@@ -7,7 +7,11 @@
  * 8-way demultiplexor:
  * {a, b, c, d, e, f, g, h} = {in, 0, 0, 0, 0, 0, 0, 0} if sel == 000
  *                            {0, in, 0, 0, 0, 0, 0, 0} if sel == 001
- *                            etc.
+ *                            {0, 0, in, 0, 0, 0, 0, 0} if sel == 010
+ *                            {0, 0, 0, in, 0, 0, 0, 0} if sel == 011
+ *                            {0, 0, 0, 0, in, 0, 0, 0} if sel == 100
+ *                            {0, 0, 0, 0, 0, in, 0, 0} if sel == 101
+ *                            {0, 0, 0, 0, 0, 0, in, 0} if sel == 110
  *                            {0, 0, 0, 0, 0, 0, 0, in} if sel == 111
  */
 
@@ -16,5 +20,39 @@ CHIP DMux8Way {
     OUT a, b, c, d, e, f, g, h;
 
     PARTS:
-    // Put your code here:
+    Not(in=sel[0], out=notsel0);
+    Not(in=sel[1], out=notsel1);
+    Not(in=sel[2], out=notsel2);
+
+    And(a=notsel0, b=notsel1, out=caseone);
+    And(a=notsel2, b=caseone, out=caseonetmp);
+    And(a=in, b=caseonetmp, out=a);
+    
+    And(a=sel[0], b=notsel1, out=casetwo);
+    And(a=notsel2, b=casetwo, out=casetwotmp);
+    And(a=in, b=casetwotmp, out=b);
+    
+    And(a=notsel0, b=sel[1], out=casethree);
+    And(a=notsel2, b=casethree, out=casethreetmp);
+    And(a=in, b=casethreetmp, out=c);
+    
+    And(a=sel[0], b=sel[1], out=casefour);
+    And(a=notsel2, b=casefour, out=casefourtmp);
+    And(a=in, b=casefourtmp, out=d);
+    
+    And(a=notsel0, b=notsel1, out=casefive);
+    And(a=sel[2], b=casefive, out=casefivetmp);
+    And(a=in, b=casefivetmp, out=e);
+    
+    And(a=sel[0], b=notsel1, out=casesix);
+    And(a=sel[2], b=casesix, out=casesixtmp);
+    And(a=in, b=casesixtmp, out=f);
+    
+    And(a=notsel0, b=sel[1], out=caseseven);
+    And(a=sel[2], b=caseseven, out=caseseventmp);
+    And(a=in, b=caseseventmp, out=g);
+    
+    And(a=sel[0], b=sel[1], out=caseeight);
+    And(a=sel[2], b=caseeight, out=caseeighttmp);
+    And(a=in, b=caseeighttmp, out=h);
 }
