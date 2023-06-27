@@ -1,0 +1,17 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/Not16.hdl
+
+/**
+ * 16-bit Not:
+ * for i=0..15: out[i] = not in[i]
+ */
+
+CHIP Not16 {
+    IN in[16];
+    OUT out[16];
+
+    PARTS:
+    // Put your code here:
+}

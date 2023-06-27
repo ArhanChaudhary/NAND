@@ -1,0 +1,183 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/MemoryTest/Main.jack
+
+/** Test program for the OS Memory class. */
+class Main {
+
+    /** Test Memory.peek(), poke(), alloc() and deAlloc().
+     *
+     *  This test is also a diagnostic.  RAM[17000] is incremented before and
+     *  after every call so that the failure point can be accurately determined
+     *  when using command line testing.  Return values from all alloc() calls
+     *  are also stored in the test results to aid debugging.
+     */
+    function void main() {
+        var int temp;
+        var Array a, b, c, out;
+
+        let out = 17000;     // Address where test results will be stored.
+
+        // Test poke() and peek().
+
+        let out[0] = 10;                    // poke test
+        do Memory.poke(out + 1, 333);       // RAM[17001] = 333
+
+        let out[0] = 11;                    // peek test
+        let temp = Memory.peek(out + 1);
+        let out[2] = temp + 1;              // RAM[17002] = 334
+        let out[0] = 12;                    // peek/poke test complete
+
+        // Allocate a memory block.
+        // Validate that the returned block is entirely within the heap,
+        // Test aborts if the block is not valid.
+
+        let out[0] = 20;
+        let a = Memory.alloc(20);
+        let out[3] = a;                     // RAM[17003] = block address
+
+        let out[0] = 21;
+        do Main.checkRange(a, 20);
+        let out[0] = 22;
+
+        // Allocate a SMALLER memory block.
+        // Validate that the returned block is entirely within the heap,
+        // and that it does not overlap block 'a'.
+        // Test aborts if the block is not valid or overlaps.
+        //
+        // Common failure: first block was not removed from free list so space
+        // for this block was found within the first block.
+
+        let out[0] = 30;
+        let b = Memory.alloc(3);
+        let out[4] = b;                     // RAM[17004] = block address
+
+        let out[0] = 31;
+        do Main.checkRange(b, 3);
+        let out[0] = 32;
+        do Main.checkOverlap(b, 3, a, 3);
+        let out[0] = 33;
+
+        // Allocate a memory block.
+        // Validate that the returned block is entirely within the heap,
+        // and that it does not overlap blocks 'a' or 'b'.
+        // Test aborts if the block is not valid or overlaps.
+
+        let out[0] = 40;
+        let c = Memory.alloc(500);
+        let out[5] = c;                     // RAM[17005] = block address
+
+        let out[0] = 41;
+        do Main.checkRange(c, 500);
+        let out[0] = 42;
+        do Main.checkOverlap(c, 500, a, 3);
+        let out[0] = 43;
+        do Main.checkOverlap(c, 500, b, 3);
+        let out[0] = 44;
+
+        // Deallocate blocks 'a' and 'b', retaining 'c'.
+        //
+        // Common failure: free list corrupted by deAlloc().
+
+        let out[0] = 50;
+        do Memory.deAlloc(a);
+
+        let out[0] = 51;
+        do Memory.deAlloc(b);
+        let out[0] = 52;
+
+        // Allocate a memory block.
+        // Validate that the returned block is entirely within the heap,
+        // and that it does not overlap blocks 'c'.
+        // Test aborts if the block is not valid or overlaps.
+        //
+        // Common failure: free list corrupted by deAlloc().
+
+        let out[0] = 60;
+        let b = Memory.alloc(3);
+        let out[6] = b;                     // RAM[17006] = block address
+
+        let out[0] = 61;
+        do Main.checkRange(b, 3);
+        let out[0] = 62;
+        do Main.checkOverlap(b, 3, c, 500);
+        let out[0] = 63;
+
+        // Deallocate blocks 'b' and 'c'.
+
+        let out[0] = 70;
+        do Memory.deAlloc(c);
+
+        let out[0] = 71;
+        do Memory.deAlloc(b);
+        let out[0] = 72;
+
+        // Test that deallocated blocks are placed on the free list and can
+        // be reused.
+
+        let out[0] = 70;
+        let a = Memory.alloc(8000);
+        let out[7] = a;                     // RAM[17007] = block address
+
+        let out[0] = 71;
+        do Main.checkRange(a, 8000);
+
+        let out[0] = 72;
+        do Memory.deAlloc(a);
+
+        let out[0] = 73;
+        let a = Memory.alloc(7000);
+
+        let out[0] = 74;
+        do Main.checkRange(a, 7000);
+
+        let out[0] = 75;
+        do Memory.deAlloc(a);
+        let out[8] = a;                     // RAM[17008] = block address
+
+        // Test complete.
+        let out[0] = 100;
+
+        // At this point all allocated blocks have been deallocated.
+        //
+        // You can inspect the free list and confirm that all of the heap is
+        // contained in the free segments.
+        //
+        // If you implemented defragmentation in dealloc(), the free list
+        // should contain only one segment, consisting of the entire heap.
+
+        return;
+    }
+
+
+    /** Check that block a(a_len) is in the heap.
+     *
+     *  If the block begins or ends outside of the heap, calls Sys.halt()
+     */
+    function void checkRange(int a, int a_len) {
+        var int a_high;
+        let a_high = (a + a_len)-1;
+        if ((a < 2048) | ((a_high) > 16383)) {
+            // Block is not entirely within heap.
+            do Sys.halt();
+        }
+        return;
+    }
+
+    /** Check that block a(a_len) does not overlap block b(b_len).
+     *  Assumes that both blocks have been range checked.
+     *
+     *  If the blocks overlap, calls Sys.halt()
+     */
+    function void checkOverlap(int a, int a_len, int b, int b_len) {
+        var int a_high, b_high;
+        let a_high = (a + a_len)-1;
+        let b_high = (b + b_len)-1;
+        if ( ~ ((a > b_high) | (a_high < b))) {
+            // Block overlaps excluded range.
+            do Sys.halt();
+        }
+        return;
+    }
+}

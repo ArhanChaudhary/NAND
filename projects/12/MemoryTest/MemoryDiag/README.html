@@ -1,0 +1,55 @@
+<html>
+<h4>MemoryDiag is both a pass/fail test and a diagnostic.</h4>
+<p>
+MemoryDiag tests the following:
+<ol>
+<li>Memory.peek() and Memory.poke() read from and write to the specified memory address.</li>
+<li>Memory.alloc() returns RAM blocks that are fully contained within the heap address range 2048-16383.</li>
+<li>Memory.alloc() does not return RAM blocks that overlap each other.</li>
+<li>RAM blocks deallocated by Memory.deAlloc() are made available for Memory.alloc() to reuse.</li>
+</ol>
+The block reuse test allocates and deallocates an 8000 word block.  It then tries to allocates a 7000 word block which must be allocated from the deallocated 8000 word block.  If the 8000 word block is not available for reuse, there will only be about 6300 words available in the heap so you will get an ERR6.
+<p>
+<i>At the end of this test it is normal to see some pixels set on the screen.</i>  This is because the results of the test are written to RAM[17000]&nbsp;&ndash; RAM[17008] which is in the Screen memory.  MemoryDiag does not put its results in the first 16K of RAM because it must not interfere with the Memory.jack that is being tested.
+
+
+<h4>Using MemoryDiag as a diagnostic</h4>
+
+RAM[17000] is set to a unique value before every system call and address validation.  This allows the exact failure location in the test to be identified when automated testing is used.  At the end of the test, RAM[17000] is set to 100.
+<p>
+When the test fails to compare, look at the MemoryDiag.out file and note the RAM[17000] value.  This is the test <i>step</i> that failed.  Look through the Main.jack code and find the corresponding<br>
+&emsp;&emsp;<tt>let out[0] = <i>step</i>;</tt><br>
+statement.  The function immediately following this statement is where the failure occurred.
+<p>
+For example, if RAM[17000] is 51, the<br>
+&emsp;&emsp;<tt>do Memory.deAlloc(b);</tt><br>
+call did not return.  Either there was a simulation error like a bad address or deAlloc() got stuck in a loop.
+
+
+<h4>Sample MemoryDiag output files</h4>
+
+<i>Note that RAM[17003]&nbsp;&ndash; RAM[17008] are "don't care" values in the MemoryDiag.cmp file.</i>
+<p>
+Supplied Memory.vm passes:
+<pre style="padding-left:2em;">
+|RAM[17000|RAM[17001|RAM[17002|RAM[17003|RAM[17004|RAM[17005|RAM[17006|RAM[17007|RAM[17008|
+|     100 |     333 |     334 |    2050 |    2072 |    2077 |    2050 |    2050 |    2050 |
+</pre>
+Memory.Jack using the Coursera implementation passes:
+<pre style="padding-left:2em;">
+|RAM[17000|RAM[17001|RAM[17002|RAM[17003|RAM[17004|RAM[17005|RAM[17006|RAM[17007|RAM[17008|
+|     100 |     333 |     334 |   16364 |   16359 |   15857 |   15852 |    7850 |    8850 |
+</pre>
+Broken Memory.jack fails (alloc() returns duplicate block address):
+<pre style="padding-left:2em;">
+|RAM[17000|RAM[17001|RAM[17002|RAM[17003|RAM[17004|RAM[17005|RAM[17006|RAM[17007|RAM[17008|
+|      32 |     333 |     334 |    2050 |    2050 |       0 |       0 |       0 |       0 |
+</pre>
+Broken Memory.jack fails (deAlloc() does not recycle memory blocks):
+<pre style="padding-left:2em;">
+|RAM[17000|RAM[17001|RAM[17002|RAM[17003|RAM[17004|RAM[17005|RAM[17006|RAM[17007|RAM[17008|
+|      73 |     333 |     334 |   16364 |   16359 |   15857 |   15852 |    7850 |       0 |
+</pre>
+
+</html>
+<p>
