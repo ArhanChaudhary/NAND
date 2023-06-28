@@ -84,4 +84,47 @@ CHIP ALU {
     Xor(a=x[13], b=nx, out=x[13]);
     Xor(a=x[14], b=nx, out=x[14]);
     Xor(a=x[15], b=nx, out=x[15]);
+
+    // 00 = 0
+    // 01 = 1
+    // 10 = 0
+    // 11 = 0
+    Not(in=zy, out=nzy);
+    And(a=y[0], b=nzy, out=y[0]);
+    And(a=y[1], b=nzy, out=y[1]);
+    And(a=y[2], b=nzy, out=y[2]);
+    And(a=y[3], b=nzy, out=y[3]);
+    And(a=y[4], b=nzy, out=y[4]);
+    And(a=y[5], b=nzy, out=y[5]);
+    And(a=y[6], b=nzy, out=y[6]);
+    And(a=y[7], b=nzy, out=y[7]);
+    And(a=y[8], b=nzy, out=y[8]);
+    And(a=y[9], b=nzy, out=y[9]);
+    And(a=y[10], b=nzy, out=y[10]);
+    And(a=y[11], b=nzy, out=y[11]);
+    And(a=y[12], b=nzy, out=y[12]);
+    And(a=y[13], b=nzy, out=y[13]);
+    And(a=y[14], b=nzy, out=y[14]);
+    And(a=y[15], b=nzy, out=y[15]);
+
+    // 00 = 0
+    // 01 = 1
+    // 10 = 1
+    // 11 = 0
+    Xor(a=y[0], b=ny, out=y[0]);
+    Xor(a=y[1], b=ny, out=y[1]);
+    Xor(a=y[2], b=ny, out=y[2]);
+    Xor(a=y[3], b=ny, out=y[3]);
+    Xor(a=y[4], b=ny, out=y[4]);
+    Xor(a=y[5], b=ny, out=y[5]);
+    Xor(a=y[6], b=ny, out=y[6]);
+    Xor(a=y[7], b=ny, out=y[7]);
+    Xor(a=y[8], b=ny, out=y[8]);
+    Xor(a=y[9], b=ny, out=y[9]);
+    Xor(a=y[10], b=ny, out=y[10]);
+    Xor(a=y[11], b=ny, out=y[11]);
+    Xor(a=y[12], b=ny, out=y[12]);
+    Xor(a=y[13], b=ny, out=y[13]);
+    Xor(a=y[14], b=ny, out=y[14]);
+    Xor(a=y[15], b=ny, out=y[15]);
 }
