@@ -25,6 +25,10 @@
 // if (no == 1) set out = !out   // bitwise not
 // if (out == 0) set zr = 1
 // if (out < 0) set ng = 1
+// 10 = 1
+// 11 = 0
+// 01 = 1
+// 00 = 0
 
 CHIP ALU {
     IN  
@@ -42,5 +46,21 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    Not(in=zx, out=nzx);
+    And(a=x[0], b=nzx, out=x[0]);
+    And(a=x[1], b=nzx, out=x[1]);
+    And(a=x[2], b=nzx, out=x[2]);
+    And(a=x[3], b=nzx, out=x[3]);
+    And(a=x[4], b=nzx, out=x[4]);
+    And(a=x[5], b=nzx, out=x[5]);
+    And(a=x[6], b=nzx, out=x[6]);
+    And(a=x[7], b=nzx, out=x[7]);
+    And(a=x[8], b=nzx, out=x[8]);
+    And(a=x[9], b=nzx, out=x[9]);
+    And(a=x[10], b=nzx, out=x[10]);
+    And(a=x[11], b=nzx, out=x[11]);
+    And(a=x[12], b=nzx, out=x[12]);
+    And(a=x[13], b=nzx, out=x[13]);
+    And(a=x[14], b=nzx, out=x[14]);
+    And(a=x[15], b=nzx, out=x[15]);
 }
