@@ -127,4 +127,10 @@ CHIP ALU {
     Xor(a=y[13], b=ny, out=y[13]);
     Xor(a=y[14], b=ny, out=y[14]);
     Xor(a=y[15], b=ny, out=y[15]);
+
+    // if (f == 0)  set out = x & y  // bitwise and
+    // if (f == 1)  set out = x + y  // integer 2's complement addition
+    Add16(a=x, b=y, out=addout);
+    And16(a=x, b=y, out=andout);
+    Mux16(a=andout, b=addout, sel=f, out=out);
 }
