@@ -43,25 +43,25 @@ CHIP ALU {
 
     PARTS:
     // zx
-    Mux16(a=x, b=false, sel=zx, out=x);
+    Mux16(a=x, b=false, sel=zx, out=x1);
     // nx
-    Not16(in=x, out=notx);
-    Mux16(a=x, b=not, sel=nx, out=x);
+    Not16(in=x1, out=notx);
+    Mux16(a=x1, b=not, sel=nx, out=x2);
     // zy
-    Mux16(a=y, b=false, sel=zy, out=y);
+    Mux16(a=y, b=false, sel=zy, out=y1);
     // ny
-    Not16(in=y, out=noty);
-    Mux16(a=y, b=not, sel=ny, out=y);
+    Not16(in=y1, out=noty);
+    Mux16(a=y1, b=not, sel=ny, out=y2);
     // f
-    Add16(a=x, b=y, out=addout);
-    And16(a=x, b=y, out=andout);
+    Add16(a=x2, b=y2, out=addout);
+    And16(a=x2, b=y2, out=andout);
     Mux16(a=andout, b=addout, sel=f, out=out);
     // no
     Not16(in=out, out=notout);
-    Mux16(a=out, b=notout, sel=no, out=out);
+    Mux16(a=out, b=notout, sel=no, out=out1);
     // zr
-    Or8Way(in=out[0..7], out=outor1);
-    Or8Way(in=out[8..15], out=outor2);
+    Or8Way(in=out1[0..7], out=outor1);
+    Or8Way(in=out1[8..15], out=outor2);
     Or(a=outor1, b=outor2, out=outor);
     Not(in=outor, out=zr);
 }
