@@ -42,94 +42,17 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-    // 00 = 0
-    // 01 = 1
-    // 10 = 0
-    // 11 = 0
-    Not(in=zx, out=nzx);
-    And(a=x[0], b=nzx, out=x[0]);
-    And(a=x[1], b=nzx, out=x[1]);
-    And(a=x[2], b=nzx, out=x[2]);
-    And(a=x[3], b=nzx, out=x[3]);
-    And(a=x[4], b=nzx, out=x[4]);
-    And(a=x[5], b=nzx, out=x[5]);
-    And(a=x[6], b=nzx, out=x[6]);
-    And(a=x[7], b=nzx, out=x[7]);
-    And(a=x[8], b=nzx, out=x[8]);
-    And(a=x[9], b=nzx, out=x[9]);
-    And(a=x[10], b=nzx, out=x[10]);
-    And(a=x[11], b=nzx, out=x[11]);
-    And(a=x[12], b=nzx, out=x[12]);
-    And(a=x[13], b=nzx, out=x[13]);
-    And(a=x[14], b=nzx, out=x[14]);
-    And(a=x[15], b=nzx, out=x[15]);
-
-    // 00 = 0
-    // 01 = 1
-    // 10 = 1
-    // 11 = 0
-    Xor(a=x[0], b=nx, out=x[0]);
-    Xor(a=x[1], b=nx, out=x[1]);
-    Xor(a=x[2], b=nx, out=x[2]);
-    Xor(a=x[3], b=nx, out=x[3]);
-    Xor(a=x[4], b=nx, out=x[4]);
-    Xor(a=x[5], b=nx, out=x[5]);
-    Xor(a=x[6], b=nx, out=x[6]);
-    Xor(a=x[7], b=nx, out=x[7]);
-    Xor(a=x[8], b=nx, out=x[8]);
-    Xor(a=x[9], b=nx, out=x[9]);
-    Xor(a=x[10], b=nx, out=x[10]);
-    Xor(a=x[11], b=nx, out=x[11]);
-    Xor(a=x[12], b=nx, out=x[12]);
-    Xor(a=x[13], b=nx, out=x[13]);
-    Xor(a=x[14], b=nx, out=x[14]);
-    Xor(a=x[15], b=nx, out=x[15]);
-
-    // 00 = 0
-    // 01 = 1
-    // 10 = 0
-    // 11 = 0
-    Not(in=zy, out=nzy);
-    And(a=y[0], b=nzy, out=y[0]);
-    And(a=y[1], b=nzy, out=y[1]);
-    And(a=y[2], b=nzy, out=y[2]);
-    And(a=y[3], b=nzy, out=y[3]);
-    And(a=y[4], b=nzy, out=y[4]);
-    And(a=y[5], b=nzy, out=y[5]);
-    And(a=y[6], b=nzy, out=y[6]);
-    And(a=y[7], b=nzy, out=y[7]);
-    And(a=y[8], b=nzy, out=y[8]);
-    And(a=y[9], b=nzy, out=y[9]);
-    And(a=y[10], b=nzy, out=y[10]);
-    And(a=y[11], b=nzy, out=y[11]);
-    And(a=y[12], b=nzy, out=y[12]);
-    And(a=y[13], b=nzy, out=y[13]);
-    And(a=y[14], b=nzy, out=y[14]);
-    And(a=y[15], b=nzy, out=y[15]);
-
-    // 00 = 0
-    // 01 = 1
-    // 10 = 1
-    // 11 = 0
-    Xor(a=y[0], b=ny, out=y[0]);
-    Xor(a=y[1], b=ny, out=y[1]);
-    Xor(a=y[2], b=ny, out=y[2]);
-    Xor(a=y[3], b=ny, out=y[3]);
-    Xor(a=y[4], b=ny, out=y[4]);
-    Xor(a=y[5], b=ny, out=y[5]);
-    Xor(a=y[6], b=ny, out=y[6]);
-    Xor(a=y[7], b=ny, out=y[7]);
-    Xor(a=y[8], b=ny, out=y[8]);
-    Xor(a=y[9], b=ny, out=y[9]);
-    Xor(a=y[10], b=ny, out=y[10]);
-    Xor(a=y[11], b=ny, out=y[11]);
-    Xor(a=y[12], b=ny, out=y[12]);
-    Xor(a=y[13], b=ny, out=y[13]);
-    Xor(a=y[14], b=ny, out=y[14]);
-    Xor(a=y[15], b=ny, out=y[15]);
-
-    // if (f == 0)  set out = x & y  // bitwise and
-    // if (f == 1)  set out = x + y  // integer 2's complement addition
+    // zx
+    Mux16(a=x, b=false, sel=zx, out=x);
+    // nx
+    Not16(in=x, out=notx);
+    Mux16(a=x, b=not, sel=nx, out=x);
+    // zy
+    Mux16(a=y, b=false, sel=zy, out=y);
+    // ny
+    Not16(in=y, out=noty);
+    Mux16(a=y, b=not, sel=ny, out=y);
+    // f
     Add16(a=x, b=y, out=addout);
     And16(a=x, b=y, out=andout);
     Mux16(a=andout, b=addout, sel=f, out=out);
