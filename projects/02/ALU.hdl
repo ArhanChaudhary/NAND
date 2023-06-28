@@ -25,10 +25,6 @@
 // if (no == 1) set out = !out   // bitwise not
 // if (out == 0) set zr = 1
 // if (out < 0) set ng = 1
-// 10 = 1
-// 11 = 0
-// 01 = 1
-// 00 = 0
 
 CHIP ALU {
     IN  
@@ -46,6 +42,10 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
+    // 00 = 0
+    // 01 = 1
+    // 10 = 0
+    // 11 = 0
     Not(in=zx, out=nzx);
     And(a=x[0], b=nzx, out=x[0]);
     And(a=x[1], b=nzx, out=x[1]);
@@ -63,4 +63,25 @@ CHIP ALU {
     And(a=x[13], b=nzx, out=x[13]);
     And(a=x[14], b=nzx, out=x[14]);
     And(a=x[15], b=nzx, out=x[15]);
+
+    // 00 = 0
+    // 01 = 1
+    // 10 = 1
+    // 11 = 0
+    Xor(a=x[0], b=nx, out=x[0]);
+    Xor(a=x[1], b=nx, out=x[1]);
+    Xor(a=x[2], b=nx, out=x[2]);
+    Xor(a=x[3], b=nx, out=x[3]);
+    Xor(a=x[4], b=nx, out=x[4]);
+    Xor(a=x[5], b=nx, out=x[5]);
+    Xor(a=x[6], b=nx, out=x[6]);
+    Xor(a=x[7], b=nx, out=x[7]);
+    Xor(a=x[8], b=nx, out=x[8]);
+    Xor(a=x[9], b=nx, out=x[9]);
+    Xor(a=x[10], b=nx, out=x[10]);
+    Xor(a=x[11], b=nx, out=x[11]);
+    Xor(a=x[12], b=nx, out=x[12]);
+    Xor(a=x[13], b=nx, out=x[13]);
+    Xor(a=x[14], b=nx, out=x[14]);
+    Xor(a=x[15], b=nx, out=x[15]);
 }
