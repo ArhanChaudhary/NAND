@@ -16,5 +16,21 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // ret = out
+    // if inc then ret = out+1
+    // if load then ret = in
+    // if reset then ret = 0 
+    // DFF(in=ret, out=out)
+
+    // inc
+    Inc16(in=dffout, out=outinc);
+    Mux16(a=dffout, b=outinc, sel=inc, out=ret1);
+    // load
+    Mux16(a=ret1, b=in, sel=load, out=ret2);
+    // reset
+    Mux16(a=ret2, b=false, sel=reset, out=ret3);
+    // clock
+    Or(a=load, b=inc, out=shouldload1);
+    Or(a=shouldload1, b=reset, out=shouldload);
+    Register(in=ret3, load=shouldload, out=dffout, out=out);
 }
