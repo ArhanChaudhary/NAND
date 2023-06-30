@@ -39,5 +39,21 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Put your code here:
+    // Plan:
+    // @1
+    // M=D, D=A, D=M
+    // D+1, A+1, M+1
+    // MD=D+1
+    // 0;JMP, D;JGT
+    // D=M;JMP
+    // pc stuff
+
+    // @1
+    Not(in=instruction[15], out=ainst);
+    // MSB of addressM can be stored but it won't be used because
+    // the data memory is < 2**15
+    ARegister(in=in, load=ainst, out[0..13]=addressM);
+    Not(in=true[0], out=writeM);
+
+    // M=D
 }
