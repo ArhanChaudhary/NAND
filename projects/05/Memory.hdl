@@ -27,5 +27,22 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // address[14] == 0 means select RAM
+    // address[13] == 0 means select Screen
+    // address[13] == 1 and address[14] == 1 means select Keyboard
+    // 00 => RAM
+    // 01 => RAM
+    // 10 => SCREEN
+    // 11 => KEYBOARD
+    Not(in=address[14], out=n14);
+    And(a=n14, b=load, out=loadram);
+
+    Not(in=address[13], out=n13);
+    And(a=n13, b=address[14], out=loadscreen1);
+    And(a=loadscreen1, b=load, out=loadscreen);
+
+    RAM16K(in=in, load=loadram, address=address[0..13], out=out1);
+    Screen(in=in, load=loadscreen, address=address[0..12], out=out2);
+    Keyboard(out=out3);
+    Mux4Way16(a=out1, b=out1, c=out2, d=out3, sel=address[13..14], out=out);
 }
