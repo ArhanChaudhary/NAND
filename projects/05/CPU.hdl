@@ -53,15 +53,16 @@ CHIP CPU {
 
     ARegister(in=aregin, load=loadareg, out[0..14]=addressM, out=aluy1, out=pcin);
 
-    And(a=aluoutispos, b=instruction[0], out=shouldgoto1);
-    And(a=aluoutiszero, b=instruction[1], out=shouldgoto2);
-    And(a=aluoutisneg, b=instruction[2], out=shouldgoto3);
-    Or(a=shouldgoto1, b=shouldgoto2, out=shouldgototmp);
-    Or(a=shouldgototmp, b=shouldgoto3, out=shouldgototmp2);
-    And(a=shouldgototmp2, b=instruction[15], out=shouldgoto);
+    And(a=aluoutispos, b=instruction[0], out=jumpcond1);
+    And(a=aluoutiszero, b=instruction[1], out=jumpcond2);
+    And(a=aluoutisneg, b=instruction[2], out=jumpcond3);
+    Or(a=jumpcond1, b=jumpcond2, out=shouldjumptmp);
+    Or(a=shouldjumptmp, b=jumpcond3, out=shouldjump);
+    And(a=shouldjump, b=instruction[15], out=shouldgoto);
     PC(in=pcin, load=shouldgoto, inc[0]=true, reset=reset, out[0..14]=pc);
 
-    DRegister(in=aluout, load=instruction[4], out=alux);
+    And(a=instruction[4], b=instruction[15], out=loaddreg);
+    DRegister(in=aluout, load=loaddreg, out=alux);
     Mux16(a=aluy1, b=inM, sel=instruction[12], out=aluy);
 
     ALU(x=alux, y=aluy, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6],
