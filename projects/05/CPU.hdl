@@ -39,21 +39,33 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    // Plan:
-    // @1
-    // M=D, D=A, D=M
-    // D+1, A+1, M+1
-    // MD=D+1
-    // 0;JMP, D;JGT
-    // D=M;JMP
-    // pc stuff
+    // NOTE: MSB of addressM amd pc can be stored but it won't be
+    // used and will always be 0 because the data memory is < 2**15
+    And(a=instruction[3], b=instruction[15], out=writeM);
 
-    // @1
-    Not(in=instruction[15], out=ainst);
-    // MSB of addressM can be stored but it won't be used because
-    // the data memory is < 2**15
-    ARegister(in=in, load=ainst, out[0..13]=addressM);
-    Not(in=true[0], out=writeM);
+    Mux16(a=instruction, b=aluout, sel=instruction[15], out=aregin);
 
-    // M=D
+    Not(in=instruction[15], out=loadareg1);
+    Or(a=aluoutispos, b=aluoutiszero, out=aluhasouttmp);
+    Or(a=aluhasouttmp, b=aluoutisneg, out=aluhasout);
+    And(a=aluhasout, b=instruction[5], out=loadareg2);
+    Or(a=loadareg1, b=loadareg2, out=loadareg);
+
+    ARegister(in=aregin, load=loadareg, out[0..14]=addressM, out=aluy1, out=pcin);
+
+    And(a=aluoutispos, b=instruction[0], out=shouldgoto1);
+    And(a=aluoutiszero, b=instruction[1], out=shouldgoto2);
+    And(a=aluoutisneg, b=instruction[2], out=shouldgoto3);
+    Or(a=shouldgoto1, b=shouldgoto2, out=shouldgototmp);
+    Or(a=shouldgototmp, b=shouldgoto3, out=shouldgototmp2);
+    And(a=shouldgototmp2, b=instruction[15], out=shouldgoto);
+    PC(in=pcin, load=shouldgoto, inc[0]=true, reset=reset, out[0..14]=pc);
+
+    DRegister(in=aluout, load=instruction[4], out=alux);
+    Mux16(a=aluy1, b=inM, sel=instruction[12], out=aluy);
+
+    ALU(x=alux, y=aluy, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6],
+        out=outM, out=aluout, zr=aluoutiszero, ng=aluoutisneg);
+    Or(a=aluoutisneg, b=aluoutiszero, out=autoutispostmp);
+    Not(in=autoutispostmp, out=aluoutispos);
 }
