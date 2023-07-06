@@ -1,5 +1,4 @@
 import nReadlines from 'n-readlines';
-import { NANDException } from '../core/exceptions';
 
 export enum CommandType {
     A_COMMAND,
@@ -20,27 +19,30 @@ export class Parser {
         if (!line)
             return false
         this.currentCommand = line.toString('ascii').replace(/[ \t\r\f]/g, '');
-        if (!this.currentCommand || this.currentCommand.startsWith('//')) {
+        const comment: number = this.currentCommand.indexOf("//");
+        if (comment !== -1)
+            this.currentCommand = this.currentCommand.substring(0, comment);
+        if (!this.currentCommand)
             return this.advance();
-        }
         return true;
     }
 
     public commandType(): CommandType {
-        if (/^@\d+$/.test(this.currentCommand))
+        if (this.currentCommand.startsWith('@'))
             return CommandType.A_COMMAND;
-        if (/^(.+=)?.+(;.+)?$/.test(this.currentCommand))
-            return CommandType.C_COMMAND;
-        if (/^\(.+\)$/.test(this.currentCommand))
+        if (this.currentCommand.startsWith('('))
             return CommandType.L_COMMAND;
-        throw new NANDException("Invalid command syntax: " + this.currentCommand);
+        return CommandType.C_COMMAND;
     }
 
-    public symbol(commandType: CommandType): string {
-        if (commandType === CommandType.A_COMMAND)
+    public symbol(): string {
+        if (this.currentCommand.startsWith('@'))
             return this.currentCommand.substring(1);
-        // L_COMMAND
         return this.currentCommand.substring(1, this.currentCommand.length - 1);
+    }
+
+    public AIsNumber(): boolean {
+        return /^@\d/.test(this.currentCommand);
     }
 
     public dest(): string {
