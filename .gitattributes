@@ -1,4 +1,4 @@
-projects/06/pong/*.asm linguist-vendored
+projects/06/pong/* linguist-vendored
 projects/**/*.html linguist-vendored
 *.tst linguist-vendored
 *.hdl linguist-language=VHDL
