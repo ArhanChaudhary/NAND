@@ -9,7 +9,7 @@ const out: Array<string> = [];
 while (parser.advance()) {
     switch (parser.commandType()) {
         case CommandType.A_COMMAND: {
-            const bin = (+parser.symbol()).toString(2);
+            const bin = (+parser.symbol(CommandType.A_COMMAND)).toString(2);
             out.push('0' + ('0000000000000000' + bin).slice(-15));
             break;
         }

@@ -31,11 +31,16 @@ export class Parser {
             return CommandType.A_COMMAND;
         if (/^(.+=)?.+(;.+)?$/.test(this.currentCommand))
             return CommandType.C_COMMAND;
+        if (/^\(.+\)$/.test(this.currentCommand))
+            return CommandType.L_COMMAND;
         throw new NANDException("Invalid command syntax: " + this.currentCommand);
     }
 
-    public symbol(): string {
-        return this.currentCommand.substring(1);
+    public symbol(commandType: CommandType): string {
+        if (commandType === CommandType.A_COMMAND)
+            return this.currentCommand.substring(1);
+        // L_COMMAND
+        return this.currentCommand.substring(1, this.currentCommand.length - 1);
     }
 
     public dest(): string {
@@ -55,13 +60,5 @@ export class Parser {
         if (tmp === -1)
             return '';
         return this.currentCommand.substring(tmp + 1);
-    }
-
-    public getFileStream(): nReadlines {
-        return this.fileStream;
-    }
-
-    public getCurrentCommand(): string {
-        return this.currentCommand;
     }
 }
