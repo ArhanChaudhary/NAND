@@ -1,7 +1,7 @@
 import nReadlines from 'n-readlines';
 import { NANDException } from '../core/exceptions';
 
-enum CommandType {
+export enum CommandType {
     A_COMMAND,
     C_COMMAND,
     L_COMMAND
@@ -15,14 +15,15 @@ export class Parser {
         this.fileStream = new nReadlines(file);
     }
 
-    public advance(): void {
+    public advance(): boolean {
         let line: Buffer | boolean = this.fileStream.next();
         if (!line)
-            return
+            return false
         this.currentCommand = line.toString('ascii').replace(/[ \t\r\f]/g, '');
         if (!this.currentCommand || this.currentCommand.startsWith('//')) {
-            this.advance();
+            return this.advance();
         }
+        return true;
     }
 
     public commandType(): CommandType {
@@ -42,7 +43,7 @@ export class Parser {
     }
 
     public comp(): string {
-        const tmp: number = this.currentCommand.indexOf("=");
+        const tmp: number = this.currentCommand.indexOf(";");
         if (tmp === -1) {
             return this.currentCommand.substring(this.currentCommand.indexOf("=") + 1);
         }
