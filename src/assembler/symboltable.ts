@@ -1,5 +1,5 @@
-export class SymbolTable {
-    private symbolTable: any;
+export default class SymbolTable {
+    private symbolTable: { [symbol: string]: number };
     
     constructor() {
         this.symbolTable = {};

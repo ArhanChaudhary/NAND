@@ -1,6 +1,6 @@
 import { Parser, CommandType } from "./parser";
-import { Code } from "./code";
-import { SymbolTable } from "./symboltable";
+import Code from "./code";
+import SymbolTable from "./symboltable";
 import fs from "fs";
 
 const file = '../projects/06/rect/Rect.asm';

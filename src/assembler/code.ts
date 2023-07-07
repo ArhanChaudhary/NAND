@@ -1,6 +1,6 @@
-import { NANDException } from "../core/exceptions";
+import NANDException from "../core/exceptions";
 
-export class Code {
+export default class Code {
     public static dest(mnemonic: string): string {
         const ret = [0, 0, 0];
         if (mnemonic.includes('A'))
