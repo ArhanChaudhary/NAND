@@ -31,8 +31,9 @@ while (parser.advance()) {
 }
 
 parser = new Parser(file);
-const out: Array<string> = [];
+const out = fs.createWriteStream(file.replace(".asm", ".hack"));
 let RAMAddress: number = 16;
+let wrote = false;
 while (parser.advance()) {
     switch (parser.commandType()) {
         case CommandType.A_COMMAND: {
@@ -49,13 +50,13 @@ while (parser.advance()) {
                 raw = RAMAddress;
                 symbolTable.addEntry(symbol, RAMAddress++);
             }
-            out.push(`0${
+            out.write(`${wrote ? '\n' : ''}0${
                 ('0000000000000000' + raw.toString(2)).slice(-15)
             }`);
             break;
         }
         case CommandType.C_COMMAND: {
-            out.push(`111${
+            out.write(`${wrote ? '\n' : ''}111${
                 Code.comp(parser.comp())
             }${
                 Code.dest(parser.dest())
@@ -65,5 +66,6 @@ while (parser.advance()) {
             break;
         }
     }
+    wrote = true;
 }
-fs.writeFileSync(file.replace(".asm", ".hack"), out.join('\n'));
+out.close();
