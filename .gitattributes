@@ -2,3 +2,4 @@ projects/06/pong/* linguist-vendored
 projects/**/*.html linguist-vendored
 *.tst linguist-vendored
 *.hdl linguist-language=VHDL
+*.vm linguist-language=LLVM
