@@ -14,7 +14,6 @@ export default class CodeWriter {
         
         const out: Array<string> | undefined = {
             'add': [
-                '// add',
                 '@SP',
                 'AM=M-1',
                 'D=M',
@@ -22,7 +21,6 @@ export default class CodeWriter {
                 'M=M+D',
             ],
             'sub': [
-                '// sub',
                 '@SP',
                 'AM=M-1',
                 'D=M',
@@ -30,13 +28,11 @@ export default class CodeWriter {
                 'M=M-D',
             ],
             'neg': [
-                '// neg',
                 '@SP',
                 'A=M-1',
                 'M=-M',
             ],
             'eq': [
-                '// eq',
                 '@SP',
                 'AM=M-1',
                 'D=M',
@@ -51,7 +47,6 @@ export default class CodeWriter {
                 '(FALSE_' + CodeWriter.labelCount + ')',
             ],
             'gt': [
-                '// gt',
                 '@SP',
                 'AM=M-1',
                 'D=M',
@@ -66,7 +61,6 @@ export default class CodeWriter {
                 '(FALSE_' + CodeWriter.labelCount + ')',
             ],
             'lt': [
-                '// lt',
                 '@SP',
                 'AM=M-1',
                 'D=M',
@@ -81,7 +75,6 @@ export default class CodeWriter {
                 '(FALSE_' + CodeWriter.labelCount + ')',
             ],
             'and': [
-                '// and',
                 '@SP',
                 'AM=M-1',
                 'D=M',
@@ -89,7 +82,6 @@ export default class CodeWriter {
                 'M=M&D',
             ],
             'or': [
-                '// or',
                 '@SP',
                 'AM=M-1',
                 'D=M',
@@ -97,7 +89,6 @@ export default class CodeWriter {
                 'M=M|D',
             ],
             'not': [
-                '// not',
                 '@SP',
                 'A=M-1',
                 'M=!M',
@@ -108,33 +99,88 @@ export default class CodeWriter {
         if (['eq', 'gt', 'lt'].includes(command)) {
             CodeWriter.labelCount++;
         }
-        this.fileStream.write(out.join('\n') + '\n\n');
+        this.fileStream.write(`// ${command}\n${out.join('\n')}\n\n`);
     }
 
     public writePushPop(command: CommandType, segment: string, index: number): void {
-        let out: Array<string>;
-        switch (command) {
-            case CommandType.C_PUSH:
-                switch (segment) {
-                    case 'constant':
-                        out = [
-                            '// push constant ' + index,
-                            '@' + index,
-                            'D=A',
-                            '@SP',
-                            'AM=M+1',
-                            'A=A-1',
-                            'M=D',
-                        ];
-                        break;
-                    default:
-                        throw new NANDException("Invalid vm command segment: " + command);
-                }
-                break;
-            default:
-                throw new NANDException("Invalid vm command type: " + command);
+        let out: Array<string> | undefined;
+        if (CommandType.C_PUSH) {
+            out = {
+                'constant': [
+                    '@' + index,
+                    'D=A',
+                ],
+                'local': [
+                    '@LCL',
+                ],
+                'argument': [
+                    '@ARG',
+                ],
+                'this': [
+                    '@THIS',
+                ],
+                'that': [
+                    '@THAT',
+                ],
+            }[segment];
+            if (out === undefined)
+                throw new NANDException("Invalid vm command segment: " + command);
+            if (['local', 'argument', 'this', 'that'].includes(segment)) {
+                out.push(...[
+                    'D=M',
+                    '@' + index,
+                    'A=A+D',
+                    'D=M',
+                ]);
+            }
+            out.push(...[
+                '@SP',
+                'AM=M+1',
+                'A=A-1',
+                'M=D',
+            ]);
+        } else if (CommandType.C_POP) {
+            out = {
+                'local': [
+                    '@LCL',
+                ],
+                'argument': [
+                    '@ARG',
+                ],
+                'this': [
+                    '@THIS',
+                ],
+                'that': [
+                    '@THAT',
+                ],
+            }[segment];
+            if (out === undefined)
+                throw new NANDException("Invalid vm command segment: " + command);
+            if (['local', 'argument', 'this', 'that'].includes(segment)) {
+                out = [
+                    // stores RAM index dest in R13
+                    '@' + index,
+                    'D=A',
+                    out[0],
+                    'D=D+M',
+                    '@R13',
+                    'M=D',
+
+                    // pops stack and stores it in D
+                    '@SP',
+                    'MA=M-1',
+                    'D=M',
+
+                    // store D in the address of the value of R13
+                    '@R13',
+                    'A=M',
+                    'M=D',
+                ];
+            }
+        } else {
+            throw new NANDException("Invalid vm command type: " + command);
         }
-        this.fileStream.write(out.join('\n') + '\n\n');
+        this.fileStream.write(`// ${command === CommandType.C_PUSH ? 'push' : 'pop'} ${segment} ${index}\n${out.join('\n')}\n\n`);
     }
 
     public close(): void {
