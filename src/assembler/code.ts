@@ -42,22 +42,27 @@ export default class Code {
             case '-' + AOrM:
                 return ret + '110011';
             case 'D+1':
+            case '1+D':
                 return ret + '011111';
             case AOrM + '+1':
+            case '1+' + AOrM:
                 return ret + '110111';
             case 'D-1':
                 return ret + '001110';
             case AOrM + '-1':
                 return ret + '110010';
             case 'D+' + AOrM:
+            case AOrM + '+D':
                 return ret + '000010';
             case 'D-' + AOrM:
                 return ret + '010011';
             case AOrM + '-D':
                 return ret + '000111';
             case 'D&' + AOrM:
+            case AOrM + '&D':
                 return ret + '000000';
             case 'D|' + AOrM:
+            case AOrM + '|D':
                 return ret + '010101';
             default:
                 throw new NANDException("Invalid command comp: " + mnemonic);
