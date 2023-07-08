@@ -102,36 +102,39 @@ export default class CodeWriter {
         this.fileStream.write(`// ${command}\n${out.join('\n')}\n\n`);
     }
 
+    static segmentMemoryMap: { [segment: string]: string } = {
+        'local': '@LCL',
+        'argument': '@ARG',
+        'this': '@THIS',
+        'that': '@THAT',
+        'pointer': '@3',
+        'temp': '@5',
+    }
+
     public writePushPop(command: CommandType, segment: string, index: number): void {
-        let out: Array<string> | undefined;
+        let out: Array<string>;
         if (CommandType.C_PUSH) {
-            out = {
-                'constant': [
-                    '@' + index,
-                    'D=A',
-                ],
-                'local': [
-                    '@LCL',
-                ],
-                'argument': [
-                    '@ARG',
-                ],
-                'this': [
-                    '@THIS',
-                ],
-                'that': [
-                    '@THAT',
-                ],
-            }[segment];
-            if (out === undefined)
-                throw new NANDException("Invalid vm command segment: " + command);
-            if (['local', 'argument', 'this', 'that'].includes(segment)) {
-                out.push(...[
-                    'D=M',
-                    '@' + index,
-                    'A=A+D',
-                    'D=M',
-                ]);
+            switch (segment) {
+                case 'constant':
+                    out = [
+                        '@' + index,
+                        'D=A',
+                    ];
+                    break;
+                case 'local':
+                case 'argument':
+                case 'this':
+                case 'that':
+                    out = [
+                        CodeWriter.segmentMemoryMap[segment],
+                        'D=M',
+                        '@' + index,
+                        'A=A+D',
+                        'D=M',
+                    ];
+                    break;
+                default:
+                    throw new NANDException("Invalid vm command segment: " + command);
             }
             out.push(...[
                 '@SP',
@@ -140,42 +143,33 @@ export default class CodeWriter {
                 'M=D',
             ]);
         } else if (CommandType.C_POP) {
-            out = {
-                'local': [
-                    '@LCL',
-                ],
-                'argument': [
-                    '@ARG',
-                ],
-                'this': [
-                    '@THIS',
-                ],
-                'that': [
-                    '@THAT',
-                ],
-            }[segment];
-            if (out === undefined)
-                throw new NANDException("Invalid vm command segment: " + command);
-            if (['local', 'argument', 'this', 'that'].includes(segment)) {
-                out = [
-                    // stores RAM index dest in R13
-                    '@' + index,
-                    'D=A',
-                    out[0],
-                    'D=D+M',
-                    '@R13',
-                    'M=D',
-
-                    // pops stack and stores it in D
-                    '@SP',
-                    'MA=M-1',
-                    'D=M',
-
-                    // store D in the address of the value of R13
-                    '@R13',
-                    'A=M',
-                    'M=D',
-                ];
+            switch (segment) {
+                case 'local':
+                case 'argument':
+                case 'this':
+                case 'that':
+                    out = [
+                        // stores RAM index dest in R13
+                        '@' + index,
+                        'D=A',
+                        CodeWriter.segmentMemoryMap[segment],
+                        'D=D+M',
+                        '@R13',
+                        'M=D',
+    
+                        // pops stack and stores it in D
+                        '@SP',
+                        'MA=M-1',
+                        'D=M',
+    
+                        // store D in the address of the value of R13
+                        '@R13',
+                        'A=M',
+                        'M=D',
+                    ];
+                    break;
+                default:
+                    throw new NANDException("Invalid vm command segment: " + command);
             }
         } else {
             throw new NANDException("Invalid vm command type: " + command);
