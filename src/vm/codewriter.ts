@@ -113,8 +113,9 @@ export default class CodeWriter {
 
     public writePushPop(command: CommandType, segment: string, index: number): void {
         let out: Array<string>;
-        if (CommandType.C_PUSH) {
+        if (command === CommandType.C_PUSH) {
             switch (segment) {
+                // sets D to the value that needs to be pushed
                 case 'constant':
                     out = [
                         '@' + index,
@@ -133,6 +134,16 @@ export default class CodeWriter {
                         'D=M',
                     ];
                     break;
+                case 'pointer':
+                case 'temp':
+                    out = [
+                        CodeWriter.segmentMemoryMap[segment],
+                        'D=A',
+                        '@' + index,
+                        'A=A+D',
+                        'D=M',
+                    ];
+                    break;
                 default:
                     throw new NANDException("Invalid vm command segment: " + command);
             }
@@ -142,35 +153,47 @@ export default class CodeWriter {
                 'A=A-1',
                 'M=D',
             ]);
-        } else if (CommandType.C_POP) {
+        } else if (command === CommandType.C_POP) {
             switch (segment) {
+                // sets D to the RAM index dest
                 case 'local':
                 case 'argument':
                 case 'this':
                 case 'that':
                     out = [
-                        // stores RAM index dest in R13
                         '@' + index,
                         'D=A',
                         CodeWriter.segmentMemoryMap[segment],
                         'D=D+M',
-                        '@R13',
-                        'M=D',
-    
-                        // pops stack and stores it in D
-                        '@SP',
-                        'MA=M-1',
-                        'D=M',
-    
-                        // store D in the address of the value of R13
-                        '@R13',
-                        'A=M',
-                        'M=D',
+                    ];
+                    break;
+                case 'pointer':
+                case 'temp':
+                    out = [
+                        '@' + index,
+                        'D=A',
+                        CodeWriter.segmentMemoryMap[segment],
+                        'D=D+A',
                     ];
                     break;
                 default:
                     throw new NANDException("Invalid vm command segment: " + command);
             }
+            out.push(...[
+                // stores RAM index dest in R13
+                '@R13',
+                'M=D',
+
+                // pops stack and stores it in D
+                '@SP',
+                'AM=M-1',
+                'D=M',
+
+                // store D in the address of the value of R13
+                '@R13',
+                'A=M',
+                'M=D',
+            ]);
         } else {
             throw new NANDException("Invalid vm command type: " + command);
         }
