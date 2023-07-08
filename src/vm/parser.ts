@@ -1,6 +1,6 @@
 import nReadlines from 'n-readlines';
 
-enum CommandType {
+export enum CommandType {
     C_ARITHMETIC,
     C_PUSH,
     C_POP
@@ -18,7 +18,7 @@ export class Parser {
         let line: Buffer | boolean = this.fileStream.next();
         if (!line)
             return false
-        this.currentCommand = line.toString('ascii').trim().replace(/  +/, ' ');
+        this.currentCommand = line.toString('ascii').trim().replace(/ {2,}/, ' ');
         const comment: number = this.currentCommand.indexOf("//");
         if (comment !== -1)
             this.currentCommand = this.currentCommand.substring(0, comment);
