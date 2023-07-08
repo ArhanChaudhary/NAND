@@ -3,7 +3,7 @@ import Code from "./code";
 import SymbolTable from "./symboltable";
 import fs from "fs";
 
-const file = '../projects/06/rect/Rect.asm';
+const file = process.argv[process.argv.length - 1];
 
 const symbolTable = new SymbolTable();
 symbolTable.addEntry('SP', 0);
