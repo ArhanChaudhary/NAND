@@ -1,5 +1,5 @@
 import CodeWriter from "./codewriter";
-import { Parser, CommandType } from "./parser";
+import Parser, { CommandType } from "./parser";
 
 const file = process.argv[process.argv.length - 1];
 

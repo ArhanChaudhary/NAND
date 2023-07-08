@@ -6,7 +6,7 @@ export enum CommandType {
     C_POP
 }
 
-export class Parser {
+export default class Parser {
     private fileStream: nReadlines;
     private currentCommand: string = '';
 
