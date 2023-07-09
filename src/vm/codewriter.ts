@@ -10,94 +10,85 @@ export default class CodeWriter {
         this.fileStream = fs.createWriteStream(file.replace(".vm", ".asm"));
     }
 
+    static branchCommandMap: { [command: string]: string } = {
+        'eq': 'JNE',
+        'gt': 'JLE',
+        'lt': 'JGE',
+    }
+
     public writeArithmetic(command: string): void {
-        
-        const out: Array<string> | undefined = {
-            'add': [
-                '@SP',
-                'AM=M-1',
-                'D=M',
-                'A=A-1',
-                'M=M+D',
-            ],
-            'sub': [
-                '@SP',
-                'AM=M-1',
-                'D=M',
-                'A=A-1',
-                'M=M-D',
-            ],
-            'neg': [
-                '@SP',
-                'A=M-1',
-                'M=-M',
-            ],
-            'eq': [
-                '@SP',
-                'AM=M-1',
-                'D=M',
-                'A=A-1',
-                'D=M-D',
-                'M=0',
-                '@FALSE_' + CodeWriter.labelCount,
-                'D;JNE',
-                '@SP',
-                'A=M-1',
-                'M=-1',
-                '(FALSE_' + CodeWriter.labelCount + ')',
-            ],
-            'gt': [
-                '@SP',
-                'AM=M-1',
-                'D=M',
-                'A=A-1',
-                'D=M-D',
-                'M=0',
-                '@FALSE_' + CodeWriter.labelCount,
-                'D;JLE',
-                '@SP',
-                'A=M-1',
-                'M=-1',
-                '(FALSE_' + CodeWriter.labelCount + ')',
-            ],
-            'lt': [
-                '@SP',
-                'AM=M-1',
-                'D=M',
-                'A=A-1',
-                'D=M-D',
-                'M=0',
-                '@FALSE_' + CodeWriter.labelCount,
-                'D;JGE',
-                '@SP',
-                'A=M-1',
-                'M=-1',
-                '(FALSE_' + CodeWriter.labelCount + ')',
-            ],
-            'and': [
-                '@SP',
-                'AM=M-1',
-                'D=M',
-                'A=A-1',
-                'M=M&D',
-            ],
-            'or': [
-                '@SP',
-                'AM=M-1',
-                'D=M',
-                'A=A-1',
-                'M=M|D',
-            ],
-            'not': [
-                '@SP',
-                'A=M-1',
-                'M=!M',
-            ],
-        }[command];
-        if (out === undefined)
-            throw new NANDException("Invalid vm command: " + command);
-        if (['eq', 'gt', 'lt'].includes(command)) {
-            CodeWriter.labelCount++;
+        let out: Array<string>;
+        switch (command) {
+            case 'add':
+                out = [
+                    '@SP',
+                    'AM=M-1',
+                    'D=M',
+                    'A=A-1',
+                    'M=M+D',
+                ];
+                break;
+            case 'sub':
+                out = [
+                    '@SP',
+                    'AM=M-1',
+                    'D=M',
+                    'A=A-1',
+                    'M=M-D',
+                ];
+                break;
+            case 'neg':
+                out = [
+                    '@SP',
+                    'A=M-1',
+                    'M=-M',
+                ];
+                break;
+            case 'eq':
+            case 'gt':
+            case 'lt':
+                out = [
+                    '@SP',
+                    'AM=M-1',
+                    'D=M',
+                    'A=A-1',
+                    'D=M-D',
+                    'M=0',
+                    '@FALSE_' + CodeWriter.labelCount,
+                    'D;' + CodeWriter.branchCommandMap[command],
+                    '@SP',
+                    'A=M-1',
+                    'M=-1',
+                    '(FALSE_' + CodeWriter.labelCount++ + ')',
+                ];
+                break;
+            case 'and':
+                out = [
+                    '@SP',
+                    'AM=M-1',
+                    'D=M',
+                    'A=A-1',
+                    'M=M&D',
+                ];
+                break;
+            case 'or':
+                out = [
+                    '@SP',
+                    'AM=M-1',
+                    'D=M',
+                    'A=A-1',
+                    'M=M|D',
+                ];
+                break;
+            case 'not':
+                out = [
+                    '@SP',
+                    'A=M-1',
+                    'M=!M',
+                ];
+                break;
+            default:
+                throw new NANDException("Invalid vm command: " + command);
         }
         this.fileStream.write(`// ${command}\n${out.join('\n')}\n\n`);
     }
