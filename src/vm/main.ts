@@ -1,3 +1,4 @@
+// TODO: If the program’s argument is a directory name rather than a file name, the main program should process all the .vm files in this directory. In doing so, it should use a separate Parser for handling each input file and a single CodeWriter for handling the output.
 import CodeWriter from "./codewriter";
 import Parser, { CommandType } from "./parser";
 

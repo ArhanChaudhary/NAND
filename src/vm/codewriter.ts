@@ -4,9 +4,13 @@ import { CommandType } from './parser';
 
 export default class CodeWriter {
     private fileStream: WriteStream;
+    private fileName: string;
     static labelCount: number = 0;
 
     constructor(file: string) {
+        const tmp = file.split('/');
+        this.fileName = tmp[tmp.length - 1];
+        this.fileName = this.fileName.substring(0, this.fileName.indexOf('.'));
         this.fileStream = fs.createWriteStream(file.replace(".vm", ".asm"));
     }
 
@@ -135,6 +139,12 @@ export default class CodeWriter {
                         'D=M',
                     ];
                     break;
+                case 'static':
+                    out = [
+                        `@${this.fileName}.${index}`,
+                        'D=M',
+                    ]
+                    break;
                 default:
                     throw new NANDException("Invalid vm command segment: " + command);
             }
@@ -166,6 +176,12 @@ export default class CodeWriter {
                         CodeWriter.segmentMemoryMap[segment],
                         'D=D+A',
                     ];
+                    break;
+                case 'static':
+                    out = [
+                        `@${this.fileName}.${index}`,
+                        'D=A',
+                    ]
                     break;
                 default:
                     throw new NANDException("Invalid vm command segment: " + command);
