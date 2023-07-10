@@ -13,10 +13,14 @@ export default class CodeWriter {
         this.fileStream = fs.createWriteStream(file.replace(".vm", ".asm"));
         // this.writeInit();
     }
+
+    private write(out: Array<string>): void {
+        this.fileStream.write(`${out.join('\n')}\n\n`);
+    }
     
     // private writeInit(): void {
     //     bootstrap code
-    //     this.fileStream.write('// sp init\n@256\nD=A\n@SP\nM=D\n\n');
+    //     this.write(['// sp init', '@256', 'D=A', '@SP', 'M=D']);
     //     // call sys init
     // }
 
@@ -124,7 +128,7 @@ export default class CodeWriter {
             default:
                 throw new NANDException("Invalid vm command: " + command);
         }
-        this.fileStream.write(`${out.join('\n')}\n\n`);
+        this.write(out);
     }
 
     static segmentMemoryMap: { [segment: string]: string } = {
@@ -183,7 +187,7 @@ export default class CodeWriter {
             'A=A-1',
             'M=D',
         ]);
-        this.fileStream.write(`${out.join('\n')}\n\n`);
+        this.write(out);
     }
 
     public writePop(segment: string, index: number): void {
@@ -234,7 +238,7 @@ export default class CodeWriter {
             'A=M',
             'M=D',
         ]);
-        this.fileStream.write(`${out.join('\n')}\n\n`);
+        this.write(out);
     }
 
     public close(): void {
