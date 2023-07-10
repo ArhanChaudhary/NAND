@@ -4,6 +4,7 @@ import NANDException from '../core/exceptions';
 export default class CodeWriter {
     private fileStream: WriteStream;
     private fileName: string;
+    private currentFunction: string = '';
     static labelCount: number = 0;
 
     constructor(file: string) {
@@ -25,15 +26,29 @@ export default class CodeWriter {
     // }
 
     public writeLabel(label: string): void {
-
+        this.write([
+            `// label ${label}`,
+            `(${this.currentFunction}$${label})`
+        ]);
     }
 
     public writeGoto(label: string): void {
-
+        this.write([
+            `// goto ${label}`,
+            `@${this.currentFunction}$${label}`,
+            '0;JMP'
+        ]);
     }
 
     public writeIf(label: string): void {
-
+        this.write([
+            `// if-goto ${label}`,
+            '@SP',
+            'AM=M-1',
+            'D=M',
+            `@${this.currentFunction}$${label}`,
+            'D;JNE',
+        ]);
     }
 
     public writeCall(functionName: string, numArgs: number): void {
@@ -41,11 +56,11 @@ export default class CodeWriter {
     }
 
     public writeReturn(): void {
-
+        this.currentFunction = '';
     }
 
     public writeFunction(functionName: string, numLocals: number): void {
-
+        this.currentFunction = functionName;
     }
 
     static branchCommandMap: { [command: string]: string } = {
@@ -146,8 +161,8 @@ export default class CodeWriter {
             // sets D to the value that needs to be pushed
             case 'constant':
                 out.push(...[
-                        '@' + index,
-                        'D=A',
+                    '@' + index,
+                    'D=A',
                 ]);
                 break;
             case 'local':
@@ -155,27 +170,27 @@ export default class CodeWriter {
             case 'this':
             case 'that':
                 out.push(...[
-                        CodeWriter.segmentMemoryMap[segment],
-                        'D=M',
-                        '@' + index,
-                        'A=A+D',
-                        'D=M',
+                    CodeWriter.segmentMemoryMap[segment],
+                    'D=M',
+                    '@' + index,
+                    'A=A+D',
+                    'D=M',
                 ]);
                 break;
             case 'pointer':
             case 'temp':
                 out.push(...[
-                        CodeWriter.segmentMemoryMap[segment],
-                        'D=A',
-                        '@' + index,
-                        'A=A+D',
-                        'D=M',
+                    CodeWriter.segmentMemoryMap[segment],
+                    'D=A',
+                    '@' + index,
+                    'A=A+D',
+                    'D=M',
                 ]);
                 break;
             case 'static':
                 out.push(...[
-                        `@${this.fileName}.${index}`,
-                        'D=M',
+                    `@${this.fileName}.${index}`,
+                    'D=M',
                 ]);
                 break;
             default:
