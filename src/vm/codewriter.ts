@@ -57,10 +57,87 @@ export default class CodeWriter {
 
     public writeReturn(): void {
         this.currentFunction = '';
+        this.write([
+            '// return',
+            // store LCL-1 (where the stored THAT is) in R14
+            '@LCL',
+            'D=M-1',
+            '@R14',
+            'M=D',
+
+            // store the returned word at ARG[0]
+            '@SP',
+            'A=M-1',
+            'D=M',
+            '@ARG',
+            'A=M',
+            'M=D',
+
+            // restore sp
+            'D=A',
+            '@SP',
+            'M=D+1',
+
+            // restore that
+            '@R14',
+            'A=M',
+            'D=M',
+            '@THAT',
+            'M=D',
+
+            // restore this
+            '@R14',
+            'AM=M-1',
+            'D=M',
+            '@THIS',
+            'M=D',
+
+            // restore arg
+            '@R14',
+            'AM=M-1',
+            'D=M',
+            '@ARG',
+            'M=D',
+
+            // restore lcl
+            '@R14',
+            'AM=M-1',
+            'D=M',
+            '@LCL',
+            'M=D',
+
+            // goto ret
+            '@R14',
+            'A=M-1',
+            '0;JMP',
+        ]);
     }
 
     public writeFunction(functionName: string, numLocals: number): void {
         this.currentFunction = functionName;
+        const out: Array<string> = [
+            `// function ${functionName} ${numLocals}`,
+            `(${functionName})`,
+        ];
+        if (numLocals) {
+            out.push(...[
+                '@SP',
+                'A=M',
+            ]);
+            for (let k = 0; k < numLocals - 1; k++) {
+                out.push(...[
+                    'M=0',
+                    'A=A+1'
+                ]);
+            }
+            out.push(...[
+                'M=0',
+                'AD=A+1',
+                '@SP',
+                'M=D'
+            ]);
+        }
+        this.write(out);
     }
 
     static branchCommandMap: { [command: string]: string } = {
