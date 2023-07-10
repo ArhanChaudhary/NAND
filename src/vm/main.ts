@@ -12,10 +12,10 @@ while (parser.advance()) {
             codeWriter.writeArithmetic(parser.arg1());
             break;
         case CommandType.C_POP:
-            codeWriter.writePushPop(CommandType.C_POP, parser.arg1(), parser.arg2());
+            codeWriter.writePop(parser.arg1(), parser.arg2());
             break;
         case CommandType.C_PUSH:
-            codeWriter.writePushPop(CommandType.C_PUSH, parser.arg1(), parser.arg2());
+            codeWriter.writePush(parser.arg1(), parser.arg2());
             break;
     }
 }

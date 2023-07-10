@@ -106,47 +106,46 @@ export default class CodeWriter {
         'temp': '@5',
     }
 
-    public writePushPop(command: CommandType, segment: string, index: number): void {
-        let out: Array<string>;
-        if (command === CommandType.C_PUSH) {
+    public writePush(segment: string, index: number): void {
+        let out: Array<string> = [`// push ${segment} ${index}`];
             switch (segment) {
                 // sets D to the value that needs to be pushed
                 case 'constant':
-                    out = [
+                out.push(...[
                         '@' + index,
                         'D=A',
-                    ];
+                ]);
                     break;
                 case 'local':
                 case 'argument':
                 case 'this':
                 case 'that':
-                    out = [
+                out.push(...[
                         CodeWriter.segmentMemoryMap[segment],
                         'D=M',
                         '@' + index,
                         'A=A+D',
                         'D=M',
-                    ];
+                ]);
                     break;
                 case 'pointer':
                 case 'temp':
-                    out = [
+                out.push(...[
                         CodeWriter.segmentMemoryMap[segment],
                         'D=A',
                         '@' + index,
                         'A=A+D',
                         'D=M',
-                    ];
+                ]);
                     break;
                 case 'static':
-                    out = [
+                out.push(...[
                         `@${this.fileName}.${index}`,
                         'D=M',
-                    ]
+                ]);
                     break;
                 default:
-                    throw new NANDException("Invalid vm command segment: " + command);
+                throw new NANDException(`Invalid vm command segment: push ${segment} ${index}`);
             }
             out.push(...[
                 '@SP',
@@ -154,37 +153,41 @@ export default class CodeWriter {
                 'A=A-1',
                 'M=D',
             ]);
-        } else if (command === CommandType.C_POP) {
+        this.fileStream.write(`${out.join('\n')}\n\n`);
+    }
+
+    public writePop(segment: string, index: number): void {
+        let out: Array<string> = [`// pop ${segment} ${index}`];
             switch (segment) {
                 // sets D to the RAM index dest
                 case 'local':
                 case 'argument':
                 case 'this':
                 case 'that':
-                    out = [
+                out.push(...[
                         '@' + index,
                         'D=A',
                         CodeWriter.segmentMemoryMap[segment],
                         'D=D+M',
-                    ];
+                ]);
                     break;
                 case 'pointer':
                 case 'temp':
-                    out = [
+                out.push(...[
                         '@' + index,
                         'D=A',
                         CodeWriter.segmentMemoryMap[segment],
                         'D=D+A',
-                    ];
+                ]);
                     break;
                 case 'static':
-                    out = [
+                out.push(...[
                         `@${this.fileName}.${index}`,
                         'D=A',
-                    ]
+                ]);
                     break;
                 default:
-                    throw new NANDException("Invalid vm command segment: " + command);
+                throw new NANDException(`Invalid vm command segment: pop ${segment} ${index}`);
             }
             out.push(...[
                 // stores RAM index dest in R13
@@ -201,10 +204,7 @@ export default class CodeWriter {
                 'A=M',
                 'M=D',
             ]);
-        } else {
-            throw new NANDException("Invalid vm command type: " + command);
-        }
-        this.fileStream.write(`// ${command === CommandType.C_PUSH ? 'push' : 'pop'} ${segment} ${index}\n${out.join('\n')}\n\n`);
+        this.fileStream.write(`${out.join('\n')}\n\n`);
     }
 
     public close(): void {
