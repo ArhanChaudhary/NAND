@@ -1,6 +1,5 @@
 import fs, { WriteStream } from 'fs';
 import NANDException from '../core/exceptions';
-import { CommandType } from './parser';
 
 export default class CodeWriter {
     private fileStream: WriteStream;
@@ -41,7 +40,7 @@ export default class CodeWriter {
 
     }
 
-    public writeFunction(functionName: string, numLocals: number) {
+    public writeFunction(functionName: string, numLocals: number): void {
 
     }
 
@@ -52,37 +51,37 @@ export default class CodeWriter {
     }
 
     public writeArithmetic(command: string): void {
-        let out: Array<string>;
+        const out: Array<string> = [`// ${command}`];
         switch (command) {
             case 'add':
-                out = [
+                out.push(...[
                     '@SP',
                     'AM=M-1',
                     'D=M',
                     'A=A-1',
                     'M=M+D',
-                ];
+                ]);
                 break;
             case 'sub':
-                out = [
+                out.push(...[
                     '@SP',
                     'AM=M-1',
                     'D=M',
                     'A=A-1',
                     'M=M-D',
-                ];
+                ]);
                 break;
             case 'neg':
-                out = [
+                out.push(...[
                     '@SP',
                     'A=M-1',
                     'M=-M',
-                ];
+                ]);
                 break;
             case 'eq':
             case 'gt':
             case 'lt':
-                out = [
+                out.push(...[
                     '@SP',
                     'AM=M-1',
                     'D=M',
@@ -95,37 +94,37 @@ export default class CodeWriter {
                     'A=M-1',
                     'M=-1',
                     '(FALSE_' + CodeWriter.labelCount++ + ')',
-                ];
+                ]);
                 break;
             case 'and':
-                out = [
+                out.push(...[
                     '@SP',
                     'AM=M-1',
                     'D=M',
                     'A=A-1',
                     'M=M&D',
-                ];
+                ]);
                 break;
             case 'or':
-                out = [
+                out.push(...[
                     '@SP',
                     'AM=M-1',
                     'D=M',
                     'A=A-1',
                     'M=M|D',
-                ];
+                ]);
                 break;
             case 'not':
-                out = [
+                out.push(...[
                     '@SP',
                     'A=M-1',
                     'M=!M',
-                ];
+                ]);
                 break;
             default:
                 throw new NANDException("Invalid vm command: " + command);
         }
-        this.fileStream.write(`// ${command}\n${out.join('\n')}\n\n`);
+        this.fileStream.write(`${out.join('\n')}\n\n`);
     }
 
     static segmentMemoryMap: { [segment: string]: string } = {
@@ -138,19 +137,19 @@ export default class CodeWriter {
     }
 
     public writePush(segment: string, index: number): void {
-        let out: Array<string> = [`// push ${segment} ${index}`];
-            switch (segment) {
-                // sets D to the value that needs to be pushed
-                case 'constant':
+        const out: Array<string> = [`// push ${segment} ${index}`];
+        switch (segment) {
+            // sets D to the value that needs to be pushed
+            case 'constant':
                 out.push(...[
                         '@' + index,
                         'D=A',
                 ]);
-                    break;
-                case 'local':
-                case 'argument':
-                case 'this':
-                case 'that':
+                break;
+            case 'local':
+            case 'argument':
+            case 'this':
+            case 'that':
                 out.push(...[
                         CodeWriter.segmentMemoryMap[segment],
                         'D=M',
@@ -158,9 +157,9 @@ export default class CodeWriter {
                         'A=A+D',
                         'D=M',
                 ]);
-                    break;
-                case 'pointer':
-                case 'temp':
+                break;
+            case 'pointer':
+            case 'temp':
                 out.push(...[
                         CodeWriter.segmentMemoryMap[segment],
                         'D=A',
@@ -168,73 +167,73 @@ export default class CodeWriter {
                         'A=A+D',
                         'D=M',
                 ]);
-                    break;
-                case 'static':
+                break;
+            case 'static':
                 out.push(...[
                         `@${this.fileName}.${index}`,
                         'D=M',
                 ]);
-                    break;
-                default:
+                break;
+            default:
                 throw new NANDException(`Invalid vm command segment: push ${segment} ${index}`);
-            }
-            out.push(...[
-                '@SP',
-                'AM=M+1',
-                'A=A-1',
-                'M=D',
-            ]);
+        }
+        out.push(...[
+            '@SP',
+            'AM=M+1',
+            'A=A-1',
+            'M=D',
+        ]);
         this.fileStream.write(`${out.join('\n')}\n\n`);
     }
 
     public writePop(segment: string, index: number): void {
-        let out: Array<string> = [`// pop ${segment} ${index}`];
-            switch (segment) {
-                // sets D to the RAM index dest
-                case 'local':
-                case 'argument':
-                case 'this':
-                case 'that':
+        const out: Array<string> = [`// pop ${segment} ${index}`];
+        switch (segment) {
+            // sets D to the RAM index dest
+            case 'local':
+            case 'argument':
+            case 'this':
+            case 'that':
                 out.push(...[
                         '@' + index,
                         'D=A',
                         CodeWriter.segmentMemoryMap[segment],
                         'D=D+M',
                 ]);
-                    break;
-                case 'pointer':
-                case 'temp':
+                break;
+            case 'pointer':
+            case 'temp':
                 out.push(...[
                         '@' + index,
                         'D=A',
                         CodeWriter.segmentMemoryMap[segment],
                         'D=D+A',
                 ]);
-                    break;
-                case 'static':
+                break;
+            case 'static':
                 out.push(...[
                         `@${this.fileName}.${index}`,
                         'D=A',
                 ]);
-                    break;
-                default:
+                break;
+            default:
                 throw new NANDException(`Invalid vm command segment: pop ${segment} ${index}`);
-            }
-            out.push(...[
-                // stores RAM index dest in R13
-                '@R13',
-                'M=D',
+        }
+        out.push(...[
+            // stores RAM index dest in R13
+            '@R13',
+            'M=D',
 
-                // pops stack and stores it in D
-                '@SP',
-                'AM=M-1',
-                'D=M',
+            // pops stack and stores it in D
+            '@SP',
+            'AM=M-1',
+            'D=M',
 
-                // store D in the address of the value of R13
-                '@R13',
-                'A=M',
-                'M=D',
-            ]);
+            // store D in the address of the value of R13
+            '@R13',
+            'A=M',
+            'M=D',
+        ]);
         this.fileStream.write(`${out.join('\n')}\n\n`);
     }
 
