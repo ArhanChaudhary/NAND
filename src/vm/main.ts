@@ -17,6 +17,24 @@ while (parser.advance()) {
         case CommandType.C_PUSH:
             codeWriter.writePush(parser.arg1(), parser.arg2());
             break;
+        case CommandType.C_LABEL:
+            codeWriter.writeLabel(parser.arg1());
+            break;
+        case CommandType.C_GOTO:
+            codeWriter.writeGoto(parser.arg1());
+            break;
+        case CommandType.C_IF:
+            codeWriter.writeIf(parser.arg1());
+            break;
+        case CommandType.C_FUNCTION:
+            codeWriter.writeFunction(parser.arg1(), parser.arg2());
+            break;
+        case CommandType.C_RETURN:
+            codeWriter.writeReturn();
+            break;
+        case CommandType.C_CALL:
+            codeWriter.writeCall(parser.arg1(), parser.arg2());
+            break;
     }
 }
 codeWriter.close();

@@ -12,6 +12,37 @@ export default class CodeWriter {
         this.fileName = tmp[tmp.length - 1];
         this.fileName = this.fileName.substring(0, this.fileName.indexOf('.'));
         this.fileStream = fs.createWriteStream(file.replace(".vm", ".asm"));
+        // this.writeInit();
+    }
+    
+    // private writeInit(): void {
+    //     bootstrap code
+    //     this.fileStream.write('// sp init\n@256\nD=A\n@SP\nM=D\n\n');
+    //     // call sys init
+    // }
+
+    public writeLabel(label: string): void {
+
+    }
+
+    public writeGoto(label: string): void {
+
+    }
+
+    public writeIf(label: string): void {
+
+    }
+
+    public writeCall(functionName: string, numArgs: number): void {
+
+    }
+
+    public writeReturn(): void {
+
+    }
+
+    public writeFunction(functionName: string, numLocals: number) {
+
     }
 
     static branchCommandMap: { [command: string]: string } = {

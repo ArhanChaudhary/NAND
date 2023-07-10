@@ -3,7 +3,13 @@ import nReadlines from 'n-readlines';
 export enum CommandType {
     C_ARITHMETIC,
     C_PUSH,
-    C_POP
+    C_POP,
+    C_LABEL,
+    C_GOTO,
+    C_IF,
+    C_FUNCTION,
+    C_RETURN,
+    C_CALL,
 }
 
 export default class Parser {
@@ -28,11 +34,19 @@ export default class Parser {
     }
 
     public commandType(): CommandType {
-        if (this.currentCommand.startsWith('pu'))
-            return CommandType.C_PUSH;
-        if (this.currentCommand.startsWith('po'))
-            return CommandType.C_POP;
-        return CommandType.C_ARITHMETIC;
+        let ret: CommandType | undefined = {
+            'pu': CommandType.C_PUSH,
+            'po': CommandType.C_POP,
+            'la': CommandType.C_LABEL,
+            'go': CommandType.C_GOTO,
+            'if': CommandType.C_IF,
+            'fu': CommandType.C_FUNCTION,
+            're': CommandType.C_RETURN,
+            'ca': CommandType.C_CALL,
+        }[this.currentCommand.substring(0, 2)];
+        if (ret === undefined)
+            ret = CommandType.C_ARITHMETIC;
+        return ret;
     }
 
     public arg1(): string {
