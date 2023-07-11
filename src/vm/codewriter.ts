@@ -64,6 +64,16 @@ export default class CodeWriter {
             '@R14',
             'M=D',
 
+            // store return address in R15
+            // NOTE: this is necessary because methods without arguments
+            // have ARG pointed at the return value address, meaning it
+            // will be overriden. (i had to find that out the hard way :V)
+            '@4',
+            'A=D-A',
+            'D=M',
+            '@R15',
+            'M=D',
+
             // store the returned word at ARG[0]
             '@SP',
             'A=M-1',
@@ -100,14 +110,14 @@ export default class CodeWriter {
 
             // restore lcl
             '@R14',
-            'AM=M-1',
+            'A=M-1',
             'D=M',
             '@LCL',
             'M=D',
-
+            
             // goto ret
-            '@R14',
-            'A=M-1',
+            '@R15',
+            'A=M',
             '0;JMP',
         ]);
     }
