@@ -104,7 +104,6 @@ export default class CodeWriter {
     }
 
     public writeReturn(): void {
-        this.currentFunction = '';
         this.write([
             '// return',
             // store LCL-1 (where the stored THAT is) in R14
@@ -172,6 +171,12 @@ export default class CodeWriter {
     }
 
     public writeFunction(functionName: string, numLocals: number): void {
+        // this could possibly lead to an issue where procedural code after
+        // a function is still given the function label. However, this doesn't
+        // seem to be possible or at least of issue in NAND's implementation.
+        // Sys.init calls everything as functions, and it itself won't have
+        // any complicated return logic, so for now let's ignore but be aware
+        // of it
         this.currentFunction = functionName;
         const out: string[] = [
             `// function ${functionName} ${numLocals}`,
