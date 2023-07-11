@@ -19,16 +19,14 @@ export default class CodeWriter {
     }
     
     public writeInit(): void {
-        // this.write([
-        //     '// init',
-        //     '@256',
-        //     'D=A',
-        //     '@SP',
-        //     'M=D',
-        // ]);
-        // this.writeCall('Sys.init', 0);
-
-        // call sys.init??
+        this.write([
+            '// init',
+            '@256',
+            'D=A',
+            '@SP',
+            'M=D',
+        ]);
+        this.writeCall('Sys.init', 0);
     }
 
     public writeLabel(label: string): void {
