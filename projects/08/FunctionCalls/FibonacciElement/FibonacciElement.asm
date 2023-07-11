@@ -48,15 +48,8 @@ M=D
 @R14
 A=M
 0;JMP
-(AFTER_SETUP)
-
-// call Sys.init 0
-@RETURN_ADDR0
-D=A
-@SP
-AM=M+1
-A=A-1
-M=D
+// push state during call
+(PUSH_STATE)
 @LCL
 D=M
 @SP
@@ -85,6 +78,25 @@ M=D
 D=M
 @LCL
 M=D
+@R15
+A=M
+0;JMP
+(AFTER_SETUP)
+
+// call Sys.init 0
+@RETURN_ADDR0
+D=A
+@SP
+AM=M+1
+A=A-1
+M=D
+@AFTER_PUSH_STATE1
+D=A
+@R15
+M=D
+@PUSH_STATE
+0;JMP
+(AFTER_PUSH_STATE1)
 @0
 D=D-A
 @5
@@ -124,12 +136,12 @@ D=M
 A=A-1
 D=M-D
 M=0
-@FALSE_1
+@FALSE_2
 D;JGE
 @SP
 A=M-1
 M=-1
-(FALSE_1)
+(FALSE_2)
 
 // if-goto IF_TRUE
 @SP
@@ -190,40 +202,19 @@ A=A-1
 M=M-D
 
 // call Main.fibonacci 1
-@RETURN_ADDR2
+@RETURN_ADDR3
 D=A
 @SP
 AM=M+1
 A=A-1
 M=D
-@LCL
-D=M
-@SP
-AM=M+1
-A=A-1
+@AFTER_PUSH_STATE4
+D=A
+@R15
 M=D
-@ARG
-D=M
-@SP
-AM=M+1
-A=A-1
-M=D
-@THIS
-D=M
-@SP
-AM=M+1
-A=A-1
-M=D
-@THAT
-D=M
-@SP
-AM=M+1
-A=A-1
-M=D
-@SP
-D=M
-@LCL
-M=D
+@PUSH_STATE
+0;JMP
+(AFTER_PUSH_STATE4)
 @1
 D=D-A
 @5
@@ -232,7 +223,7 @@ D=D-A
 M=D
 @Main.fibonacci
 0;JMP
-(RETURN_ADDR2)
+(RETURN_ADDR3)
 
 // push argument 0
 @ARG
@@ -261,40 +252,19 @@ A=A-1
 M=M-D
 
 // call Main.fibonacci 1
-@RETURN_ADDR3
+@RETURN_ADDR5
 D=A
 @SP
 AM=M+1
 A=A-1
 M=D
-@LCL
-D=M
-@SP
-AM=M+1
-A=A-1
+@AFTER_PUSH_STATE6
+D=A
+@R15
 M=D
-@ARG
-D=M
-@SP
-AM=M+1
-A=A-1
-M=D
-@THIS
-D=M
-@SP
-AM=M+1
-A=A-1
-M=D
-@THAT
-D=M
-@SP
-AM=M+1
-A=A-1
-M=D
-@SP
-D=M
-@LCL
-M=D
+@PUSH_STATE
+0;JMP
+(AFTER_PUSH_STATE6)
 @1
 D=D-A
 @5
@@ -303,7 +273,7 @@ D=D-A
 M=D
 @Main.fibonacci
 0;JMP
-(RETURN_ADDR3)
+(RETURN_ADDR5)
 
 // add
 @SP
@@ -328,40 +298,19 @@ A=A-1
 M=D
 
 // call Main.fibonacci 1
-@RETURN_ADDR4
+@RETURN_ADDR7
 D=A
 @SP
 AM=M+1
 A=A-1
 M=D
-@LCL
-D=M
-@SP
-AM=M+1
-A=A-1
+@AFTER_PUSH_STATE8
+D=A
+@R15
 M=D
-@ARG
-D=M
-@SP
-AM=M+1
-A=A-1
-M=D
-@THIS
-D=M
-@SP
-AM=M+1
-A=A-1
-M=D
-@THAT
-D=M
-@SP
-AM=M+1
-A=A-1
-M=D
-@SP
-D=M
-@LCL
-M=D
+@PUSH_STATE
+0;JMP
+(AFTER_PUSH_STATE8)
 @1
 D=D-A
 @5
@@ -370,7 +319,7 @@ D=D-A
 M=D
 @Main.fibonacci
 0;JMP
-(RETURN_ADDR4)
+(RETURN_ADDR7)
 
 // label WHILE
 (Sys.init$WHILE)

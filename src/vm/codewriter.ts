@@ -29,6 +29,7 @@ export default class CodeWriter {
             'M=D',
             '@AFTER_SETUP',
             '0;JMP',
+
             '// return',
             '(DO_RETURN)',
             // store LCL-1 (where the stored THAT is) in R14
@@ -92,6 +93,52 @@ export default class CodeWriter {
             '@R14',
             'A=M',
             '0;JMP',
+
+            '// push state during call',
+            '(PUSH_STATE)',
+            // push lcl
+            '@LCL',
+            'D=M',
+            '@SP',
+            'AM=M+1',
+            'A=A-1',
+            'M=D',
+
+            // push arg
+            '@ARG',
+            'D=M',
+            '@SP',
+            'AM=M+1',
+            'A=A-1',
+            'M=D',
+
+            // push this
+            '@THIS',
+            'D=M',
+            '@SP',
+            'AM=M+1',
+            'A=A-1',
+            'M=D',
+
+            // push that
+            '@THAT',
+            'D=M',
+            '@SP',
+            'AM=M+1',
+            'A=A-1',
+            'M=D',
+
+            // reposition lcl and store SP in D
+            '@SP',
+            'D=M',
+            '@LCL',
+            'M=D',
+            
+            // goto R15
+            '@R15',
+            'A=M',
+            '0;JMP',
+
             '(AFTER_SETUP)',
         ]);
         this.writeCall('Sys.init', 0);
@@ -124,36 +171,27 @@ export default class CodeWriter {
     }
 
     public writeCall(functionName: string, numArgs: number): void {
+        const l1 = CodeWriter.labelCount++;
+        const l2 = CodeWriter.labelCount++;
         const out: string[] = [
             `// call ${functionName} ${numArgs}`,
-            '@RETURN_ADDR' + CodeWriter.labelCount,
+            // push return address
+            '@RETURN_ADDR' + l1,
             'D=A',
             '@SP',
             'AM=M+1',
             'A=A-1',
             'M=D',
-        ];
-        for (const statePtr of [
-            '@LCL',
-            '@ARG',
-            '@THIS',
-            '@THAT',
-        ]) {
-            out.push(...[
-                statePtr,
-                'D=M',
-                '@SP',
-                'AM=M+1',
-                'A=A-1',
-                'M=D',
-            ]);
-        }
-        out.push(...[
-            // reposition lcl
-            '@SP',
-            'D=M',
-            '@LCL',
+
+            // push lcl, arg, this, that
+            '@AFTER_PUSH_STATE' + l2,
+            'D=A',
+            '@R15',
             'M=D',
+            '@PUSH_STATE',
+            '0;JMP',
+            // SP is stored in D after PUSH_STATE finishes
+            `(AFTER_PUSH_STATE${l2})`,
 
             // reposition arg
             '@' + numArgs,
@@ -164,8 +202,8 @@ export default class CodeWriter {
             'M=D',
             '@' + functionName,
             '0;JMP',
-            `(RETURN_ADDR${CodeWriter.labelCount++})`,
-        ]);
+            `(RETURN_ADDR${l1})`,
+        ];
         this.write(out);
     }
 
