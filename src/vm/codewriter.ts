@@ -27,6 +27,72 @@ export default class CodeWriter {
             'D=A',
             '@SP',
             'M=D',
+            '@AFTER_SETUP',
+            '0;JMP',
+            '// return',
+            '(DO_RETURN)',
+            // store LCL-1 (where the stored THAT is) in R14
+            '@LCL',
+            'D=M-1',
+            '@R13',
+            'M=D',
+
+            // store return address in R15
+            // NOTE: this is necessary because methods without arguments
+            // have ARG pointed at the return value address, meaning it
+            // will be overriden. (i had to find that out the hard way :V)
+            '@4',
+            'A=D-A',
+            'D=M',
+            '@R14',
+            'M=D',
+
+            // store the returned word at ARG[0]
+            '@SP',
+            'A=M-1',
+            'D=M',
+            '@ARG',
+            'A=M',
+            'M=D',
+
+            // restore sp
+            'D=A',
+            '@SP',
+            'M=D+1',
+
+            // restore that
+            '@R13',
+            'A=M',
+            'D=M',
+            '@THAT',
+            'M=D',
+
+            // restore this
+            '@R13',
+            'AM=M-1',
+            'D=M',
+            '@THIS',
+            'M=D',
+
+            // restore arg
+            '@R13',
+            'AM=M-1',
+            'D=M',
+            '@ARG',
+            'M=D',
+
+            // restore lcl
+            '@R13',
+            'A=M-1',
+            'D=M',
+            '@LCL',
+            'M=D',
+            
+            // goto ret
+            '@R14',
+            'A=M',
+            '0;JMP',
+            '(AFTER_SETUP)',
         ]);
         this.writeCall('Sys.init', 0);
     }
@@ -106,66 +172,7 @@ export default class CodeWriter {
     public writeReturn(): void {
         this.write([
             '// return',
-            // store LCL-1 (where the stored THAT is) in R14
-            '@LCL',
-            'D=M-1',
-            '@R14',
-            'M=D',
-
-            // store return address in R15
-            // NOTE: this is necessary because methods without arguments
-            // have ARG pointed at the return value address, meaning it
-            // will be overriden. (i had to find that out the hard way :V)
-            '@4',
-            'A=D-A',
-            'D=M',
-            '@R15',
-            'M=D',
-
-            // store the returned word at ARG[0]
-            '@SP',
-            'A=M-1',
-            'D=M',
-            '@ARG',
-            'A=M',
-            'M=D',
-
-            // restore sp
-            'D=A',
-            '@SP',
-            'M=D+1',
-
-            // restore that
-            '@R14',
-            'A=M',
-            'D=M',
-            '@THAT',
-            'M=D',
-
-            // restore this
-            '@R14',
-            'AM=M-1',
-            'D=M',
-            '@THIS',
-            'M=D',
-
-            // restore arg
-            '@R14',
-            'AM=M-1',
-            'D=M',
-            '@ARG',
-            'M=D',
-
-            // restore lcl
-            '@R14',
-            'A=M-1',
-            'D=M',
-            '@LCL',
-            'M=D',
-            
-            // goto ret
-            '@R15',
-            'A=M',
+            '@DO_RETURN',
             '0;JMP',
         ]);
     }
