@@ -11,11 +11,10 @@ export default class CodeWriter {
         const tmp = file.split('/');
         this.fileName = tmp[tmp.length - 1];
         this.fileName = this.fileName.substring(0, this.fileName.indexOf('.'));
-        this.fileStream = fs.createWriteStream(file.replace(".vm", ".asm"));
-        // this.writeInit();
+        this.fileStream = fs.createWriteStream(file);
     }
 
-    private write(out: Array<string>): void {
+    private write(out: string[]): void {
         this.fileStream.write(`${out.join('\n')}\n\n`);
     }
     
@@ -115,7 +114,7 @@ export default class CodeWriter {
 
     public writeFunction(functionName: string, numLocals: number): void {
         this.currentFunction = functionName;
-        const out: Array<string> = [
+        const out: string[] = [
             `// function ${functionName} ${numLocals}`,
             `(${functionName})`,
         ];
@@ -147,7 +146,7 @@ export default class CodeWriter {
     }
 
     public writeArithmetic(command: string): void {
-        const out: Array<string> = [`// ${command}`];
+        const out: string[] = [`// ${command}`];
         switch (command) {
             case 'add':
                 out.push(...[
@@ -233,7 +232,7 @@ export default class CodeWriter {
     }
 
     public writePush(segment: string, index: number): void {
-        const out: Array<string> = [`// push ${segment} ${index}`];
+        const out: string[] = [`// push ${segment} ${index}`];
         switch (segment) {
             // sets D to the value that needs to be pushed
             case 'constant':
@@ -283,7 +282,7 @@ export default class CodeWriter {
     }
 
     public writePop(segment: string, index: number): void {
-        const out: Array<string> = [`// pop ${segment} ${index}`];
+        const out: string[] = [`// pop ${segment} ${index}`];
         switch (segment) {
             // sets D to the RAM index dest
             case 'local':

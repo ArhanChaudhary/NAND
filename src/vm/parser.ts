@@ -24,10 +24,11 @@ export default class Parser {
         let line: Buffer | boolean = this.fileStream.next();
         if (!line)
             return false
-        this.currentCommand = line.toString('ascii').trim().replace(/ {2,}/, ' ');
+        this.currentCommand = line.toString('ascii');
         const comment: number = this.currentCommand.indexOf("//");
         if (comment !== -1)
             this.currentCommand = this.currentCommand.substring(0, comment);
+        this.currentCommand = this.currentCommand.trim().replace(/ {2,}/, ' ');
         if (!this.currentCommand)
             return this.advance();
         return true;
