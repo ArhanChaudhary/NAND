@@ -21,6 +21,10 @@ codeWriter.writeInit();
 files.forEach(file => {
     if (!file.endsWith('.vm')) return;
 
+    const tmp = file.split('/');
+    let fileName = tmp[tmp.length - 1];
+    fileName = fileName.substring(0, fileName.indexOf('.'));
+    codeWriter.setFileName(fileName);
     const parser: Parser = new Parser(path + '/' + file);
     while (parser.advance()) {
         switch (parser.commandType()) {

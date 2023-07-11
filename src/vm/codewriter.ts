@@ -3,15 +3,17 @@ import NANDException from '../core/exceptions';
 
 export default class CodeWriter {
     private fileStream: WriteStream;
-    private fileName: string;
+    private fileName: string = '';
     private currentFunction: string = '';
     static labelCount: number = 0;
 
     constructor(file: string) {
-        const tmp = file.split('/');
-        this.fileName = tmp[tmp.length - 1];
-        this.fileName = this.fileName.substring(0, this.fileName.indexOf('.'));
         this.fileStream = fs.createWriteStream(file);
+    }
+
+    // needed for segregating a static segment for each vm file
+    public setFileName(file: string) {
+        this.fileName = file;
     }
 
     private write(out: string[]): void {
@@ -347,25 +349,25 @@ export default class CodeWriter {
             case 'this':
             case 'that':
                 out.push(...[
-                        '@' + index,
-                        'D=A',
-                        CodeWriter.segmentMemoryMap[segment],
-                        'D=D+M',
+                    '@' + index,
+                    'D=A',
+                    CodeWriter.segmentMemoryMap[segment],
+                    'D=D+M',
                 ]);
                 break;
             case 'pointer':
             case 'temp':
                 out.push(...[
-                        '@' + index,
-                        'D=A',
-                        CodeWriter.segmentMemoryMap[segment],
-                        'D=D+A',
+                    '@' + index,
+                    'D=A',
+                    CodeWriter.segmentMemoryMap[segment],
+                    'D=D+A',
                 ]);
                 break;
             case 'static':
                 out.push(...[
-                        `@${this.fileName}.${index}`,
-                        'D=A',
+                    `@${this.fileName}.${index}`,
+                    'D=A',
                 ]);
                 break;
             default:
