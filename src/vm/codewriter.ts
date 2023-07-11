@@ -18,11 +18,18 @@ export default class CodeWriter {
         this.fileStream.write(`${out.join('\n')}\n\n`);
     }
     
-    // private writeInit(): void {
-    //     bootstrap code
-    //     this.write(['// sp init', '@256', 'D=A', '@SP', 'M=D']);
-    //     // call sys init
-    // }
+    public writeInit(): void {
+        // this.write([
+        //     '// init',
+        //     '@256',
+        //     'D=A',
+        //     '@SP',
+        //     'M=D',
+        // ]);
+        // this.writeCall('Sys.init', 0);
+
+        // call sys.init??
+    }
 
     public writeLabel(label: string): void {
         this.write([
@@ -51,7 +58,49 @@ export default class CodeWriter {
     }
 
     public writeCall(functionName: string, numArgs: number): void {
+        const out: string[] = [
+            `// call ${functionName} ${numArgs}`,
+            '@RETURN_ADDR' + CodeWriter.labelCount,
+            'D=A',
+            '@SP',
+            'AM=M+1',
+            'A=A-1',
+            'M=D',
+        ];
+        for (const statePtr of [
+            '@LCL',
+            '@ARG',
+            '@THIS',
+            '@THAT',
+        ]) {
+            out.push(...[
+                statePtr,
+                'D=M',
+                '@SP',
+                'AM=M+1',
+                'A=A-1',
+                'M=D',
+            ]);
+        }
+        out.push(...[
+            // reposition lcl
+            '@SP',
+            'D=M',
+            '@LCL',
+            'M=D',
 
+            // reposition arg
+            '@' + numArgs,
+            'D=D-A',
+            '@5',
+            'D=D-A',
+            '@ARG',
+            'M=D',
+            '@' + functionName,
+            '0;JMP',
+            `(RETURN_ADDR${CodeWriter.labelCount++})`,
+        ]);
+        this.write(out);
     }
 
     public writeReturn(): void {
