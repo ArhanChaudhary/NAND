@@ -97,9 +97,13 @@ export default class CodeWriter {
             'A=M',
             '0;JMP',
 
-            '(PUSH_STATE) // push state during call',
-            '@R15',
+            '(DO_CALL) // push state and goto functionName',
+            // push return address
+            '@SP',
+            'AM=M+1',
+            'A=A-1',
             'M=D',
+
             // push lcl
             '@LCL',
             'D=M',
@@ -138,8 +142,19 @@ export default class CodeWriter {
             '@LCL',
             'M=D',
             
-            // goto R15
-            '@R15',
+            // load numArgs into A
+            '@R14',
+            'A=M',
+
+            // arg = SP - numArgs - 5
+            'D=D-A',
+            '@5',
+            'D=D-A',
+            '@ARG',
+            'M=D',
+
+            // goto R13 (functionName)
+            '@R13',
             'A=M',
             '0;JMP',
 
@@ -238,36 +253,35 @@ export default class CodeWriter {
     }
 
     public writeCall(functionName: string, numArgs: number): void {
-        const l1 = CodeWriter.labelCount++;
-        const l2 = CodeWriter.labelCount++;
         const out: string[] = [
-            // push return address
-            `@RETURN_ADDR${l1} // call ${functionName} ${numArgs}`,
+            // save functionName rom address in R13
+            `@${functionName} // call ${functionName} ${numArgs}`,
             'D=A',
-            '@SP',
-            'AM=M+1',
-            'A=A-1',
+            '@R13',
             'M=D',
-
-            // push lcl, arg, this, that
-            '@AFTER_PUSH_STATE' + l2,
-            'D=A',
-            '@PUSH_STATE',
-            '0;JMP',
-            // SP is stored in D after PUSH_STATE finishes
-            `(AFTER_PUSH_STATE${l2})`,
-
-            // reposition arg
-            '@' + numArgs,
-            'D=D-A',
-            '@5',
-            'D=D-A',
-            '@ARG',
-            'M=D',
-            '@' + functionName,
-            '0;JMP',
-            `(RETURN_ADDR${l1})`,
         ];
+        // save numArgs in R14
+        if (numArgs === 0 || numArgs === 1) {
+            out.push(...[
+                '@R14',
+                'M=' + numArgs,
+            ]);
+        } else {
+            out.push(...[
+                '@' + numArgs,
+                'D=A',
+                '@R14',
+                'M=D',
+            ]);
+        }
+        out.push(...[
+            // do call
+            '@CALL_RETURN_ADDR' + CodeWriter.labelCount,
+            'D=A',
+            '@DO_CALL',
+            '0;JMP',
+            `(CALL_RETURN_ADDR${CodeWriter.labelCount++})`,
+        ]);
         this.write(out);
     }
 
