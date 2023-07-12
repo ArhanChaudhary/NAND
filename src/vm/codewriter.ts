@@ -93,6 +93,8 @@ export default class CodeWriter {
             '0;JMP',
 
             '(PUSH_STATE) // push state during call',
+            '@R15',
+            'M=D',
             // push lcl
             '@LCL',
             'D=M',
@@ -137,6 +139,8 @@ export default class CodeWriter {
             '0;JMP',
 
             '(DO_LT) // lt',
+            '@R15',
+            'M=D',
             // lt logic
             '@SP',
             'AM=M-1',
@@ -157,6 +161,8 @@ export default class CodeWriter {
             '0;JMP',
 
             '(DO_EQ) // eq',
+            '@R15',
+            'M=D',
             // eq logic
             '@SP',
             'AM=M-1',
@@ -177,6 +183,8 @@ export default class CodeWriter {
             '0;JMP',
 
             '(DO_GT) // gt',
+            '@R15',
+            'M=D',
             // gt logic
             '@SP',
             'AM=M-1',
@@ -239,8 +247,6 @@ export default class CodeWriter {
             // push lcl, arg, this, that
             '@AFTER_PUSH_STATE' + l2,
             'D=A',
-            '@R15',
-            'M=D',
             '@PUSH_STATE',
             '0;JMP',
             // SP is stored in D after PUSH_STATE finishes
@@ -333,8 +339,6 @@ export default class CodeWriter {
                 out = [
                     `@AFTER_DO_${command.toUpperCase()}${CodeWriter.labelCount}`,
                     'D=A',
-                    '@R15',
-                    'M=D',
                     '@DO_' + command.toUpperCase(),
                     '0;JMP',
                     `(AFTER_DO_${command.toUpperCase()}${CodeWriter.labelCount++})`,
