@@ -17,21 +17,19 @@ export default class CodeWriter {
     }
 
     private write(out: string[]): void {
-        this.fileStream.write(`${out.join('\n')}\n\n`);
+        this.fileStream.write(`${out.join('\n')}\n`);
     }
     
     public writeInit(): void {
         this.write([
-            '// init',
-            '@256',
+            '@256 // init',
             'D=A',
             '@SP',
             'M=D',
             '@AFTER_SETUP',
             '0;JMP',
 
-            '// return',
-            '(DO_RETURN)',
+            '(DO_RETURN) // return',
             // store LCL-1 (where the stored THAT is) in R14
             '@LCL',
             'D=M-1',
@@ -94,8 +92,7 @@ export default class CodeWriter {
             'A=M',
             '0;JMP',
 
-            '// push state during call',
-            '(PUSH_STATE)',
+            '(PUSH_STATE) // push state during call',
             // push lcl
             '@LCL',
             'D=M',
@@ -139,8 +136,7 @@ export default class CodeWriter {
             'A=M',
             '0;JMP',
 
-            '// lt',
-            '(DO_LT)',
+            '(DO_LT) // lt',
             // lt logic
             '@SP',
             'AM=M-1',
@@ -160,8 +156,7 @@ export default class CodeWriter {
             'A=M',
             '0;JMP',
 
-            '// eq',
-            '(DO_EQ)',
+            '(DO_EQ) // eq',
             // eq logic
             '@SP',
             'AM=M-1',
@@ -181,8 +176,7 @@ export default class CodeWriter {
             'A=M',
             '0;JMP',
 
-            '// gt',
-            '(DO_GT)',
+            '(DO_GT) // gt',
             // gt logic
             '@SP',
             'AM=M-1',
@@ -209,23 +203,20 @@ export default class CodeWriter {
 
     public writeLabel(label: string): void {
         this.write([
-            `// label ${label}`,
-            `(${this.currentFunction}$${label})`
+            `(${this.currentFunction}$${label}) // label ${label}`
         ]);
     }
 
     public writeGoto(label: string): void {
         this.write([
-            `// goto ${label}`,
-            `@${this.currentFunction}$${label}`,
+            `@${this.currentFunction}$${label} // goto ${label}`,
             '0;JMP'
         ]);
     }
 
     public writeIf(label: string): void {
         this.write([
-            `// if-goto ${label}`,
-            '@SP',
+            '@SP // if-goto ${label}',
             'AM=M-1',
             'D=M',
             `@${this.currentFunction}$${label}`,
@@ -237,9 +228,8 @@ export default class CodeWriter {
         const l1 = CodeWriter.labelCount++;
         const l2 = CodeWriter.labelCount++;
         const out: string[] = [
-            `// call ${functionName} ${numArgs}`,
             // push return address
-            '@RETURN_ADDR' + l1,
+            `@RETURN_ADDR${l1} // call ${functionName} ${numArgs}`,
             'D=A',
             '@SP',
             'AM=M+1',
@@ -272,8 +262,7 @@ export default class CodeWriter {
 
     public writeReturn(): void {
         this.write([
-            '// return',
-            '@DO_RETURN',
+            '@DO_RETURN // return',
             '0;JMP',
         ]);
     }
@@ -287,8 +276,7 @@ export default class CodeWriter {
         // of it
         this.currentFunction = functionName;
         const out: string[] = [
-            `// function ${functionName} ${numLocals}`,
-            `(${functionName})`,
+            `(${functionName}) // function ${functionName} ${numLocals}`,
         ];
         if (numLocals) {
             out.push(...[
@@ -312,37 +300,37 @@ export default class CodeWriter {
     }
 
     public writeArithmetic(command: string): void {
-        const out: string[] = [`// ${command}`];
+        let out: string[];
         switch (command) {
             case 'add':
-                out.push(...[
+                out = [
                     '@SP',
                     'AM=M-1',
                     'D=M',
                     'A=A-1',
                     'M=M+D',
-                ]);
+                ];
                 break;
             case 'sub':
-                out.push(...[
+                out = [
                     '@SP',
                     'AM=M-1',
                     'D=M',
                     'A=A-1',
                     'M=M-D',
-                ]);
+                ];
                 break;
             case 'neg':
-                out.push(...[
+                out = [
                     '@SP',
                     'A=M-1',
                     'M=-M',
-                ]);
+                ];
                 break;
             case 'eq':
             case 'gt':
             case 'lt':
-                out.push(...[
+                out = [
                     `@AFTER_DO_${command.toUpperCase()}${CodeWriter.labelCount}`,
                     'D=A',
                     '@R15',
@@ -350,36 +338,37 @@ export default class CodeWriter {
                     '@DO_' + command.toUpperCase(),
                     '0;JMP',
                     `(AFTER_DO_${command.toUpperCase()}${CodeWriter.labelCount++})`,
-                ]);
+                ];
                 break;
             case 'and':
-                out.push(...[
+                out = [
                     '@SP',
                     'AM=M-1',
                     'D=M',
                     'A=A-1',
                     'M=M&D',
-                ]);
+                ];
                 break;
             case 'or':
-                out.push(...[
+                out = [
                     '@SP',
                     'AM=M-1',
                     'D=M',
                     'A=A-1',
                     'M=M|D',
-                ]);
+                ];
                 break;
             case 'not':
-                out.push(...[
+                out = [
                     '@SP',
                     'A=M-1',
                     'M=!M',
-                ]);
+                ];
                 break;
             default:
                 throw new NANDException("Invalid vm command: " + command);
         }
+        out[0] += ` // ${command}`;
         this.write(out);
     }
 
@@ -393,42 +382,42 @@ export default class CodeWriter {
     }
 
     public writePush(segment: string, index: number): void {
-        const out: string[] = [`// push ${segment} ${index}`];
+        let out: string[];
         switch (segment) {
             // sets D to the value that needs to be pushed
             case 'constant':
-                out.push(...[
+                out = [
                     '@' + index,
                     'D=A',
-                ]);
+                ];
                 break;
             case 'local':
             case 'argument':
             case 'this':
             case 'that':
-                out.push(...[
+                out = [
                     CodeWriter.segmentMemoryMap[segment],
                     'D=M',
                     '@' + index,
                     'A=A+D',
                     'D=M',
-                ]);
+                ];
                 break;
             case 'pointer':
             case 'temp':
-                out.push(...[
+                out = [
                     CodeWriter.segmentMemoryMap[segment],
                     'D=A',
                     '@' + index,
                     'A=A+D',
                     'D=M',
-                ]);
+                ];
                 break;
             case 'static':
-                out.push(...[
+                out = [
                     `@${this.fileName}.${index}`,
                     'D=M',
-                ]);
+                ];
                 break;
             default:
                 throw new NANDException(`Invalid vm command segment: push ${segment} ${index}`);
@@ -439,38 +428,39 @@ export default class CodeWriter {
             'A=A-1',
             'M=D',
         ]);
+        out[0] += ` // push ${segment} ${index}`;
         this.write(out);
     }
 
     public writePop(segment: string, index: number): void {
-        const out: string[] = [`// pop ${segment} ${index}`];
+        let out: string[];
         switch (segment) {
             // sets D to the RAM index dest
             case 'local':
             case 'argument':
             case 'this':
             case 'that':
-                out.push(...[
+                out = [
                     '@' + index,
                     'D=A',
                     CodeWriter.segmentMemoryMap[segment],
                     'D=D+M',
-                ]);
+                ];
                 break;
             case 'pointer':
             case 'temp':
-                out.push(...[
+                out = [
                     '@' + index,
                     'D=A',
                     CodeWriter.segmentMemoryMap[segment],
                     'D=D+A',
-                ]);
+                ];
                 break;
             case 'static':
-                out.push(...[
+                out = [
                     `@${this.fileName}.${index}`,
                     'D=A',
-                ]);
+                ];
                 break;
             default:
                 throw new NANDException(`Invalid vm command segment: pop ${segment} ${index}`);
@@ -490,6 +480,7 @@ export default class CodeWriter {
             'A=M',
             'M=D',
         ]);
+        out[0] += ` // pop ${segment} ${index}`;
         this.write(out);
     }
 
