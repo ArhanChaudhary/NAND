@@ -409,13 +409,13 @@ export default class CodeWriter {
         this.write(out);
     }
 
-    static segmentMemoryMap: { [segment: string]: string } = {
+    static segmentMemoryMap = {
         'local': '@LCL',
         'argument': '@ARG',
         'this': '@THIS',
         'that': '@THAT',
-        'pointer': '@3',
-        'temp': '@5',
+        'pointer': 3,
+        'temp': 5,
     }
 
     public writePush(segment: string, index: number): void {
@@ -423,30 +423,19 @@ export default class CodeWriter {
         switch (segment) {
             // sets D to the value that needs to be pushed
             case 'constant':
+                if (index === 0 || index === 1) {
+                    out = [];
+                } else {
                 out = [
                     '@' + index,
                     'D=A',
                 ];
-                break;
-            case 'local':
-            case 'argument':
-            case 'this':
-            case 'that':
-                out = [
-                    CodeWriter.segmentMemoryMap[segment],
-                    'D=M',
-                    '@' + index,
-                    'A=A+D',
-                    'D=M',
-                ];
+                }
                 break;
             case 'pointer':
             case 'temp':
                 out = [
-                    CodeWriter.segmentMemoryMap[segment],
-                    'D=A',
-                    '@' + index,
-                    'A=A+D',
+                    `@R${index + CodeWriter.segmentMemoryMap[segment]}`,
                     'D=M',
                 ];
                 break;
@@ -456,6 +445,39 @@ export default class CodeWriter {
                     'D=M',
                 ];
                 break;
+            case 'local':
+            case 'argument':
+            case 'this':
+            case 'that':
+                if (index === 0) {
+                    out = [
+                        CodeWriter.segmentMemoryMap[segment],
+                        'A=M',
+                        'D=M',
+                    ];
+                } else if (index === 1) {
+                    out = [
+                        CodeWriter.segmentMemoryMap[segment],
+                        'A=M+1',
+                        'D=M',
+                    ];
+                } else if (index === 2) {
+                    out = [
+                        CodeWriter.segmentMemoryMap[segment],
+                        'A=M+1',
+                        'A=A+1',
+                        'D=M',
+                    ];
+                } else {
+                    out = [
+                        CodeWriter.segmentMemoryMap[segment],
+                        'D=M',
+                        '@' + index,
+                        'A=A+D',
+                        'D=M',
+                    ];
+                }
+                break;
             default:
                 throw new NANDException(`Invalid vm command segment: push ${segment} ${index}`);
         }
@@ -463,8 +485,12 @@ export default class CodeWriter {
             '@SP',
             'AM=M+1',
             'A=A-1',
-            'M=D',
         ]);
+        if (segment === 'constant' && (index === 0 || index === 1)) {
+            out.push('M=' + index);
+        } else {
+            out.push('M=D');
+        }
         out[0] += ` // push ${segment} ${index}`;
         this.write(out);
     }
