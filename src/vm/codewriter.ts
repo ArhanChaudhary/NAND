@@ -139,6 +139,69 @@ export default class CodeWriter {
             'A=M',
             '0;JMP',
 
+            '// lt',
+            '(DO_LT)',
+            // lt logic
+            '@SP',
+            'AM=M-1',
+            'D=M',
+            'A=A-1',
+            'D=M-D',
+            'M=0',
+            '@LT_FALSE',
+            'D;JGE',
+            '@SP',
+            'A=M-1',
+            'M=-1',
+            '(LT_FALSE)',
+
+            // goto R15
+            '@R15',
+            'A=M',
+            '0;JMP',
+
+            '// eq',
+            '(DO_EQ)',
+            // eq logic
+            '@SP',
+            'AM=M-1',
+            'D=M',
+            'A=A-1',
+            'D=M-D',
+            'M=0',
+            '@EQ_FALSE',
+            'D;JNE',
+            '@SP',
+            'A=M-1',
+            'M=-1',
+            '(EQ_FALSE)',
+
+            // goto R15
+            '@R15',
+            'A=M',
+            '0;JMP',
+
+            '// gt',
+            '(DO_GT)',
+            // gt logic
+            '@SP',
+            'AM=M-1',
+            'D=M',
+            'A=A-1',
+            'D=M-D',
+            'M=0',
+            '@GT_FALSE',
+            'D;JLE',
+            '@SP',
+            'A=M-1',
+            'M=-1',
+            '(GT_FALSE)',
+
+            // goto R15
+            '@R15',
+            'A=M',
+            '0;JMP',
+
             '(AFTER_SETUP)',
         ]);
         this.writeCall('Sys.init', 0);
@@ -248,12 +311,6 @@ export default class CodeWriter {
         this.write(out);
     }
 
-    static branchCommandMap: { [command: string]: string } = {
-        'eq': 'JNE',
-        'gt': 'JLE',
-        'lt': 'JGE',
-    }
-
     public writeArithmetic(command: string): void {
         const out: string[] = [`// ${command}`];
         switch (command) {
@@ -286,18 +343,13 @@ export default class CodeWriter {
             case 'gt':
             case 'lt':
                 out.push(...[
-                    '@SP',
-                    'AM=M-1',
-                    'D=M',
-                    'A=A-1',
-                    'D=M-D',
-                    'M=0',
-                    '@FALSE_' + CodeWriter.labelCount,
-                    'D;' + CodeWriter.branchCommandMap[command],
-                    '@SP',
-                    'A=M-1',
-                    'M=-1',
-                    '(FALSE_' + CodeWriter.labelCount++ + ')',
+                    `@AFTER_DO_${command.toUpperCase()}${CodeWriter.labelCount}`,
+                    'D=A',
+                    '@R15',
+                    'M=D',
+                    '@DO_' + command.toUpperCase(),
+                    '0;JMP',
+                    `(AFTER_DO_${command.toUpperCase()}${CodeWriter.labelCount++})`,
                 ]);
                 break;
             case 'and':
