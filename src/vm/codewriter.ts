@@ -300,26 +300,40 @@ export default class CodeWriter {
         // any complicated return logic, so for now let's ignore but be aware
         // of it
         this.currentFunction = functionName;
+
         const out: string[] = [
             `(${functionName}) // function ${functionName} ${numLocals}`,
         ];
         if (numLocals) {
+            if (numLocals === 1) {
+                this.write(out);
+                this.writePush('constant', 0);
+                return;
+            } else if (numLocals === 2) {
             out.push(...[
                 '@SP',
                 'A=M',
-            ]);
-            for (let k = 0; k < numLocals - 1; k++) {
-                out.push(...[
                     'M=0',
-                    'A=A+1'
-                ]);
-            }
-            out.push(...[
-                'M=0',
-                'AD=A+1',
-                '@SP',
-                'M=D'
+                    'A=A+1',
+                    'M=0',
+                    'D=A+1',
+                    '@SP',
+                    'M=D',
             ]);
+            } else {
+                out.push(...[
+                    '@' + numLocals,
+                    'D=A',
+                    `(${functionName}_INIT_LOOP)`,
+                    '@SP',
+                    'AM=M+1',
+                    'A=A-1',
+                    'M=0',
+                    'D=D-1',
+                    `@${functionName}_INIT_LOOP`,
+                    'D;JGT',
+                ])
+            }
         }
         this.write(out);
     }
