@@ -16,8 +16,13 @@ export default class CodeWriter {
         this.fileName = file;
     }
 
+    private firstWrite: boolean = true;
     private write(out: string[]): void {
-        this.fileStream.write(`${out.join('\n')}\n`);
+        if (this.firstWrite)
+            this.fileStream.write(out.join('\n'));
+        else
+            this.fileStream.write('\n' + out.join('\n'));
+        this.firstWrite = false;            
     }
     
     public writeInit(): void {
