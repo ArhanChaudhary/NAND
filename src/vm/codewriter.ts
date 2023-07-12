@@ -141,7 +141,7 @@ export default class CodeWriter {
             'D=M',
             '@LCL',
             'M=D',
-            
+
             // load numArgs into A
             '@R14',
             'A=M',
@@ -310,16 +310,16 @@ export default class CodeWriter {
                 this.writePush('constant', 0);
                 return;
             } else if (numLocals === 2) {
-            out.push(...[
-                '@SP',
-                'A=M',
+                out.push(...[
+                    '@SP',
+                    'A=M',
                     'M=0',
                     'A=A+1',
                     'M=0',
                     'D=A+1',
                     '@SP',
                     'M=D',
-            ]);
+                ]);
             } else {
                 out.push(...[
                     '@' + numLocals,
@@ -426,10 +426,10 @@ export default class CodeWriter {
                 if (index === 0 || index === 1) {
                     out = [];
                 } else {
-                out = [
-                    '@' + index,
-                    'D=A',
-                ];
+                    out = [
+                        '@' + index,
+                        'D=A',
+                    ];
                 }
                 break;
             case 'pointer':
@@ -496,53 +496,58 @@ export default class CodeWriter {
     }
 
     public writePop(segment: string, index: number): void {
-        let out: string[];
+        const out: string[] = [
+            '@SP',
+            'AM=M-1',
+            'D=M',
+        ];
         switch (segment) {
-            // sets D to the RAM index dest
+            case 'pointer':
+            case 'temp':
+                out.push(`@R${CodeWriter.segmentMemoryMap[segment] + index}`);
+                break;
+            case 'static':
+                out.push(`@${this.fileName}.${index}`);
+                break;
             case 'local':
             case 'argument':
             case 'this':
             case 'that':
-                out = [
-                    '@' + index,
-                    'D=A',
-                    CodeWriter.segmentMemoryMap[segment],
-                    'D=D+M',
-                ];
-                break;
-            case 'pointer':
-            case 'temp':
-                out = [
-                    '@' + index,
-                    'D=A',
-                    CodeWriter.segmentMemoryMap[segment],
-                    'D=D+A',
-                ];
-                break;
-            case 'static':
-                out = [
-                    `@${this.fileName}.${index}`,
-                    'D=A',
-                ];
+                out.push(CodeWriter.segmentMemoryMap[segment]);
+                if (index === 0) {
+                    out.push('A=M');
+                } else if (index <= 8) {
+                    out.push('A=M+1');
+                    for (let i = 0; i < index - 1; i++) {
+                        out.push('A=A+1');
+                    }
+                } else {
+                    this.write([
+                        // stores RAM index dest in R13
+                        `@${index} // pop ${segment} ${index}`,
+                        'D=A',
+                        CodeWriter.segmentMemoryMap[segment],
+                        'D=D+M',
+                        '@R13',
+                        'M=D',
+
+                        // pops stack and stores it in D
+                        '@SP',
+                        'AM=M-1',
+                        'D=M',
+
+                        // store D in the address of the value of R13
+                        '@R13',
+                        'A=M',
+                        'M=D',
+                    ]);
+                    return;
+                }
                 break;
             default:
                 throw new NANDException(`Invalid vm command segment: pop ${segment} ${index}`);
         }
-        out.push(...[
-            // stores RAM index dest in R13
-            '@R13',
-            'M=D',
-
-            // pops stack and stores it in D
-            '@SP',
-            'AM=M-1',
-            'D=M',
-
-            // store D in the address of the value of R13
-            '@R13',
-            'A=M',
-            'M=D',
-        ]);
+        out.push('M=D');
         out[0] += ` // pop ${segment} ${index}`;
         this.write(out);
     }
