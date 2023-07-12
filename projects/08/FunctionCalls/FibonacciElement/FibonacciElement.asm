@@ -81,6 +81,57 @@ M=D
 @R15
 A=M
 0;JMP
+// lt
+(DO_LT)
+@SP
+AM=M-1
+D=M
+A=A-1
+D=M-D
+M=0
+@LT_FALSE
+D;JGE
+@SP
+A=M-1
+M=-1
+(LT_FALSE)
+@R15
+A=M
+0;JMP
+// eq
+(DO_EQ)
+@SP
+AM=M-1
+D=M
+A=A-1
+D=M-D
+M=0
+@EQ_FALSE
+D;JNE
+@SP
+A=M-1
+M=-1
+(EQ_FALSE)
+@R15
+A=M
+0;JMP
+// gt
+(DO_GT)
+@SP
+AM=M-1
+D=M
+A=A-1
+D=M-D
+M=0
+@GT_FALSE
+D;JLE
+@SP
+A=M-1
+M=-1
+(GT_FALSE)
+@R15
+A=M
+0;JMP
 (AFTER_SETUP)
 
 // call Sys.init 0
@@ -130,18 +181,13 @@ A=A-1
 M=D
 
 // lt
-@SP
-AM=M-1
-D=M
-A=A-1
-D=M-D
-M=0
-@FALSE_2
-D;JGE
-@SP
-A=M-1
-M=-1
-(FALSE_2)
+@AFTER_DO_LT2
+D=A
+@R15
+M=D
+@DO_LT
+0;JMP
+(AFTER_DO_LT2)
 
 // if-goto IF_TRUE
 @SP
