@@ -1,12 +1,10 @@
-// init
-@256
+@256 // init
 D=A
 @SP
 M=D
 @AFTER_SETUP
 0;JMP
-// return
-(DO_RETURN)
+(DO_RETURN) // return
 @LCL
 D=M-1
 @R13
@@ -48,8 +46,11 @@ M=D
 @R14
 A=M
 0;JMP
-// push state during call
-(PUSH_STATE)
+(DO_CALL) // push state and goto functionName
+@SP
+AM=M+1
+A=A-1
+M=D
 @LCL
 D=M
 @SP
@@ -78,11 +79,19 @@ M=D
 D=M
 @LCL
 M=D
-@R15
+@R14
+A=M
+D=D-A
+@5
+D=D-A
+@ARG
+M=D
+@R13
 A=M
 0;JMP
-// lt
-(DO_LT)
+(DO_LT) // lt
+@R15
+M=D
 @SP
 AM=M-1
 D=M
@@ -98,8 +107,9 @@ M=-1
 @R15
 A=M
 0;JMP
-// eq
-(DO_EQ)
+(DO_EQ) // eq
+@R15
+M=D
 @SP
 AM=M-1
 D=M
@@ -115,8 +125,9 @@ M=-1
 @R15
 A=M
 0;JMP
-// gt
-(DO_GT)
+(DO_GT) // gt
+@R15
+M=D
 @SP
 AM=M-1
 D=M
@@ -133,331 +144,176 @@ M=-1
 A=M
 0;JMP
 (AFTER_SETUP)
-
-// call Sys.init 0
-@RETURN_ADDR0
+@Sys.init // call Sys.init 0
 D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-@AFTER_PUSH_STATE1
-D=A
-@R15
-M=D
-@PUSH_STATE
-0;JMP
-(AFTER_PUSH_STATE1)
-@0
-D=D-A
-@5
-D=D-A
-@ARG
-M=D
-@Sys.init
-0;JMP
-(RETURN_ADDR0)
-
-// function Sys.init 0
-(Sys.init)
-
-// push constant 4000
-@4000
-D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-
-// pop pointer 0
-@0
-D=A
-@3
-D=D+A
 @R13
 M=D
-@SP
-AM=M-1
-D=M
-@R13
-A=M
-M=D
-
-// push constant 5000
-@5000
-D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-
-// pop pointer 1
-@1
-D=A
-@3
-D=D+A
-@R13
-M=D
-@SP
-AM=M-1
-D=M
-@R13
-A=M
-M=D
-
-// call Sys.main 0
-@RETURN_ADDR2
-D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-@AFTER_PUSH_STATE3
-D=A
-@R15
-M=D
-@PUSH_STATE
-0;JMP
-(AFTER_PUSH_STATE3)
-@0
-D=D-A
-@5
-D=D-A
-@ARG
-M=D
-@Sys.main
-0;JMP
-(RETURN_ADDR2)
-
-// pop temp 1
-@1
-D=A
-@5
-D=D+A
-@R13
-M=D
-@SP
-AM=M-1
-D=M
-@R13
-A=M
-M=D
-
-// label LOOP
-(Sys.init$LOOP)
-
-// goto LOOP
-@Sys.init$LOOP
-0;JMP
-
-// function Sys.main 5
-(Sys.main)
-@SP
-A=M
+@R14
 M=0
+@CALL_RETURN_ADDR0
+D=A
+@DO_CALL
+0;JMP
+(CALL_RETURN_ADDR0)
+(Sys.init) // function Sys.init 0
+@4000 // push constant 4000
+D=A
+@SP
+AM=M+1
+A=A-1
+M=D
+@SP // pop pointer 0
+AM=M-1
+D=M
+@R3
+M=D
+@5000 // push constant 5000
+D=A
+@SP
+AM=M+1
+A=A-1
+M=D
+@SP // pop pointer 1
+AM=M-1
+D=M
+@R4
+M=D
+@Sys.main // call Sys.main 0
+D=A
+@R13
+M=D
+@R14
+M=0
+@CALL_RETURN_ADDR1
+D=A
+@DO_CALL
+0;JMP
+(CALL_RETURN_ADDR1)
+@SP // pop temp 1
+AM=M-1
+D=M
+@R6
+M=D
+(Sys.init$LOOP) // label LOOP
+@Sys.init$LOOP // goto LOOP
+0;JMP
+(Sys.main) // function Sys.main 5
+@5
+D=A
+(Sys.main_INIT_LOOP)
+@SP
+AM=M+1
+A=A-1
+M=0
+D=D-1
+@Sys.main_INIT_LOOP
+D;JGT
+@4001 // push constant 4001
+D=A
+@SP
+AM=M+1
+A=A-1
+M=D
+@SP // pop pointer 0
+AM=M-1
+D=M
+@R3
+M=D
+@5001 // push constant 5001
+D=A
+@SP
+AM=M+1
+A=A-1
+M=D
+@SP // pop pointer 1
+AM=M-1
+D=M
+@R4
+M=D
+@200 // push constant 200
+D=A
+@SP
+AM=M+1
+A=A-1
+M=D
+@SP // pop local 1
+AM=M-1
+D=M
+@LCL
+A=M+1
+M=D
+@40 // push constant 40
+D=A
+@SP
+AM=M+1
+A=A-1
+M=D
+@SP // pop local 2
+AM=M-1
+D=M
+@LCL
+A=M+1
 A=A+1
-M=0
-A=A+1
-M=0
-A=A+1
-M=0
-A=A+1
-M=0
-AD=A+1
-@SP
 M=D
-
-// push constant 4001
-@4001
+@6 // push constant 6
 D=A
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// pop pointer 0
-@0
-D=A
-@3
-D=D+A
-@R13
-M=D
-@SP
+@SP // pop local 3
 AM=M-1
 D=M
-@R13
-A=M
-M=D
-
-// push constant 5001
-@5001
-D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-
-// pop pointer 1
-@1
-D=A
-@3
-D=D+A
-@R13
-M=D
-@SP
-AM=M-1
-D=M
-@R13
-A=M
-M=D
-
-// push constant 200
-@200
-D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-
-// pop local 1
-@1
-D=A
 @LCL
-D=D+M
-@R13
+A=M+1
+A=A+1
+A=A+1
 M=D
-@SP
-AM=M-1
-D=M
-@R13
-A=M
-M=D
-
-// push constant 40
-@40
+@123 // push constant 123
 D=A
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// pop local 2
-@2
+@Sys.add12 // call Sys.add12 1
 D=A
-@LCL
-D=D+M
 @R13
 M=D
-@SP
-AM=M-1
-D=M
-@R13
-A=M
-M=D
-
-// push constant 6
-@6
+@R14
+M=1
+@CALL_RETURN_ADDR2
 D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-
-// pop local 3
-@3
-D=A
-@LCL
-D=D+M
-@R13
-M=D
-@SP
-AM=M-1
-D=M
-@R13
-A=M
-M=D
-
-// push constant 123
-@123
-D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-
-// call Sys.add12 1
-@RETURN_ADDR4
-D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-@AFTER_PUSH_STATE5
-D=A
-@R15
-M=D
-@PUSH_STATE
+@DO_CALL
 0;JMP
-(AFTER_PUSH_STATE5)
-@1
-D=D-A
-@5
-D=D-A
-@ARG
-M=D
-@Sys.add12
-0;JMP
-(RETURN_ADDR4)
-
-// pop temp 0
-@0
-D=A
-@5
-D=D+A
-@R13
-M=D
-@SP
+(CALL_RETURN_ADDR2)
+@SP // pop temp 0
 AM=M-1
 D=M
-@R13
+@R5
+M=D
+@LCL // push local 0
 A=M
-M=D
-
-// push local 0
-@LCL
-D=M
-@0
-A=A+D
 D=M
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// push local 1
-@LCL
-D=M
-@1
-A=A+D
+@LCL // push local 1
+A=M+1
 D=M
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// push local 2
-@LCL
-D=M
-@2
-A=A+D
+@LCL // push local 2
+A=M+1
+A=A+1
 D=M
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// push local 3
-@LCL
+@LCL // push local 3
 D=M
 @3
 A=A+D
@@ -466,9 +322,7 @@ D=M
 AM=M+1
 A=A-1
 M=D
-
-// push local 4
-@LCL
+@LCL // push local 4
 D=M
 @4
 A=A+D
@@ -477,113 +331,68 @@ D=M
 AM=M+1
 A=A-1
 M=D
-
-// add
-@SP
+@SP // add
 AM=M-1
 D=M
 A=A-1
 M=M+D
-
-// add
-@SP
+@SP // add
 AM=M-1
 D=M
 A=A-1
 M=M+D
-
-// add
-@SP
+@SP // add
 AM=M-1
 D=M
 A=A-1
 M=M+D
-
-// add
-@SP
+@SP // add
 AM=M-1
 D=M
 A=A-1
 M=M+D
-
-// return
-@DO_RETURN
+@DO_RETURN // return
 0;JMP
-
-// function Sys.add12 0
-(Sys.add12)
-
-// push constant 4002
-@4002
+(Sys.add12) // function Sys.add12 0
+@4002 // push constant 4002
 D=A
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// pop pointer 0
-@0
-D=A
-@3
-D=D+A
-@R13
-M=D
-@SP
+@SP // pop pointer 0
 AM=M-1
 D=M
-@R13
-A=M
+@R3
 M=D
-
-// push constant 5002
-@5002
+@5002 // push constant 5002
 D=A
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// pop pointer 1
-@1
-D=A
-@3
-D=D+A
-@R13
-M=D
-@SP
+@SP // pop pointer 1
 AM=M-1
 D=M
-@R13
-A=M
+@R4
 M=D
-
-// push argument 0
-@ARG
-D=M
-@0
-A=A+D
+@ARG // push argument 0
+A=M
 D=M
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// push constant 12
-@12
+@12 // push constant 12
 D=A
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// add
-@SP
+@SP // add
 AM=M-1
 D=M
 A=A-1
 M=M+D
-
-// return
-@DO_RETURN
+@DO_RETURN // return
 0;JMP
-

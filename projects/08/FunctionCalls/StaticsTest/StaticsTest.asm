@@ -1,12 +1,10 @@
-// init
-@256
+@256 // init
 D=A
 @SP
 M=D
 @AFTER_SETUP
 0;JMP
-// return
-(DO_RETURN)
+(DO_RETURN) // return
 @LCL
 D=M-1
 @R13
@@ -48,8 +46,11 @@ M=D
 @R14
 A=M
 0;JMP
-// push state during call
-(PUSH_STATE)
+(DO_CALL) // push state and goto functionName
+@SP
+AM=M+1
+A=A-1
+M=D
 @LCL
 D=M
 @SP
@@ -78,11 +79,19 @@ M=D
 D=M
 @LCL
 M=D
-@R15
+@R14
+A=M
+D=D-A
+@5
+D=D-A
+@ARG
+M=D
+@R13
 A=M
 0;JMP
-// lt
-(DO_LT)
+(DO_LT) // lt
+@R15
+M=D
 @SP
 AM=M-1
 D=M
@@ -98,8 +107,9 @@ M=-1
 @R15
 A=M
 0;JMP
-// eq
-(DO_EQ)
+(DO_EQ) // eq
+@R15
+M=D
 @SP
 AM=M-1
 D=M
@@ -115,8 +125,9 @@ M=-1
 @R15
 A=M
 0;JMP
-// gt
-(DO_GT)
+(DO_GT) // gt
+@R15
+M=D
 @SP
 AM=M-1
 D=M
@@ -133,376 +144,202 @@ M=-1
 A=M
 0;JMP
 (AFTER_SETUP)
-
-// call Sys.init 0
-@RETURN_ADDR0
-D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-@AFTER_PUSH_STATE1
-D=A
-@R15
-M=D
-@PUSH_STATE
-0;JMP
-(AFTER_PUSH_STATE1)
-@0
-D=D-A
-@5
-D=D-A
-@ARG
-M=D
-@Sys.init
-0;JMP
-(RETURN_ADDR0)
-
-// function Class1.set 0
-(Class1.set)
-
-// push argument 0
-@ARG
-D=M
-@0
-A=A+D
-D=M
-@SP
-AM=M+1
-A=A-1
-M=D
-
-// pop static 0
-@Class1.0
+@Sys.init // call Sys.init 0
 D=A
 @R13
 M=D
+@R14
+M=0
+@CALL_RETURN_ADDR0
+D=A
+@DO_CALL
+0;JMP
+(CALL_RETURN_ADDR0)
+(Class1.set) // function Class1.set 0
+@ARG // push argument 0
+A=M
+D=M
 @SP
+AM=M+1
+A=A-1
+M=D
+@SP // pop static 0
 AM=M-1
 D=M
-@R13
-A=M
+@Class1.0
 M=D
-
-// push argument 1
-@ARG
-D=M
-@1
-A=A+D
+@ARG // push argument 1
+A=M+1
 D=M
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// pop static 1
-@Class1.1
-D=A
-@R13
-M=D
-@SP
+@SP // pop static 1
 AM=M-1
 D=M
-@R13
-A=M
-M=D
-
-// push constant 0
-@0
-D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-
-// return
-@DO_RETURN
-0;JMP
-
-// function Class1.get 0
-(Class1.get)
-
-// push static 0
-@Class1.0
-D=M
-@SP
-AM=M+1
-A=A-1
-M=D
-
-// push static 1
 @Class1.1
+M=D
+@SP // push constant 0
+AM=M+1
+A=A-1
+M=0
+@DO_RETURN // return
+0;JMP
+(Class1.get) // function Class1.get 0
+@Class1.0 // push static 0
 D=M
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// sub
+@Class1.1 // push static 1
+D=M
 @SP
+AM=M+1
+A=A-1
+M=D
+@SP // sub
 AM=M-1
 D=M
 A=A-1
 M=M-D
-
-// return
-@DO_RETURN
+@DO_RETURN // return
 0;JMP
-
-// function Class2.set 0
-(Class2.set)
-
-// push argument 0
-@ARG
-D=M
-@0
-A=A+D
+(Class2.set) // function Class2.set 0
+@ARG // push argument 0
+A=M
 D=M
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// pop static 0
-@Class2.0
-D=A
-@R13
-M=D
-@SP
+@SP // pop static 0
 AM=M-1
 D=M
-@R13
-A=M
+@Class2.0
 M=D
-
-// push argument 1
-@ARG
-D=M
-@1
-A=A+D
+@ARG // push argument 1
+A=M+1
 D=M
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// pop static 1
-@Class2.1
-D=A
-@R13
-M=D
-@SP
+@SP // pop static 1
 AM=M-1
 D=M
-@R13
-A=M
-M=D
-
-// push constant 0
-@0
-D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-
-// return
-@DO_RETURN
-0;JMP
-
-// function Class2.get 0
-(Class2.get)
-
-// push static 0
-@Class2.0
-D=M
-@SP
-AM=M+1
-A=A-1
-M=D
-
-// push static 1
 @Class2.1
+M=D
+@SP // push constant 0
+AM=M+1
+A=A-1
+M=0
+@DO_RETURN // return
+0;JMP
+(Class2.get) // function Class2.get 0
+@Class2.0 // push static 0
 D=M
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// sub
+@Class2.1 // push static 1
+D=M
 @SP
+AM=M+1
+A=A-1
+M=D
+@SP // sub
 AM=M-1
 D=M
 A=A-1
 M=M-D
-
-// return
-@DO_RETURN
+@DO_RETURN // return
 0;JMP
-
-// function Sys.init 0
-(Sys.init)
-
-// push constant 6
-@6
+(Sys.init) // function Sys.init 0
+@6 // push constant 6
 D=A
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// push constant 8
-@8
+@8 // push constant 8
 D=A
 @SP
 AM=M+1
 A=A-1
 M=D
-
-// call Class1.set 2
-@RETURN_ADDR2
+@Class1.set // call Class1.set 2
 D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-@AFTER_PUSH_STATE3
-D=A
-@R15
-M=D
-@PUSH_STATE
-0;JMP
-(AFTER_PUSH_STATE3)
-@2
-D=D-A
-@5
-D=D-A
-@ARG
-M=D
-@Class1.set
-0;JMP
-(RETURN_ADDR2)
-
-// pop temp 0
-@0
-D=A
-@5
-D=D+A
 @R13
 M=D
-@SP
+@2
+D=A
+@R14
+M=D
+@CALL_RETURN_ADDR1
+D=A
+@DO_CALL
+0;JMP
+(CALL_RETURN_ADDR1)
+@SP // pop temp 0
 AM=M-1
 D=M
+@R5
+M=D
+@23 // push constant 23
+D=A
+@SP
+AM=M+1
+A=A-1
+M=D
+@15 // push constant 15
+D=A
+@SP
+AM=M+1
+A=A-1
+M=D
+@Class2.set // call Class2.set 2
+D=A
 @R13
-A=M
 M=D
-
-// push constant 23
-@23
-D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-
-// push constant 15
-@15
-D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-
-// call Class2.set 2
-@RETURN_ADDR4
-D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-@AFTER_PUSH_STATE5
-D=A
-@R15
-M=D
-@PUSH_STATE
-0;JMP
-(AFTER_PUSH_STATE5)
 @2
-D=D-A
-@5
-D=D-A
-@ARG
-M=D
-@Class2.set
-0;JMP
-(RETURN_ADDR4)
-
-// pop temp 0
-@0
 D=A
-@5
-D=D+A
-@R13
+@R14
 M=D
-@SP
+@CALL_RETURN_ADDR2
+D=A
+@DO_CALL
+0;JMP
+(CALL_RETURN_ADDR2)
+@SP // pop temp 0
 AM=M-1
 D=M
+@R5
+M=D
+@Class1.get // call Class1.get 0
+D=A
 @R13
-A=M
 M=D
-
-// call Class1.get 0
-@RETURN_ADDR6
+@R14
+M=0
+@CALL_RETURN_ADDR3
 D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-@AFTER_PUSH_STATE7
+@DO_CALL
+0;JMP
+(CALL_RETURN_ADDR3)
+@Class2.get // call Class2.get 0
 D=A
-@R15
+@R13
 M=D
-@PUSH_STATE
-0;JMP
-(AFTER_PUSH_STATE7)
-@0
-D=D-A
-@5
-D=D-A
-@ARG
-M=D
-@Class1.get
-0;JMP
-(RETURN_ADDR6)
-
-// call Class2.get 0
-@RETURN_ADDR8
+@R14
+M=0
+@CALL_RETURN_ADDR4
 D=A
-@SP
-AM=M+1
-A=A-1
-M=D
-@AFTER_PUSH_STATE9
-D=A
-@R15
-M=D
-@PUSH_STATE
+@DO_CALL
 0;JMP
-(AFTER_PUSH_STATE9)
-@0
-D=D-A
-@5
-D=D-A
-@ARG
-M=D
-@Class2.get
+(CALL_RETURN_ADDR4)
+(Sys.init$WHILE) // label WHILE
+@Sys.init$WHILE // goto WHILE
 0;JMP
-(RETURN_ADDR8)
-
-// label WHILE
-(Sys.init$WHILE)
-
-// goto WHILE
-@Sys.init$WHILE
-0;JMP
-

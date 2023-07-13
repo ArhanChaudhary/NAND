@@ -244,7 +244,7 @@ export default class CodeWriter {
 
     public writeIf(label: string): void {
         this.write([
-            '@SP // if-goto ${label}',
+            `@SP // if-goto ${label}`,
             'AM=M-1',
             'D=M',
             `@${this.currentFunction}$${label}`,
