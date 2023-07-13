@@ -111,10 +111,11 @@ class _2048 {
     }
 
     method void tryMove(int position, int direction) {
-        var int currentPositionValue;
+        var int positionValue;
         var int nextPosition;
-        let currentPositionValue = getPosition(position);
-        if (currentPositionValue = 0) {
+        var int nextPositionValue;
+        let positionValue = getPosition(position);
+        if (positionValue = 0) {
             return;
         }
         if (direction = 1) {
@@ -161,12 +162,18 @@ class _2048 {
                 return;
             }
         }
-        if (~(getPosition(nextPosition) = 0)) {
+        let nextPositionValue = getPosition(nextPosition);
+        if (~(nextPositionValue = 0)) {
+            if (positionValue = nextPositionValue) {
+                do setPosition(nextPosition, positionValue * 2);
+                do setPosition(position, 0);
+                do drawGrid();
+            }
             return;
         }
-        do drawGrid();
-        do setPosition(nextPosition, currentPositionValue);
+        do setPosition(nextPosition, positionValue);
         do setPosition(position, 0);
+        do drawGrid();
         do tryMove(nextPosition, direction);
         return;
     }
@@ -175,15 +182,31 @@ class _2048 {
         var int i;
         var int j;
         var Array tmp;
+        var int tmp2;
         do Output.moveCursor(0, 0);
         let i = 0;
         while (i < size) {
             let tmp = grid[i];
             let j = 0;
             while (j < size) {
-                do Output.printInt(tmp[j]);
+                let tmp2 = tmp[j];
+                if (tmp2 < 10) {
+                    do Output.printInt(tmp[j]);
+                    do Output.printString("   ");
+                } else {
+                    if (tmp2 < 100) {
+                        do Output.printInt(tmp[j]);
+                        do Output.printString("  ");
+                    } else {
+                        if (tmp2 < 1000) {
+                            do Output.printInt(tmp[j]);
+                            do Output.printString(" ");
+                        }
+                    }
+                }
                 let j = j + 1;
             }
+            do Output.println();
             do Output.println();
             let i = i + 1;
         }
