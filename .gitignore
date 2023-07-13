@@ -1,3 +1,11 @@
 .DS_Store
 src/dist
 src/node_modules
+Keyboard.vm
+Memory.vm
+Output.vm
+Screen.vm
+String.vm
+Sys.vm
+Math.vm
+Array.vm
