@@ -1,12 +1,14 @@
 class _2048 {
     static int gridX, gridY;
     static int size;
+    static int randomPosition;
     field Array grid;
 
     function void init() {
         let gridX = 5;
         let gridY = 5;
         let size = 4;
+        let randomPosition = (-1);
         return;
     }
 
@@ -30,8 +32,37 @@ class _2048 {
     }
 
     method void run() {
+        var int key;
+        var boolean exit;
+
+        let exit = false;
+        while (~exit) {
+            do setRandomPosition();
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+            }
+            if (key = 131) {
+                do moveGrid(1); // up
+            }
+            if (key = 133) {
+                do moveGrid(2); // down
+            }
+            if (key = 130) {
+                do moveGrid(3); // left
+            }
+            if (key = 132) {
+                do moveGrid(4); // right
+            }
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed();
+            }
+        }
         do drawGrid();
         return;
+    }
+
+    method void moveGrid(int direction) {
+
     }
 
     method void drawGrid() {
@@ -52,12 +83,39 @@ class _2048 {
         return;
     }
 
-    function getRandomPosition() {
-
+    method void setRandomPosition() {
+        var int randomPositionValue;
+        let randomPosition = randomPosition + 1;
+        let randomPositionValue = getPosition(randomPosition);
+        if (randomPositionValue = 0) {
+            do setPosition(randomPosition, 2);
+            return;
+        }
+        do setRandomPosition();
+        return;
     }
 
-    method int accessRandomPosition() {
+    method int getPosition(int pos) {
+        var int div;
+        var int mod;
+        var Array tmp;
+        let div = pos / 4;
+        let mod = pos - (div * 4);
 
+        let tmp = grid[div];
+        return tmp[mod];
+    }
+
+    method void setPosition(int pos, int value) {
+        var int div;
+        var int mod;
+        var Array tmp;
+        let div = pos / 4;
+        let mod = pos - (div * 4);
+
+        let tmp = grid[div];
+        let tmp[mod] = value;
+        return;
     }
 
     method void dispose() {
