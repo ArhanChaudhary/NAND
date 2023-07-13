@@ -1,0 +1,75 @@
+class _2048 {
+    static int gridX, gridY;
+    static int size;
+    field Array grid;
+
+    function void init() {
+        let gridX = 5;
+        let gridY = 5;
+        let size = 4;
+        return;
+    }
+
+    constructor _2048 new() {
+        var int i;
+        var int j;
+        var Array tmp;
+        let grid = Array.new(4);
+        let i = 0;
+        while (i < size) {
+            let tmp = Array.new(4);
+            let grid[i] = tmp;
+            let j = 0;
+            while (j < size) {
+                let tmp[j] = 0;
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
+        return this;
+    }
+
+    method void run() {
+        do drawGrid();
+        return;
+    }
+
+    method void drawGrid() {
+        var int i;
+        var int j;
+        var Array tmp;
+        let i = 0;
+        while (i < size) {
+            let tmp = grid[i];
+            let j = 0;
+            while (j < size) {
+                do Output.printInt(tmp[j]);
+                let j = j + 1;
+            }
+            do Output.println();
+            let i = i + 1;
+        }
+        return;
+    }
+
+    function getRandomPosition() {
+
+    }
+
+    method int accessRandomPosition() {
+
+    }
+
+    method void dispose() {
+        var int i;
+        var Array tmp;
+        let i = 0;
+        while (i < size) {
+            let tmp = grid[i];
+            do tmp.dispose();
+            let i = i + 1;
+        }
+        do Memory.deAlloc(this);
+        return;
+    }
+}
