@@ -36,8 +36,9 @@ class _2048 {
         var boolean exit;
 
         let exit = false;
+        do setRandomPosition();
+        do drawGrid();
         while (~exit) {
-            do setRandomPosition();
             while (key = 0) {
                 let key = Keyboard.keyPressed();
             }
@@ -53,22 +54,61 @@ class _2048 {
             if (key = 132) {
                 do moveGrid(4); // right
             }
+            do setRandomPosition();
+            do drawGrid();
             while (~(key = 0)) {
                 let key = Keyboard.keyPressed();
             }
         }
-        do drawGrid();
         return;
     }
 
     method void moveGrid(int direction) {
+        var int i;
+        var int j;
+        var Array tmp;
+        let i = 3;
+        let j = 0;
+        while (~(i = 19)) {
+            while (j < 4) {
+                do tryMove(i, direction);
+                let i = i - 1;
+                let j = j + 1;
+            }
+            let j = 0;
+            let i = i + 8;
+        }
+        return;
+    }
 
+    method void tryMove(int position, int direction) {
+        var int currentPositionValue;
+        let currentPositionValue = getPosition(position);
+        if (direction = 4) {
+            if (
+                (currentPositionValue = 0) |
+                (position = 3) |
+                (position = 7) |
+                (position = 11) |
+                (position = 15) |
+                (~(getPosition(position + 1) = 0))
+            ) {
+                return;
+            }
+            do drawGrid();
+            do Output.println();
+            do setPosition(position + 1, currentPositionValue);
+            do setPosition(position, 0);
+            do tryMove(position + 1, direction);
+        }
+        return;
     }
 
     method void drawGrid() {
         var int i;
         var int j;
         var Array tmp;
+        do Output.moveCursor(0, 0);
         let i = 0;
         while (i < size) {
             let tmp = grid[i];
