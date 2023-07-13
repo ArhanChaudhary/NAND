@@ -1,14 +1,14 @@
 class _2048 {
     static int gridX, gridY;
     static int size;
-    static int randomPosition;
+    static int lcg;
     field Array grid;
 
     function void init() {
         let gridX = 5;
         let gridY = 5;
         let size = 4;
-        let randomPosition = (-1);
+        let lcg = 1234;
         return;
     }
 
@@ -125,10 +125,13 @@ class _2048 {
 
     method void setRandomPosition() {
         var int randomPositionValue;
-        let randomPosition = randomPosition + 1;
-        let randomPositionValue = getPosition(randomPosition);
+        var int lcg16;
+        let lcg = Math.abs((3 * lcg) + 1234);
+        let lcg = lcg - ((lcg / 16385) * 16385);
+        let lcg16 = lcg - ((lcg / 16) * 16);
+        let randomPositionValue = getPosition(lcg16);
         if (randomPositionValue = 0) {
-            do setPosition(randomPosition, 2);
+            do setPosition(lcg16, 2);
             return;
         }
         do setRandomPosition();
