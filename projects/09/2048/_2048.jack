@@ -67,40 +67,107 @@ class _2048 {
         var int i;
         var int j;
         var Array tmp;
-        let i = 3;
+
+        var int iStep;
+        var int iNext;
+        var int iStop;
+
+        if (direction = 1) {
+            let i = 0;
+            let iStep = 4;
+            let iNext = (-15);
+            let iStop = 4;
+        }
+        if (direction = 2) {
+            let i = 12;
+            let iStep = (-4);
+            let iNext = 17;
+            let iStop = 16;
+        }
+        if (direction = 3) {
+            let i = 0;
+            let iStep = 1;
+            let iNext = 0;
+            let iStop = 16;
+        }
+        if (direction = 4) {
+            let i = 3;
+            let iStep = (-1);
+            let iNext = 8;
+            let iStop = 19;
+        }
+        
         let j = 0;
-        while (~(i = 19)) {
+        while (~(i = iStop)) {
             while (j < 4) {
                 do tryMove(i, direction);
-                let i = i - 1;
+                let i = i + iStep;
                 let j = j + 1;
             }
             let j = 0;
-            let i = i + 8;
+            let i = i + iNext;
         }
         return;
     }
 
     method void tryMove(int position, int direction) {
         var int currentPositionValue;
+        var int nextPosition;
         let currentPositionValue = getPosition(position);
-        if (direction = 4) {
+        if (currentPositionValue = 0) {
+            return;
+        }
+        if (direction = 1) {
+            let nextPosition = position - 4;
             if (
-                (currentPositionValue = 0) |
-                (position = 3) |
-                (position = 7) |
-                (position = 11) |
-                (position = 15) |
-                (~(getPosition(position + 1) = 0))
+                (position = 0) |
+                (position = 1) |
+                (position = 2) |
+                (position = 3)
             ) {
                 return;
             }
-            do drawGrid();
-            do Output.println();
-            do setPosition(position + 1, currentPositionValue);
-            do setPosition(position, 0);
-            do tryMove(position + 1, direction);
         }
+        if (direction = 2) {
+            let nextPosition = position + 4;
+            if (
+                (position = 12) |
+                (position = 13) |
+                (position = 14) |
+                (position = 15)
+            ) {
+                return;
+            }
+        }
+        if (direction = 3) {
+            let nextPosition = position - 1;
+            if (
+                (position = 0) |
+                (position = 4) |
+                (position = 8) |
+                (position = 12)
+            ) {
+                return;
+            }
+        }
+        if (direction = 4) {
+            let nextPosition = position + 1;
+            if (
+                (position = 3) |
+                (position = 7) |
+                (position = 11) |
+                (position = 15)
+            ) {
+                return;
+            }
+        }
+        if (~(getPosition(nextPosition) = 0)) {
+            return;
+        }
+        do drawGrid();
+        do setPosition(nextPosition, currentPositionValue);
+        do setPosition(position, 0);
+        do tryMove(nextPosition, direction);
         return;
     }
 
