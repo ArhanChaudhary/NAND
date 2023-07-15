@@ -2,6 +2,7 @@ class _2048 {
     static int lcg;
     field int size;
     field int gridX, gridY;
+    field int combinedPosition;
     field Array grid;
 
     function void init() {
@@ -100,6 +101,7 @@ class _2048 {
         }
         
         let j = 0;
+        let combinedPosition = (-1);
         while (~(i = iStop)) {
             while (j < 4) {
                 do tryMove(i, direction);
@@ -166,9 +168,10 @@ class _2048 {
         }
         let nextPositionValue = getPosition(nextPosition);
         if (~(nextPositionValue = 0)) {
-            if (positionValue = nextPositionValue) {
+            if ((~(position = combinedPosition)) & (~(nextPosition = combinedPosition)) & (positionValue = nextPositionValue)) {
                 do setPosition(nextPosition, positionValue * 2, false);
                 do erasePosition(position, positionValue);
+                let combinedPosition = nextPosition;
             }
             return;
         }
