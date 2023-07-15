@@ -35,7 +35,7 @@ class _2048 {
         let exit = false;
         let grid = Array.new(size);
         let i = 0;
-        do drawGrid2();
+        do initUI();
         while (i < size) {
             let tmp = Array.new(size);
             let grid[i] = tmp;
@@ -49,7 +49,7 @@ class _2048 {
         return this;
     }
 
-    method void drawGrid2() {
+    method void initUI() {
         var int i;
         var int rawGridX;
         var int rawGridY;
@@ -111,9 +111,7 @@ class _2048 {
                 let key = Keyboard.keyPressed();
             }
         }
-        // remove drawGrid
-        // score thing
-        // you win
+        // you win/lose
         do Output.printString("You lose, try again");
         return;
     }
@@ -156,7 +154,7 @@ class _2048 {
         let combinedPosition = (-1);
         while (~(i = iStop)) {
             while (j < size) {
-                do tryMove(i, direction);
+                do tryMove(i, direction, true);
                 let i = i + iStep;
                 let j = j + 1;
             }
@@ -166,7 +164,7 @@ class _2048 {
         return;
     }
 
-    method void tryMove(int position, int direction) {
+    method void tryMove(int position, int direction, boolean firstIteration) {
         var int positionValue;
         var int nextPosition;
         var int nextPositionValue;
@@ -204,19 +202,19 @@ class _2048 {
                 let validDirection = true;
                 let combinedPosition = nextPosition;
                 do setPosition(nextPosition, positionValue * 2, false);
-                do erasePosition(position, positionValue);
+                do erasePosition(position, positionValue, firstIteration);
             }
             return;
         }
         let takenCount = takenCount + 1;
         let validDirection = true;
         do setPosition(nextPosition, positionValue, false);
-        do erasePosition(position, positionValue);
-        do tryMove(nextPosition, direction);
+        do erasePosition(position, positionValue, firstIteration);
+        do tryMove(nextPosition, direction, false);
         return;
     }
 
-    method void erasePosition(int position, int positionValue) {
+    method void erasePosition(int position, int positionValue, boolean draw) {
         var int div;
         var int mod;
         var Array tmp;
@@ -226,13 +224,15 @@ class _2048 {
         let tmp = grid[div];
         let tmp[mod] = 0;
 
-        if (positionValue > 99) {
-            do cursorTo(div, mod);
-            do Output.printString("   ");
-        } else {if (positionValue > 9) {
-            do cursorTo(div, mod);
-            do Output.printString("  ");
-        }}
+        if (draw) {
+            if (positionValue > 99) {
+                do cursorTo(div, mod);
+                do Output.printString("   ");
+            } else {if (positionValue > 9) {
+                do cursorTo(div, mod);
+                do Output.printString("  ");
+            }}
+        }
         let takenCount = takenCount - 1;
         do setPosition(position, 0, false);
         return;
