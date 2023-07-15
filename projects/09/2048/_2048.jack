@@ -4,6 +4,7 @@ class _2048 {
     field int gridX, gridY;
     field int combinedPosition;
     field int spacesCount;
+    field boolean validDirection;
     field boolean exit;
     field Array grid;
 
@@ -46,6 +47,7 @@ class _2048 {
             while (key = 0) {
                 let key = Keyboard.keyPressed();
             }
+            let validDirection = false;
             if (key = 131) {
                 do moveGrid(1); // up
             }
@@ -58,13 +60,19 @@ class _2048 {
             if (key = 132) {
                 do moveGrid(4); // right
             }
-            do drawGrid();
-            do setRandomPosition();
+            if (validDirection) {
+                do drawGrid();
+                do setRandomPosition();
+            }
             while (~(key = 0)) {
                 let key = Keyboard.keyPressed();
             }
         }
-        do Output.printString("you lost");
+        // make moveGrid return
+        // remove drawGrid
+        // score thing
+        // you win
+        do Output.printString("You lose, try again");
         return;
     }
 
@@ -151,13 +159,15 @@ class _2048 {
         let nextPositionValue = getPosition(nextPosition);
         if (~(nextPositionValue = 0)) {
             if ((~(position = combinedPosition)) & (~(nextPosition = combinedPosition)) & (positionValue = nextPositionValue)) {
+                let validDirection = true;
+                let combinedPosition = nextPosition;
                 do setPosition(nextPosition, positionValue * 2, false);
                 do erasePosition(position, positionValue);
-                let combinedPosition = nextPosition;
             }
             return;
         }
         let spacesCount = spacesCount + 1;
+        let validDirection = true;
         do setPosition(nextPosition, positionValue, false);
         do erasePosition(position, positionValue);
         do tryMove(nextPosition, direction);
