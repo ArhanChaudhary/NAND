@@ -3,23 +3,26 @@ class _2048 {
     field int size;
     field int gridX, gridY;
     field int combinedPosition;
+    field int spacesCount;
+    field boolean exit;
     field Array grid;
 
     function void init() {
-        
         let lcg = 1234;
         return;
     }
 
-    constructor _2048 new() {
+    constructor _2048 new(int gridX_, int gridY_, int size_) {
         var int i;
         var int j;
         var Array tmp;
-
-        let gridX = 5;
-        let gridY = 5;
-        let size = 4;
-
+        
+        let gridX = gridX_;
+        let gridY = gridY_;
+        let size = size_;
+        
+        let spacesCount = 0;
+        let exit = false;
         let grid = Array.new(size);
         let i = 0;
         while (i < size) {
@@ -37,9 +40,7 @@ class _2048 {
 
     method void run() {
         var int key;
-        var boolean exit;
 
-        let exit = false;
         do setRandomPosition();
         while (~exit) {
             while (key = 0) {
@@ -63,6 +64,7 @@ class _2048 {
                 let key = Keyboard.keyPressed();
             }
         }
+        do Output.printString("you lost");
         return;
     }
 
@@ -155,6 +157,7 @@ class _2048 {
             }
             return;
         }
+        let spacesCount = spacesCount + 1;
         do setPosition(nextPosition, positionValue, false);
         do erasePosition(position, positionValue);
         do tryMove(nextPosition, direction);
@@ -172,13 +175,19 @@ class _2048 {
         let tmp[mod] = 0;
 
         if (positionValue > 99) {
-            do Output.moveCursor(div * 2, mod * 4);
+            do cursorTo(div, mod);
             do Output.printString("   ");
         } else {if (positionValue > 9) {
-            do Output.moveCursor(div * 2, mod * 4);
+            do cursorTo(div, mod);
             do Output.printString("  ");
         }}
+        let spacesCount = spacesCount - 1;
         do setPosition(position, 0, false);
+        return;
+    }
+
+    method void cursorTo(int row, int col) {
+        do Output.moveCursor(row * 2, col * 4);
         return;
     }
 
@@ -193,7 +202,7 @@ class _2048 {
             let j = 0;
             while (j < size) {
                 let tmp2 = tmp[j];
-                do Output.moveCursor(i * 2, j * 4);
+                do cursorTo(i, j);
                 if (~(tmp2 = 0)) {
                     do Output.printInt(tmp2);
                 }
@@ -208,13 +217,18 @@ class _2048 {
 
     method void setRandomPosition() {
         var int randomPositionValue;
-        var int lcg16;
+        var int lcgSize;
+        if (spacesCount = (size * size)) {
+            let exit = true;
+            return;
+        }
         let lcg = Math.abs((3 * lcg) + 1234);
         let lcg = lcg - ((lcg / 16385) * 16385);
-        let lcg16 = lcg - ((lcg / 16) * 16);
-        let randomPositionValue = getPosition(lcg16);
+        let lcgSize = lcg - ((lcg / (size * size)) * (size * size));
+        let randomPositionValue = getPosition(lcgSize);
         if (randomPositionValue = 0) {
-            do setPosition(lcg16, 2, true);
+            let spacesCount = spacesCount + 1;
+            do setPosition(lcgSize, 2, true);
             return;
         }
         do setRandomPosition();
@@ -239,7 +253,7 @@ class _2048 {
         let div = pos / size;
         let mod = pos - (div * size);
         if (draw) {
-            do Output.moveCursor(div * 2, mod * 4);
+            do cursorTo(div, mod);
             do Output.printInt(value);
         }
 
