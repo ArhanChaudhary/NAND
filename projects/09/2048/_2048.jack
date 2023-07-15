@@ -6,7 +6,8 @@ class _2048 {
     field int gridX, gridY;
     field int score;
     field int combinedPosition;
-    field int spacesCount;
+    field int takenCount;
+    field int score;
     field boolean validDirection;
     field boolean exit;
     field Array grid;
@@ -25,11 +26,12 @@ class _2048 {
         var int j;
         var Array tmp;
 
+        let score = 0;
         let gridX = 21;
         let gridY = 11;
         let size = size_;
         
-        let spacesCount = 0;
+        let takenCount = 0;
         let exit = false;
         let grid = Array.new(size);
         let i = 0;
@@ -56,7 +58,7 @@ class _2048 {
 
         let i = 0;
         while (i < (size + 1)) {
-            do Screen.drawLine(
+            do Screen.drawRectangle(
                 rawGridX,
                 rawGridY + ((i * spaceY) * characterPixelHeight),
                 rawGridX + ((size * spaceX) * characterPixelWidth),
@@ -66,7 +68,7 @@ class _2048 {
         }
         let i = 0;
         while (i < (size + 1)) {
-            do Screen.drawLine(
+            do Screen.drawRectangle(
                 rawGridX + ((i * spaceX) * characterPixelWidth),
                 rawGridY,
                 rawGridX + ((i * spaceX) * characterPixelWidth),
@@ -74,6 +76,9 @@ class _2048 {
             );
             let i = i + 1;
         }
+
+        do Output.moveCursor(gridY - 3, gridX - 1);
+        do Output.printString("Score:");
         return;
     }
 
@@ -203,7 +208,7 @@ class _2048 {
             }
             return;
         }
-        let spacesCount = spacesCount + 1;
+        let takenCount = takenCount + 1;
         let validDirection = true;
         do setPosition(nextPosition, positionValue, false);
         do erasePosition(position, positionValue);
@@ -228,7 +233,7 @@ class _2048 {
             do cursorTo(div, mod);
             do Output.printString("  ");
         }}
-        let spacesCount = spacesCount - 1;
+        let takenCount = takenCount - 1;
         do setPosition(position, 0, false);
         return;
     }
@@ -265,7 +270,7 @@ class _2048 {
     method void setRandomPosition() {
         var int randomPositionValue;
         var int lcgSize;
-        if (spacesCount = (size * size)) {
+        if (takenCount = (size * size)) {
             let exit = true;
             return;
         }
@@ -274,12 +279,16 @@ class _2048 {
         let lcgSize = lcg - ((lcg / (size * size)) * (size * size));
         let randomPositionValue = getPosition(lcgSize);
         if (randomPositionValue = 0) {
-            let spacesCount = spacesCount + 1;
+            let takenCount = takenCount + 1;
             if ((lcg - ((lcg / 10) * 10)) > 5) {
                 do setPosition(lcgSize, 4, true);
+                let score = score + 4;
             } else {
                 do setPosition(lcgSize, 2, true);
+                let score = score + 2;
             }
+            do Output.moveCursor(gridY - 3, gridX + 6);
+            do Output.printInt(score);
             return;
         }
         do setRandomPosition();
