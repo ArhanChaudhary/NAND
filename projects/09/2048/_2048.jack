@@ -1,13 +1,11 @@
 class _2048 {
-    static int gridX, gridY;
-    static int size;
     static int lcg;
+    field int size;
+    field int gridX, gridY;
     field Array grid;
 
     function void init() {
-        let gridX = 5;
-        let gridY = 5;
-        let size = 4;
+        
         let lcg = 1234;
         return;
     }
@@ -16,6 +14,11 @@ class _2048 {
         var int i;
         var int j;
         var Array tmp;
+
+        let gridX = 5;
+        let gridY = 5;
+        let size = 4;
+
         let grid = Array.new(4);
         let i = 0;
         while (i < size) {
@@ -37,7 +40,6 @@ class _2048 {
 
         let exit = false;
         do setRandomPosition();
-        do drawGrid();
         while (~exit) {
             while (key = 0) {
                 let key = Keyboard.keyPressed();
@@ -54,8 +56,8 @@ class _2048 {
             if (key = 132) {
                 do moveGrid(4); // right
             }
-            do setRandomPosition();
             do drawGrid();
+            do setRandomPosition();
             while (~(key = 0)) {
                 let key = Keyboard.keyPressed();
             }
@@ -165,16 +167,35 @@ class _2048 {
         let nextPositionValue = getPosition(nextPosition);
         if (~(nextPositionValue = 0)) {
             if (positionValue = nextPositionValue) {
-                do setPosition(nextPosition, positionValue * 2);
-                do setPosition(position, 0);
-                do drawGrid();
+                do setPosition(nextPosition, positionValue * 2, false);
+                do erasePosition(position, positionValue);
             }
             return;
         }
-        do setPosition(nextPosition, positionValue);
-        do setPosition(position, 0);
-        do drawGrid();
+        do setPosition(nextPosition, positionValue, false);
+        do erasePosition(position, positionValue);
         do tryMove(nextPosition, direction);
+        return;
+    }
+
+    method void erasePosition(int position, int positionValue) {
+        var int div;
+        var int mod;
+        var Array tmp;
+        let div = position / 4;
+        let mod = position - (div * 4);
+
+        let tmp = grid[div];
+        let tmp[mod] = 0;
+
+        if (positionValue > 99) {
+            do Output.moveCursor(div * 2, mod * 4);
+            do Output.printString("   ");
+        } else {if (positionValue > 9) {
+            do Output.moveCursor(div * 2, mod * 4);
+            do Output.printString("  ");
+        }}
+        do setPosition(position, 0, false);
         return;
     }
 
@@ -183,26 +204,15 @@ class _2048 {
         var int j;
         var Array tmp;
         var int tmp2;
-        do Output.moveCursor(0, 0);
         let i = 0;
         while (i < size) {
             let tmp = grid[i];
             let j = 0;
             while (j < size) {
                 let tmp2 = tmp[j];
-                if (tmp2 < 10) {
-                    do Output.printInt(tmp[j]);
-                    do Output.printString("   ");
-                } else {
-                    if (tmp2 < 100) {
-                        do Output.printInt(tmp[j]);
-                        do Output.printString("  ");
-                    } else {
-                        if (tmp2 < 1000) {
-                            do Output.printInt(tmp[j]);
-                            do Output.printString(" ");
-                        }
-                    }
+                do Output.moveCursor(i * 2, j * 4);
+                if (~(tmp2 = 0)) {
+                    do Output.printInt(tmp2);
                 }
                 let j = j + 1;
             }
@@ -221,7 +231,7 @@ class _2048 {
         let lcg16 = lcg - ((lcg / 16) * 16);
         let randomPositionValue = getPosition(lcg16);
         if (randomPositionValue = 0) {
-            do setPosition(lcg16, 2);
+            do setPosition(lcg16, 2, true);
             return;
         }
         do setRandomPosition();
@@ -239,12 +249,16 @@ class _2048 {
         return tmp[mod];
     }
 
-    method void setPosition(int pos, int value) {
+    method void setPosition(int pos, int value, boolean draw) {
         var int div;
         var int mod;
         var Array tmp;
         let div = pos / 4;
         let mod = pos - (div * 4);
+        if (draw) {
+            do Output.moveCursor(div * 2, mod * 4);
+            do Output.printInt(value);
+        }
 
         let tmp = grid[div];
         let tmp[mod] = value;
