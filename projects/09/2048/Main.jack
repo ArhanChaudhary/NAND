@@ -2,7 +2,7 @@ class Main {
     function void main() {
         var _2048 game;
         do _2048.init();
-        let game = _2048.new(4, 4, 4);
+        let game = _2048.new(4);
         do game.run();
         do game.dispose();
         return;

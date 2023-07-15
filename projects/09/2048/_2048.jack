@@ -1,7 +1,10 @@
 class _2048 {
     static int lcg;
+    static int characterPixelWidth, characterPixelHeight;
+    static int spaceX, spaceY;
     field int size;
     field int gridX, gridY;
+    field int score;
     field int combinedPosition;
     field int spacesCount;
     field boolean validDirection;
@@ -10,22 +13,27 @@ class _2048 {
 
     function void init() {
         let lcg = 1234;
+        let characterPixelWidth = 8;
+        let characterPixelHeight = 11;
+        let spaceX = 6;
+        let spaceY = 3;
         return;
     }
 
-    constructor _2048 new(int gridX_, int gridY_, int size_) {
+    constructor _2048 new(int size_) {
         var int i;
         var int j;
         var Array tmp;
-        
-        let gridX = gridX_;
-        let gridY = gridY_;
+
+        let gridX = 21;
+        let gridY = 11;
         let size = size_;
         
         let spacesCount = 0;
         let exit = false;
         let grid = Array.new(size);
         let i = 0;
+        do drawGrid2();
         while (i < size) {
             let tmp = Array.new(size);
             let grid[i] = tmp;
@@ -37,6 +45,36 @@ class _2048 {
             let i = i + 1;
         }
         return this;
+    }
+
+    method void drawGrid2() {
+        var int i;
+        var int rawGridX;
+        var int rawGridY;
+        let rawGridX = (gridX - 1) * characterPixelWidth;
+        let rawGridY = (gridY - 1) * characterPixelHeight;
+
+        let i = 0;
+        while (i < (size + 1)) {
+            do Screen.drawLine(
+                rawGridX,
+                rawGridY + ((i * spaceY) * characterPixelHeight),
+                rawGridX + ((size * spaceX) * characterPixelWidth),
+                rawGridY + ((i * spaceY) * characterPixelHeight)
+            );
+            let i = i + 1;
+        }
+        let i = 0;
+        while (i < (size + 1)) {
+            do Screen.drawLine(
+                rawGridX + ((i * spaceX) * characterPixelWidth),
+                rawGridY,
+                rawGridX + ((i * spaceX) * characterPixelWidth),
+                rawGridY + ((size * spaceY) * characterPixelHeight)
+            );
+            let i = i + 1;
+        }
+        return;
     }
 
     method void run() {
@@ -68,7 +106,6 @@ class _2048 {
                 let key = Keyboard.keyPressed();
             }
         }
-        // make moveGrid return
         // remove drawGrid
         // score thing
         // you win
@@ -197,7 +234,7 @@ class _2048 {
     }
 
     method void cursorTo(int row, int col) {
-        do Output.moveCursor(row * 2, col * 4);
+        do Output.moveCursor((row * spaceY) + gridY, (col * spaceX) + gridX);
         return;
     }
 
@@ -238,7 +275,11 @@ class _2048 {
         let randomPositionValue = getPosition(lcgSize);
         if (randomPositionValue = 0) {
             let spacesCount = spacesCount + 1;
-            do setPosition(lcgSize, 2, true);
+            if ((lcg - ((lcg / 10) * 10)) > 5) {
+                do setPosition(lcgSize, 4, true);
+            } else {
+                do setPosition(lcgSize, 2, true);
+            }
             return;
         }
         do setRandomPosition();
