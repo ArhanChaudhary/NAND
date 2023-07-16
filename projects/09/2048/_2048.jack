@@ -6,10 +6,8 @@ class _2048 {
     field int gridX, gridY;
     field int score;
     field int combinedPosition;
-    field int takenCount;
-    field int score;
     field boolean validDirection;
-    field boolean exit;
+    field boolean win, won, lose;
     field Array grid;
 
     function void init() {
@@ -26,13 +24,14 @@ class _2048 {
         var int j;
         var Array tmp;
 
+        let win = false;
+        let won = false;
+        let lose = false;
         let score = 0;
         let gridX = 21;
         let gridY = 11;
         let size = size_;
         
-        let takenCount = 0;
-        let exit = false;
         let grid = Array.new(size);
         let i = 0;
         do initUI();
@@ -79,6 +78,9 @@ class _2048 {
 
         do Output.moveCursor(gridY - 3, gridX - 1);
         do Output.printString("Score:");
+
+        do Output.moveCursor(3, 28);
+        do Output.printString("PLAY 2048");
         return;
     }
 
@@ -86,7 +88,7 @@ class _2048 {
         var int key;
 
         do setRandomPosition();
-        while (~exit) {
+        while (~lose) {
             while (key = 0) {
                 let key = Keyboard.keyPressed();
                 let lcg = Math.abs(lcg + 1649);
@@ -108,12 +110,17 @@ class _2048 {
                 do drawGrid();
                 do setRandomPosition();
             }
+            if (win) {
+                do Output.moveCursor(gridY - 3, gridX + 13);
+                do Output.printString("YOU WIN :D");
+                let win = false;
+            }
             while (~(key = 0)) {
                 let key = Keyboard.keyPressed();
             }
         }
-        // you win/lose
-        do Output.printString("You lose, try again");
+        do Output.moveCursor(gridY - 3, gridX + 14);
+        do Output.printString("GAME OVER");
         return;
     }
 
@@ -207,7 +214,6 @@ class _2048 {
             }
             return;
         }
-        let takenCount = takenCount + 1;
         let validDirection = true;
         do setPosition(nextPosition, positionValue, false);
         do erasePosition(position, positionValue, firstIteration);
@@ -234,7 +240,6 @@ class _2048 {
                 do Output.printString("  ");
             }}
         }
-        let takenCount = takenCount - 1;
         do setPosition(position, 0, false);
         return;
     }
@@ -279,7 +284,6 @@ class _2048 {
         let lcgSize = lcg - ((lcg / (size * size)) * (size * size));
         let randomPositionValue = getPosition(lcgSize);
         if (randomPositionValue = 0) {
-            let takenCount = takenCount + 1;
             if ((lcg - ((lcg / 6) * 6)) > 3) {
                 let positionValue = 4;
             } else {
@@ -289,10 +293,62 @@ class _2048 {
             let score = score + positionValue;
             do Output.moveCursor(gridY - 3, gridX + 6);
             do Output.printInt(score);
+            if ((~(score < 2048)) & (~won)) {
+                let win = true;
+                let won = true;
+            }
+            if (checkLose()) {
+                let lose = true;
+            }
             return;
         }
         do setRandomPosition();
         return;
+    }
+
+    method boolean checkLose() {
+        var int i;
+        var int j;
+        var int prevPositionValue;
+        var Array tmp;
+        var int tmp2;
+
+        let i = 0;
+        let j = 0;
+        let prevPositionValue = (-1);
+        while (i < size) {
+            let tmp = grid[i];
+            while (j < size) {
+                let tmp2 = tmp[j];
+                if ((prevPositionValue = tmp2) | (tmp2 = 0)) {
+                    return false;
+                }
+                let prevPositionValue = tmp2;
+                let j = j + 1;
+            }
+            let prevPositionValue = (-1);
+            let j = 0;
+            let i = i + 1;
+        }
+        let i = 0;
+        let j = 0;
+        let prevPositionValue = (-1);
+        while (i < size) {
+            let j = 0;
+            while (j < size) {
+                let tmp = grid[j];
+                let tmp2 = tmp[i];
+                if ((prevPositionValue = tmp2) | (tmp2 = 0)) {
+                    return false;
+                }
+                let prevPositionValue = tmp2;
+                let j = j + 1;
+            }
+            let prevPositionValue = (-1);
+            let j = 0;
+            let i = i + 1;
+        }
+        return true;
     }
 
     method int getPosition(int pos) {
