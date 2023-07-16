@@ -274,30 +274,42 @@ class _2048 {
     }
 
     method void setRandomPosition() {
-        var int lcgSize;
+        var Array available;
+        var int i;
+        var int availableCount;
+        var int chosenPosition;
+
+        let available = Array.new(size * size);
+        let availableCount = 0;
+        let i = 0;
+        while (i < (size * size)) {
+            if (getPosition(i) = 0) {
+                let available[availableCount] = i;
+                let availableCount = availableCount + 1;
+            }
+            let i = i + 1;
+        }
+
         let lcg = Math.abs((473 * lcg) + 12534);
         let lcg = lcg - ((lcg / 1638) * 1638);
-        let lcgSize = lcg - ((lcg / (size * size)) * (size * size));
-        if (getPosition(lcgSize) = 0) {
-            if ((lcg - ((lcg / 6) * 6)) > 3) {
-                do setPosition(lcgSize, 4, true);
-                let score = score + 4;
-            } else {
-                do setPosition(lcgSize, 2, true);
-                let score = score + 2;
-            }
-            do Output.moveCursor(gridY - 3, gridX + 6);
-            do Output.printInt(score);
-            if ((~(score < 2048)) & (~won)) {
-                let win = true;
-                let won = true;
-            }
-            if (checkLose()) {
-                let lose = true;
-            }
-            return;
+        let chosenPosition = available[lcg - ((lcg / availableCount) * availableCount)];
+
+        if ((lcg - ((lcg / 6) * 6)) > 3) {
+            do setPosition(chosenPosition, 4, true);
+            let score = score + 4;
+        } else {
+            do setPosition(chosenPosition, 2, true);
+            let score = score + 2;
         }
-        do setRandomPosition();
+        do Output.moveCursor(gridY - 3, gridX + 6);
+        do Output.printInt(score);
+        if ((~(score < 2048)) & (~won)) {
+            let win = true;
+            let won = true;
+        }
+        if (checkLose()) {
+            let lose = true;
+        }
         return;
     }
 
