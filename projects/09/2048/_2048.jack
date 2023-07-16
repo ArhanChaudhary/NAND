@@ -9,6 +9,7 @@ class _2048 {
     field boolean validDirection;
     field boolean win, won, lose;
     field Array grid;
+    field Array prevGrid;
 
     function void init() {
         let lcg = 1234;
@@ -22,7 +23,8 @@ class _2048 {
     constructor _2048 new(int size_) {
         var int i;
         var int j;
-        var Array tmp;
+        var Array row;
+        var Array prevRow;
 
         let win = false;
         let won = false;
@@ -33,14 +35,18 @@ class _2048 {
         let size = size_;
         
         let grid = Array.new(size);
+        let prevGrid = Array.new(size);
         let i = 0;
         do initUI();
         while (i < size) {
-            let tmp = Array.new(size);
-            let grid[i] = tmp;
+            let row = Array.new(size);
+            let grid[i] = row;
+            let prevRow = Array.new(size);
+            let prevGrid[i] = prevRow;
             let j = 0;
             while (j < size) {
-                let tmp[j] = 0;
+                let row[j] = 0;
+                let prevRow[j] = 0;
                 let j = j + 1;
             }
             let i = i + 1;
@@ -252,22 +258,25 @@ class _2048 {
     method void drawGrid() {
         var int i;
         var int j;
-        var Array tmp;
-        var int tmp2;
+        var Array row;
+        var Array prevRow;
+        var int positionValue;
         let i = 0;
         while (i < size) {
-            let tmp = grid[i];
+            let row = grid[i];
+            let prevRow = prevGrid[i];
             let j = 0;
             while (j < size) {
-                let tmp2 = tmp[j];
-                do cursorTo(i, j);
-                if (~(tmp2 = 0)) {
-                    do Output.printInt(tmp2);
-                }
+                let positionValue = row[j];
+                if (positionValue = 0) {
+                    do cursorTo(i, j);
+                } else {if (~(prevRow[j] = positionValue)) {
+                    do cursorTo(i, j);
+                    do Output.printInt(positionValue);
+                }}
+                let prevRow[j] = positionValue;
                 let j = j + 1;
             }
-            do Output.println();
-            do Output.println();
             let i = i + 1;
         }
         return;
@@ -321,10 +330,10 @@ class _2048 {
         var int tmp2;
 
         let i = 0;
-        let j = 0;
         let prevPositionValue = (-1);
         while (i < size) {
             let tmp = grid[i];
+            let j = 0;
             while (j < size) {
                 let tmp2 = tmp[j];
                 if ((prevPositionValue = tmp2) | (tmp2 = 0)) {
@@ -334,11 +343,9 @@ class _2048 {
                 let j = j + 1;
             }
             let prevPositionValue = (-1);
-            let j = 0;
             let i = i + 1;
         }
         let i = 0;
-        let j = 0;
         let prevPositionValue = (-1);
         while (i < size) {
             let j = 0;
@@ -352,7 +359,6 @@ class _2048 {
                 let j = j + 1;
             }
             let prevPositionValue = (-1);
-            let j = 0;
             let i = i + 1;
         }
         return true;
