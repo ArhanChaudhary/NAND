@@ -1,4 +1,4 @@
-import Tokenizer, { TokenType } from "./tokenizer";
+import Tokenizer from "./tokenizer";
 import Engine from "./engine";
 import fs from "fs";
 
@@ -17,27 +17,6 @@ files.forEach(file => {
     if (!file.endsWith('.jack')) return;
 
     const tokenizer: Tokenizer = new Tokenizer(file);
-    while (tokenizer.advance()) {
-        switch (tokenizer.tokenType()) {
-            case TokenType.KEYWORD:
-                tokenizer.writeXML('keyword', tokenizer.token());
-                break;
-            case TokenType.SYMBOL:
-                tokenizer.writeXML('symbol', tokenizer.token());
-                break;
-            case TokenType.IDENTIFIER:
-                tokenizer.writeXML('identifier', tokenizer.token());
-                break;
-            case TokenType.INT_CONST:
-                tokenizer.writeXML('integerConstant', tokenizer.token());
-                break;
-            case TokenType.STRING_CONST:
-                tokenizer.writeXML('stringConstant', tokenizer.token());
-                break;
-        }
-    }
-    const engine: Engine = new Engine(file);
-    while (engine.advance()) {
-        
-    }
+    const engine: Engine = new Engine(file, tokenizer);
+    engine.compileClass();
 });

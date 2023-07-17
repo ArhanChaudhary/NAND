@@ -1,4 +1,4 @@
-import fs, { WriteStream } from "fs";
+import fs from "fs";
 import nReadlines from "n-readlines";
 import NANDException from "../core/exceptions";
 
@@ -70,8 +70,7 @@ const Digits = [
 ]
 
 export default class Tokenizer {
-    private inputStream: nReadlines;
-    private outputStream: WriteStream;
+    private fileStream: nReadlines;
     private currentLine: string = '';
     private currentLineNumber: number = 0;
     private currentLineIndex: number = 0;
@@ -80,31 +79,7 @@ export default class Tokenizer {
     private inComment: boolean = false;
 
     constructor(file: string) {
-        this.inputStream = new nReadlines(file);
-        this.outputStream = fs.createWriteStream(file.substring(0, file.length - 5) + 'T.xml');
-        this.outputStream.write('<tokens>');
-    }
-
-    public write(out: string): void {
-        this.outputStream.write('\n' + out);
-    }
-
-    public writeXML(tag: string, data: string): void {
-        switch (data) {
-            case '<':
-                data = '&lt;';
-                break;
-            case '>':
-                data = '&gt;';
-                break;
-            case '"':
-                data = '&quot;';
-                break;
-            case '&':
-                data = '&amp;';
-                break;
-        }
-        this.write(`<${tag}> ${data} </${tag}>`);
+        this.fileStream = new nReadlines(file);
     }
 
     static isLetter(char: string): boolean {
@@ -152,10 +127,9 @@ export default class Tokenizer {
     public advance(): boolean {
         let line: Buffer | boolean;
         if (this.currentLine.length === this.currentLineIndex) {
-            line = this.inputStream.next();
+            line = this.fileStream.next();
             this.currentLineNumber++;
             if (!line) {
-                this.write("</tokens>");
                 return false;
             }
             this.currentLineIndex = 0;

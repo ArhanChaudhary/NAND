@@ -1,28 +1,30 @@
 import fs, { WriteStream } from "fs";
 import nReadlines from "n-readlines";
 import NANDException from "../core/exceptions";
+import Tokenizer, { TokenType } from "./tokenizer";
 
 export default class Engine {
-    private currentToken: string = '';
-    private inputStream: nReadlines;
+    private tokenizer: Tokenizer;
     private outputStream: WriteStream;
+    private indent: number = 0;
 
-    constructor(file: string) {
-        this.inputStream = new nReadlines(file);
+    constructor(file: string, tokenizer: Tokenizer) {
+        this.tokenizer = tokenizer;
         this.outputStream = fs.createWriteStream(file.substring(0, file.length - 5) + '.xml');
-        this.outputStream.write('<tokens>');
+        this.tokenizer.advance();
     }
 
     private firstWrite: boolean = true;
-    public write(out: string): void {
+    private write(out: string): void {
+        out = '  '.repeat(this.indent) + out;
         if (this.firstWrite)
             this.outputStream.write(out);
         else
             this.outputStream.write('\n' + out);
-        this.firstWrite = false;            
+        this.firstWrite = false;
     }
 
-    public writeXML(tag: string, data: string): void {
+    private writeClosedXML(tag: string, data: string): void {
         switch (data) {
             case '<':
                 data = '&lt;';
@@ -40,69 +42,116 @@ export default class Engine {
         this.write(`<${tag}> ${data} </${tag}>`);
     }
 
-    public advance(): boolean {
-        let line: Buffer | boolean = this.inputStream.next();
-        if (!line)
-            return false
-        this.currentToken = line.toString('ascii').trim().replace(/ {2,}/, ' ');
-        if (!this.currentToken)
-            return this.advance();
-        return true;
+    private compileToken(): void {
+        switch (this.tokenizer.tokenType()) {
+            case TokenType.KEYWORD:
+                this.writeClosedXML('keyword', this.tokenizer.token());
+                break;
+            case TokenType.SYMBOL:
+                this.writeClosedXML('symbol', this.tokenizer.token());
+                break;
+            case TokenType.IDENTIFIER:
+                this.writeClosedXML('identifier', this.tokenizer.token());
+                break;
+            case TokenType.INT_CONST:
+                this.writeClosedXML('integerConstant', this.tokenizer.token());
+                break;
+            case TokenType.STRING_CONST:
+                this.writeClosedXML('stringConstant', this.tokenizer.token());
+                break;
+        }
     }
 
     public compileClass(): void {
+        this.write('<class>');
+        this.indent++;
+        do {
+            this.compileToken();
+            if (this.tokenizer.token() === '{') {
+                this.tokenizer.advance();
+                break;
+            }
+        } while (this.tokenizer.advance());
+
+        do {
+            if (!['field', 'static'].includes(this.tokenizer.token()))
+                break;
+            this.compileClassVarDev();
+        } while (this.tokenizer.advance());
+        // while (this.tokenizer.advance()) {
+        //     if (['constructor', 'method', 'function'].includes(this.tokenizer.token()))
+        //         break;
+        //     this.compileSubroutine();
+        // }
+        this.indent--;
+        if (this.tokenizer.token() !== '}' || this.indent !== 0) {
+            throw new NANDException();
+        }
+        if (this.tokenizer.advance()) {
+            throw new NANDException();
+        }
+        this.write('</class>');
+    }
+    
+    private compileClassVarDev(): void {
+        this.write("<classVarDec>");
+        this.indent++;
+        do {
+            this.compileToken();
+            if (this.tokenizer.token() === ';') {
+                this.tokenizer.advance();
+                break;
+            }
+        } while (this.tokenizer.advance());
+        this.indent--;
+        this.write("</classVarDec>");
+    }
+    
+    private compileSubroutine(): void {
 
     }
     
-    public compileClassVarDev(): void {
+    private compileParameterList(): void {
 
     }
     
-    public compileSubroutine(): void {
+    private compileVarDec(): void {
 
     }
     
-    public compileParameterList(): void {
+    private compileStatements(): void {
 
     }
     
-    public compileVarDec(): void {
+    private compileDo(): void {
 
     }
     
-    public compileStatements(): void {
+    private compileLet(): void {
 
     }
     
-    public compileDo(): void {
+    private compileWhile(): void {
 
     }
     
-    public compileLet(): void {
+    private compileReturn(): void {
 
     }
     
-    public compileWhile(): void {
+    private compileIf(): void {
 
     }
     
-    public compileReturn(): void {
+    private compileExpression(): void {
 
     }
     
-    public compileIf(): void {
-
-    }
-    
-    public compileExpression(): void {
-
-    }
-    
-    public compileTerm(): void {
+    private compileTerm(): void {
 
     }
 
-    public compileExpressionList(): void {
+    private compileExpressionList(): void {
 
     }
 }
