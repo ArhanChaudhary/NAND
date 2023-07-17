@@ -73,18 +73,20 @@ export default class Tokenizer {
     private inputStream: nReadlines;
     private outputStream: WriteStream;
     private currentLine: string = '';
+    private currentLineNumber: number = 0;
     private currentLineIndex: number = 0;
     private currentToken: string | null = null;
     private currentTokenType: TokenType | null = null;
+    private inComment: boolean = false;
 
     constructor(file: string) {
         this.inputStream = new nReadlines(file);
         this.outputStream = fs.createWriteStream(file.substring(0, file.length - 5) + 'T_.xml');
-        this.write('<tokens>');
+        this.outputStream.write('<tokens>');
     }
 
     public write(out: string): void {
-        this.outputStream.write('\n' + out);           
+        this.outputStream.write('\n' + out);
     }
 
     public writeXML(tag: string, data: string): void {
@@ -117,12 +119,38 @@ export default class Tokenizer {
         let line: Buffer | boolean;
         if (this.currentLine.length === this.currentLineIndex) {
             line = this.inputStream.next();
+            this.currentLineNumber++;
             if (!line) {
                 this.write("</tokens>");
                 return false;
             }
             this.currentLineIndex = 0;
             this.currentLine = line.toString('ascii');
+            let startComment: number = this.currentLine.indexOf("/*");
+            let endComment: number = this.currentLine.indexOf("*/");
+            if (endComment !== -1) {
+                endComment += 2;
+            }
+            if (startComment === -1) {
+                if (endComment === -1) {
+                    if (this.inComment) {
+                        this.currentLineIndex = this.currentLine.length;
+                        return this.advance();
+                    }
+                } else {
+                    if (!this.inComment) {
+                        throw new NANDException("Invalid end comment");
+                    }
+                    this.currentLine = this.currentLine.substring(endComment);
+                }
+            } else {
+                if (endComment === -1) {
+                    this.currentLine = this.currentLine.substring(0, startComment);;
+                    this.inComment = true;
+                } else {
+                    this.currentLine = this.currentLine.substring(0, startComment) + this.currentLine.substring(endComment);
+                }
+            }
             const comment: number = this.currentLine.indexOf("//");
             if (comment !== -1)
                 this.currentLine = this.currentLine.substring(0, comment);
