@@ -15,7 +15,7 @@ if (path.endsWith('.jack')) {
 }
 files.forEach(file => {
     if (!file.endsWith('.jack')) return;
-    
+
     const tokenizer: Tokenizer = new Tokenizer(file);
     while (tokenizer.advance()) {
         switch (tokenizer.tokenType()) {
@@ -35,5 +35,9 @@ files.forEach(file => {
                 tokenizer.writeXML('stringConstant', tokenizer.token());
                 break;
         }
+    }
+    const engine: Engine = new Engine(file);
+    while (engine.advance()) {
+        
     }
 });
