@@ -81,7 +81,7 @@ export default class Tokenizer {
 
     constructor(file: string) {
         this.inputStream = new nReadlines(file);
-        this.outputStream = fs.createWriteStream(file.substring(0, file.length - 5) + 'T_.xml');
+        this.outputStream = fs.createWriteStream(file.substring(0, file.length - 5) + 'T.xml');
         this.outputStream.write('<tokens>');
     }
 
@@ -104,7 +104,7 @@ export default class Tokenizer {
                 data = '&amp;';
                 break;
         }
-        this.write(`<${tag}>${data}</${tag}>`);
+        this.write(`<${tag}> ${data} </${tag}>`);
     }
 
     static isLetter(char: string): boolean {
@@ -116,37 +116,37 @@ export default class Tokenizer {
     }
 
     private removeComments(): void {
-            let startComment: number = this.currentLine.indexOf("/*");
-            let endComment: number = this.currentLine.indexOf("*/");
-            if (endComment !== -1) {
-                endComment += 2;
-            }
-            if (startComment === -1) {
-                if (endComment === -1) {
-                    if (this.inComment) {
+        let startComment: number = this.currentLine.indexOf("/*");
+        let endComment: number = this.currentLine.indexOf("*/");
+        if (endComment !== -1) {
+            endComment += 2;
+        }
+        if (startComment === -1) {
+            if (endComment === -1) {
+                if (this.inComment) {
                     this.currentLine = '';
                     this.currentLineIndex = 0;
                     return;
-                    }
-                } else {
-                    if (!this.inComment) {
-                        throw new NANDException("Invalid end comment");
-                    }
-                    this.currentLine = this.currentLine.substring(endComment);
                 }
             } else {
-                if (endComment === -1) {
-                    this.currentLine = this.currentLine.substring(0, startComment);;
-                    this.inComment = true;
-                } else {
-                    this.currentLine = this.currentLine.substring(0, startComment) + this.currentLine.substring(endComment);
+                if (!this.inComment) {
+                    throw new NANDException("Invalid end comment");
+                }
+                this.currentLine = this.currentLine.substring(endComment);
+            }
+        } else {
+            if (endComment === -1) {
+                this.currentLine = this.currentLine.substring(0, startComment);;
+                this.inComment = true;
+            } else {
+                this.currentLine = this.currentLine.substring(0, startComment) + this.currentLine.substring(endComment);
                 this.removeComments();
                 return;
             }
-            }
-            const comment: number = this.currentLine.indexOf("//");
-            if (comment !== -1)
-                this.currentLine = this.currentLine.substring(0, comment);
+        }
+        const comment: number = this.currentLine.indexOf("//");
+        if (comment !== -1)
+            this.currentLine = this.currentLine.substring(0, comment);
     }
 
     public advance(): boolean {
@@ -173,19 +173,20 @@ export default class Tokenizer {
             if (char === undefined) {
                 break;
             }
-            if (SymbolTokens.includes(char)) {
-                this.currentToken = char;
-                this.currentTokenType = TokenType.SYMBOL;
-                this.currentLineIndex++;
-                break;
-            }
             if (firstIteration) {
                 if (char === ' ') {
                     start++;
                     continue;
                 }
+                if (SymbolTokens.includes(char)) {
+                    this.currentToken = char;
+                    this.currentTokenType = TokenType.SYMBOL;
+                    this.currentLineIndex++;
+                    break;
+                }
                 firstIteration = false;
                 if (char === '"') {
+                    start++;
                     this.currentTokenType = TokenType.STRING_CONST;
                 } else if (Tokenizer.isLetter(char)) {
                     this.currentTokenType = TokenType.IDENTIFIER;
@@ -198,26 +199,27 @@ export default class Tokenizer {
             }
             switch (this.currentTokenType) {
                 case TokenType.STRING_CONST:
-                    if (char === '"') {
-                        this.currentToken = this.currentLine.substring(start + 1, this.currentLineIndex - 1);
-                        break findToken;
+                    if (char !== '"') {
+                        break;
                     }
-                    break;
+                    this.currentToken = this.currentLine.substring(start, this.currentLineIndex);
+                    this.currentLineIndex++;
+                    break findToken;
                 case TokenType.IDENTIFIER:
-                    if (!(Tokenizer.isLetter(char) || Tokenizer.isNumber(char) || char === '_')) {
-                        this.currentToken = this.currentLine.substring(start, this.currentLineIndex);
-                        if (Keywords.includes(this.currentToken)) {
-                            this.currentTokenType = TokenType.KEYWORD;
-                        }
-                        break findToken;
+                    if (Tokenizer.isLetter(char) || Tokenizer.isNumber(char) || char === '_') {
+                        break;
                     }
-                    break;
+                    this.currentToken = this.currentLine.substring(start, this.currentLineIndex);
+                    if (Keywords.includes(this.currentToken)) {
+                        this.currentTokenType = TokenType.KEYWORD;
+                    }
+                    break findToken;
                 case TokenType.INT_CONST:
-                    if (!Tokenizer.isNumber(char)) {
-                        this.currentToken = this.currentLine.substring(start, this.currentLineIndex);
-                        break findToken;
+                    if (Tokenizer.isNumber(char)) {
+                        break;
                     }
-                    break;
+                    this.currentToken = this.currentLine.substring(start, this.currentLineIndex);
+                    break findToken;
                 default:
                     throw new NANDException(`Invalid token type ${this.currentTokenType} for: ${this.currentLine.substring(start, this.currentLineIndex)}`);
             }
