@@ -115,17 +115,7 @@ export default class Tokenizer {
         return Digits.includes(char);
     }
 
-    public advance(): boolean {
-        let line: Buffer | boolean;
-        if (this.currentLine.length === this.currentLineIndex) {
-            line = this.inputStream.next();
-            this.currentLineNumber++;
-            if (!line) {
-                this.write("</tokens>");
-                return false;
-            }
-            this.currentLineIndex = 0;
-            this.currentLine = line.toString('ascii');
+    private removeComments(): void {
             let startComment: number = this.currentLine.indexOf("/*");
             let endComment: number = this.currentLine.indexOf("*/");
             if (endComment !== -1) {
@@ -134,8 +124,9 @@ export default class Tokenizer {
             if (startComment === -1) {
                 if (endComment === -1) {
                     if (this.inComment) {
-                        this.currentLineIndex = this.currentLine.length;
-                        return this.advance();
+                    this.currentLine = '';
+                    this.currentLineIndex = 0;
+                    return;
                     }
                 } else {
                     if (!this.inComment) {
@@ -149,11 +140,27 @@ export default class Tokenizer {
                     this.inComment = true;
                 } else {
                     this.currentLine = this.currentLine.substring(0, startComment) + this.currentLine.substring(endComment);
-                }
+                this.removeComments();
+                return;
+            }
             }
             const comment: number = this.currentLine.indexOf("//");
             if (comment !== -1)
                 this.currentLine = this.currentLine.substring(0, comment);
+    }
+
+    public advance(): boolean {
+        let line: Buffer | boolean;
+        if (this.currentLine.length === this.currentLineIndex) {
+            line = this.inputStream.next();
+            this.currentLineNumber++;
+            if (!line) {
+                this.write("</tokens>");
+                return false;
+            }
+            this.currentLineIndex = 0;
+            this.currentLine = line.toString('ascii');
+            this.removeComments();
             this.currentLine = this.currentLine.trim().replace(/ {2,}/, ' ');
             if (!this.currentLine)
                 return this.advance();
