@@ -9,6 +9,18 @@ const varType = [
     TokenType.IDENTIFIER,
 ];
 
+const ops = [
+    '+',
+    '-',
+    '*',
+    '/',
+    '&',
+    '|',
+    '<',
+    '>',
+    '=',
+];
+
 export default class Engine {
     private tokenizer: Tokenizer;
     private outputStream: WriteStream;
@@ -61,7 +73,9 @@ export default class Engine {
         }
         if (advance) {
             this.compileTerminal();
-            this.tokenizer.advance();
+            if (!this.tokenizer.advance()) {
+                throw new SyntaxException();
+            }
         }
     }
 
@@ -235,6 +249,7 @@ export default class Engine {
         this.indent++;
 
         this.assertToken('do');
+        this.assertToken(TokenType.IDENTIFIER);
         this.compileSubroutineCall();
         this.assertToken(';');
 
@@ -321,6 +336,10 @@ export default class Engine {
         this.indent++;
 
         this.compileTerm();
+        while (ops.includes(this.tokenizer.token())) {
+            this.assertToken(ops);
+            this.compileTerm();
+        }
 
         this.indent--;
         this.write('</expression>');
@@ -330,9 +349,50 @@ export default class Engine {
         this.write('<term>');
         this.indent++;
 
-        if (this.tokenizer.tokenType() !== TokenType.SYMBOL) {
-            this.compileTerminal();
-            this.tokenizer.advance();
+        switch (this.tokenizer.tokenType()) {
+            case TokenType.INT_CONST:
+                this.assertToken(TokenType.INT_CONST);
+                break;
+            case TokenType.STRING_CONST:
+                this.assertToken(TokenType.STRING_CONST);
+                break;
+            case TokenType.KEYWORD:
+                this.assertToken(['true', 'false', 'null', 'this']);
+                break;
+            case TokenType.IDENTIFIER:
+                this.assertToken(TokenType.IDENTIFIER);
+                switch (this.tokenizer.token()) {
+                    case '[':
+                        this.assertToken('[');
+                        this.compileExpression();
+                        this.assertToken(']');
+                        break;
+                    case '(':
+                        this.assertToken('(');
+                        this.compileExpression();
+                        this.assertToken(')');
+                        break;
+                    case '.':
+                        this.compileSubroutineCall();
+                        break;
+                }
+                break;
+            case TokenType.SYMBOL:
+                switch (this.tokenizer.token()) {
+                    case '~':
+                    case '-':
+                        this.assertToken(['-', '~']);
+                        this.compileTerm();
+                        break;
+                    case '(':
+                        this.assertToken('(');
+                        this.compileExpression();
+                        this.assertToken(')');
+                        break;
+                    default:
+                        throw new SyntaxException();
+                } 
+                break;
         }
 
         this.indent--;
@@ -340,7 +400,6 @@ export default class Engine {
     }
 
     private compileSubroutineCall(): void {
-        this.assertToken(TokenType.IDENTIFIER);
         if (this.tokenizer.token() === '.') {
             this.assertToken('.');
             this.assertToken(TokenType.IDENTIFIER);
