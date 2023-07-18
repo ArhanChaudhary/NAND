@@ -42,7 +42,7 @@ export default class Engine {
         this.write(`<${tag}> ${data} </${tag}>`);
     }
 
-    private compileToken(): void {
+    private compileTerminal(): void {
         switch (this.tokenizer.tokenType()) {
             case TokenType.KEYWORD:
                 this.writeClosedXML('keyword', this.tokenizer.token());
@@ -65,8 +65,9 @@ export default class Engine {
     public compileClass(): void {
         this.write('<class>');
         this.indent++;
+
         do {
-            this.compileToken();
+            this.compileTerminal();
             if (this.tokenizer.token() === '{') {
                 this.tokenizer.advance();
                 break;
@@ -76,79 +77,272 @@ export default class Engine {
         do {
             if (!['field', 'static'].includes(this.tokenizer.token()))
                 break;
-            this.compileClassVarDev();
+            this.compileClassVarDec();
         } while (this.tokenizer.advance());
-        // while (this.tokenizer.advance()) {
-        //     if (['constructor', 'method', 'function'].includes(this.tokenizer.token()))
-        //         break;
-        //     this.compileSubroutine();
-        // }
-        this.indent--;
-        if (this.tokenizer.token() !== '}' || this.indent !== 0) {
-            throw new NANDException();
-        }
-        if (this.tokenizer.advance()) {
-            throw new NANDException();
-        }
-        this.write('</class>');
-    }
-    
-    private compileClassVarDev(): void {
-        this.write("<classVarDec>");
-        this.indent++;
+
         do {
-            this.compileToken();
-            if (this.tokenizer.token() === ';') {
+            if (!['constructor', 'method', 'function'].includes(this.tokenizer.token()))
+                break;
+            this.compileSubroutine();
+        } while (this.tokenizer.advance());
+
+        do {
+            this.compileTerminal();
+            if (this.tokenizer.token() === '}') {
                 this.tokenizer.advance();
                 break;
             }
         } while (this.tokenizer.advance());
+
         this.indent--;
-        this.write("</classVarDec>");
+        this.write('</class>');
+    }
+    
+    private compileClassVarDec(): void {
+        this.write('<classVarDec>');
+        this.indent++;
+
+        do {
+            this.compileTerminal();
+            if (this.tokenizer.token() === ';') {
+                break;
+            }
+        } while (this.tokenizer.advance());
+
+        this.indent--;
+        this.write('</classVarDec>');
     }
     
     private compileSubroutine(): void {
+        this.write('<subroutineDec>');
+        this.indent++;
 
+        do {
+            this.compileTerminal();
+            if (this.tokenizer.token() === '(') {
+                this.tokenizer.advance();
+                break;
+            }
+        } while (this.tokenizer.advance());
+        
+        this.compileParameterList();
+        this.compileTerminal();
+        this.tokenizer.advance();
+
+        do {
+            if (this.tokenizer.token() === '{') {
+                this.compileSubroutineBody();
+                break;
+            }
+            this.compileTerminal();
+        } while (this.tokenizer.advance());
+
+        this.indent--;
+        this.write('</subroutineDec>');
     }
     
     private compileParameterList(): void {
+        this.write('<parameterList>');
+        this.indent++;
 
+        do {
+            if (this.tokenizer.token() === ')') {
+                break;
+            }
+            this.compileTerminal();
+        } while (this.tokenizer.advance());
+
+        this.indent--;
+        this.write('</parameterList>');
+    }
+
+    private compileSubroutineBody(): void {
+        this.write('<subroutineBody>');
+        this.indent++;
+
+        do {
+            this.compileTerminal();
+            if (this.tokenizer.token() === '{') {
+                this.tokenizer.advance();
+                break;
+            }
+        } while (this.tokenizer.advance());
+
+        do {
+            if (this.tokenizer.token() !== 'var') {
+                break;
+            }
+            this.compileVarDec();
+        } while (this.tokenizer.advance());
+
+        do {
+            if (['let', 'if', 'while', 'do', 'return'].includes(this.tokenizer.token())) {
+                this.compileStatements();
+                break;
+            }
+        } while (this.tokenizer.advance());
+
+        do {
+            this.compileTerminal();
+            if (this.tokenizer.token() === '}') {
+                break;
+            }
+        } while (this.tokenizer.advance());
+
+        this.indent--;
+        this.write('</subroutineBody>');
     }
     
     private compileVarDec(): void {
+        this.write('<varDec>');
+        this.indent++;
 
+        do {
+            this.compileTerminal();
+            if (this.tokenizer.token() === ';') {
+                break;
+            }
+        } while (this.tokenizer.advance());
+
+        this.indent--;
+        this.write('</varDec>');
     }
     
     private compileStatements(): void {
+        this.write('<statements>');
+        this.indent++;
 
+        outer: do {
+            switch (this.tokenizer.token()) {
+                case 'let':
+                    this.compileLet();
+                    break;
+                case 'if':
+                    this.compileIf();
+                    break;
+                case 'while':
+                    this.compileWhile();
+                    break;
+                case 'do':
+                    this.compileDo();
+                    break;
+                case 'return':
+                    this.compileReturn();
+                    break;
+                default:
+                    break outer;
+            }
+        } while (this.tokenizer.advance());
+
+        this.indent--;
+        this.write('</statements>');
     }
     
     private compileDo(): void {
+        this.write('<doStatement>');
+        this.indent++;
 
+        do {
+            this.compileTerminal();
+            if (this.tokenizer.token() === ';') {
+                break;
+            }
+        } while (this.tokenizer.advance());
+
+        this.indent--;
+        this.write('</doStatement>');
     }
     
     private compileLet(): void {
+        this.write('<letStatement>');
+        this.indent++;
 
+        this.compileTerminal();
+        this.tokenizer.advance();
+        this.compileTerminal();
+        this.tokenizer.advance();
+
+        if (this.tokenizer.token() === '[') {
+            this.compileTerminal();
+            this.tokenizer.advance();
+            this.compileExpression();
+            this.compileTerminal();
+            this.tokenizer.advance();
+        }
+
+        this.compileTerminal();
+        this.tokenizer.advance();
+        this.compileExpression();
+        this.compileTerminal();
+
+        this.indent--;
+        this.write('</letStatement>');
     }
     
     private compileWhile(): void {
+        this.write('<whileStatement>');
+        this.indent++;
 
+        do {
+            this.compileTerminal();
+            if (this.tokenizer.token() === ';') {
+                break;
+            }
+        } while (this.tokenizer.advance());
+
+        this.indent--;
+        this.write('</whileStatement>');
     }
     
     private compileReturn(): void {
+        this.write('<returnStatement>');
+        this.indent++;
 
+        do {
+            this.compileTerminal();
+            if (this.tokenizer.token() === ';') {
+                break;
+            }
+        } while (this.tokenizer.advance());
+
+        this.indent--;
+        this.write('</returnStatement>');
     }
     
     private compileIf(): void {
+        this.write('<ifStatement>');
+        this.indent++;
 
+        // do {
+        //     this.compileTerminal();
+        //     if (this.tokenizer.token() === ';') {
+        //         break;
+        //     }
+        // } while (this.tokenizer.advance());
+
+        this.indent--;
+        this.write('</ifStatement>');
     }
     
     private compileExpression(): void {
+        this.write('<expression>');
+        this.indent++;
 
+        this.compileTerm();
+
+        this.indent--;
+        this.write('</expression>');
     }
     
     private compileTerm(): void {
+        this.write('<term>');
+        this.indent++;
 
+        this.compileTerminal();
+        this.tokenizer.advance();
+
+        this.indent--;
+        this.write('</term>');
     }
 
     private compileExpressionList(): void {
