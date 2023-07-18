@@ -368,10 +368,6 @@ export default class Engine {
                         this.assertToken(']');
                         break;
                     case '(':
-                        this.assertToken('(');
-                        this.compileExpression();
-                        this.assertToken(')');
-                        break;
                     case '.':
                         this.compileSubroutineCall();
                         break;
