@@ -1,6 +1,6 @@
 import fs from "fs";
 import nReadlines from "n-readlines";
-import NANDException from "../core/exceptions";
+import { NANDException } from "../core/exceptions";
 
 export enum TokenType {
     KEYWORD,

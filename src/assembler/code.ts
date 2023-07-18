@@ -1,4 +1,4 @@
-import NANDException from "../core/exceptions";
+import { NANDException } from "../core/exceptions";
 
 export default class Code {
     public static dest(mnemonic: string): string {

@@ -1,5 +1,5 @@
 import fs, { WriteStream } from 'fs';
-import NANDException from '../core/exceptions';
+import { NANDException } from '../core/exceptions';
 
 export default class CodeWriter {
     private fileStream: WriteStream;

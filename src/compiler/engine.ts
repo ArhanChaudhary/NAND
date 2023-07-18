@@ -1,5 +1,5 @@
 import fs, { WriteStream } from "fs";
-import NANDException from "../core/exceptions";
+import { SyntaxException } from "../core/exceptions";
 import Tokenizer, { TokenType } from "./tokenizer";
 
 const varType = [
@@ -51,13 +51,13 @@ export default class Engine {
     private assertToken(expectedToken: string | TokenType | (string | TokenType)[], advance: boolean = true): void {
         if (typeof expectedToken === 'string') {
             if (this.tokenizer.token() !== expectedToken)
-                throw new NANDException();
+                throw new SyntaxException();
         } else if (Array.isArray(expectedToken)) {
             if (!expectedToken.includes(this.tokenizer.token()) && !expectedToken.includes(this.tokenizer.tokenType()))
-                throw new NANDException();
+                throw new SyntaxException();
         } else if (expectedToken in TokenType) {
             if (this.tokenizer.tokenType() !== expectedToken)
-                throw new NANDException();
+                throw new SyntaxException();
         }
         if (advance) {
             this.compileTerminal();
@@ -104,7 +104,7 @@ export default class Engine {
         this.assertToken('}', false);
         this.compileTerminal();
         if (this.tokenizer.advance()) {
-            throw new NANDException();
+            throw new SyntaxException();
         }
 
         this.indent--;

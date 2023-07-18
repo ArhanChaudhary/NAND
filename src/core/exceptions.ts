@@ -1,1 +1,2 @@
-export default class NANDException extends Error {}
+export class NANDException extends Error {}
+export class SyntaxException extends NANDException {}
