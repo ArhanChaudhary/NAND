@@ -107,6 +107,7 @@ export default class Tokenizer {
                 if (!this.inComment) {
                     throw new NANDException("Invalid end comment");
                 }
+                this.inComment = false;
                 this.currentLine = this.currentLine.substring(endComment);
             }
         } else {
