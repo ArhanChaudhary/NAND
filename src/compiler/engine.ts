@@ -1,7 +1,13 @@
 import fs, { WriteStream } from "fs";
-import nReadlines from "n-readlines";
 import NANDException from "../core/exceptions";
 import Tokenizer, { TokenType } from "./tokenizer";
+
+const varType = [
+    'int',
+    'char',
+    'boolean',
+    TokenType.IDENTIFIER,
+];
 
 export default class Engine {
     private tokenizer: Tokenizer;
@@ -42,6 +48,23 @@ export default class Engine {
         this.write(`<${tag}> ${data} </${tag}>`);
     }
 
+    private assertToken(expectedToken: string | TokenType | (string | TokenType)[], advance: boolean = true): void {
+        if (typeof expectedToken === 'string') {
+            if (this.tokenizer.token() !== expectedToken)
+                throw new NANDException();
+        } else if (Array.isArray(expectedToken)) {
+            if (!expectedToken.includes(this.tokenizer.token()) && !expectedToken.includes(this.tokenizer.tokenType()))
+                throw new NANDException();
+        } else if (expectedToken in TokenType) {
+            if (this.tokenizer.tokenType() !== expectedToken)
+                throw new NANDException();
+        }
+        if (advance) {
+            this.compileTerminal();
+            this.tokenizer.advance();
+        }
+    }
+
     private compileTerminal(): void {
         switch (this.tokenizer.tokenType()) {
             case TokenType.KEYWORD:
@@ -66,33 +89,23 @@ export default class Engine {
         this.write('<class>');
         this.indent++;
 
-        do {
-            this.compileTerminal();
-            if (this.tokenizer.token() === '{') {
-                this.tokenizer.advance();
-                break;
-            }
-        } while (this.tokenizer.advance());
+        this.assertToken('class');
+        this.assertToken(TokenType.IDENTIFIER);
+        this.assertToken('{');
 
-        do {
-            if (!['field', 'static'].includes(this.tokenizer.token()))
-                break;
+        while (['field', 'static'].includes(this.tokenizer.token())) {
             this.compileClassVarDec();
-        } while (this.tokenizer.advance());
+        }
 
-        do {
-            if (!['constructor', 'method', 'function'].includes(this.tokenizer.token()))
-                break;
+        while (['constructor', 'method', 'function'].includes(this.tokenizer.token())) {
             this.compileSubroutine();
-        } while (this.tokenizer.advance());
+        }
 
-        do {
-            this.compileTerminal();
-            if (this.tokenizer.token() === '}') {
-                this.tokenizer.advance();
-                break;
-            }
-        } while (this.tokenizer.advance());
+        this.assertToken('}', false);
+        this.compileTerminal();
+        if (this.tokenizer.advance()) {
+            throw new NANDException();
+        }
 
         this.indent--;
         this.write('</class>');
@@ -102,12 +115,16 @@ export default class Engine {
         this.write('<classVarDec>');
         this.indent++;
 
-        do {
-            this.compileTerminal();
-            if (this.tokenizer.token() === ';') {
-                break;
-            }
-        } while (this.tokenizer.advance());
+        this.assertToken(['static', 'field']);
+        this.assertToken(varType);
+        this.assertToken(TokenType.IDENTIFIER);
+
+        while (this.tokenizer.token() === ',') {
+            this.assertToken(',');
+            this.assertToken(TokenType.IDENTIFIER);
+        }
+
+        this.assertToken(';');
 
         this.indent--;
         this.write('</classVarDec>');
@@ -117,25 +134,13 @@ export default class Engine {
         this.write('<subroutineDec>');
         this.indent++;
 
-        do {
-            this.compileTerminal();
-            if (this.tokenizer.token() === '(') {
-                this.tokenizer.advance();
-                break;
-            }
-        } while (this.tokenizer.advance());
-        
+        this.assertToken(['constructor', 'function', 'method']);
+        this.assertToken(['void', ...varType]);
+        this.assertToken(TokenType.IDENTIFIER);
+        this.assertToken('(');
         this.compileParameterList();
-        this.compileTerminal();
-        this.tokenizer.advance();
-
-        do {
-            if (this.tokenizer.token() === '{') {
-                this.compileSubroutineBody();
-                break;
-            }
-            this.compileTerminal();
-        } while (this.tokenizer.advance());
+        this.assertToken(')');
+        this.compileSubroutineBody();
 
         this.indent--;
         this.write('</subroutineDec>');
@@ -145,12 +150,15 @@ export default class Engine {
         this.write('<parameterList>');
         this.indent++;
 
-        do {
-            if (this.tokenizer.token() === ')') {
-                break;
+        if (varType.includes(this.tokenizer.token())) {
+            this.assertToken(varType);
+            this.assertToken(TokenType.IDENTIFIER);
+            while (this.tokenizer.token() === ',') {
+                this.assertToken(',');
+                this.assertToken(varType);
+                this.assertToken(TokenType.IDENTIFIER);
             }
-            this.compileTerminal();
-        } while (this.tokenizer.advance());
+        }
 
         this.indent--;
         this.write('</parameterList>');
@@ -160,34 +168,14 @@ export default class Engine {
         this.write('<subroutineBody>');
         this.indent++;
 
-        do {
-            this.compileTerminal();
-            if (this.tokenizer.token() === '{') {
-                this.tokenizer.advance();
-                break;
-            }
-        } while (this.tokenizer.advance());
+        this.assertToken('{');
 
-        do {
-            if (this.tokenizer.token() !== 'var') {
-                break;
-            }
+        while (this.tokenizer.token() === 'var') {
             this.compileVarDec();
-        } while (this.tokenizer.advance());
+        }
 
-        do {
-            if (['let', 'if', 'while', 'do', 'return'].includes(this.tokenizer.token())) {
-                this.compileStatements();
-                break;
-            }
-        } while (this.tokenizer.advance());
-
-        do {
-            this.compileTerminal();
-            if (this.tokenizer.token() === '}') {
-                break;
-            }
-        } while (this.tokenizer.advance());
+        this.compileStatements();
+        this.assertToken('}');
 
         this.indent--;
         this.write('</subroutineBody>');
@@ -197,12 +185,16 @@ export default class Engine {
         this.write('<varDec>');
         this.indent++;
 
-        do {
-            this.compileTerminal();
-            if (this.tokenizer.token() === ';') {
-                break;
-            }
-        } while (this.tokenizer.advance());
+        this.assertToken('var');
+        this.assertToken(varType);
+        this.assertToken(TokenType.IDENTIFIER);
+
+        while (this.tokenizer.token() === ',') {
+            this.assertToken(',');
+            this.assertToken(TokenType.IDENTIFIER);
+        }
+
+        this.assertToken(';');
 
         this.indent--;
         this.write('</varDec>');
@@ -212,7 +204,7 @@ export default class Engine {
         this.write('<statements>');
         this.indent++;
 
-        outer: do {
+        outer: while (true) {
             switch (this.tokenizer.token()) {
                 case 'let':
                     this.compileLet();
@@ -232,7 +224,7 @@ export default class Engine {
                 default:
                     break outer;
             }
-        } while (this.tokenizer.advance());
+        }
 
         this.indent--;
         this.write('</statements>');
@@ -242,12 +234,9 @@ export default class Engine {
         this.write('<doStatement>');
         this.indent++;
 
-        do {
-            this.compileTerminal();
-            if (this.tokenizer.token() === ';') {
-                break;
-            }
-        } while (this.tokenizer.advance());
+        this.assertToken('do');
+        this.compileSubroutineCall();
+        this.assertToken(';');
 
         this.indent--;
         this.write('</doStatement>');
@@ -257,23 +246,18 @@ export default class Engine {
         this.write('<letStatement>');
         this.indent++;
 
-        this.compileTerminal();
-        this.tokenizer.advance();
-        this.compileTerminal();
-        this.tokenizer.advance();
+        this.assertToken('let');
+        this.assertToken(TokenType.IDENTIFIER);
 
         if (this.tokenizer.token() === '[') {
-            this.compileTerminal();
-            this.tokenizer.advance();
+            this.assertToken('[');
             this.compileExpression();
-            this.compileTerminal();
-            this.tokenizer.advance();
+            this.assertToken(']');
         }
 
-        this.compileTerminal();
-        this.tokenizer.advance();
+        this.assertToken('=');
         this.compileExpression();
-        this.compileTerminal();
+        this.assertToken(';');
 
         this.indent--;
         this.write('</letStatement>');
@@ -283,12 +267,13 @@ export default class Engine {
         this.write('<whileStatement>');
         this.indent++;
 
-        do {
-            this.compileTerminal();
-            if (this.tokenizer.token() === ';') {
-                break;
-            }
-        } while (this.tokenizer.advance());
+        this.assertToken('while');
+        this.assertToken('(');
+        this.compileExpression();
+        this.assertToken(')');
+        this.assertToken('{');
+        this.compileStatements();
+        this.assertToken('}');
 
         this.indent--;
         this.write('</whileStatement>');
@@ -298,12 +283,11 @@ export default class Engine {
         this.write('<returnStatement>');
         this.indent++;
 
-        do {
-            this.compileTerminal();
-            if (this.tokenizer.token() === ';') {
-                break;
-            }
-        } while (this.tokenizer.advance());
+        this.assertToken('return');
+        if (this.tokenizer.token() !== ';') {
+            this.compileExpression();
+        }
+        this.assertToken(';');
 
         this.indent--;
         this.write('</returnStatement>');
@@ -313,12 +297,20 @@ export default class Engine {
         this.write('<ifStatement>');
         this.indent++;
 
-        // do {
-        //     this.compileTerminal();
-        //     if (this.tokenizer.token() === ';') {
-        //         break;
-        //     }
-        // } while (this.tokenizer.advance());
+        this.assertToken('if');
+        this.assertToken('(');
+        this.compileExpression();
+        this.assertToken(')');
+        this.assertToken('{');
+        this.compileStatements();
+        this.assertToken('}');
+
+        if (this.tokenizer.token() === 'else') {
+            this.assertToken('else');
+            this.assertToken('{');
+            this.compileStatements();
+            this.assertToken('}');
+        }
 
         this.indent--;
         this.write('</ifStatement>');
@@ -338,14 +330,39 @@ export default class Engine {
         this.write('<term>');
         this.indent++;
 
-        this.compileTerminal();
-        this.tokenizer.advance();
+        if (this.tokenizer.tokenType() !== TokenType.SYMBOL) {
+            this.compileTerminal();
+            this.tokenizer.advance();
+        }
 
         this.indent--;
         this.write('</term>');
     }
 
-    private compileExpressionList(): void {
+    private compileSubroutineCall(): void {
+        this.assertToken(TokenType.IDENTIFIER);
+        if (this.tokenizer.token() === '.') {
+            this.assertToken('.');
+            this.assertToken(TokenType.IDENTIFIER);
+        }
+        this.assertToken('(');
+        this.compileExpressionList();
+        this.assertToken(')');
+    }
 
+    private compileExpressionList(): void {
+        this.write('<expressionList>');
+        this.indent++;
+
+        if (this.tokenizer.token() !== ')') {
+            this.compileExpression();
+            while (this.tokenizer.token() === ',') {
+                this.assertToken(',');
+                this.compileExpression();
+            }
+        }
+
+        this.indent--;
+        this.write('</expressionList>');
     }
 }
