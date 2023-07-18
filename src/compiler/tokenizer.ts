@@ -83,7 +83,7 @@ export default class Tokenizer {
     }
 
     static isLetter(char: string): boolean {
-        return /[a-z]/i.test(char);
+        return /[a-z]/i.test(char) || char === '_';
     }
 
     static isNumber(char: string): boolean {
@@ -181,7 +181,7 @@ export default class Tokenizer {
                     this.currentLineIndex++;
                     break findToken;
                 case TokenType.IDENTIFIER:
-                    if (Tokenizer.isLetter(char) || Tokenizer.isNumber(char) || char === '_') {
+                    if (Tokenizer.isLetter(char) || Tokenizer.isNumber(char)) {
                         break;
                     }
                     this.currentToken = this.currentLine.substring(start, this.currentLineIndex);
