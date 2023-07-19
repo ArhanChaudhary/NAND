@@ -71,28 +71,29 @@ export default class Engine {
             if (this.tokenizer.tokenType() !== expectedToken)
                 throw new SyntaxException();
         }
-            this.compileTerminal();
-            if (!this.tokenizer.advance()) {
-                throw new SyntaxException();
-            }
+        this.compileTerminal();
+        if (!this.tokenizer.advance()) {
+            throw new SyntaxException();
         }
+    }
 
-    private compileTerminal(): void {
-        switch (this.tokenizer.tokenType()) {
+    private compileTerminal(tokenOverride: string | undefined = undefined, tokenTypeOverride: TokenType | undefined = undefined): void {
+        const token: string = tokenOverride || this.tokenizer.token();
+        switch (tokenTypeOverride || this.tokenizer.tokenType()) {
             case TokenType.KEYWORD:
-                this.writeClosedXML('keyword', this.tokenizer.token());
+                this.writeClosedXML('keyword', token);
                 break;
             case TokenType.SYMBOL:
-                this.writeClosedXML('symbol', this.tokenizer.token());
+                this.writeClosedXML('symbol', token);
                 break;
             case TokenType.IDENTIFIER:
-                this.writeClosedXML('identifier', this.tokenizer.token());
+                this.writeClosedXML('identifier', token);
                 break;
             case TokenType.INT_CONST:
-                this.writeClosedXML('integerConstant', this.tokenizer.token());
+                this.writeClosedXML('integerConstant', token);
                 break;
             case TokenType.STRING_CONST:
-                this.writeClosedXML('stringConstant', this.tokenizer.token());
+                this.writeClosedXML('stringConstant', token);
                 break;
         }
     }
@@ -248,8 +249,31 @@ export default class Engine {
         this.indent++;
 
         this.assertToken('do');
-        this.assertToken(TokenType.IDENTIFIER);
-        this.compileSubroutineCall();
+
+        if (this.tokenizer.tokenType() !== TokenType.IDENTIFIER)
+            throw new SyntaxException();
+        const prevToken = this.tokenizer.token();
+        const prevTokenType = this.tokenizer.tokenType();
+        this.tokenizer.advance();
+        switch (this.tokenizer.token()) {
+            case '(':
+                this.compileTerminal(prevToken, prevTokenType);
+                this.assertToken('(');
+                this.compileExpressionList();
+                this.assertToken(')');
+                break;
+            case '.':
+                this.compileTerminal(prevToken, prevTokenType);
+                this.assertToken('.');
+                this.assertToken(TokenType.IDENTIFIER);
+                this.assertToken('(');
+                this.compileExpressionList();
+                this.assertToken(')');
+                break;
+            default:
+                throw new SyntaxException();
+        }
+
         this.assertToken(';');
 
         this.indent--;
@@ -359,17 +383,34 @@ export default class Engine {
                 this.assertToken(['true', 'false', 'null', 'this']);
                 break;
             case TokenType.IDENTIFIER:
-                this.assertToken(TokenType.IDENTIFIER);
+                if (this.tokenizer.tokenType() !== TokenType.IDENTIFIER)
+                    throw new SyntaxException();
+                const prevToken = this.tokenizer.token();
+                const prevTokenType = this.tokenizer.tokenType();
+                this.tokenizer.advance();
                 switch (this.tokenizer.token()) {
                     case '[':
+                        this.compileTerminal(prevToken, prevTokenType);
                         this.assertToken('[');
                         this.compileExpression();
                         this.assertToken(']');
                         break;
                     case '(':
-                    case '.':
-                        this.compileSubroutineCall();
+                        this.compileTerminal(prevToken, prevTokenType);
+                        this.assertToken('(');
+                        this.compileExpressionList();
+                        this.assertToken(')');
                         break;
+                    case '.':
+                        this.compileTerminal(prevToken, prevTokenType);
+                        this.assertToken('.');
+                        this.assertToken(TokenType.IDENTIFIER);
+                        this.assertToken('(');
+                        this.compileExpressionList();
+                        this.assertToken(')');
+                        break;
+                    default:
+                        this.compileTerminal(prevToken, prevTokenType);
                 }
                 break;
             case TokenType.SYMBOL:
@@ -392,16 +433,6 @@ export default class Engine {
 
         this.indent--;
         this.write('</term>');
-    }
-
-    private compileSubroutineCall(): void {
-        if (this.tokenizer.token() === '.') {
-            this.assertToken('.');
-            this.assertToken(TokenType.IDENTIFIER);
-        }
-        this.assertToken('(');
-        this.compileExpressionList();
-        this.assertToken(')');
     }
 
     private compileExpressionList(): void {
