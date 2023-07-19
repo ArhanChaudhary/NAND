@@ -26,9 +26,9 @@ export default class Engine {
     private outputStream: WriteStream;
     private indent: number = 0;
 
-    constructor(file: string, tokenizer: Tokenizer) {
-        this.tokenizer = tokenizer;
+    constructor(file: string) {
         this.outputStream = fs.createWriteStream(file.substring(0, file.length - 5) + '.xml');
+        this.tokenizer = new Tokenizer(file);
         this.tokenizer.advance();
     }
 
@@ -60,7 +60,7 @@ export default class Engine {
         this.write(`<${tag}> ${data} </${tag}>`);
     }
 
-    private assertToken(expectedToken: string | TokenType | (string | TokenType)[], advance: boolean = true): void {
+    private assertToken(expectedToken: string | TokenType | (string | TokenType)[]): void {
         if (typeof expectedToken === 'string') {
             if (this.tokenizer.token() !== expectedToken)
                 throw new SyntaxException();
@@ -71,13 +71,11 @@ export default class Engine {
             if (this.tokenizer.tokenType() !== expectedToken)
                 throw new SyntaxException();
         }
-        if (advance) {
             this.compileTerminal();
             if (!this.tokenizer.advance()) {
                 throw new SyntaxException();
             }
         }
-    }
 
     private compileTerminal(): void {
         switch (this.tokenizer.tokenType()) {
@@ -115,7 +113,8 @@ export default class Engine {
             this.compileSubroutine();
         }
 
-        this.assertToken('}', false);
+        if (this.tokenizer.token() !== '}')
+            throw new SyntaxException();
         this.compileTerminal();
         if (this.tokenizer.advance()) {
             throw new SyntaxException();
@@ -129,7 +128,7 @@ export default class Engine {
         this.write('<classVarDec>');
         this.indent++;
 
-        this.assertToken(['static', 'field']);
+        this.assertToken(['field', 'static']);
         this.assertToken(varType);
         this.assertToken(TokenType.IDENTIFIER);
 

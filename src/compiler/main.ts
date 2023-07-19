@@ -1,4 +1,3 @@
-import Tokenizer from "./tokenizer";
 import Engine from "./engine";
 import fs from "fs";
 
@@ -15,8 +14,5 @@ if (path.endsWith('.jack')) {
 }
 files.forEach(file => {
     if (!file.endsWith('.jack')) return;
-
-    const tokenizer: Tokenizer = new Tokenizer(file);
-    const engine: Engine = new Engine(file, tokenizer);
-    engine.compileClass();
+    new Engine(file).compileClass();
 });

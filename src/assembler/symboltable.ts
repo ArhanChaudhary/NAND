@@ -1,9 +1,5 @@
 export default class SymbolTable {
-    private symbolTable: { [symbol: string]: number };
-    
-    constructor() {
-        this.symbolTable = {};
-    }
+    private symbolTable: { [symbol: string]: number } = {};
 
     public addEntry(symbol: string, address: number): void {
         this.symbolTable[symbol] = address;
