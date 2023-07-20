@@ -29,6 +29,7 @@ export default class Engine {
 
     private className: string = '';
     private subroutineName: string = '';
+    private subroutineType: string = '';
     private labelCounter: number = 0;
 
     constructor(file: string) {
@@ -100,9 +101,19 @@ export default class Engine {
     }
     
     private compileClassVarDec(): void {
-        const kind = this.tokenizer.token();
-        this.assertToken(['field', 'static']);
-        const type = this.tokenizer.token();
+        let kind: string;
+        switch (this.tokenizer.token()) {
+            case 'field':
+                kind = 'this';
+                break;
+            case 'static':
+                kind = 'static';
+                break;
+            default:
+                throw new SyntaxException();
+        }
+        this.tokenizer.advance();
+        const type: string = this.tokenizer.token();
         this.assertToken(varType, 'class');
         this.symbolTable.define(this.tokenizer.token(), type, kind);
         this.assertToken(TokenType.IDENTIFIER, undefined, true);
@@ -118,6 +129,7 @@ export default class Engine {
     
     private compileSubroutine(): void {
         this.symbolTable.startSubroutine();
+        this.subroutineType = this.tokenizer.token();
         this.assertToken(['constructor', 'function', 'method']);
         this.assertToken(['void', ...varType], 'class');
         this.subroutineName = this.tokenizer.token();
@@ -152,6 +164,18 @@ export default class Engine {
         }
 
         this.vmwriter.writeFunction(`${this.className}.${this.subroutineName}`, this.symbolTable.count('local'));
+        switch (this.subroutineType ) {
+            case 'constructor':
+                this.vmwriter.writePush('constant', this.symbolTable.count('this'));
+                this.vmwriter.writeCall('Memory.alloc', 1);
+                this.vmwriter.writePop('pointer', 0);
+                break;
+            case 'method':
+                this.vmwriter.writePush('argument', 0);
+                this.vmwriter.writePop('pointer', 0);
+                break;
+        }
+
         this.compileStatements();
         this.assertToken('}');
     }
@@ -213,9 +237,19 @@ export default class Engine {
             case '(':
                 // this.compileTerminal('subroutine', prevToken, prevTokenType);
                 this.assertToken('(');
+                switch (this.subroutineType) {
+                    case 'function':
+                        throw new SyntaxException();
+                    case 'constructor':
+                        this.vmwriter.writePush('pointer', 0);
+                        break;
+                    case 'method':
+                        this.vmwriter.writePush('argument', 0);
+                        break;
+                }
                 nArgs = this.compileExpressionList();
                 this.assertToken(')');
-                this.vmwriter.writeCall(`${this.className}.${prevToken}`, nArgs);
+                this.vmwriter.writeCall(`${this.className}.${prevToken}`, nArgs + 1);
                 break;
             case '.':
                 if (prevTokenType === null) {
@@ -347,7 +381,16 @@ export default class Engine {
                         this.vmwriter.writePush('constant', 0);
                         break;
                     case 'this':
-                        this.vmwriter.writePush('argument', 0);
+                        switch (this.subroutineType) {
+                            case 'function':
+                                throw new SyntaxException();
+                            case 'constructor':
+                                this.vmwriter.writePush('pointer', 0);
+                                break;
+                            case 'method':
+                                this.vmwriter.writePush('argument', 0);
+                                break;
+                        }
                         break;
                     default:
                         throw new SyntaxException();

@@ -1,0 +1,8 @@
+function Main.main 1
+call Test.new 0
+pop local 0
+push local 0
+call Test.foo 1
+pop temp 0
+push constant 0
+return

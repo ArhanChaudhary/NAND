@@ -1,11 +1,17 @@
-class Main {
+class Test {
     field int x;
     field int y;
     field int z;
 
-    function void main() {
-        var Test k;
-        let x = (x + g(2, y, -k.f(1), 5 - 2)) * 5;
+    constructor Test new() {
+        let x = 1;
+        let y = 2;
+        let z = 3;
+        return this;
+    }
+
+    method void foo() {
+        do Output.printInt(5);
         return;
     }
 }

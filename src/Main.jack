@@ -1,0 +1,8 @@
+class Main {
+    function void main() {
+        var Test x;
+        let x = Test.new();
+        do x.foo();
+        return;
+    }
+}

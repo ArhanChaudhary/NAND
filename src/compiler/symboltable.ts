@@ -6,7 +6,7 @@ export default class SymbolTable {
     private subroutineSymbolTable: { [name: string]: SymbolAttribute } = {};
     private counts: { [name: string]: number } = {
         'static': 0,
-        'field': 0,
+        'this': 0,
         'argument': 0,
         'local': 0,
     };
@@ -14,7 +14,7 @@ export default class SymbolTable {
     private getTable(kind: string) {
         switch (kind) {
             case 'static':
-            case 'field':
+            case 'this':
                 return this.classSymbolTable;
             case 'argument':
             case 'local':
