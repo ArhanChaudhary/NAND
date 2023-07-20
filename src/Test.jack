@@ -1,0 +1,11 @@
+class Main {
+    field int x;
+    field int y;
+    field int z;
+
+    function void main() {
+        var Test k;
+        let x = (x + g(2, y, -k.f(1), 5 - 2)) * 5;
+        return;
+    }
+}

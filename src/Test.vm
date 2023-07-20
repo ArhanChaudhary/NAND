@@ -1,0 +1,18 @@
+function Main.main 1
+push field 0
+push constant 2
+push field 1
+push var 0
+push constant 1
+call Test.f 2
+neg
+push constant 5
+push constant 2
+sub
+call Main.g 4
+add
+push constant 5
+call Math.multiply 2
+pop field 0
+push constant 0
+return
