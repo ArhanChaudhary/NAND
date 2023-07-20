@@ -141,7 +141,7 @@ export default class Engine {
     }
     
     private compileParameterList(): void {
-        if (varType.includes(this.tokenizer.token())) {
+        if (varType.includes(this.tokenizer.token()) || varType.includes(this.tokenizer.tokenType())) {
             const type = this.tokenizer.token();
             this.assertToken(varType, 'class');
             this.symbolTable.define(this.tokenizer.token(), type, 'argument');
