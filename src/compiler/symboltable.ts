@@ -1,4 +1,4 @@
-import { NANDException } from "../core/exceptions";
+import { NANDException, SyntaxException } from "../core/exceptions";
 
 type SymbolAttribute = {type: string, kind: string, index: number};
 export default class SymbolTable {
@@ -24,9 +24,19 @@ export default class SymbolTable {
         }
     }
 
-    public startSubroutine(): void {
+    public startSubroutine(subroutineType: string): void {
         this.subroutineSymbolTable = {};
-        this.counts.argument = 0;
+        switch (subroutineType) {
+            case 'constructor':
+            case 'function':
+                this.counts.argument = 0;
+                break;
+            case 'method':
+                this.counts.argument = 1;
+                break;
+            default:
+                throw new SyntaxException();
+        }
         this.counts.local = 0;
     }
 

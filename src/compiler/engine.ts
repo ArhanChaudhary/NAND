@@ -128,8 +128,8 @@ export default class Engine {
     }
     
     private compileSubroutine(): void {
-        this.symbolTable.startSubroutine();
         this.subroutineType = this.tokenizer.token();
+        this.symbolTable.startSubroutine(this.subroutineType);
         this.assertToken(['constructor', 'function', 'method']);
         this.assertToken(['void', ...varType], 'class');
         this.subroutineName = this.tokenizer.token();
