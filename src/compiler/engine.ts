@@ -287,10 +287,12 @@ export default class Engine {
             this.vmwriter.writePush(kind, index);
             this.compileExpression();
             this.vmwriter.writeArithmetic('+');
-            this.vmwriter.writePop('pointer', 1);
             this.assertToken(']');
             this.assertToken('=');
             this.compileExpression();
+            this.vmwriter.writePop('temp', 0);
+            this.vmwriter.writePop('pointer', 1);
+            this.vmwriter.writePush('temp', 0);
             this.vmwriter.writePop('that', 0);
             this.assertToken(';');
         } else {
