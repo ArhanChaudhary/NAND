@@ -8,7 +8,7 @@ export default class SymbolTable {
         'static': 0,
         'field': 0,
         'argument': 0,
-        'var': 0,
+        'local': 0,
     };
 
     private getTable(kind: string) {
@@ -17,7 +17,7 @@ export default class SymbolTable {
             case 'field':
                 return this.classSymbolTable;
             case 'argument':
-            case 'var':
+            case 'local':
                 return this.subroutineSymbolTable;
             default:
                 throw new NANDException("Invalid kind: "+ kind);
@@ -27,7 +27,7 @@ export default class SymbolTable {
     public startSubroutine(): void {
         this.subroutineSymbolTable = {};
         this.counts.argument = 0;
-        this.counts.var = 0;
+        this.counts.local = 0;
     }
 
     public define(name: string, type: string, kind: string): void {

@@ -29,6 +29,7 @@ export default class Engine {
 
     private className: string = '';
     private subroutineName: string = '';
+    private labelCounter: number = 0;
 
     constructor(file: string) {
         // todo: test if file name equals class name
@@ -150,7 +151,7 @@ export default class Engine {
             this.compileVarDec();
         }
 
-        this.vmwriter.writeFunction(`${this.className}.${this.subroutineName}`, this.symbolTable.count('var'));
+        this.vmwriter.writeFunction(`${this.className}.${this.subroutineName}`, this.symbolTable.count('local'));
         this.compileStatements();
         this.assertToken('}');
     }
@@ -159,12 +160,12 @@ export default class Engine {
         this.assertToken('var');
         const type = this.tokenizer.token();
         this.assertToken(varType, 'class');
-        this.symbolTable.define(this.tokenizer.token(), type, 'var');
+        this.symbolTable.define(this.tokenizer.token(), type, 'local');
         this.assertToken(TokenType.IDENTIFIER, undefined, true);
 
         while (this.tokenizer.token() === ',') {
             this.assertToken(',');
-            this.symbolTable.define(this.tokenizer.token(), type, 'var');
+            this.symbolTable.define(this.tokenizer.token(), type, 'local');
             this.assertToken(TokenType.IDENTIFIER, undefined, true);
         }
 
@@ -260,12 +261,19 @@ export default class Engine {
     }
     
     private compileWhile(): void {
+        const l1: number = this.labelCounter++;
+        const l2: number = this.labelCounter++;
         this.assertToken('while');
         this.assertToken('(');
+        this.vmwriter.writeLabel('WHILE_ITER' + l1);
         this.compileExpression();
+        this.vmwriter.writeArithmetic('~');
+        this.vmwriter.writeIf('WHILE_BREAKER' + l2);
         this.assertToken(')');
         this.assertToken('{');
         this.compileStatements();
+        this.vmwriter.writeGoto('WHILE_ITER' + l1);
+        this.vmwriter.writeLabel('WHILE_BREAKER' + l2);
         this.assertToken('}');
     }
     
@@ -283,19 +291,28 @@ export default class Engine {
     }
     
     private compileIf(): void {
+        const l1: number = this.labelCounter++;
         this.assertToken('if');
         this.assertToken('(');
         this.compileExpression();
+        this.vmwriter.writeArithmetic('~');
+        this.vmwriter.writeIf('FALSE_CASE' + l1);
         this.assertToken(')');
         this.assertToken('{');
         this.compileStatements();
         this.assertToken('}');
 
         if (this.tokenizer.token() === 'else') {
+            const l2: number = this.labelCounter++;
             this.assertToken('else');
             this.assertToken('{');
+            this.vmwriter.writeGoto('TRUE_CASE' + l2);
+            this.vmwriter.writeLabel('FALSE_CASE' + l1);
             this.compileStatements();
+            this.vmwriter.writeLabel('TRUE_CASE' + l2);
             this.assertToken('}');
+        } else {
+            this.vmwriter.writeLabel('FALSE_CASE' + l1);
         }
     }
 
@@ -320,8 +337,22 @@ export default class Engine {
                 this.assertToken(TokenType.STRING_CONST);
                 break;
             case TokenType.KEYWORD:
-                // todo
-                this.assertToken(['true', 'false', 'null', 'this']);
+                switch (this.tokenizer.token()) {
+                    case 'true':
+                        this.vmwriter.writePush('constant', 1);
+                        this.vmwriter.writeArithmetic('-', false);
+                        break;
+                    case 'false':
+                    case 'null':
+                        this.vmwriter.writePush('constant', 0);
+                        break;
+                    case 'this':
+                        this.vmwriter.writePush('argument', 0);
+                        break;
+                    default:
+                        throw new SyntaxException();
+                }
+                this.tokenizer.advance();
                 break;
             case TokenType.IDENTIFIER:
                 const prevToken = this.tokenizer.token();
