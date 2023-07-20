@@ -284,14 +284,22 @@ export default class Engine {
 
         if (this.tokenizer.token() === '[') {
             this.assertToken('[');
+            this.vmwriter.writePush(kind, index);
             this.compileExpression();
+            this.vmwriter.writeArithmetic('+');
+            this.vmwriter.writePop('pointer', 1);
             this.assertToken(']');
+            this.assertToken('=');
+            this.compileExpression();
+            this.vmwriter.writePop('that', 0);
+            this.assertToken(';');
+        } else {
+            this.assertToken('=');
+            this.compileExpression();
+            this.assertToken(';');
+            this.vmwriter.writePop(kind, index);
         }
 
-        this.assertToken('=');
-        this.compileExpression();
-        this.assertToken(';');
-        this.vmwriter.writePop(kind, index);
     }
     
     private compileWhile(): void {
@@ -367,7 +375,12 @@ export default class Engine {
                 this.assertToken(TokenType.INT_CONST);
                 break;
             case TokenType.STRING_CONST:
-                // todo
+                this.vmwriter.writePush('constant', this.tokenizer.token().length);
+                this.vmwriter.writeCall('String.new', 1);
+                for (const char of this.tokenizer.token()) {
+                    this.vmwriter.writePush('constant', char.charCodeAt(0));
+                    this.vmwriter.writeCall('String.appendChar', 2);
+                }
                 this.assertToken(TokenType.STRING_CONST);
                 break;
             case TokenType.KEYWORD:
@@ -419,9 +432,12 @@ export default class Engine {
                         if (prevTokenKind === null) {
                             throw new SyntaxException();
                         }
-                        // todo
                         this.assertToken('[');
+                        this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
                         this.compileExpression();
+                        this.vmwriter.writeArithmetic('+');
+                        this.vmwriter.writePop('pointer', 1);
+                        this.vmwriter.writePush('that', 0);
                         this.assertToken(']');
                         break;
                     case '(':
