@@ -34,8 +34,8 @@ export default class SymbolTable {
         this.getTable(kind)[name] = {type, kind, index: this.counts[kind]++};
     }
 
-    public varCount(kind: string): number {
-        return this.counts[kind] + 1;
+    public count(kind: string): number {
+        return this.counts[kind];
     }
 
     private getSymbol(name: string): SymbolAttribute | null {
