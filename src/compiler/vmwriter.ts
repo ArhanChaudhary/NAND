@@ -1,10 +1,11 @@
 import fs, { WriteStream } from "fs";
+import { NANDException } from "../core/exceptions";
 
 export default class VMWriter {
     private outputStream: WriteStream;
 
     constructor(file: string) {
-        this.outputStream = fs.createWriteStream(file.substring(0, file.length - 5) + '.xml');
+        this.outputStream = fs.createWriteStream(file.substring(0, file.length - 5) + '.vm');
     }
 
     private firstWrite: boolean = true;
@@ -16,7 +17,7 @@ export default class VMWriter {
         this.firstWrite = false;
     }
 
-    public writePush(segment: string, index: number): void {
+    public writePush(segment: string, index: number | string): void {
         this.write(`push ${segment} ${index}`);
     }
     
@@ -24,8 +25,45 @@ export default class VMWriter {
         this.write(`pop ${segment} ${index}`);
     }
     
-    public writeArithmetic(command: string): void {
-        this.write(command);
+    public writeArithmetic(command: string, sub: boolean = true): void {
+        switch (command) {
+            case '+':
+                this.write('add');
+                break;
+            case '-':
+                if (sub) {
+                    this.write('sub');
+                } else {
+                    this.write('neg');
+                }
+                break;
+            case '&':
+                this.write('and');
+                break;
+            case '|':
+                this.write('or');
+                break;
+            case '<':
+                this.write('lt');
+                break;
+            case '>':
+                this.write('gt');
+                break;
+            case '=':
+                this.write('eq');
+                break;
+            case '~':
+                this.write('not');
+                break;
+            case '*':
+                this.writeCall('Math.multiply', 2);
+                break;
+            case '/':
+                this.writeCall('Math.divide', 2);
+                break;
+            default:
+                throw new NANDException();
+        };
     }
     
     public writeLabel(label: string): void {
