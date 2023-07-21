@@ -159,13 +159,13 @@ class _2048 {
         }
         if (direction = 4) {
             let i = size - 1;
-            let iStep = (-1);
+            let iStep = -1;
             let iNext = size * 2;
             let iStop = (size * (size + 1)) - 1;
         }
         
         let j = 0;
-        let combinedPosition = (-1);
+        let combinedPosition = -1;
         while (~(i = iStop)) {
             while (j < size) {
                 do tryMove(i, direction, true);
@@ -335,7 +335,7 @@ class _2048 {
         var int tmp2;
 
         let i = 0;
-        let prevPositionValue = (-1);
+        let prevPositionValue = -1;
         while (i < size) {
             let tmp = grid[i];
             let j = 0;
@@ -347,11 +347,11 @@ class _2048 {
                 let prevPositionValue = tmp2;
                 let j = j + 1;
             }
-            let prevPositionValue = (-1);
+            let prevPositionValue = -1;
             let i = i + 1;
         }
         let i = 0;
-        let prevPositionValue = (-1);
+        let prevPositionValue = -1;
         while (i < size) {
             let j = 0;
             while (j < size) {
@@ -363,7 +363,7 @@ class _2048 {
                 let prevPositionValue = tmp2;
                 let j = j + 1;
             }
-            let prevPositionValue = (-1);
+            let prevPositionValue = -1;
             let i = i + 1;
         }
         return true;
