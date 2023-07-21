@@ -164,7 +164,7 @@ export default class Engine {
         }
 
         this.vmwriter.writeFunction(`${this.className}.${this.subroutineName}`, this.symbolTable.count('local'));
-        switch (this.subroutineType ) {
+        switch (this.subroutineType) {
             case 'constructor':
                 this.vmwriter.writePush('constant', this.symbolTable.count('this'));
                 this.vmwriter.writeCall('Memory.alloc', 1);
@@ -237,16 +237,9 @@ export default class Engine {
             case '(':
                 // this.compileTerminal('subroutine', prevToken, prevTokenType);
                 this.assertToken('(');
-                switch (this.subroutineType) {
-                    case 'function':
-                        throw new SyntaxException();
-                    case 'constructor':
-                        this.vmwriter.writePush('pointer', 0);
-                        break;
-                    case 'method':
-                        this.vmwriter.writePush('argument', 0);
-                        break;
-                }
+                if (this.subroutineType === 'function')
+                    throw new SyntaxException();
+                this.vmwriter.writePush('pointer', 0);
                 nArgs = this.compileExpressionList();
                 this.assertToken(')');
                 this.vmwriter.writeCall(`${this.className}.${prevToken}`, nArgs + 1);
@@ -396,16 +389,9 @@ export default class Engine {
                         this.vmwriter.writePush('constant', 0);
                         break;
                     case 'this':
-                        switch (this.subroutineType) {
-                            case 'function':
-                                throw new SyntaxException();
-                            case 'constructor':
-                                this.vmwriter.writePush('pointer', 0);
-                                break;
-                            case 'method':
-                                this.vmwriter.writePush('argument', 0);
-                                break;
-                        }
+                        if (this.subroutineType === 'function')
+                            throw new SyntaxException();
+                        this.vmwriter.writePush('pointer', 0);
                         break;
                     default:
                         throw new SyntaxException();
@@ -445,16 +431,9 @@ export default class Engine {
                     case '(':
                         // this.compileTerminal('subroutine', prevToken, prevTokenType);
                         this.assertToken('(');
-                        switch (this.subroutineType) {
-                            case 'function':
-                                throw new SyntaxException();
-                            case 'constructor':
-                                this.vmwriter.writePush('pointer', 0);
-                                break;
-                            case 'method':
-                                this.vmwriter.writePush('argument', 0);
-                                break;
-                        }
+                        if (this.subroutineType === 'function')
+                            throw new SyntaxException();
+                        this.vmwriter.writePush('pointer', 0);
                         nArgs = this.compileExpressionList();
                         this.assertToken(')');
                         this.vmwriter.writeCall(`${this.className}.${prevToken}`, nArgs + 1);
