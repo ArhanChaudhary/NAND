@@ -16,8 +16,8 @@ for (let r = 0; r < 16; r++) {
 }
 symbolTable.addEntry('SCREEN', 16384);
 symbolTable.addEntry('KBD', 24576);
-let parser: Parser = new Parser(file);
-let ROMAddress: number = 0;
+let parser = new Parser(file);
+let ROMAddress = 0;
 while (parser.advance()) {
     switch (parser.commandType()) {
         case CommandType.A_COMMAND:
@@ -32,13 +32,13 @@ while (parser.advance()) {
 
 parser = new Parser(file);
 const out = fs.createWriteStream(file.replace(".asm", ".hack"));
-let RAMAddress: number = 16;
+let RAMAddress = 16;
 let wrote = false;
 while (parser.advance()) {
     switch (parser.commandType()) {
         case CommandType.A_COMMAND: {
             let raw: number;
-            const symbol: string = parser.symbol();
+            const symbol = parser.symbol();
             if (parser.AIsNumber()) {
                 raw = +symbol;
             } else if (symbolTable.contains(symbol)) {

@@ -70,7 +70,7 @@ export default class Code {
     }
 
     public static jump(mnemonic: string): string {
-        const ret: string | undefined = {
+        const ret = {
             '': '000',
             'JGT': '001',
             'JEQ': '010',

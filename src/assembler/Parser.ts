@@ -8,7 +8,7 @@ export enum CommandType {
 
 export default class Parser {
     private fileStream: nReadlines;
-    private currentCommand: string = '';
+    private currentCommand = '';
 
     constructor(file: string) {
         this.fileStream = new nReadlines(file);
@@ -50,7 +50,7 @@ export default class Parser {
     }
 
     public comp(): string {
-        const tmp: number = this.currentCommand.indexOf(";");
+        const tmp = this.currentCommand.indexOf(";");
         if (tmp === -1) {
             return this.currentCommand.substring(this.currentCommand.indexOf("=") + 1);
         }
@@ -58,7 +58,7 @@ export default class Parser {
     }
 
     public jump(): string {
-        const tmp: number = this.currentCommand.indexOf(";");
+        const tmp = this.currentCommand.indexOf(";");
         if (tmp === -1)
             return '';
         return this.currentCommand.substring(tmp + 1);

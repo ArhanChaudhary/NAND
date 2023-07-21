@@ -2,7 +2,7 @@ import CodeWriter from "./codewriter";
 import Parser, { CommandType } from "./parser";
 import fs from "fs";
 
-let path: string = process.argv[process.argv.length - 1];
+let path = process.argv[process.argv.length - 1];
 if (path[path.length - 1] === '/') {
     path = path.slice(0, -1);
 }

@@ -14,7 +14,7 @@ export enum CommandType {
 
 export default class Parser {
     private fileStream: nReadlines;
-    private currentCommand: string = '';
+    private currentCommand = '';
 
     constructor(file: string) {
         this.fileStream = new nReadlines(file);
@@ -23,9 +23,9 @@ export default class Parser {
     public advance(): boolean {
         let line: Buffer | boolean = this.fileStream.next();
         if (!line)
-            return false
+            return false;
         this.currentCommand = line.toString('ascii');
-        const comment: number = this.currentCommand.indexOf("//");
+        const comment = this.currentCommand.indexOf("//");
         if (comment !== -1)
             this.currentCommand = this.currentCommand.substring(0, comment);
         this.currentCommand = this.currentCommand.trim().replace(/ {2,}/, ' ');
@@ -35,7 +35,7 @@ export default class Parser {
     }
 
     public commandType(): CommandType {
-        let ret: CommandType | undefined = {
+        let ret = {
             'pu': CommandType.C_PUSH,
             'po': CommandType.C_POP,
             'la': CommandType.C_LABEL,

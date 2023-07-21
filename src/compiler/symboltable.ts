@@ -59,21 +59,21 @@ export default class SymbolTable {
     }
 
     public kindOf(name: string): string | null {
-        const symbolAttribute: SymbolAttribute | null = this.getSymbol(name);
+        const symbolAttribute = this.getSymbol(name);
         if (symbolAttribute === null)
             return null;
         return symbolAttribute.kind;
     }
 
     public typeOf(name: string): string | null {
-        const symbolAttribute: SymbolAttribute | null = this.getSymbol(name);
+        const symbolAttribute = this.getSymbol(name);
         if (symbolAttribute === null)
             return null;
         return symbolAttribute.type;
     }
 
     public indexOf(name: string): number | null {
-        const symbolAttribute: SymbolAttribute | null = this.getSymbol(name);
+        const symbolAttribute = this.getSymbol(name);
         if (symbolAttribute === null)
             return null;
         return symbolAttribute.index;

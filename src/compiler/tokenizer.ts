@@ -70,12 +70,12 @@ const Digits = [
 
 export default class Tokenizer {
     private fileStream: nReadlines;
-    private currentLine: string = '';
-    private currentLineNumber: number = 0;
-    private currentLineIndex: number = 0;
+    private currentLine = '';
+    private currentLineNumber = 0;
+    private currentLineIndex = 0;
     private currentToken: string | null = null;
     private currentTokenType: TokenType | null = null;
-    private inComment: boolean = false;
+    private inComment = false;
 
     constructor(file: string) {
         this.fileStream = new nReadlines(file);
@@ -90,8 +90,8 @@ export default class Tokenizer {
     }
 
     private removeComments(): void {
-        let startComment: number = this.currentLine.indexOf("/*");
-        let endComment: number = this.currentLine.indexOf("*/");
+        let startComment = this.currentLine.indexOf("/*");
+        let endComment = this.currentLine.indexOf("*/");
         if (endComment !== -1) {
             endComment += 2;
         }
@@ -119,7 +119,7 @@ export default class Tokenizer {
                 return;
             }
         }
-        const comment: number = this.currentLine.indexOf("//");
+        const comment = this.currentLine.indexOf("//");
         if (comment !== -1)
             this.currentLine = this.currentLine.substring(0, comment);
     }
@@ -139,11 +139,11 @@ export default class Tokenizer {
             if (!this.currentLine)
                 return this.advance();
         }
-        let start: number = this.currentLineIndex;
-        let firstIteration: boolean = true;
+        let start = this.currentLineIndex;
+        let firstIteration = true;
         this.currentToken = null;
         findToken: do {
-            const char: string = this.currentLine[this.currentLineIndex];
+            const char = this.currentLine[this.currentLineIndex];
             if (char === undefined) {
                 break;
             }

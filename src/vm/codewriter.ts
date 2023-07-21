@@ -3,9 +3,9 @@ import { NANDException } from '../core/exceptions';
 
 export default class CodeWriter {
     private fileStream: WriteStream;
-    private fileName: string = '';
-    private currentFunction: string = '';
-    static labelCount: number = 0;
+    private fileName = '';
+    private currentFunction = '';
+    static labelCount = 0;
 
     constructor(file: string) {
         this.fileStream = fs.createWriteStream(file);
@@ -253,7 +253,7 @@ export default class CodeWriter {
     }
 
     public writeCall(functionName: string, numArgs: number): void {
-        const out: string[] = [
+        const out = [
             // save functionName rom address in R13
             `@${functionName} // call ${functionName} ${numArgs}`,
             'D=A',
@@ -301,7 +301,7 @@ export default class CodeWriter {
         // of it
         this.currentFunction = functionName;
 
-        const out: string[] = [
+        const out = [
             `(${functionName}) // function ${functionName} ${numLocals}`,
         ];
         if (numLocals) {
@@ -496,7 +496,7 @@ export default class CodeWriter {
     }
 
     public writePop(segment: string, index: number): void {
-        const out: string[] = [
+        const out = [
             '@SP',
             'AM=M-1',
             'D=M',

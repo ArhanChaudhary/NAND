@@ -27,10 +27,10 @@ export default class Engine {
     private tokenizer: Tokenizer;
     private symbolTable: SymbolTable;
 
-    private className: string = '';
-    private subroutineName: string = '';
-    private subroutineType: string = '';
-    private labelCounter: number = 0;
+    private className = '';
+    private subroutineName = '';
+    private subroutineType = '';
+    private labelCounter = 0;
 
     constructor(file: string) {
         // todo: test if file name equals class name
@@ -75,6 +75,7 @@ export default class Engine {
         if (this.tokenizer.advance()) {
             throw new SyntaxException();
         }
+        this.vmwriter.close();
     }
     
     private compileClassVarDec(): void {
@@ -90,7 +91,7 @@ export default class Engine {
                 throw new SyntaxException();
         }
         this.tokenizer.advance();
-        const type: string = this.tokenizer.token();
+        const type = this.tokenizer.token();
         this.assertToken(varType);
         this.symbolTable.define(this.tokenizer.token(), type, kind);
         this.assertToken(TokenType.IDENTIFIER);
@@ -207,7 +208,7 @@ export default class Engine {
         const prevTokenType = this.symbolTable.typeOf(prevToken) as string;
         const prevTokenIndex = this.symbolTable.indexOf(prevToken) as number;
         this.tokenizer.advance();
-        let nArgs: number = 0;
+        let nArgs = 0;
         let subroutineClass: string | null;
         let subroutineMethod: string;
         switch (this.tokenizer.token()) {
@@ -274,8 +275,8 @@ export default class Engine {
     }
     
     private compileWhile(): void {
-        const l1: number = this.labelCounter++;
-        const l2: number = this.labelCounter++;
+        const l1 = this.labelCounter++;
+        const l2 = this.labelCounter++;
         this.assertToken('while');
         this.assertToken('(');
         this.vmwriter.writeLabel('WHILE_ITER' + l1);
@@ -304,7 +305,7 @@ export default class Engine {
     }
     
     private compileIf(): void {
-        const l1: number = this.labelCounter++;
+        const l1 = this.labelCounter++;
         this.assertToken('if');
         this.assertToken('(');
         this.compileExpression();
@@ -316,7 +317,7 @@ export default class Engine {
         this.assertToken('}');
 
         if (this.tokenizer.token() === 'else') {
-            const l2: number = this.labelCounter++;
+            const l2 = this.labelCounter++;
             this.tokenizer.advance();
             this.assertToken('{');
             this.vmwriter.writeGoto('TRUE_CASE' + l2);
@@ -380,7 +381,7 @@ export default class Engine {
                 const prevTokenType = this.symbolTable.typeOf(prevToken) as string;
                 const prevTokenIndex = this.symbolTable.indexOf(prevToken) as number;
                 this.tokenizer.advance();
-                let nArgs: number = 0;
+                let nArgs = 0;
                 let subroutineClass: string | null;
                 let subroutineMethod: string;
                 switch (this.tokenizer.token()) {
@@ -462,7 +463,7 @@ export default class Engine {
     }
 
     private compileExpressionList(): number {
-        let nArgs: number = 0;
+        let nArgs = 0;
         if (this.tokenizer.token() !== ')') {
             this.compileExpression();
             nArgs++;
