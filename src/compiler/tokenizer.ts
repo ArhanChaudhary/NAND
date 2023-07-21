@@ -1,4 +1,3 @@
-import fs from "fs";
 import nReadlines from "n-readlines";
 import { NANDException } from "../core/exceptions";
 
@@ -112,7 +111,7 @@ export default class Tokenizer {
             }
         } else {
             if (endComment === -1) {
-                this.currentLine = this.currentLine.substring(0, startComment);;
+                this.currentLine = this.currentLine.substring(0, startComment);
                 this.inComment = true;
             } else {
                 this.currentLine = this.currentLine.substring(0, startComment) + this.currentLine.substring(endComment);
@@ -136,7 +135,7 @@ export default class Tokenizer {
             this.currentLineIndex = 0;
             this.currentLine = line.toString('ascii');
             this.removeComments();
-            this.currentLine = this.currentLine.trim().replace(/ {2,}/, ' ');
+            this.currentLine = this.currentLine.trim();
             if (!this.currentLine)
                 return this.advance();
         }
