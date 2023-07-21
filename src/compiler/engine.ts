@@ -445,9 +445,19 @@ export default class Engine {
                     case '(':
                         // this.compileTerminal('subroutine', prevToken, prevTokenType);
                         this.assertToken('(');
+                        switch (this.subroutineType) {
+                            case 'function':
+                                throw new SyntaxException();
+                            case 'constructor':
+                                this.vmwriter.writePush('pointer', 0);
+                                break;
+                            case 'method':
+                                this.vmwriter.writePush('argument', 0);
+                                break;
+                        }
                         nArgs = this.compileExpressionList();
                         this.assertToken(')');
-                        this.vmwriter.writeCall(`${this.className}.${prevToken}`, nArgs);
+                        this.vmwriter.writeCall(`${this.className}.${prevToken}`, nArgs + 1);
                         break;
                     case '.':
                         if (prevTokenType === null) {
