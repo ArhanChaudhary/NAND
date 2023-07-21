@@ -17,7 +17,7 @@ pop pointer 0
 push this 0
 call Square.dispose 1
 pop temp 0
-push argument 0
+push pointer 0
 call Memory.deAlloc 1
 pop temp 0
 push constant 0
@@ -84,7 +84,7 @@ not
 if-goto WHILE_BREAKER7
 call Keyboard.keyPressed 0
 pop local 0
-push argument 0
+push pointer 0
 call SquareGame.moveSquare 1
 pop temp 0
 goto WHILE_ITER6
@@ -157,7 +157,7 @@ not
 if-goto WHILE_BREAKER16
 call Keyboard.keyPressed 0
 pop local 0
-push argument 0
+push pointer 0
 call SquareGame.moveSquare 1
 pop temp 0
 goto WHILE_ITER15

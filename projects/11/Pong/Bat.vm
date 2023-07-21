@@ -20,7 +20,7 @@ return
 function Bat.dispose 0
 push argument 0
 pop pointer 0
-push argument 0
+push pointer 0
 call Memory.deAlloc 1
 pop temp 0
 push constant 0
@@ -32,7 +32,7 @@ push constant 1
 neg
 call Screen.setColor 1
 pop temp 0
-push argument 0
+push pointer 0
 call Bat.draw 1
 pop temp 0
 push constant 0
@@ -43,7 +43,7 @@ pop pointer 0
 push constant 0
 call Screen.setColor 1
 pop temp 0
-push argument 0
+push pointer 0
 call Bat.draw 1
 pop temp 0
 push constant 0
@@ -85,12 +85,12 @@ return
 function Bat.setWidth 0
 push argument 0
 pop pointer 0
-push argument 0
+push pointer 0
 call Bat.hide 1
 pop temp 0
 push argument 1
 pop this 2
-push argument 0
+push pointer 0
 call Bat.show 1
 pop temp 0
 push constant 0

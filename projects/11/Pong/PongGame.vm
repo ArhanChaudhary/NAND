@@ -74,7 +74,7 @@ pop temp 0
 push this 1
 call Ball.dispose 1
 pop temp 0
-push argument 0
+push pointer 0
 call Memory.deAlloc 1
 pop temp 0
 push constant 0
@@ -109,7 +109,7 @@ pop local 0
 push this 0
 call Bat.move 1
 pop temp 0
-push argument 0
+push pointer 0
 call PongGame.moveBall 1
 pop temp 0
 push constant 50
@@ -165,7 +165,7 @@ pop local 0
 push this 0
 call Bat.move 1
 pop temp 0
-push argument 0
+push pointer 0
 call PongGame.moveBall 1
 pop temp 0
 push constant 50
