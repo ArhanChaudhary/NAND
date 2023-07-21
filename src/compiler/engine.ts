@@ -197,17 +197,11 @@ export default class Engine {
             }
         }
     }
-    
-    private compileDo(): void {
-        this.assertToken('do');
 
-        if (this.tokenizer.tokenType() !== TokenType.IDENTIFIER)
-            throw new SyntaxException();
-        const prevToken = this.tokenizer.token();
+    private compileSubroutineCall(prevToken: string): void {
         const prevTokenKind = this.symbolTable.kindOf(prevToken) as string;
         const prevTokenType = this.symbolTable.typeOf(prevToken) as string;
         const prevTokenIndex = this.symbolTable.indexOf(prevToken) as number;
-        this.tokenizer.advance();
         let nArgs = 0;
         let subroutineClass: string | null;
         let subroutineMethod: string;
@@ -242,6 +236,13 @@ export default class Engine {
             default:
                 throw new SyntaxException();
         }
+    }
+    
+    private compileDo(): void {
+        this.assertToken('do');
+        const prevToken = this.tokenizer.token();
+        this.assertToken(TokenType.IDENTIFIER);
+        this.compileSubroutineCall(prevToken);
         this.assertToken(';');
         this.vmwriter.writePop('temp', 0);
     }
@@ -378,12 +379,8 @@ export default class Engine {
             case TokenType.IDENTIFIER:
                 const prevToken = this.tokenizer.token();
                 const prevTokenKind = this.symbolTable.kindOf(prevToken) as string;
-                const prevTokenType = this.symbolTable.typeOf(prevToken) as string;
                 const prevTokenIndex = this.symbolTable.indexOf(prevToken) as number;
                 this.tokenizer.advance();
-                let nArgs = 0;
-                let subroutineClass: string | null;
-                let subroutineMethod: string;
                 switch (this.tokenizer.token()) {
                     /**
                     varName
@@ -405,31 +402,8 @@ export default class Engine {
                         this.assertToken(']');
                         break;
                     case '(':
-                        this.tokenizer.advance();
-                        if (this.subroutineType === 'function')
-                            throw new SyntaxException();
-                        this.vmwriter.writePush('pointer', 0);
-                        nArgs = this.compileExpressionList();
-                        this.assertToken(')');
-                        this.vmwriter.writeCall(`${this.className}.${prevToken}`, nArgs + 1);
-                        break;
                     case '.':
-                        if (prevTokenType !== null) {
-                            subroutineClass = prevTokenType;
-                        } else {
-                            subroutineClass = prevToken;
-                        }
-                        this.tokenizer.advance();
-                        subroutineMethod = this.tokenizer.token();
-                        this.assertToken(TokenType.IDENTIFIER);
-                        this.assertToken('(');
-                        if (prevTokenType !== null) {
-                            this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
-                            nArgs = 1;
-                        }
-                        nArgs += this.compileExpressionList();
-                        this.assertToken(')');
-                        this.vmwriter.writeCall(`${subroutineClass}.${subroutineMethod}`, nArgs);
+                        this.compileSubroutineCall(prevToken);
                         break;
                     default:
                         if (prevTokenKind === null) {
