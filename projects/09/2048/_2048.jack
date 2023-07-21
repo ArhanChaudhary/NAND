@@ -237,12 +237,17 @@ class _2048 {
         let tmp = grid[div];
         let tmp[mod] = 0;
 
-        if (draw) {
-            if (positionValue > 99) {
-                do cursorTo(div, mod);
+        if (draw & (positionValue > 9)) {
+            do cursorTo(div, mod);
+            let tmp = prevGrid[div];
+            // 0 32 16 16 press left doesnt draw the second 32
+            // because prevGrid over there was 32
+            let tmp[mod] = -1;
+            if (positionValue > 999) {
+                do Output.printString("    ");
+            } else {if (positionValue > 99) {
                 do Output.printString("   ");
-            } else {if (positionValue > 9) {
-                do cursorTo(div, mod);
+            } else {
                 do Output.printString("  ");
             }}
         }
