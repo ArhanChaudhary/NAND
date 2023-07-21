@@ -41,7 +41,10 @@ export default class SymbolTable {
     }
 
     public define(name: string, type: string, kind: string): void {
-        this.getTable(kind)[name] = {type, kind, index: this.counts[kind]++};
+        const table = this.getTable(kind);
+        if (name in table)
+            throw new SyntaxException();
+        table[name] = {type, kind, index: this.counts[kind]++};
     }
 
     public count(kind: string): number {

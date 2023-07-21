@@ -27,13 +27,19 @@ export default class Engine {
     private tokenizer: Tokenizer;
     private symbolTable: SymbolTable;
 
+    private fileName: string;
     private className = '';
     private subroutineName = '';
+    private subroutineNames: string[] = [];
+    private subroutineCalls: { name: string }[] = [];
     private subroutineType = '';
+    private subroutineReturnType = '';
     private labelCounter = 0;
 
     constructor(file: string) {
-        // todo: test if file name equals class name
+        const tmp = file.split('/');
+        this.fileName = tmp[tmp.length - 1];
+        this.fileName = this.fileName.substring(0, this.fileName.indexOf('.'));
         this.tokenizer = new Tokenizer(file);
         this.vmwriter = new VMWriter(file);
         this.symbolTable = new SymbolTable();
@@ -59,6 +65,8 @@ export default class Engine {
     public compileClass(): void {
         this.assertToken('class');
         this.className = this.tokenizer.token();
+        if (this.className !== this.fileName)
+            throw new SyntaxException();
         this.assertToken(TokenType.IDENTIFIER);
         this.assertToken('{');
 
@@ -74,6 +82,11 @@ export default class Engine {
             throw new SyntaxException();
         if (this.tokenizer.advance()) {
             throw new SyntaxException();
+        }
+
+        for (const call of this.subroutineCalls) {
+            if (!this.subroutineNames.includes(call.name))
+                throw new SyntaxException();
         }
         this.vmwriter.close();
     }
@@ -109,9 +122,15 @@ export default class Engine {
         this.subroutineType = this.tokenizer.token();
         this.symbolTable.startSubroutine(this.subroutineType);
         this.assertToken(['constructor', 'function', 'method']);
+        this.subroutineReturnType = this.tokenizer.token();
         this.assertToken(['void', ...varType]);
+        if (this.subroutineType === 'constructor' && this.subroutineReturnType !== this.className)
+            throw new SyntaxException();
         this.subroutineName = this.tokenizer.token();
         this.assertToken(TokenType.IDENTIFIER);
+        if (this.subroutineNames.includes(this.subroutineName))
+            throw new SyntaxException();
+        this.subroutineNames.push(this.subroutineName);
         this.assertToken('(');
         this.compileParameterList();
         this.assertToken(')');
@@ -161,6 +180,7 @@ export default class Engine {
     private compileVarDec(): void {
         this.assertToken('var');
         const type = this.tokenizer.token();
+        // TODO: check if identifier type is a class
         this.assertToken(varType);
         this.symbolTable.define(this.tokenizer.token(), type, 'local');
         this.assertToken(TokenType.IDENTIFIER);
@@ -207,6 +227,7 @@ export default class Engine {
         let subroutineMethod: string;
         switch (this.tokenizer.token()) {
             case '(':
+                this.subroutineCalls.push({ name: prevToken });
                 this.tokenizer.advance();
                 if (this.subroutineType === 'function')
                     throw new SyntaxException();
@@ -216,6 +237,7 @@ export default class Engine {
                 this.vmwriter.writeCall(`${this.className}.${prevToken}`, nArgs + 1);
                 break;
             case '.':
+                // TODO: check if class has subroutine
                 if (prevTokenType !== null) {
                     subroutineClass = prevTokenType;
                 } else {
@@ -250,6 +272,8 @@ export default class Engine {
     private compileLet(): void {
         this.assertToken('let');
         const kind = this.symbolTable.kindOf(this.tokenizer.token()) as string;
+        if (kind === null)
+            throw new SyntaxException();
         const index = this.symbolTable.indexOf(this.tokenizer.token()) as number;
         this.assertToken(TokenType.IDENTIFIER);
 
@@ -272,7 +296,6 @@ export default class Engine {
             this.assertToken(';');
             this.vmwriter.writePop(kind, index);
         }
-
     }
     
     private compileWhile(): void {
@@ -295,12 +318,22 @@ export default class Engine {
     private compileReturn(): void {
         this.assertToken('return');
         if (this.tokenizer.token() === ';') {
+            if (this.subroutineReturnType !== 'void')
+                throw new SyntaxException();
             this.tokenizer.advance();
             this.vmwriter.writePush('constant', 0);
-        } else {
-            this.compileExpression();
-            this.assertToken(';');
+            return;
         }
+        if (this.subroutineReturnType === 'void') {
+            throw new SyntaxException();
+        }
+        if (this.subroutineType === 'constructor') {
+            this.assertToken('this');
+        } else {
+            // TODO: check expression type
+            this.compileExpression();
+        }
+        this.assertToken(';'); 
         this.vmwriter.writeReturn();
         
     }
