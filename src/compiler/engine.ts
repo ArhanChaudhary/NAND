@@ -322,18 +322,20 @@ export default class Engine {
                 throw new SyntaxException();
             this.tokenizer.advance();
             this.vmwriter.writePush('constant', 0);
-            return;
-        }
-        if (this.subroutineReturnType === 'void') {
-            throw new SyntaxException();
-        }
-        if (this.subroutineType === 'constructor') {
-            this.assertToken('this');
         } else {
-            // TODO: check expression type
-            this.compileExpression();
+            if (this.subroutineReturnType === 'void') {
+                throw new SyntaxException();
+            }
+            if (this.subroutineType === 'constructor') {
+                if (this.tokenizer.token() !== 'this')
+                    throw new SyntaxException();
+                this.compileTerm();
+            } else {
+                // TODO: check expression type
+                this.compileExpression();
+            }
+            this.assertToken(';'); 
         }
-        this.assertToken(';'); 
         this.vmwriter.writeReturn();
         
     }
