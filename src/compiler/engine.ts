@@ -290,7 +290,7 @@ export default class Engine {
     private compileLet(): void {
         this.assertToken('let');
         const kind = this.symbolTable.kindOf(this.tokenizer.token()) as string;
-        if (kind === null)
+        if (kind === null || kind === 'this' && this.subroutineType === 'function')
             throw new SyntaxException();
         const index = this.symbolTable.indexOf(this.tokenizer.token()) as number;
         this.assertToken(TokenType.IDENTIFIER);
@@ -443,27 +443,22 @@ export default class Engine {
                     className.subroutineName(expressionList)
                     varName.subroutineName(expressionList)
                      */
-                    case '[':
-                        if (prevTokenKind === null) {
+                    case '(':
+                    case '.':
+                        this.compileSubroutineCall(prevToken);
+                        break;
+                    default:
+                        if (prevTokenKind === null || prevTokenKind === 'this' && this.subroutineType === 'function')
                             throw new SyntaxException();
-                        }
-                        this.tokenizer.advance();
                         this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
+                    case '[':
+                        this.tokenizer.advance();
                         this.compileExpression();
                         this.vmwriter.writeArithmetic('+');
                         this.vmwriter.writePop('pointer', 1);
                         this.vmwriter.writePush('that', 0);
                         this.assertToken(']');
                         break;
-                    case '(':
-                    case '.':
-                        this.compileSubroutineCall(prevToken);
-                        break;
-                    default:
-                        if (prevTokenKind === null) {
-                            throw new SyntaxException();
-                        }
-                        this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
                 }
                 break;
             case TokenType.SYMBOL:
