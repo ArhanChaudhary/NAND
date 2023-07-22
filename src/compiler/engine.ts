@@ -34,6 +34,7 @@ export default class Engine {
     private subroutineCalls: { name: string }[] = [];
     private subroutineType = '';
     private subroutineReturnType = '';
+    private lastStatementIsReturn = false;
     private labelCounter = 0;
 
     constructor(file: string) {
@@ -134,7 +135,14 @@ export default class Engine {
         this.assertToken('(');
         this.compileParameterList();
         this.assertToken(')');
+        this.lastStatementIsReturn = false;
         this.compileSubroutineBody();
+        if (!this.lastStatementIsReturn) {
+            if (this.subroutineReturnType !== 'void')
+                throw new SyntaxException();
+            this.vmwriter.writePush('constant', 0);
+            this.vmwriter.writeReturn();
+        }
     }
     
     private compileParameterList(): void {
@@ -198,18 +206,28 @@ export default class Engine {
         outer: while (true) {
             switch (this.tokenizer.token()) {
                 case 'let':
-                    this.compileLet();
-                    break;
                 case 'if':
-                    this.compileIf();
-                    break;
                 case 'while':
-                    this.compileWhile();
-                    break;
                 case 'do':
-                    this.compileDo();
+                    if (this.lastStatementIsReturn)
+                        throw new SyntaxException();
+                    switch (this.tokenizer.token()) {
+                        case 'let':
+                            this.compileLet();
+                            break;
+                        case 'if':
+                            this.compileIf();
+                            break;
+                        case 'while':
+                            this.compileWhile();
+                            break;
+                        case 'do':
+                            this.compileDo();
+                            break;
+                    }
                     break;
                 case 'return':
+                    this.lastStatementIsReturn = true;
                     this.compileReturn();
                     break;
                 default:
@@ -323,9 +341,8 @@ export default class Engine {
             this.tokenizer.advance();
             this.vmwriter.writePush('constant', 0);
         } else {
-            if (this.subroutineReturnType === 'void') {
+            if (this.subroutineReturnType === 'void')
                 throw new SyntaxException();
-            }
             if (this.subroutineType === 'constructor') {
                 if (this.tokenizer.token() !== 'this')
                     throw new SyntaxException();
@@ -337,7 +354,6 @@ export default class Engine {
             this.assertToken(';'); 
         }
         this.vmwriter.writeReturn();
-        
     }
     
     private compileIf(): void {
@@ -350,6 +366,8 @@ export default class Engine {
         this.assertToken(')');
         this.assertToken('{');
         this.compileStatements();
+        const returnInIfBlock = this.lastStatementIsReturn;
+        this.lastStatementIsReturn = false;
         this.assertToken('}');
 
         if (this.tokenizer.token() === 'else') {
@@ -359,6 +377,7 @@ export default class Engine {
             this.vmwriter.writeGoto('TRUE_CASE' + l2);
             this.vmwriter.writeLabel('FALSE_CASE' + l1);
             this.compileStatements();
+            this.lastStatementIsReturn &&= returnInIfBlock;
             this.vmwriter.writeLabel('TRUE_CASE' + l2);
             this.assertToken('}');
         } else {
