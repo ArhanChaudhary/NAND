@@ -1,4 +1,4 @@
-import { NANDException, SyntaxException } from "../core/exceptions";
+import { NANDException, SyntaxError } from "../core/exceptions";
 import { KeywordToken } from "./tokenizer";
 
 type SymbolAttribute = {type: string, kind: string, index: number};
@@ -36,7 +36,7 @@ export default class SymbolTable {
                 this.counts.argument = 1;
                 break;
             default:
-                throw new SyntaxException();
+                throw new SyntaxError();
         }
         this.counts.local = 0;
     }
@@ -44,7 +44,7 @@ export default class SymbolTable {
     public define(name: string, type: string, kind: string): void {
         const table = this.getTable(kind);
         if (name in table)
-            throw new SyntaxException();
+            throw new SyntaxError();
         table[name] = {type, kind, index: this.counts[kind]++};
     }
 

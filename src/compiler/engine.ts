@@ -1,4 +1,4 @@
-import { SyntaxException } from "../core/exceptions";
+import { SyntaxError } from "../core/exceptions";
 import Tokenizer, { TokenType, SymbolToken, KeywordToken } from "./tokenizer";
 import SymbolTable from "./symboltable";
 import VMWriter from "./vmwriter";
@@ -50,16 +50,16 @@ export default class Engine {
     private assertToken(expectedToken: string | TokenType | (string | TokenType)[]): void {
         if (typeof expectedToken === 'string') {
             if (this.tokenizer.token() !== expectedToken)
-                throw new SyntaxException();
+                throw new SyntaxError();
         } else if (Array.isArray(expectedToken)) {
             if (!expectedToken.includes(this.tokenizer.token()) && !expectedToken.includes(this.tokenizer.tokenType()))
-                throw new SyntaxException();
+                throw new SyntaxError();
         } else if (expectedToken in TokenType) {
             if (this.tokenizer.tokenType() !== expectedToken)
-                throw new SyntaxException();
+                throw new SyntaxError();
         }
         if (!this.tokenizer.advance()) {
-            throw new SyntaxException();
+            throw new SyntaxError();
         }
     }
 
@@ -67,7 +67,7 @@ export default class Engine {
         this.assertToken(KeywordToken.CLASS);
         this.className = this.tokenizer.token();
         if (this.className !== this.fileName)
-            throw new SyntaxException();
+            throw new SyntaxError();
         this.assertToken(TokenType.IDENTIFIER);
         this.assertToken(SymbolToken.OPENING_CURLY_BRACKET);
 
@@ -80,14 +80,14 @@ export default class Engine {
         }
 
         if (this.tokenizer.token() !== SymbolToken.CLOSING_CURLY_BRACKET)
-            throw new SyntaxException();
+            throw new SyntaxError();
         if (this.tokenizer.advance()) {
-            throw new SyntaxException();
+            throw new SyntaxError();
         }
 
         for (const call of this.subroutineCalls) {
             if (!this.subroutineNames.includes(call.name))
-                throw new SyntaxException();
+                throw new SyntaxError();
         }
         this.vmwriter.close();
     }
@@ -102,7 +102,7 @@ export default class Engine {
                 kind = 'static';
                 break;
             default:
-                throw new SyntaxException();
+                throw new SyntaxError();
         }
         this.tokenizer.advance();
         const type = this.tokenizer.token();
@@ -126,11 +126,11 @@ export default class Engine {
         this.subroutineReturnType = this.tokenizer.token();
         this.assertToken([KeywordToken.VOID, ...varType]);
         if (this.subroutineType === KeywordToken.CONSTRUCTOR && this.subroutineReturnType !== this.className)
-            throw new SyntaxException();
+            throw new SyntaxError();
         this.subroutineName = this.tokenizer.token();
         this.assertToken(TokenType.IDENTIFIER);
         if (this.subroutineNames.includes(this.subroutineName))
-            throw new SyntaxException();
+            throw new SyntaxError();
         this.subroutineNames.push(this.subroutineName);
         this.assertToken(SymbolToken.OPENING_PARENTHESIS);
         this.compileParameterList();
@@ -142,7 +142,7 @@ export default class Engine {
                 this.vmwriter.writePush('pointer', 0);
             } else {
                 if (this.subroutineReturnType !== KeywordToken.VOID)
-                    throw new SyntaxException();
+                    throw new SyntaxError();
                 this.vmwriter.writePush('constant', 0);
             }
             this.vmwriter.writeReturn();
@@ -214,7 +214,7 @@ export default class Engine {
                 case KeywordToken.WHILE:
                 case KeywordToken.DO:
                     if (this.lastStatementIsReturn)
-                        throw new SyntaxException();
+                        throw new SyntaxError();
                     switch (this.tokenizer.token()) {
                         case KeywordToken.LET:
                             this.compileLet();
@@ -252,7 +252,7 @@ export default class Engine {
                 this.subroutineCalls.push({ name: prevToken });
                 this.tokenizer.advance();
                 if (this.subroutineType === KeywordToken.FUNCTION)
-                    throw new SyntaxException();
+                    throw new SyntaxError();
                 this.vmwriter.writePush('pointer', 0);
                 nArgs = this.compileExpressionList();
                 this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
@@ -278,7 +278,7 @@ export default class Engine {
                 this.vmwriter.writeCall(`${subroutineClass}.${subroutineMethod}`, nArgs);
                 break;
             default:
-                throw new SyntaxException();
+                throw new SyntaxError();
         }
     }
     
@@ -295,7 +295,7 @@ export default class Engine {
         this.assertToken(KeywordToken.LET);
         const kind = this.symbolTable.kindOf(this.tokenizer.token()) as string;
         if (kind === null || kind === 'this' && this.subroutineType === KeywordToken.FUNCTION)
-            throw new SyntaxException();
+            throw new SyntaxError();
         const index = this.symbolTable.indexOf(this.tokenizer.token()) as number;
         this.assertToken(TokenType.IDENTIFIER);
         switch (this.tokenizer.token()) {
@@ -352,15 +352,15 @@ export default class Engine {
         this.assertToken(KeywordToken.RETURN);
         if (this.tokenizer.token() === SymbolToken.SEMICOLON) {
             if (this.subroutineReturnType !== KeywordToken.VOID)
-                throw new SyntaxException();
+                throw new SyntaxError();
             this.tokenizer.advance();
             this.vmwriter.writePush('constant', 0);
         } else {
             if (this.subroutineReturnType === KeywordToken.VOID)
-                throw new SyntaxException();
+                throw new SyntaxError();
             if (this.subroutineType === KeywordToken.CONSTRUCTOR) {
                 if (this.tokenizer.token() !== KeywordToken.THIS)
-                    throw new SyntaxException();
+                    throw new SyntaxError();
                 this.compileTerm();
             } else {
                 this.compileExpression();
@@ -436,11 +436,11 @@ export default class Engine {
                         break;
                     case KeywordToken.THIS:
                         if (this.subroutineType === KeywordToken.FUNCTION)
-                            throw new SyntaxException();
+                            throw new SyntaxError();
                         this.vmwriter.writePush('pointer', 0);
                         break;
                     default:
-                        throw new SyntaxException();
+                        throw new SyntaxError();
                 }
                 this.tokenizer.advance();
                 break;
@@ -459,7 +459,7 @@ export default class Engine {
                      */
                     case SymbolToken.OPENING_BRACKET:
                         if (prevTokenKind === null || prevTokenKind === 'this' && this.subroutineType === KeywordToken.FUNCTION)
-                            throw new SyntaxException();
+                            throw new SyntaxError();
                         this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
 
                         this.tokenizer.advance();
@@ -484,7 +484,7 @@ export default class Engine {
                         break;
                     default:
                         if (prevTokenKind === null || prevTokenKind === 'this' && this.subroutineType === KeywordToken.FUNCTION)
-                            throw new SyntaxException();
+                            throw new SyntaxError();
                         this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
                 }
                 break;
@@ -506,7 +506,7 @@ export default class Engine {
                         this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
                         break;
                     default:
-                        throw new SyntaxException();
+                        throw new SyntaxError();
                 } 
                 break;
         }
