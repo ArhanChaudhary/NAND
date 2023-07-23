@@ -23,7 +23,6 @@ class _2048 {
     constructor _2048 new(int size_) {
         var int i;
         var int j;
-        var Array row;
         var Array prevRow;
 
         let win = false;
@@ -39,19 +38,16 @@ class _2048 {
         let i = 0;
         do initUI();
         while (i < size) {
-            let row = Array.new(size);
-            let grid[i] = row;
-            let prevRow = Array.new(size);
-            let prevGrid[i] = prevRow;
+            let grid[i] = Array.new(size);
+            let prevGrid[i] = Array.new(size);
             let j = 0;
             while (j < size) {
-                let row[j] = 0;
-                let prevRow[j] = 0;
+                let grid[i][j] = 0;
+                let prevGrid[i][j] = 0;
                 let j = j + 1;
             }
             let i = i + 1;
         }
-        return this;
     }
 
     method void initUI() {
@@ -87,7 +83,6 @@ class _2048 {
 
         do Output.moveCursor(3, 28);
         do Output.printString("PLAY 2048");
-        return;
     }
 
     method void run() {
@@ -133,8 +128,6 @@ class _2048 {
     method void moveGrid(int direction) {
         var int i;
         var int j;
-        var Array tmp;
-
         var int iStep;
         var int iNext;
         var int iStop;
@@ -175,7 +168,6 @@ class _2048 {
             let j = 0;
             let i = i + iNext;
         }
-        return;
     }
 
     method void tryMove(int position, int direction, boolean firstIteration) {
@@ -224,25 +216,21 @@ class _2048 {
         do setPosition(nextPosition, positionValue, false);
         do erasePosition(position, positionValue, firstIteration);
         do tryMove(nextPosition, direction, false);
-        return;
     }
 
     method void erasePosition(int position, int positionValue, boolean draw) {
         var int div;
         var int mod;
-        var Array tmp;
         let div = position / size;
         let mod = position - (div * size);
 
-        let tmp = grid[div];
-        let tmp[mod] = 0;
+        let grid[div][mod] = 0;
 
         if (draw & (positionValue > 9)) {
             do cursorTo(div, mod);
-            let tmp = prevGrid[div];
             // 0 32 16 16 press left doesnt draw the second 32
             // because prevGrid over there was 32
-            let tmp[mod] = -1;
+            let prevGrid[div][mod] = -1;
             if (positionValue > 999) {
                 do Output.printString("    ");
             } else {if (positionValue > 99) {
@@ -252,34 +240,28 @@ class _2048 {
             }}
         }
         do setPosition(position, 0, false);
-        return;
     }
 
     method void cursorTo(int row, int col) {
         do Output.moveCursor((row * spaceY) + gridY, (col * spaceX) + gridX);
-        return;
     }
 
     method void drawGrid() {
         var int i;
         var int j;
-        var Array row;
-        var Array prevRow;
         var int positionValue;
         let i = 0;
         while (i < size) {
-            let row = grid[i];
-            let prevRow = prevGrid[i];
             let j = 0;
             while (j < size) {
-                let positionValue = row[j];
+                let positionValue = grid[i][j];
                 if (positionValue = 0) {
                     do cursorTo(i, j);
-                } else {if (~(prevRow[j] = positionValue)) {
+                } else {if (~(prevGrid[i][j] = positionValue)) {
                     do cursorTo(i, j);
                     do Output.printInt(positionValue);
                 }}
-                let prevRow[j] = positionValue;
+                let prevGrid[i][j] = positionValue;
                 let j = j + 1;
             }
             let i = i + 1;
@@ -324,27 +306,24 @@ class _2048 {
         if (checkLose()) {
             let lose = true;
         }
-        return;
     }
 
     method boolean checkLose() {
         var int i;
         var int j;
+        var int positionValue;
         var int prevPositionValue;
-        var Array tmp;
-        var int tmp2;
 
         let i = 0;
         let prevPositionValue = -1;
         while (i < size) {
-            let tmp = grid[i];
             let j = 0;
             while (j < size) {
-                let tmp2 = tmp[j];
-                if ((prevPositionValue = tmp2) | (tmp2 = 0)) {
+                let positionValue = grid[i][j];
+                if ((prevPositionValue = positionValue) | (positionValue = 0)) {
                     return false;
                 }
-                let prevPositionValue = tmp2;
+                let prevPositionValue = positionValue;
                 let j = j + 1;
             }
             let prevPositionValue = -1;
@@ -355,12 +334,11 @@ class _2048 {
         while (i < size) {
             let j = 0;
             while (j < size) {
-                let tmp = grid[j];
-                let tmp2 = tmp[i];
-                if ((prevPositionValue = tmp2) | (tmp2 = 0)) {
+                let positionValue = grid[j][i];
+                if ((prevPositionValue = positionValue) | (positionValue = 0)) {
                     return false;
                 }
-                let prevPositionValue = tmp2;
+                let prevPositionValue = positionValue;
                 let j = j + 1;
             }
             let prevPositionValue = -1;
@@ -372,18 +350,15 @@ class _2048 {
     method int getPosition(int pos) {
         var int div;
         var int mod;
-        var Array tmp;
         let div = pos / size;
         let mod = pos - (div * size);
 
-        let tmp = grid[div];
-        return tmp[mod];
+        return grid[div][mod];
     }
 
     method void setPosition(int pos, int value, boolean draw) {
         var int div;
         var int mod;
-        var Array tmp;
         let div = pos / size;
         let mod = pos - (div * size);
         if (draw) {
@@ -391,8 +366,7 @@ class _2048 {
             do Output.printInt(value);
         }
 
-        let tmp = grid[div];
-        let tmp[mod] = value;
+        let grid[div][mod] = value;
         return;
     }
 
