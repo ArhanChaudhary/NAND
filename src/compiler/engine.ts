@@ -138,9 +138,13 @@ export default class Engine {
         this.lastStatementIsReturn = false;
         this.compileSubroutineBody();
         if (!this.lastStatementIsReturn) {
-            if (this.subroutineReturnType !== 'void')
-                throw new SyntaxException();
-            this.vmwriter.writePush('constant', 0);
+            if (this.subroutineType === 'constructor') {
+                this.vmwriter.writePush('pointer', 0);
+            } else {
+                if (this.subroutineReturnType !== 'void')
+                    throw new SyntaxException();
+                this.vmwriter.writePush('constant', 0);
+            }
             this.vmwriter.writeReturn();
         }
     }
