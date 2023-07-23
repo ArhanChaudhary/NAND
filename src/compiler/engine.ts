@@ -1,25 +1,25 @@
 import { SyntaxException } from "../core/exceptions";
-import Tokenizer, { TokenType } from "./tokenizer";
+import Tokenizer, { TokenType, SymbolToken, KeywordToken } from "./tokenizer";
 import SymbolTable from "./symboltable";
 import VMWriter from "./vmwriter";
 
 const varType = [
-    'int',
-    'char',
-    'boolean',
+    KeywordToken.INT as string,
+    KeywordToken.CHAR as string,
+    KeywordToken.BOOLEAN as string,
     TokenType.IDENTIFIER,
 ];
 
 const ops = [
-    '+',
-    '-',
-    '*',
-    '/',
-    '&',
-    '|',
-    '<',
-    '>',
-    '=',
+    SymbolToken.ADD,
+    SymbolToken.SUBTRACT,
+    SymbolToken.MULTIPLY,
+    SymbolToken.DIVIDE,
+    SymbolToken.AND,
+    SymbolToken.OR,
+    SymbolToken.LESS_THAN,
+    SymbolToken.GREATER_THAN,
+    SymbolToken.EQUAL,
 ];
 
 export default class Engine {
@@ -64,22 +64,22 @@ export default class Engine {
     }
 
     public compileClass(): void {
-        this.assertToken('class');
+        this.assertToken(KeywordToken.CLASS);
         this.className = this.tokenizer.token();
         if (this.className !== this.fileName)
             throw new SyntaxException();
         this.assertToken(TokenType.IDENTIFIER);
-        this.assertToken('{');
+        this.assertToken(SymbolToken.OPENING_CURLY_BRACKET);
 
-        while (['field', 'static'].includes(this.tokenizer.token())) {
+        while ([KeywordToken.FIELD, KeywordToken.STATIC].includes(this.tokenizer.token() as KeywordToken)) {
             this.compileClassVarDec();
         }
 
-        while (['constructor', 'method', 'function'].includes(this.tokenizer.token())) {
+        while ([KeywordToken.CONSTRUCTOR, KeywordToken.METHOD, KeywordToken.FUNCTION].includes(this.tokenizer.token() as KeywordToken)) {
             this.compileSubroutine();
         }
 
-        if (this.tokenizer.token() !== '}')
+        if (this.tokenizer.token() !== SymbolToken.CLOSING_CURLY_BRACKET)
             throw new SyntaxException();
         if (this.tokenizer.advance()) {
             throw new SyntaxException();
@@ -95,10 +95,10 @@ export default class Engine {
     private compileClassVarDec(): void {
         let kind: string;
         switch (this.tokenizer.token()) {
-            case 'field':
+            case KeywordToken.FIELD:
                 kind = 'this';
                 break;
-            case 'static':
+            case KeywordToken.STATIC:
                 kind = 'static';
                 break;
             default:
@@ -110,38 +110,38 @@ export default class Engine {
         this.symbolTable.define(this.tokenizer.token(), type, kind);
         this.assertToken(TokenType.IDENTIFIER);
 
-        while (this.tokenizer.token() === ',') {
+        while (this.tokenizer.token() === SymbolToken.COMMA) {
             this.tokenizer.advance();
             this.symbolTable.define(this.tokenizer.token(), type, kind);
             this.assertToken(TokenType.IDENTIFIER);
         }
 
-        this.assertToken(';');
+        this.assertToken(SymbolToken.SEMICOLON);
     }
     
     private compileSubroutine(): void {
         this.subroutineType = this.tokenizer.token();
         this.symbolTable.startSubroutine(this.subroutineType);
-        this.assertToken(['constructor', 'function', 'method']);
+        this.assertToken([KeywordToken.CONSTRUCTOR, KeywordToken.FUNCTION, KeywordToken.METHOD]);
         this.subroutineReturnType = this.tokenizer.token();
-        this.assertToken(['void', ...varType]);
-        if (this.subroutineType === 'constructor' && this.subroutineReturnType !== this.className)
+        this.assertToken([KeywordToken.VOID, ...varType]);
+        if (this.subroutineType === KeywordToken.CONSTRUCTOR && this.subroutineReturnType !== this.className)
             throw new SyntaxException();
         this.subroutineName = this.tokenizer.token();
         this.assertToken(TokenType.IDENTIFIER);
         if (this.subroutineNames.includes(this.subroutineName))
             throw new SyntaxException();
         this.subroutineNames.push(this.subroutineName);
-        this.assertToken('(');
+        this.assertToken(SymbolToken.OPENING_PARENTHESIS);
         this.compileParameterList();
-        this.assertToken(')');
+        this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
         this.lastStatementIsReturn = false;
         this.compileSubroutineBody();
         if (!this.lastStatementIsReturn) {
-            if (this.subroutineType === 'constructor') {
+            if (this.subroutineType === KeywordToken.CONSTRUCTOR) {
                 this.vmwriter.writePush('pointer', 0);
             } else {
-                if (this.subroutineReturnType !== 'void')
+                if (this.subroutineReturnType !== KeywordToken.VOID)
                     throw new SyntaxException();
                 this.vmwriter.writePush('constant', 0);
             }
@@ -155,7 +155,7 @@ export default class Engine {
             this.assertToken(varType);
             this.symbolTable.define(this.tokenizer.token(), type, 'argument');
             this.assertToken(TokenType.IDENTIFIER);
-            while (this.tokenizer.token() === ',') {
+            while (this.tokenizer.token() === SymbolToken.COMMA) {
                 this.tokenizer.advance();
                 const type = this.tokenizer.token();
                 this.assertToken(varType);
@@ -166,71 +166,71 @@ export default class Engine {
     }
 
     private compileSubroutineBody(): void {
-        this.assertToken('{');
+        this.assertToken(SymbolToken.OPENING_CURLY_BRACKET);
 
-        while (this.tokenizer.token() === 'var') {
+        while (this.tokenizer.token() === KeywordToken.VAR) {
             this.compileVarDec();
         }
 
         this.vmwriter.writeFunction(`${this.className}.${this.subroutineName}`, this.symbolTable.count('local'));
         switch (this.subroutineType) {
-            case 'constructor':
+            case KeywordToken.CONSTRUCTOR:
                 this.vmwriter.writePush('constant', this.symbolTable.count('this'));
                 this.vmwriter.writeCall('Memory.alloc', 1);
                 this.vmwriter.writePop('pointer', 0);
                 break;
-            case 'method':
+            case KeywordToken.METHOD:
                 this.vmwriter.writePush('argument', 0);
                 this.vmwriter.writePop('pointer', 0);
                 break;
         }
 
         this.compileStatements();
-        this.assertToken('}');
+        this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
     }
     
     private compileVarDec(): void {
-        this.assertToken('var');
+        this.assertToken(KeywordToken.VAR);
         const type = this.tokenizer.token();
         // TODO: check if identifier type is a class
         this.assertToken(varType);
         this.symbolTable.define(this.tokenizer.token(), type, 'local');
         this.assertToken(TokenType.IDENTIFIER);
 
-        while (this.tokenizer.token() === ',') {
+        while (this.tokenizer.token() === SymbolToken.COMMA) {
             this.tokenizer.advance();
             this.symbolTable.define(this.tokenizer.token(), type, 'local');
             this.assertToken(TokenType.IDENTIFIER);
         }
 
-        this.assertToken(';');
+        this.assertToken(SymbolToken.SEMICOLON);
     }
     
     private compileStatements(): void {
         outer: while (true) {
             switch (this.tokenizer.token()) {
-                case 'let':
-                case 'if':
-                case 'while':
-                case 'do':
+                case KeywordToken.LET:
+                case KeywordToken.IF:
+                case KeywordToken.WHILE:
+                case KeywordToken.DO:
                     if (this.lastStatementIsReturn)
                         throw new SyntaxException();
                     switch (this.tokenizer.token()) {
-                        case 'let':
+                        case KeywordToken.LET:
                             this.compileLet();
                             break;
-                        case 'if':
+                        case KeywordToken.IF:
                             this.compileIf();
                             break;
-                        case 'while':
+                        case KeywordToken.WHILE:
                             this.compileWhile();
                             break;
-                        case 'do':
+                        case KeywordToken.DO:
                             this.compileDo();
                             break;
                     }
                     break;
-                case 'return':
+                case KeywordToken.RETURN:
                     this.lastStatementIsReturn = true;
                     this.compileReturn();
                     break;
@@ -248,17 +248,17 @@ export default class Engine {
         let subroutineClass: string | null;
         let subroutineMethod: string;
         switch (this.tokenizer.token()) {
-            case '(':
+            case SymbolToken.OPENING_PARENTHESIS:
                 this.subroutineCalls.push({ name: prevToken });
                 this.tokenizer.advance();
-                if (this.subroutineType === 'function')
+                if (this.subroutineType === KeywordToken.FUNCTION)
                     throw new SyntaxException();
                 this.vmwriter.writePush('pointer', 0);
                 nArgs = this.compileExpressionList();
-                this.assertToken(')');
+                this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
                 this.vmwriter.writeCall(`${this.className}.${prevToken}`, nArgs + 1);
                 break;
-            case '.':
+            case SymbolToken.PERIOD:
                 // TODO: check if class has subroutine
                 if (prevTokenType !== null) {
                     subroutineClass = prevTokenType;
@@ -268,13 +268,13 @@ export default class Engine {
                 this.tokenizer.advance();
                 subroutineMethod = this.tokenizer.token();
                 this.assertToken(TokenType.IDENTIFIER);
-                this.assertToken('(');
+                this.assertToken(SymbolToken.OPENING_PARENTHESIS);
                 if (prevTokenType !== null) {
                     this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
                     nArgs = 1;
                 }
                 nArgs += this.compileExpressionList();
-                this.assertToken(')');
+                this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
                 this.vmwriter.writeCall(`${subroutineClass}.${subroutineMethod}`, nArgs);
                 break;
             default:
@@ -283,37 +283,37 @@ export default class Engine {
     }
     
     private compileDo(): void {
-        this.assertToken('do');
+        this.assertToken(KeywordToken.DO);
         const prevToken = this.tokenizer.token();
         this.assertToken(TokenType.IDENTIFIER);
         this.compileSubroutineCall(prevToken);
-        this.assertToken(';');
+        this.assertToken(SymbolToken.SEMICOLON);
         this.vmwriter.writePop('temp', 0);
     }
     
     private compileLet(): void {
-        this.assertToken('let');
+        this.assertToken(KeywordToken.LET);
         const kind = this.symbolTable.kindOf(this.tokenizer.token()) as string;
-        if (kind === null || kind === 'this' && this.subroutineType === 'function')
+        if (kind === null || kind === 'this' && this.subroutineType === KeywordToken.FUNCTION)
             throw new SyntaxException();
         const index = this.symbolTable.indexOf(this.tokenizer.token()) as number;
         this.assertToken(TokenType.IDENTIFIER);
         switch (this.tokenizer.token()) {
-            case '[':
+            case SymbolToken.OPENING_BRACKET:
                 this.vmwriter.writePush(kind, index);
 
                 this.tokenizer.advance();
                 this.compileExpression();
-                this.vmwriter.writeArithmetic('+');
-                this.assertToken(']');
-                while (this.tokenizer.token() === '[') {
+                this.vmwriter.writeArithmetic(SymbolToken.ADD);
+                this.assertToken(SymbolToken.CLOSING_BRACKET);
+                while (this.tokenizer.token() === SymbolToken.OPENING_BRACKET) {
                     this.vmwriter.writePop('pointer', 1);
                     this.vmwriter.writePush('that', 0);
 
                     this.tokenizer.advance();
                     this.compileExpression();
-                    this.vmwriter.writeArithmetic('+');
-                    this.assertToken(']');
+                    this.vmwriter.writeArithmetic(SymbolToken.ADD);
+                    this.assertToken(SymbolToken.CLOSING_BRACKET);
                 }
                 this.assertToken('=');
                 this.compileExpression();
@@ -328,44 +328,44 @@ export default class Engine {
                 this.vmwriter.writePop(kind, index);
                 break;
         }
-        this.assertToken(';');
+        this.assertToken(SymbolToken.SEMICOLON);
     }
     
     private compileWhile(): void {
         const l1 = this.labelCounter++;
         const l2 = this.labelCounter++;
-        this.assertToken('while');
-        this.assertToken('(');
+        this.assertToken(KeywordToken.WHILE);
+        this.assertToken(SymbolToken.OPENING_PARENTHESIS);
         this.vmwriter.writeLabel('WHILE_ITER' + l1);
         this.compileExpression();
-        this.vmwriter.writeArithmetic('~');
+        this.vmwriter.writeArithmetic(SymbolToken.NOT);
         this.vmwriter.writeIf('WHILE_BREAKER' + l2);
-        this.assertToken(')');
-        this.assertToken('{');
+        this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
+        this.assertToken(SymbolToken.OPENING_CURLY_BRACKET);
         this.compileStatements();
         this.vmwriter.writeGoto('WHILE_ITER' + l1);
         this.vmwriter.writeLabel('WHILE_BREAKER' + l2);
-        this.assertToken('}');
+        this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
     }
     
     private compileReturn(): void {
-        this.assertToken('return');
-        if (this.tokenizer.token() === ';') {
-            if (this.subroutineReturnType !== 'void')
+        this.assertToken(KeywordToken.RETURN);
+        if (this.tokenizer.token() === SymbolToken.SEMICOLON) {
+            if (this.subroutineReturnType !== KeywordToken.VOID)
                 throw new SyntaxException();
             this.tokenizer.advance();
             this.vmwriter.writePush('constant', 0);
         } else {
-            if (this.subroutineReturnType === 'void')
+            if (this.subroutineReturnType === KeywordToken.VOID)
                 throw new SyntaxException();
             if (this.subroutineType === 'constructor') {
-                if (this.tokenizer.token() !== 'this')
+                if (this.tokenizer.token() !== KeywordToken.THIS)
                     throw new SyntaxException();
                 this.compileTerm();
             } else {
                 this.compileExpression();
             }
-            this.assertToken(';'); 
+            this.assertToken(SymbolToken.SEMICOLON); 
         }
         this.vmwriter.writeReturn();
     }
@@ -373,27 +373,27 @@ export default class Engine {
     private compileIf(): void {
         const l1 = this.labelCounter++;
         this.assertToken('if');
-        this.assertToken('(');
+        this.assertToken(SymbolToken.OPENING_PARENTHESIS);
         this.compileExpression();
-        this.vmwriter.writeArithmetic('~');
+        this.vmwriter.writeArithmetic(SymbolToken.NOT);
         this.vmwriter.writeIf('FALSE_CASE' + l1);
-        this.assertToken(')');
-        this.assertToken('{');
+        this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
+        this.assertToken(SymbolToken.OPENING_CURLY_BRACKET);
         this.compileStatements();
         const returnInIfBlock = this.lastStatementIsReturn;
         this.lastStatementIsReturn = false;
-        this.assertToken('}');
+        this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
 
         if (this.tokenizer.token() === 'else') {
             const l2 = this.labelCounter++;
             this.tokenizer.advance();
-            this.assertToken('{');
+            this.assertToken(SymbolToken.OPENING_CURLY_BRACKET);
             this.vmwriter.writeGoto('TRUE_CASE' + l2);
             this.vmwriter.writeLabel('FALSE_CASE' + l1);
             this.compileStatements();
             this.lastStatementIsReturn &&= returnInIfBlock;
             this.vmwriter.writeLabel('TRUE_CASE' + l2);
-            this.assertToken('}');
+            this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
         } else {
             this.vmwriter.writeLabel('FALSE_CASE' + l1);
         }
@@ -401,9 +401,9 @@ export default class Engine {
 
     private compileExpression(): void {
         this.compileTerm();
-        if (ops.includes(this.tokenizer.token())) {
-            const op = this.tokenizer.token();
-            this.assertToken(ops);
+        const op = this.tokenizer.token() as SymbolToken;
+        if (ops.includes(op)) {
+            this.tokenizer.advance();
             this.compileExpression();
             this.vmwriter.writeArithmetic(op);
         }
@@ -426,16 +426,16 @@ export default class Engine {
                 break;
             case TokenType.KEYWORD:
                 switch (this.tokenizer.token()) {
-                    case 'true':
+                    case KeywordToken.TRUE:
                         this.vmwriter.writePush('constant', 1);
-                        this.vmwriter.writeArithmetic('-', false);
+                        this.vmwriter.writeArithmetic(SymbolToken.SUBTRACT, false);
                         break;
-                    case 'false':
-                    case 'null':
+                    case KeywordToken.FALSE:
+                    case KeywordToken.NULL:
                         this.vmwriter.writePush('constant', 0);
                         break;
-                    case 'this':
-                        if (this.subroutineType === 'function')
+                    case KeywordToken.THIS:
+                        if (this.subroutineType === KeywordToken.FUNCTION)
                             throw new SyntaxException();
                         this.vmwriter.writePush('pointer', 0);
                         break;
@@ -457,53 +457,53 @@ export default class Engine {
                     className.subroutineName(expressionList)
                     varName.subroutineName(expressionList)
                      */
-                    case '[':
-                        if (prevTokenKind === null || prevTokenKind === 'this' && this.subroutineType === 'function')
+                    case SymbolToken.OPENING_BRACKET:
+                        if (prevTokenKind === null || prevTokenKind === 'this' && this.subroutineType === KeywordToken.FUNCTION)
                             throw new SyntaxException();
                         this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
 
                         this.tokenizer.advance();
                         this.compileExpression();
-                        this.vmwriter.writeArithmetic('+');
-                        this.assertToken(']');
-                        while (this.tokenizer.token() === '[') {
+                        this.vmwriter.writeArithmetic(SymbolToken.ADD);
+                        this.assertToken(SymbolToken.CLOSING_BRACKET);
+                        while (this.tokenizer.token() === SymbolToken.OPENING_BRACKET) {
                             this.vmwriter.writePop('pointer', 1);
                             this.vmwriter.writePush('that', 0);
 
                             this.tokenizer.advance();
                             this.compileExpression();
-                            this.vmwriter.writeArithmetic('+');
-                            this.assertToken(']');
+                            this.vmwriter.writeArithmetic(SymbolToken.ADD);
+                            this.assertToken(SymbolToken.CLOSING_BRACKET);
                         }
                         this.vmwriter.writePop('pointer', 1);
                         this.vmwriter.writePush('that', 0);
                         break;
-                    case '(':
-                    case '.':
+                    case SymbolToken.OPENING_PARENTHESIS:
+                    case SymbolToken.PERIOD:
                         this.compileSubroutineCall(prevToken);
                         break;
                     default:
-                        if (prevTokenKind === null || prevTokenKind === 'this' && this.subroutineType === 'function')
+                        if (prevTokenKind === null || prevTokenKind === 'this' && this.subroutineType === KeywordToken.FUNCTION)
                             throw new SyntaxException();
                         this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
                 }
                 break;
             case TokenType.SYMBOL:
                 switch (this.tokenizer.token()) {
-                    case '~':
+                    case SymbolToken.NOT:
                         this.tokenizer.advance();
                         this.compileTerm();
-                        this.vmwriter.writeArithmetic('~');
+                        this.vmwriter.writeArithmetic(SymbolToken.NOT);
                         break;
-                    case '-':
+                    case SymbolToken.SUBTRACT:
                         this.tokenizer.advance();
                         this.compileTerm();
-                        this.vmwriter.writeArithmetic('-', false);
+                        this.vmwriter.writeArithmetic(SymbolToken.SUBTRACT, false);
                         break;
-                    case '(':
+                    case SymbolToken.OPENING_PARENTHESIS:
                         this.tokenizer.advance();
                         this.compileExpression();
-                        this.assertToken(')');
+                        this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
                         break;
                     default:
                         throw new SyntaxException();
@@ -514,10 +514,10 @@ export default class Engine {
 
     private compileExpressionList(): number {
         let nArgs = 0;
-        if (this.tokenizer.token() !== ')') {
+        if (this.tokenizer.token() !== SymbolToken.CLOSING_PARENTHESIS) {
             this.compileExpression();
             nArgs++;
-            while (this.tokenizer.token() === ',') {
+            while (this.tokenizer.token() === SymbolToken.COMMA) {
                 this.tokenizer.advance();
                 this.compileExpression();
                 nArgs++;

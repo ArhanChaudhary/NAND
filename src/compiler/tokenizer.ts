@@ -9,64 +9,51 @@ export enum TokenType {
     STRING_CONST,
 }
 
-const SymbolTokens = [
-    '{',
-    '}',
-    '(',
-    ')',
-    '[',
-    ']',
-    '.',
-    ',',
-    ';',
-    '+',
-    '-',
-    '*',
-    '/',
-    '&',
-    '|',
-    '<',
-    '>',
-    '=',
-    '~',
-];
+export enum SymbolToken {
+    OPENING_CURLY_BRACKET='{',
+    CLOSING_CURLY_BRACKET='}',
+    OPENING_PARENTHESIS='(',
+    CLOSING_PARENTHESIS=')',
+    OPENING_BRACKET='[',
+    CLOSING_BRACKET=']',
+    PERIOD='.',
+    COMMA=',',
+    SEMICOLON=';',
+    ADD='+',
+    SUBTRACT='-',
+    MULTIPLY='*',
+    DIVIDE='/',
+    AND='&',
+    OR='|',
+    LESS_THAN='<',
+    GREATER_THAN='>',
+    EQUAL='=',
+    NOT='~',
+}
 
-const Keywords = [
-    'class',
-    'method',
-    'function',
-    'constructor',
-    'int',
-    'boolean',
-    'char',
-    'void',
-    'var',
-    'static',
-    'field',
-    'let',
-    'do',
-    'if',
-    'else',
-    'while',
-    'return',
-    'true',
-    'false',
-    'null',
-    'this',
-]
-
-const Digits = [
-    '0',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-]
+export enum KeywordToken {
+    CLASS='class',
+    METHOD='method',
+    FUNCTION='function',
+    CONSTRUCTOR='constructor',
+    INT='int',
+    BOOLEAN='boolean',
+    CHAR='char',
+    VOID='void',
+    VAR='var',
+    STATIC='static',
+    FIELD='field',
+    LET='let',
+    DO='do',
+    IF='if',
+    ELSE='else',
+    WHILE='while',
+    RETURN='return',
+    TRUE='true',
+    FALSE='false',
+    NULL='null',
+    THIS='this',
+}
 
 export default class Tokenizer {
     private fileStream: nReadlines;
@@ -86,7 +73,7 @@ export default class Tokenizer {
     }
 
     static isNumber(char: string): boolean {
-        return Digits.includes(char);
+        return ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(char);
     }
 
     private removeComments(): void {
@@ -152,7 +139,7 @@ export default class Tokenizer {
                     start++;
                     continue;
                 }
-                if (SymbolTokens.includes(char)) {
+                if (Object.values<string>(SymbolToken).includes(char)) {
                     this.currentToken = char;
                     this.currentTokenType = TokenType.SYMBOL;
                     this.currentLineIndex++;
@@ -184,7 +171,7 @@ export default class Tokenizer {
                         break;
                     }
                     this.currentToken = this.currentLine.substring(start, this.currentLineIndex);
-                    if (Keywords.includes(this.currentToken)) {
+                    if (Object.values<string>(KeywordToken).includes(this.currentToken)) {
                         this.currentTokenType = TokenType.KEYWORD;
                     }
                     break findToken;

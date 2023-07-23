@@ -17,7 +17,6 @@ class _2048 {
         let characterPixelHeight = 11;
         let spaceX = 6;
         let spaceY = 3;
-        return;
     }
 
     constructor _2048 new(int size_) {
@@ -122,7 +121,6 @@ class _2048 {
         }
         do Output.moveCursor(gridY - 3, gridX + 14);
         do Output.printString("GAME OVER");
-        return;
     }
 
     method void moveGrid(int direction) {
@@ -367,7 +365,6 @@ class _2048 {
         }
 
         let grid[div][mod] = value;
-        return;
     }
 
     method void dispose() {
@@ -380,6 +377,5 @@ class _2048 {
             let i = i + 1;
         }
         do Memory.deAlloc(this);
-        return;
     }
 }

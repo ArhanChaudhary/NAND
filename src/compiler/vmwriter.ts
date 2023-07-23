@@ -1,5 +1,6 @@
 import fs, { WriteStream } from "fs";
 import { NANDException } from "../core/exceptions";
+import { SymbolToken } from "./tokenizer";
 
 export default class VMWriter {
     private outputStream: WriteStream;
@@ -25,40 +26,40 @@ export default class VMWriter {
         this.write(`pop ${segment} ${index}`);
     }
     
-    public writeArithmetic(command: string, sub: boolean = true): void {
+    public writeArithmetic(command: SymbolToken, sub: boolean = true): void {
         switch (command) {
-            case '+':
+            case SymbolToken.ADD:
                 this.write('add');
                 break;
-            case '-':
+            case SymbolToken.SUBTRACT:
                 if (sub) {
                     this.write('sub');
                 } else {
                     this.write('neg');
                 }
                 break;
-            case '&':
+            case SymbolToken.AND:
                 this.write('and');
                 break;
-            case '|':
+            case SymbolToken.OR:
                 this.write('or');
                 break;
-            case '<':
+            case SymbolToken.LESS_THAN:
                 this.write('lt');
                 break;
-            case '>':
+            case SymbolToken.GREATER_THAN:
                 this.write('gt');
                 break;
-            case '=':
+            case SymbolToken.EQUAL:
                 this.write('eq');
                 break;
-            case '~':
+            case SymbolToken.NOT:
                 this.write('not');
                 break;
-            case '*':
+            case SymbolToken.MULTIPLY:
                 this.writeCall('Math.multiply', 2);
                 break;
-            case '/':
+            case SymbolToken.DIVIDE:
                 this.writeCall('Math.divide', 2);
                 break;
             default:
