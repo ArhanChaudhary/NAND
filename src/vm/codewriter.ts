@@ -18,6 +18,14 @@ export default class CodeWriter {
 
     private firstWrite: boolean = true;
     private write(out: string[]): void {
+        // let str = '';
+        // for (let i of out) {
+        //     if (i.startsWith('(')) {
+        //         str += i;
+        //     } else {
+        //         str += '\n' + i;
+        //     }
+        // }
         if (this.firstWrite)
             this.fileStream.write(out.join('\n'));
         else
