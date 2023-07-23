@@ -294,26 +294,37 @@ export default class Engine {
             throw new SyntaxException();
         const index = this.symbolTable.indexOf(this.tokenizer.token()) as number;
         this.assertToken(TokenType.IDENTIFIER);
+        switch (this.tokenizer.token()) {
+            case '[':
+                this.vmwriter.writePush(kind, index);
 
-        if (this.tokenizer.token() === '[') {
-            this.tokenizer.advance();
-            this.vmwriter.writePush(kind, index);
-            this.compileExpression();
-            this.vmwriter.writeArithmetic('+');
-            this.assertToken(']');
-            this.assertToken('=');
-            this.compileExpression();
-            this.vmwriter.writePop('temp', 0);
-            this.vmwriter.writePop('pointer', 1);
-            this.vmwriter.writePush('temp', 0);
-            this.vmwriter.writePop('that', 0);
-            this.assertToken(';');
-        } else {
-            this.assertToken('=');
-            this.compileExpression();
-            this.assertToken(';');
-            this.vmwriter.writePop(kind, index);
+                this.tokenizer.advance();
+                this.compileExpression();
+                this.vmwriter.writeArithmetic('+');
+                this.assertToken(']');
+                while (this.tokenizer.token() === '[') {
+                    this.vmwriter.writePop('pointer', 1);
+                    this.vmwriter.writePush('that', 0);
+
+                    this.tokenizer.advance();
+                    this.compileExpression();
+                    this.vmwriter.writeArithmetic('+');
+                    this.assertToken(']');
+                }
+                this.assertToken('=');
+                this.compileExpression();
+                this.vmwriter.writePop('temp', 0);
+                this.vmwriter.writePop('pointer', 1);
+                this.vmwriter.writePush('temp', 0);
+                this.vmwriter.writePop('that', 0);
+                break;
+            case '=':
+                this.tokenizer.advance();
+                this.compileExpression();
+                this.vmwriter.writePop(kind, index);
+                break;
         }
+        this.assertToken(';');
     }
     
     private compileWhile(): void {
@@ -348,7 +359,6 @@ export default class Engine {
                     throw new SyntaxException();
                 this.compileTerm();
             } else {
-                // TODO: check expression type
                 this.compileExpression();
             }
             this.assertToken(';'); 
@@ -446,13 +456,23 @@ export default class Engine {
                     case '[':
                         if (prevTokenKind === null || prevTokenKind === 'this' && this.subroutineType === 'function')
                             throw new SyntaxException();
-                        this.tokenizer.advance();
                         this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
+
+                        this.tokenizer.advance();
                         this.compileExpression();
                         this.vmwriter.writeArithmetic('+');
+                        this.assertToken(']');
+                        while (this.tokenizer.token() === '[') {
+                            this.vmwriter.writePop('pointer', 1);
+                            this.vmwriter.writePush('that', 0);
+
+                            this.tokenizer.advance();
+                            this.compileExpression();
+                            this.vmwriter.writeArithmetic('+');
+                            this.assertToken(']');
+                        }
                         this.vmwriter.writePop('pointer', 1);
                         this.vmwriter.writePush('that', 0);
-                        this.assertToken(']');
                         break;
                     case '(':
                     case '.':
