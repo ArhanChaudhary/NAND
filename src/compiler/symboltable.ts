@@ -1,4 +1,5 @@
 import { NANDException, SyntaxException } from "../core/exceptions";
+import { KeywordToken } from "./tokenizer";
 
 type SymbolAttribute = {type: string, kind: string, index: number};
 export default class SymbolTable {
@@ -27,11 +28,11 @@ export default class SymbolTable {
     public startSubroutine(subroutineType: string): void {
         this.subroutineSymbolTable = {};
         switch (subroutineType) {
-            case 'constructor':
-            case 'function':
+            case KeywordToken.CONSTRUCTOR:
+            case KeywordToken.FUNCTION:
                 this.counts.argument = 0;
                 break;
-            case 'method':
+            case KeywordToken.METHOD:
                 this.counts.argument = 1;
                 break;
             default:

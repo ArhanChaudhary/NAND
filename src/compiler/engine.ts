@@ -315,14 +315,14 @@ export default class Engine {
                     this.vmwriter.writeArithmetic(SymbolToken.ADD);
                     this.assertToken(SymbolToken.CLOSING_BRACKET);
                 }
-                this.assertToken('=');
+                this.assertToken(SymbolToken.EQUAL);
                 this.compileExpression();
                 this.vmwriter.writePop('temp', 0);
                 this.vmwriter.writePop('pointer', 1);
                 this.vmwriter.writePush('temp', 0);
                 this.vmwriter.writePop('that', 0);
                 break;
-            case '=':
+            case SymbolToken.EQUAL:
                 this.tokenizer.advance();
                 this.compileExpression();
                 this.vmwriter.writePop(kind, index);
@@ -358,7 +358,7 @@ export default class Engine {
         } else {
             if (this.subroutineReturnType === KeywordToken.VOID)
                 throw new SyntaxException();
-            if (this.subroutineType === 'constructor') {
+            if (this.subroutineType === KeywordToken.CONSTRUCTOR) {
                 if (this.tokenizer.token() !== KeywordToken.THIS)
                     throw new SyntaxException();
                 this.compileTerm();
@@ -372,7 +372,7 @@ export default class Engine {
     
     private compileIf(): void {
         const l1 = this.labelCounter++;
-        this.assertToken('if');
+        this.assertToken(KeywordToken.IF);
         this.assertToken(SymbolToken.OPENING_PARENTHESIS);
         this.compileExpression();
         this.vmwriter.writeArithmetic(SymbolToken.NOT);
@@ -384,7 +384,7 @@ export default class Engine {
         this.lastStatementIsReturn = false;
         this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
 
-        if (this.tokenizer.token() === 'else') {
+        if (this.tokenizer.token() === KeywordToken.ELSE) {
             const l2 = this.labelCounter++;
             this.tokenizer.advance();
             this.assertToken(SymbolToken.OPENING_CURLY_BRACKET);
