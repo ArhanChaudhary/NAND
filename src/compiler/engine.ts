@@ -443,6 +443,17 @@ export default class Engine {
                     className.subroutineName(expressionList)
                     varName.subroutineName(expressionList)
                      */
+                    case '[':
+                        if (prevTokenKind === null || prevTokenKind === 'this' && this.subroutineType === 'function')
+                            throw new SyntaxException();
+                        this.tokenizer.advance();
+                        this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
+                        this.compileExpression();
+                        this.vmwriter.writeArithmetic('+');
+                        this.vmwriter.writePop('pointer', 1);
+                        this.vmwriter.writePush('that', 0);
+                        this.assertToken(']');
+                        break;
                     case '(':
                     case '.':
                         this.compileSubroutineCall(prevToken);
@@ -451,14 +462,6 @@ export default class Engine {
                         if (prevTokenKind === null || prevTokenKind === 'this' && this.subroutineType === 'function')
                             throw new SyntaxException();
                         this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
-                    case '[':
-                        this.tokenizer.advance();
-                        this.compileExpression();
-                        this.vmwriter.writeArithmetic('+');
-                        this.vmwriter.writePop('pointer', 1);
-                        this.vmwriter.writePush('that', 0);
-                        this.assertToken(']');
-                        break;
                 }
                 break;
             case TokenType.SYMBOL:
