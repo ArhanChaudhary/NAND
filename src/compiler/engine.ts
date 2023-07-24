@@ -55,8 +55,8 @@ export default class Engine {
         throw new NameError(this.fileName, this.tokenizer.line(), this.tokenizer.lineNumber(), this.tokenizer.lineIndex(), expectedToken, message);
     }
 
-    private referenceError(message: string): void {
-        throw new ReferenceError(this.fileName, this.tokenizer.line(), this.tokenizer.lineNumber(), this.tokenizer.lineIndex(), message);
+    private referenceError(message: string, line?: string, lineNumber?: number, lineIndex?: number): void {
+        throw new ReferenceError(this.fileName, line || this.tokenizer.line(), lineNumber || this.tokenizer.lineNumber(), lineIndex || this.tokenizer.lineIndex(), message);
     }
 
     private define(type: string, kind: string): void {
@@ -64,12 +64,12 @@ export default class Engine {
             this.referenceError(`variable '${this.tokenizer.token()}' can only be declared once`);
     }
 
-    private validateVar(token: string): void {
+    private validateVar(token: string, line?: string, lineNumber?: number, lineIndex?: number): void {
         const kind = this.symbolTable.kindOf(token) as string;
         if (kind === null)
-            this.referenceError(`variable '${token}' was never declared`);
+            this.referenceError(`variable '${token}' was never declared`, line, lineNumber, lineIndex);
         if (kind === 'this' && this.subroutineType === KeywordToken.FUNCTION)
-            this.referenceError(`field variable '${token}' cannot be used in a function`);
+            this.referenceError(`field variable '${token}' cannot be used in a function`, line, lineNumber, lineIndex);
     }
 
     private assertToken(expectedToken: string | TokenType | (string | TokenType)[]): void {
@@ -83,9 +83,7 @@ export default class Engine {
             if (this.tokenizer.tokenType() !== expectedToken)
                 this.syntaxError(expectedToken);
         }
-        if (!this.tokenizer.advance()) {
-            // throw new SyntaxError();
-        }
+        this.tokenizer.advance();
     }
 
     public compileClass(): void {
@@ -104,12 +102,7 @@ export default class Engine {
             this.compileSubroutine();
         }
 
-        if (this.tokenizer.token() !== SymbolToken.CLOSING_CURLY_BRACKET)
-            this.syntaxError(SymbolToken.CLOSING_CURLY_BRACKET);
-        if (this.tokenizer.advance()) {
-            // throw new SyntaxError();
-        }
-
+        this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
         for (const call of this.subroutineCalls) {
             if (!this.subroutineNames.includes(call.name)) {}
                 // throw new SyntaxError();
@@ -264,7 +257,7 @@ export default class Engine {
         }
     }
 
-    private compileSubroutineCall(prevToken: string): void {
+    private compileSubroutineCall(prevToken: string, line: string, lineNumber: number, lineIndex: number): void {
         const prevTokenKind = this.symbolTable.kindOf(prevToken) as string;
         const prevTokenType = this.symbolTable.typeOf(prevToken) as string;
         const prevTokenIndex = this.symbolTable.indexOf(prevToken) as number;
@@ -285,6 +278,7 @@ export default class Engine {
             case SymbolToken.PERIOD:
                 // TODO: check if class has subroutine
                 if (prevTokenType !== null) {
+                    this.validateVar(prevToken, line, lineNumber, lineIndex);
                     subroutineClass = prevTokenType;
                 } else {
                     subroutineClass = prevToken;
@@ -309,8 +303,11 @@ export default class Engine {
     private compileDo(): void {
         this.assertToken(KeywordToken.DO);
         const prevToken = this.tokenizer.token();
+        const prevLine = this.tokenizer.line();
+        const prevLineNumber = this.tokenizer.lineNumber();
+        const prevLineIndex = this.tokenizer.lineIndex();
         this.assertToken(TokenType.IDENTIFIER);
-        this.compileSubroutineCall(prevToken);
+        this.compileSubroutineCall(prevToken, prevLine, prevLineNumber, prevLineIndex);
         this.assertToken(SymbolToken.SEMICOLON);
         this.vmwriter.writePop('temp', 0);
     }
@@ -471,6 +468,9 @@ export default class Engine {
                 const prevToken = this.tokenizer.token();
                 const prevTokenKind = this.symbolTable.kindOf(prevToken) as string;
                 const prevTokenIndex = this.symbolTable.indexOf(prevToken) as number;
+                const prevLine = this.tokenizer.line();
+                const prevLineNumber = this.tokenizer.lineNumber();
+                const prevLineIndex = this.tokenizer.lineIndex();
                 this.tokenizer.advance();
                 switch (this.tokenizer.token()) {
                     /**
@@ -481,7 +481,7 @@ export default class Engine {
                     varName.subroutineName(expressionList)
                      */
                     case SymbolToken.OPENING_BRACKET:
-                        this.validateVar(prevToken);
+                        this.validateVar(prevToken, prevLine, prevLineNumber, prevLineIndex);
                         this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
 
                         this.tokenizer.advance();
@@ -502,10 +502,10 @@ export default class Engine {
                         break;
                     case SymbolToken.OPENING_PARENTHESIS:
                     case SymbolToken.PERIOD:
-                        this.compileSubroutineCall(prevToken);
+                        this.compileSubroutineCall(prevToken, prevLine, prevLineNumber, prevLineIndex);
                         break;
                     default:
-                        this.validateVar(prevToken);
+                        this.validateVar(prevToken, prevLine, prevLineNumber, prevLineIndex);
                         this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
                 }
                 break;
@@ -528,7 +528,7 @@ export default class Engine {
                         break;
                     default:
                         this.syntaxError([SymbolToken.NOT, SymbolToken.SUBTRACT, SymbolToken.OPENING_PARENTHESIS]);
-                } 
+                }
                 break;
         }
     }
