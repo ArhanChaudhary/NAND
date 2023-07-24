@@ -188,7 +188,12 @@ export default class Tokenizer {
             }
         } while (++this.currentLineIndex < this.currentLine.length);
         if (this.currentToken === null) {
-            return this.advance();
+            if (firstIteration)
+                return this.advance();
+            this.currentToken = this.currentLine.substring(start, this.currentLineIndex);
+            if (Object.values<string>(KeywordToken).includes(this.currentToken)) {
+                this.currentTokenType = TokenType.KEYWORD;
+            }
         }
         return true;
     }
