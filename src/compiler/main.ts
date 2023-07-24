@@ -14,5 +14,11 @@ if (path.endsWith('.jack')) {
 }
 files.forEach(file => {
     if (!file.endsWith('.jack')) return;
-    new Engine(file).compileClass();
+    try {
+        const engine = new Engine(file);
+        engine.compileClass();
+    } catch (err: any) {
+        console.log(err.toString());
+    }
 });
+// Engine.postValidation();

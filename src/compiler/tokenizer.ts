@@ -59,6 +59,7 @@ export default class Tokenizer {
     private fileStream: nReadlines;
     private currentLine = '';
     private currentLineNumber = 0;
+    private prevLineIndex = 0;
     private currentLineIndex = 0;
     private currentToken: string | null = null;
     private currentTokenType: TokenType | null = null;
@@ -139,6 +140,7 @@ export default class Tokenizer {
                     start++;
                     continue;
                 }
+                this.prevLineIndex = this.currentLineIndex;
                 if (Object.values<string>(SymbolToken).includes(char)) {
                     this.currentToken = char;
                     this.currentTokenType = TokenType.SYMBOL;
@@ -201,5 +203,17 @@ export default class Tokenizer {
         if (this.currentToken === null)
             throw new NANDException("Token does not exist at line: " + this.currentLine);
         return this.currentToken;
+    }
+
+    public line(): string {
+        return this.currentLine;
+    }
+
+    public lineNumber(): number {
+        return this.currentLineNumber;
+    }
+    
+    public lineIndex(): number {
+        return this.prevLineIndex + 1;
     }
 }

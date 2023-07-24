@@ -1,4 +1,4 @@
-import { NANDException, SyntaxError } from "../core/exceptions";
+import { NANDException } from "../core/exceptions";
 import { KeywordToken } from "./tokenizer";
 
 type SymbolAttribute = {type: string, kind: string, index: number};
@@ -12,19 +12,6 @@ export default class SymbolTable {
         'local': 0,
     };
 
-    private getTable(kind: string) {
-        switch (kind) {
-            case 'static':
-            case 'this':
-                return this.classSymbolTable;
-            case 'argument':
-            case 'local':
-                return this.subroutineSymbolTable;
-            default:
-                throw new NANDException("Invalid kind: "+ kind);
-        }
-    }
-
     public startSubroutine(subroutineType: string): void {
         this.subroutineSymbolTable = {};
         switch (subroutineType) {
@@ -36,16 +23,29 @@ export default class SymbolTable {
                 this.counts.argument = 1;
                 break;
             default:
-                throw new SyntaxError();
+                throw new NANDException();
         }
         this.counts.local = 0;
     }
 
-    public define(name: string, type: string, kind: string): void {
-        const table = this.getTable(kind);
+    public define(name: string, type: string, kind: string): boolean {
+        let table: { [name: string]: SymbolAttribute };
+        switch (kind) {
+            case 'static':
+            case 'this':
+                table = this.classSymbolTable;
+                break;
+            case 'argument':
+            case 'local':
+                table = this.subroutineSymbolTable;
+                break;
+            default:
+                throw new NANDException();
+        }
         if (name in table)
-            throw new SyntaxError();
+            return false;
         table[name] = {type, kind, index: this.counts[kind]++};
+        return true;
     }
 
     public count(kind: string): number {
