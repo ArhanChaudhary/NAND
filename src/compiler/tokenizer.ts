@@ -118,6 +118,8 @@ export default class Tokenizer {
             line = this.fileStream.next();
             this.currentLineNumber++;
             if (!line) {
+                // without this tokens stay as their own value
+                this.currentToken = '';
                 return false;
             }
             this.currentLineIndex = 0;
