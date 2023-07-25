@@ -11,7 +11,7 @@
     "asbuild:release": "asc assembly/index.ts --target release",
     "asbuild": "npm run asbuild:debug && npm run asbuild:release",
     "test": "node tests",
-    "start": "npx serve ."
+    "start": "npm run asbuild && npx serve ."
   },
   "devDependencies": {
     "assemblyscript": "^0.27.6"
