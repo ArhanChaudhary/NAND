@@ -7,8 +7,8 @@
     }
   },
   "scripts": {
-    "asbuild:debug": "asc assembly/gates.ts --target debug",
-    "asbuild:release": "asc assembly/gates.ts --target release",
+    "asbuild:debug": "asc assembly/arithmetic.ts --target debug",
+    "asbuild:release": "asc assembly/arithmetic.ts --target release",
     "asbuild": "npm run asbuild:debug && npm run asbuild:release",
     "test": "node tests",
     "start": "npm run asbuild && npx serve ."

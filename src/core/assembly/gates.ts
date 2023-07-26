@@ -36,8 +36,6 @@ export function DMux(in_: boolean, sel: boolean): StaticArray<boolean> {
     return [And(in_, Not(sel)), And(in_, sel)];
 }
 
-// @ts-ignore
-@inline
 export function Not16(in_: StaticArray<boolean>): StaticArray<boolean> {
     return [
         Not(unchecked(in_[0])),
@@ -59,8 +57,6 @@ export function Not16(in_: StaticArray<boolean>): StaticArray<boolean> {
     ];
 }
 
-// @ts-ignore
-@inline
 export function And16(a: StaticArray<boolean>, b: StaticArray<boolean>): StaticArray<boolean> {
     return [
         And(unchecked(a[0]), unchecked(b[0])),
@@ -82,8 +78,6 @@ export function And16(a: StaticArray<boolean>, b: StaticArray<boolean>): StaticA
     ];
 }
 
-// @ts-ignore
-@inline
 export function Or16(a: StaticArray<boolean>, b: StaticArray<boolean>): StaticArray<boolean> {
     return [
         Or(unchecked(a[0]), unchecked(b[0])),
@@ -105,8 +99,6 @@ export function Or16(a: StaticArray<boolean>, b: StaticArray<boolean>): StaticAr
     ];
 }
 
-// @ts-ignore
-@inline
 export function Mux16(a: StaticArray<boolean>, b: StaticArray<boolean>, sel: boolean): StaticArray<boolean> {
     return [
         Mux(unchecked(a[0]), unchecked(b[0]), sel=sel),
