@@ -1,29 +1,43 @@
 import { NAND } from "./builtins"
 
+// @ts-ignore
+@inline
 export function Not(a: boolean): boolean {
     return NAND(a, a);
 }
 
+// @ts-ignore
+@inline
 export function And(a: boolean, b: boolean): boolean {
     return Not(NAND(a, b));
 }
 
+// @ts-ignore
+@inline
 export function Or(a: boolean, b: boolean): boolean {
     return NAND(Not(a), Not(b));
 }
 
+// @ts-ignore
+@inline
 export function Xor(a: boolean, b: boolean): boolean {
     return Or(And(Not(a), b), And(a, Not(b)));
 }
 
+// @ts-ignore
+@inline
 export function Mux(a: boolean, b: boolean, sel: boolean): boolean {
     return Or(And(a, Not(sel)), And(sel, b));
 }
 
+// @ts-ignore
+@inline
 export function DMux(in_: boolean, sel: boolean): StaticArray<boolean> {
     return [And(in_, Not(sel)), And(in_, sel)];
 }
 
+// @ts-ignore
+@inline
 export function Not16(in_: StaticArray<boolean>): StaticArray<boolean> {
     return [
         Not(unchecked(in_[0])),
@@ -45,6 +59,8 @@ export function Not16(in_: StaticArray<boolean>): StaticArray<boolean> {
     ];
 }
 
+// @ts-ignore
+@inline
 export function And16(a: StaticArray<boolean>, b: StaticArray<boolean>): StaticArray<boolean> {
     return [
         And(unchecked(a[0]), unchecked(b[0])),
@@ -66,6 +82,8 @@ export function And16(a: StaticArray<boolean>, b: StaticArray<boolean>): StaticA
     ];
 }
 
+// @ts-ignore
+@inline
 export function Or16(a: StaticArray<boolean>, b: StaticArray<boolean>): StaticArray<boolean> {
     return [
         Or(unchecked(a[0]), unchecked(b[0])),
@@ -87,6 +105,8 @@ export function Or16(a: StaticArray<boolean>, b: StaticArray<boolean>): StaticAr
     ];
 }
 
+// @ts-ignore
+@inline
 export function Mux16(a: StaticArray<boolean>, b: StaticArray<boolean>, sel: boolean): StaticArray<boolean> {
     return [
         Mux(unchecked(a[0]), unchecked(b[0]), sel=sel),
@@ -108,6 +128,8 @@ export function Mux16(a: StaticArray<boolean>, b: StaticArray<boolean>, sel: boo
     ];
 }
 
+// @ts-ignore
+@inline
 export function Or8Way(a: StaticArray<boolean>): boolean {
     return Or(
         unchecked(a[7]), Or(
@@ -126,6 +148,8 @@ export function Or8Way(a: StaticArray<boolean>): boolean {
     );
 }
 
+// @ts-ignore
+@inline
 export function Mux4Way16(a: StaticArray<boolean>, b: StaticArray<boolean>, c: StaticArray<boolean>, d: StaticArray<boolean>, sel: StaticArray<boolean>): StaticArray<boolean> {
     const lsb = unchecked(sel[1]);
     return Mux16(
@@ -135,6 +159,8 @@ export function Mux4Way16(a: StaticArray<boolean>, b: StaticArray<boolean>, c: S
     );
 }
 
+// @ts-ignore
+@inline
 export function Mux8Way16(a: StaticArray<boolean>, b: StaticArray<boolean>, c: StaticArray<boolean>, d: StaticArray<boolean>, e: StaticArray<boolean>, f: StaticArray<boolean>, g: StaticArray<boolean>, h: StaticArray<boolean>, sel: StaticArray<boolean>): StaticArray<boolean> {
     const sliced = sel.slice<StaticArray<boolean>>(1);
     return Mux16(
@@ -144,12 +170,16 @@ export function Mux8Way16(a: StaticArray<boolean>, b: StaticArray<boolean>, c: S
     );
 }
 
+// @ts-ignore
+@inline
 export function DMux4Way(in_: boolean, sel: StaticArray<boolean>): StaticArray<boolean> {
     const lsb = unchecked(sel[1]);
     const topbottom = DMux(in_, unchecked(sel[0]));
     return DMux(topbottom[0], lsb).concat(DMux(topbottom[1], lsb));
 }
 
+// @ts-ignore
+@inline
 export function DMux8Way(in_: boolean, sel: StaticArray<boolean>): StaticArray<boolean> {
     const sliced = sel.slice<StaticArray<boolean>>(1);
     const topbottom = DMux(in_, unchecked(sel[0]));
