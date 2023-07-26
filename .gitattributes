@@ -5,7 +5,6 @@ projects/09/** linguist-vendored
 projects/10/** linguist-vendored
 projects/11/** linguist-vendored
 projects/12/** linguist-vendored
-projects/**/*.html linguist-vendored
 projects/**/*.hack linguist-vendored
 projects/**/*.tst linguist-vendored
 projects/**/*.hdl linguist-language=VHDL
