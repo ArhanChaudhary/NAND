@@ -38,4 +38,4 @@ assert.strictEqual(u(ALU(t("0000000000010001"), t("0000000000000011"), ...t("010
 assert.strictEqual(u(ALU(t("0000000000010001"), t("0000000000000011"), ...t("000111"))), "111111111111001001")
 assert.strictEqual(u(ALU(t("0000000000010001"), t("0000000000000011"), ...t("000000"))), "000000000000000100")
 assert.strictEqual(u(ALU(t("0000000000010001"), t("0000000000000011"), ...t("010101"))), "000000000001001100")
-console.log("All test cases passed");
+console.log("All arithmetic test cases passed");
