@@ -166,15 +166,38 @@ export function Mux8Way16(a: StaticArray<boolean>, b: StaticArray<boolean>, c: S
 // @ts-ignore
 @inline
 export function DMux4Way(in_: boolean, sel: StaticArray<boolean>): StaticArray<boolean> {
+    const msb = unchecked(sel[0]);
     const lsb = unchecked(sel[1]);
-    const topbottom = DMux(in_, unchecked(sel[0]));
-    return DMux(topbottom[0], lsb).concat(DMux(topbottom[1], lsb));
+    const DMuxInline0 = And(in_, Not(msb));
+    const DMuxInline1 = And(in_, msb);
+    return [
+        And(DMuxInline0, Not(lsb)),
+        And(DMuxInline0, lsb),
+        And(DMuxInline1, Not(lsb)),
+        And(DMuxInline1, lsb),
+    ];
 }
 
 // @ts-ignore
 @inline
 export function DMux8Way(in_: boolean, sel: StaticArray<boolean>): StaticArray<boolean> {
-    const sliced = sel.slice<StaticArray<boolean>>(1);
-    const topbottom = DMux(in_, unchecked(sel[0]));
-    return DMux4Way(topbottom[0], sliced).concat(DMux4Way(topbottom[1], sliced));
+    const s0 = unchecked(sel[0]);
+    const s1 = unchecked(sel[1]);
+    const s2 = unchecked(sel[2]);
+    const topbottom0 = And(in_, Not(s0));
+    const topbottom1 = And(in_, s0);
+    const DMuxInline0 = And(topbottom0, Not(s1));
+    const DMuxInline1 = And(topbottom0, s1);
+    const DMuxInline2 = And(topbottom1, Not(s1));
+    const DMuxInline3 = And(topbottom1, s1);
+    return [
+        And(DMuxInline0, Not(s2)),
+        And(DMuxInline0, s2),
+        And(DMuxInline1, Not(s2)),
+        And(DMuxInline1, s2),
+        And(DMuxInline2, Not(s2)),
+        And(DMuxInline2, s2),
+        And(DMuxInline3, Not(s2)),
+        And(DMuxInline3, s2),
+    ];    
 }

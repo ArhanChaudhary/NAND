@@ -17,9 +17,7 @@ class Bit {
     private dffout: boolean = false;
     private dff: DFF = new DFF();
     public call(in_: boolean, load: boolean): boolean {
-        const out = this.dff.call(Mux(this.dffout, in_, load));
-        this.dffout = out;
-        return out;
+        return this.dffout = this.dff.call(Mux(this.dffout, in_, load));
     }
 }
 
@@ -205,7 +203,7 @@ const PC_reg = new Register();
 // @ts-ignore
 @inline
 export function PC(in_: StaticArray<boolean>, load: boolean, inc: boolean, reset: boolean): StaticArray<boolean> {
-    const out = PC_reg.call(
+    return PC_dffout = PC_reg.call(
         // reset
         Mux16(
             // load
@@ -226,7 +224,5 @@ export function PC(in_: StaticArray<boolean>, load: boolean, inc: boolean, reset
             reset,
         )
     );
-    PC_dffout = out;
-    return out;
 }
 
