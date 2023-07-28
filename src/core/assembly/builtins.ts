@@ -1,8 +1,7 @@
 // @ts-ignore
 @inline
 export function NAND(a: boolean, b: boolean): boolean {
-  // @ts-ignore
-  return 1 - a * b;
+  return !(a && b);
 }
 
 export const true16: StaticArray<boolean> = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true];
