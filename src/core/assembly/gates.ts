@@ -21,13 +21,14 @@ export function Or(a: boolean, b: boolean): boolean {
 // @ts-ignore
 @inline
 export function Xor(a: boolean, b: boolean): boolean {
-    return Or(And(Not(a), b), And(a, Not(b)));
+    const t1 = NAND(a, b);
+    return NAND(NAND(a, t1), NAND(b, t1));
 }
 
 // @ts-ignore
 @inline
 export function Mux(a: boolean, b: boolean, sel: boolean): boolean {
-    return Or(And(a, Not(sel)), And(sel, b));
+    return NAND(NAND(a, Not(sel)), NAND(b, sel));
 }
 
 // @ts-ignore
