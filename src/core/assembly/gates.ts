@@ -167,10 +167,19 @@ export function Mux4Way16(a: StaticArray<boolean>, b: StaticArray<boolean>, c: S
 // @ts-ignore
 @inline
 export function Mux8Way16(a: StaticArray<boolean>, b: StaticArray<boolean>, c: StaticArray<boolean>, d: StaticArray<boolean>, e: StaticArray<boolean>, f: StaticArray<boolean>, g: StaticArray<boolean>, h: StaticArray<boolean>, sel: StaticArray<boolean>): StaticArray<boolean> {
-    const sliced = sel.slice<StaticArray<boolean>>(1);
+    const s1 = sel[1];
+    const s2 = sel[2];
     return Mux16(
-        Mux4Way16(a, b, c, d, sliced),
-        Mux4Way16(e, f, g, h, sliced),
+        Mux16(
+            Mux16(a, b, s2),
+            Mux16(c, d, s2),
+            s1
+        ),
+        Mux16(
+            Mux16(e, f, s2),
+            Mux16(g, h, s2),
+            s1
+        ),
         sel[0]
     );
 }
