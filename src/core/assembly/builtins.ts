@@ -10,10 +10,14 @@ export const false16: StaticArray<boolean> = [false, false, false, false, false,
 export const one16: StaticArray<boolean> = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true];
 
 export let clock = true;
+// @ts-ignore
+@inline
 export function tick(): void {
     clock = true;
 }
 
+// @ts-ignore
+@inline
 export function tock(): void {
     clock = false;
 }
