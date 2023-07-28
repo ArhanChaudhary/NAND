@@ -1,9 +1,10 @@
 import { Xor, And, Or, Mux16, Not16, And16, Or8Way, Not } from "./gates";
 import { one16, false16 } from "./builtins";
 
+/*
 // @ts-ignore
 @inline
-export function HalfAdder(a: boolean, b: boolean): StaticArray<boolean> {
+function HalfAdder(a: boolean, b: boolean): StaticArray<boolean> {
     return [
         Xor(a, b),
         And(a, b),
@@ -19,42 +20,99 @@ function FullAdder(a: boolean, b: boolean, c: boolean): StaticArray<boolean> {
         Or(And(b, c), And(a, x)),
     ];
 }
+*/
 
-// @ts-ignore
-@inline
 export function Add16(a: StaticArray<boolean>, b: StaticArray<boolean>): StaticArray<boolean> {
     const out = new StaticArray<boolean>(16);
-    let curr = HalfAdder(a[15], b[15]);
-    out[15] = curr[0];
-    curr = FullAdder(a[14], b[14], curr[1]);
-    out[14] = curr[0];
-    curr = FullAdder(a[13], b[13], curr[1]);
-    out[13] = curr[0];
-    curr = FullAdder(a[12], b[12], curr[1]);
-    out[12] = curr[0];
-    curr = FullAdder(a[11], b[11], curr[1]);
-    out[11] = curr[0];
-    curr = FullAdder(a[10], b[10], curr[1]);
-    out[10] = curr[0];
-    curr = FullAdder(a[9], b[9], curr[1]);
-    out[9] = curr[0];
-    curr = FullAdder(a[8], b[8], curr[1]);
-    out[8] = curr[0];
-    curr = FullAdder(a[7], b[7], curr[1]);
-    out[7] = curr[0];
-    curr = FullAdder(a[6], b[6], curr[1]);
-    out[6] = curr[0];
-    curr = FullAdder(a[5], b[5], curr[1]);
-    out[5] = curr[0];
-    curr = FullAdder(a[4], b[4], curr[1]);
-    out[4] = curr[0];
-    curr = FullAdder(a[3], b[3], curr[1]);
-    out[3] = curr[0];
-    curr = FullAdder(a[2], b[2], curr[1]);
-    out[2] = curr[0];
-    curr = FullAdder(a[1], b[1], curr[1]);
-    out[1] = curr[0];
-    out[0] = FullAdder(a[0], b[0], curr[1])[0];
+    const a0 = a[0];
+    const a1 = a[1];
+    const a2 = a[2];
+    const a3 = a[3];
+    const a4 = a[4];
+    const a5 = a[5];
+    const a6 = a[6];
+    const a7 = a[7];
+    const a8 = a[8];
+    const a9 = a[9];
+    const a10 = a[10];
+    const a11 = a[11];
+    const a12 = a[12];
+    const a13 = a[13];
+    const a14 = a[14];
+    const a15 = a[15];
+    const b0 = b[0];
+    const b1 = b[1];
+    const b2 = b[2];
+    const b3 = b[3];
+    const b4 = b[4];
+    const b5 = b[5];
+    const b6 = b[6];
+    const b7 = b[7];
+    const b8 = b[8];
+    const b9 = b[9];
+    const b10 = b[10];
+    const b11 = b[11];
+    const b12 = b[12];
+    const b13 = b[13];
+    const b14 = b[14];
+    const b15 = b[15];
+    out[15] = Xor(a15, b15);
+    const carry14 = And(a15, b15);
+    const x14 = Xor(b14, carry14);
+    out[14] = Xor(a14, x14);
+
+    const carry13 = Or(And(b14, carry14), And(a14, x14));
+    const x13 = Xor(b13, carry13);
+    out[13] = Xor(a13, x13);
+
+    const carry12 = Or(And(b13, carry13), And(a13, x13));
+    const x12 = Xor(b12, carry12);
+    out[12] = Xor(a12, x12);
+
+    const carry11 = Or(And(b12, carry12), And(a12, x12));
+    const x11 = Xor(b11, carry11);
+    out[11] = Xor(a11, x11);
+
+    const carry10 = Or(And(b11, carry11), And(a11, x11));
+    const x10 = Xor(b10, carry10);
+    out[10] = Xor(a10, x10);
+
+    const carry9 = Or(And(b10, carry10), And(a10, x10));
+    const x9 = Xor(b9, carry9);
+    out[9] = Xor(a9, x9);
+
+    const carry8 = Or(And(b9, carry9), And(a9, x9));
+    const x8 = Xor(b8, carry8);
+    out[8] = Xor(a8, x8);
+
+    const carry7 = Or(And(b8, carry8), And(a8, x8));
+    const x7 = Xor(b7, carry7);
+    out[7] = Xor(a7, x7);
+
+    const carry6 = Or(And(b7, carry7), And(a7, x7));
+    const x6 = Xor(b6, carry6);
+    out[6] = Xor(a6, x6);
+
+    const carry5 = Or(And(b6, carry6), And(a6, x6));
+    const x5 = Xor(b5, carry5);
+    out[5] = Xor(a5, x5);
+
+    const carry4 = Or(And(b5, carry5), And(a5, x5));
+    const x4 = Xor(b4, carry4);
+    out[4] = Xor(a4, x4);
+
+    const carry3 = Or(And(b4, carry4), And(a4, x4));
+    const x3 = Xor(b3, carry3);
+    out[3] = Xor(a3, x3);
+
+    const carry2 = Or(And(b3, carry3), And(a3, x3));
+    const x2 = Xor(b2, carry2);
+    out[2] = Xor(a2, x2);
+
+    const carry1 = Or(And(b2, carry2), And(a2, x2));
+    const x1 = Xor(b1, carry1);
+    out[1] = Xor(a1, x1);
+    out[0] = Xor(a0, Xor(b0, Or(And(b1, carry1), And(a1, x1))));
     return out;
 }
 
