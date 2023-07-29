@@ -1,4 +1,4 @@
-import { nBit16, placeBit16 } from "./builtins";
+import { nBit16, nBit16_0, placeBit16, placeBit16_0 } from "./builtins";
 import { Xor, And, Or, Mux16, Not16, And16, Or8Way, Not } from "./gates";
 
 /*
@@ -23,7 +23,7 @@ function FullAdder(a: boolean, b: boolean, c: boolean): StaticArray<boolean> {
 */
 
 export function Add16(a: i16, b: i16): i16 {
-    const a0 = nBit16(a, 0);
+    const a0 = nBit16_0(a);
     const a1 = nBit16(a, 1);
     const a2 = nBit16(a, 2);
     const a3 = nBit16(a, 3);
@@ -39,7 +39,7 @@ export function Add16(a: i16, b: i16): i16 {
     const a13 = nBit16(a, 13);
     const a14 = nBit16(a, 14);
     const a15 = nBit16(a, 15);
-    const b0 = nBit16(b, 0);
+    const b0 = nBit16_0(b);
     const b1 = nBit16(b, 1);
     const b2 = nBit16(b, 2);
     const b3 = nBit16(b, 3);
@@ -83,7 +83,7 @@ export function Add16(a: i16, b: i16): i16 {
     const x13 = Xor(b13, carry13);
     const carry14 = Or(And(b13, carry13), And(a13, x13));
     const x14 = Xor(b14, carry14);
-    return placeBit16(Xor(a0, b0), 0) +
+    return placeBit16_0(Xor(a0, b0)) +
         placeBit16(Xor(a1, x1), 1) +
         placeBit16(Xor(a2, x2), 2) +
         placeBit16(Xor(a3, x3), 3) +
@@ -112,7 +112,7 @@ export function Inc16(in_: i16): i16 {
 @inline
 export function ALU(x: i16, y: i16, opcode: i8): i16 {
     // zx
-    const x1 = Mux16(x, 0, nBit16(opcode, 0));
+    const x1 = Mux16(x, 0, nBit16_0(opcode));
     // nx
     const x2 = Mux16(x1, Not16(x1), nBit16(opcode, 1));
     // zy
@@ -155,7 +155,7 @@ export function ALU(x: i16, y: i16, opcode: i8): i16 {
     //                                                                 nBit16(out2, 3),
     //                                                                 Or(
     //                                                                     nBit16(out2, 2),
-    //                                                                     Or(nBit16(out2, 1), nBit16(out2, 0))
+    //                                                                     Or(nBit16(out2, 1), nBit16_0(out2))
     //                                                                 )
     //                                                             )
     //                                                         )
