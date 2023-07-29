@@ -110,19 +110,19 @@ export function Inc16(in_: i16): i16 {
 
 // @ts-ignore
 @inline
-export function ALU(x: i16, y: i16, zx: boolean, nx: boolean, zy: boolean, ny: boolean, f: boolean, no: boolean): i16 {
+export function ALU(x: i16, y: i16, opcode: i8): i16 {
     // zx
-    const x1 = Mux16(x, 0, zx);
+    const x1 = Mux16(x, 0, nBit(opcode, 0));
     // nx
-    const x2 = Mux16(x1, Not16(x1), nx);
+    const x2 = Mux16(x1, Not16(x1), nBit(opcode, 1));
     // zy
-    const y1 = Mux16(y, 0, zy);
+    const y1 = Mux16(y, 0, nBit(opcode, 2));
     // ny
-    const y2 = Mux16(y1, Not16(y1), ny);
+    const y2 = Mux16(y1, Not16(y1), nBit(opcode, 3));
     // f
-    const out1 = Mux16(And16(x2, y2), Add16(x2, y2), f);
+    const out1 = Mux16(And16(x2, y2), Add16(x2, y2), nBit(opcode, 4));
     // no
-    const out2 = Mux16(out1, Not16(out1), no);
+    const out2 = Mux16(out1, Not16(out1), nBit(opcode, 5));
     return out2;
     //     // zr
     //     placeBit(
