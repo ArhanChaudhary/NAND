@@ -1,4 +1,4 @@
-import { concat16, nBit16, nBit16_0, nBit32, nBit32_0, placeBit16, placeBit16_0 } from "./builtins";
+import { nBit16, nBit16_0, placeBit16, placeBit16_0 } from "./builtins";
 import { Xor, And, Or, Mux16, Not16, And16, Or8Way, Not } from "./gates";
 
 /*
@@ -22,39 +22,39 @@ function FullAdder(a: boolean, b: boolean, c: boolean): StaticArray<boolean> {
 }
 */
 
-export function Add16(a: i32): i16 {
-    const a0 = nBit32_0(a);
-    const a1 = nBit32(a, 1);
-    const a2 = nBit32(a, 2);
-    const a3 = nBit32(a, 3);
-    const a4 = nBit32(a, 4);
-    const a5 = nBit32(a, 5);
-    const a6 = nBit32(a, 6);
-    const a7 = nBit32(a, 7);
-    const a8 = nBit32(a, 8);
-    const a9 = nBit32(a, 9);
-    const a10 = nBit32(a, 10);
-    const a11 = nBit32(a, 11);
-    const a12 = nBit32(a, 12);
-    const a13 = nBit32(a, 13);
-    const a14 = nBit32(a, 14);
-    const a15 = nBit32(a, 15);
-    const b0 = nBit32(a, 16);
-    const b1 = nBit32(a, 17);
-    const b2 = nBit32(a, 18);
-    const b3 = nBit32(a, 19);
-    const b4 = nBit32(a, 20);
-    const b5 = nBit32(a, 21);
-    const b6 = nBit32(a, 22);
-    const b7 = nBit32(a, 23);
-    const b8 = nBit32(a, 24);
-    const b9 = nBit32(a, 25);
-    const b10 = nBit32(a, 26);
-    const b11 = nBit32(a, 27);
-    const b12 = nBit32(a, 28);
-    const b13 = nBit32(a, 29);
-    const b14 = nBit32(a, 30);
-    const b15 = nBit32(a, 31);
+export function Add16(a: i16, b: i16): i16 {
+    const a0 = nBit16_0(a);
+    const a1 = nBit16(a, 1);
+    const a2 = nBit16(a, 2);
+    const a3 = nBit16(a, 3);
+    const a4 = nBit16(a, 4);
+    const a5 = nBit16(a, 5);
+    const a6 = nBit16(a, 6);
+    const a7 = nBit16(a, 7);
+    const a8 = nBit16(a, 8);
+    const a9 = nBit16(a, 9);
+    const a10 = nBit16(a, 10);
+    const a11 = nBit16(a, 11);
+    const a12 = nBit16(a, 12);
+    const a13 = nBit16(a, 13);
+    const a14 = nBit16(a, 14);
+    const a15 = nBit16(a, 15);
+    const b0 = nBit16_0(b);
+    const b1 = nBit16(b, 1);
+    const b2 = nBit16(b, 2);
+    const b3 = nBit16(b, 3);
+    const b4 = nBit16(b, 4);
+    const b5 = nBit16(b, 5);
+    const b6 = nBit16(b, 6);
+    const b7 = nBit16(b, 7);
+    const b8 = nBit16(b, 8);
+    const b9 = nBit16(b, 9);
+    const b10 = nBit16(b, 10);
+    const b11 = nBit16(b, 11);
+    const b12 = nBit16(b, 12);
+    const b13 = nBit16(b, 13);
+    const b14 = nBit16(b, 14);
+    const b15 = nBit16(b, 15);
     const carry1 = And(a0, b0);
     const x1 = Xor(b1, carry1);
     const carry2 = Or(And(b1, carry1), And(a1, x1));
@@ -104,7 +104,7 @@ export function Add16(a: i32): i16 {
 // @ts-ignore
 @inline
 export function Inc16(in_: i16): i16 {
-    return Add16(concat16(in_, 1));
+    return Add16(in_, 1);
 }
 
 
@@ -113,15 +113,17 @@ export function Inc16(in_: i16): i16 {
 export function ALU(x: i16, y: i16, opcode: i8): i16 {
     // zx
     const x1 = Mux16(x, 0, nBit16_0(opcode));
+    // nx
+    const x2 = Mux16(x1, Not16(x1), nBit16(opcode, 1));
     // zy
     const y1 = Mux16(y, 0, nBit16(opcode, 2));
-    // nx
     // ny
-    const x2y2 = concat16(Mux16(x1, Not16(x1), nBit16(opcode, 1)), Mux16(y1, Not16(y1), nBit16(opcode, 3)));
+    const y2 = Mux16(y1, Not16(y1), nBit16(opcode, 3));
     // f
-    const out1 = Mux16(And16(x2y2), Add16(x2y2), nBit16(opcode, 4));
+    const out1 = Mux16(And16((<i32>x2 & 65535) | (<i32>y2 << 16)), Add16(x2, y2), nBit16(opcode, 4));
     // no
-    return Mux16(out1, Not16(out1), nBit16(opcode, 5));
+    const out2 = Mux16(out1, Not16(out1), nBit16(opcode, 5));
+    return out2;
     //     // zr
     //     placeBit16(
     //         Not(

@@ -46,10 +46,6 @@ export function placeBit16_0(b: boolean): i16 {
 	return <i16>b;
 }
 
-export function concat16(a: i16, b: i16): i32 {
-	return (<i32>a & 65535) | (<i32>b << 16);
-}
-
 export let clock = true;
 // @ts-ignore
 @inline
