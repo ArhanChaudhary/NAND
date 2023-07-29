@@ -1,4 +1,4 @@
-import { NAND, nBit16, nBit16_0, placeBit16, placeBit16_0 } from "./builtins"
+import { NAND, nBit16, nBit16_0, nBit32, nBit32_0, placeBit16, placeBit16_0 } from "./builtins"
 
 // @ts-ignore
 @inline
@@ -60,23 +60,23 @@ export function Not16(in_: i16): i16 {
 
 // @ts-ignore
 @inline
-export function And16(a: i16, b: i16): i16 {
-    return placeBit16(And(nBit16(a, 15), nBit16(b, 15)), 15) +
-        placeBit16(And(nBit16(a, 14), nBit16(b, 14)), 14) +
-        placeBit16(And(nBit16(a, 13), nBit16(b, 13)), 13) +
-        placeBit16(And(nBit16(a, 12), nBit16(b, 12)), 12) +
-        placeBit16(And(nBit16(a, 11), nBit16(b, 11)), 11) +
-        placeBit16(And(nBit16(a, 10), nBit16(b, 10)), 10) +
-        placeBit16(And(nBit16(a, 9), nBit16(b, 9)), 9) +
-        placeBit16(And(nBit16(a, 8), nBit16(b, 8)), 8) +
-        placeBit16(And(nBit16(a, 7), nBit16(b, 7)), 7) +
-        placeBit16(And(nBit16(a, 6), nBit16(b, 6)), 6) +
-        placeBit16(And(nBit16(a, 5), nBit16(b, 5)), 5) +
-        placeBit16(And(nBit16(a, 4), nBit16(b, 4)), 4) +
-        placeBit16(And(nBit16(a, 3), nBit16(b, 3)), 3) +
-        placeBit16(And(nBit16(a, 2), nBit16(b, 2)), 2) +
-        placeBit16(And(nBit16(a, 1), nBit16(b, 1)), 1) +
-        placeBit16_0(And(nBit16_0(a), nBit16_0(b)))
+export function And16(a: i32): i16 {
+    return placeBit16(And(nBit32(a, 15), nBit32(a, 31)), 15) +
+        placeBit16(And(nBit32(a, 14), nBit32(a, 30)), 14) +
+        placeBit16(And(nBit32(a, 13), nBit32(a, 29)), 13) +
+        placeBit16(And(nBit32(a, 12), nBit32(a, 28)), 12) +
+        placeBit16(And(nBit32(a, 11), nBit32(a, 27)), 11) +
+        placeBit16(And(nBit32(a, 10), nBit32(a, 26)), 10) +
+        placeBit16(And(nBit32(a, 9), nBit32(a, 25)), 9) +
+        placeBit16(And(nBit32(a, 8), nBit32(a, 24)), 8) +
+        placeBit16(And(nBit32(a, 7), nBit32(a, 23)), 7) +
+        placeBit16(And(nBit32(a, 6), nBit32(a, 22)), 6) +
+        placeBit16(And(nBit32(a, 5), nBit32(a, 21)), 5) +
+        placeBit16(And(nBit32(a, 4), nBit32(a, 20)), 4) +
+        placeBit16(And(nBit32(a, 3), nBit32(a, 19)), 3) +
+        placeBit16(And(nBit32(a, 2), nBit32(a, 18)), 2) +
+        placeBit16(And(nBit32(a, 1), nBit32(a, 17)), 1) +
+        placeBit16_0(And(nBit32_0(a), nBit32(a, 16)))
 }
 
 
