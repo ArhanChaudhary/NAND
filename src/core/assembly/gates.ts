@@ -1,4 +1,4 @@
-import { NAND, concat16, nBit16, nBit16_0, nBit32, nBit32_0, placeBit16, placeBit16_0 } from "./builtins"
+import { NAND, nBit16, nBit16_0, nBit32, nBit32_0, placeBit16, placeBit16_0 } from "./builtins"
 
 // @ts-ignore
 @inline
@@ -103,23 +103,23 @@ export function Or16(ab: i32): i16 {
 
 // @ts-ignore
 @inline
-export function Mux16(ab: i32, sel: boolean): i16 {
-    return placeBit16(Mux(nBit32(ab, 15), nBit32(ab, 31), sel), 15) +
-        placeBit16(Mux(nBit32(ab, 14), nBit32(ab, 30), sel), 14) +
-        placeBit16(Mux(nBit32(ab, 13), nBit32(ab, 29), sel), 13) +
-        placeBit16(Mux(nBit32(ab, 12), nBit32(ab, 28), sel), 12) +
-        placeBit16(Mux(nBit32(ab, 11), nBit32(ab, 27), sel), 11) +
-        placeBit16(Mux(nBit32(ab, 10), nBit32(ab, 26), sel), 10) +
-        placeBit16(Mux(nBit32(ab, 9), nBit32(ab, 25), sel), 9) +
-        placeBit16(Mux(nBit32(ab, 8), nBit32(ab, 24), sel), 8) +
-        placeBit16(Mux(nBit32(ab, 7), nBit32(ab, 23), sel), 7) +
-        placeBit16(Mux(nBit32(ab, 6), nBit32(ab, 22), sel), 6) +
-        placeBit16(Mux(nBit32(ab, 5), nBit32(ab, 21), sel), 5) +
-        placeBit16(Mux(nBit32(ab, 4), nBit32(ab, 20), sel), 4) +
-        placeBit16(Mux(nBit32(ab, 3), nBit32(ab, 19), sel), 3) +
-        placeBit16(Mux(nBit32(ab, 2), nBit32(ab, 18), sel), 2) +
-        placeBit16(Mux(nBit32(ab, 1), nBit32(ab, 17), sel), 1) +
-        placeBit16_0(Mux(nBit32_0(ab), nBit32(ab, 16), sel))
+export function Mux16(a: i16, b: i16, sel: boolean): i16 {
+    return placeBit16(Mux(nBit16(a, 15), nBit16(b, 15), sel), 15) +
+        placeBit16(Mux(nBit16(a, 14), nBit16(b, 14), sel), 14) +
+        placeBit16(Mux(nBit16(a, 13), nBit16(b, 13), sel), 13) +
+        placeBit16(Mux(nBit16(a, 12), nBit16(b, 12), sel), 12) +
+        placeBit16(Mux(nBit16(a, 11), nBit16(b, 11), sel), 11) +
+        placeBit16(Mux(nBit16(a, 10), nBit16(b, 10), sel), 10) +
+        placeBit16(Mux(nBit16(a, 9), nBit16(b, 9), sel), 9) +
+        placeBit16(Mux(nBit16(a, 8), nBit16(b, 8), sel), 8) +
+        placeBit16(Mux(nBit16(a, 7), nBit16(b, 7), sel), 7) +
+        placeBit16(Mux(nBit16(a, 6), nBit16(b, 6), sel), 6) +
+        placeBit16(Mux(nBit16(a, 5), nBit16(b, 5), sel), 5) +
+        placeBit16(Mux(nBit16(a, 4), nBit16(b, 4), sel), 4) +
+        placeBit16(Mux(nBit16(a, 3), nBit16(b, 3), sel), 3) +
+        placeBit16(Mux(nBit16(a, 2), nBit16(b, 2), sel), 2) +
+        placeBit16(Mux(nBit16(a, 1), nBit16(b, 1), sel), 1) +
+        placeBit16_0(Mux(nBit16_0(a), nBit16_0(b), sel))
 }
 
 // @ts-ignore
@@ -151,10 +151,8 @@ export function Or8Way(a: i8): boolean {
 export function Mux4Way16(a: i16, b: i16, c: i16, d: i16, sel: u8): i16 {
     const lsb = nBit16_0(sel);
     return Mux16(
-        concat16(
-            Mux16(concat16(a, b), lsb),
-            Mux16(concat16(c, d), lsb),
-        ),
+        Mux16(a, b, lsb),
+        Mux16(c, d, lsb),
         nBit16(sel, 1)
     );
 }
@@ -166,21 +164,15 @@ export function Mux8Way16(a: i16, b: i16, c: i16, d: i16, e: i16, f: i16, g: i16
     const s0 = nBit16_0(sel);
     const s1 = nBit16(sel, 1);
     return Mux16(
-        concat16(
-            Mux16(
-                concat16(
-                    Mux16(concat16(a, b), s0),
-                    Mux16(concat16(c, d), s0),
-                ),
-                s1
-            ),
-            Mux16(
-                concat16(
-                    Mux16(concat16(e, f), s0),
-                    Mux16(concat16(g, h), s0),
-                ),
-                s1
-            )
+        Mux16(
+            Mux16(a, b, s0),
+            Mux16(c, d, s0),
+            s1
+        ),
+        Mux16(
+            Mux16(e, f, s0),
+            Mux16(g, h, s0),
+            s1
         ),
         nBit16(sel, 2)
     );
