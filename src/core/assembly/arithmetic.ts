@@ -1,4 +1,4 @@
-import { nBit16, nBit16_0, placeBit16, placeBit16_0 } from "./builtins";
+import { nBit16, nBit16_0, word16 } from "./builtins";
 import { Xor, And, Or, Mux16, Not16, And16, Or8Way, Not } from "./gates";
 
 /*
@@ -83,22 +83,24 @@ export function Add16(a: i16, b: i16): i16 {
     const x13 = Xor(b13, carry13);
     const carry14 = Or(And(b13, carry13), And(a13, x13));
     const x14 = Xor(b14, carry14);
-    return placeBit16_0(Xor(a0, b0)) |
-        placeBit16(Xor(a1, x1), 1) |
-        placeBit16(Xor(a2, x2), 2) |
-        placeBit16(Xor(a3, x3), 3) |
-        placeBit16(Xor(a4, x4), 4) |
-        placeBit16(Xor(a5, x5), 5) |
-        placeBit16(Xor(a6, x6), 6) |
-        placeBit16(Xor(a7, x7), 7) |
-        placeBit16(Xor(a8, x8), 8) |
-        placeBit16(Xor(a9, x9), 9) |
-        placeBit16(Xor(a10, x10), 10) |
-        placeBit16(Xor(a11, x11), 11) |
-        placeBit16(Xor(a12, x12), 12) |
-        placeBit16(Xor(a13, x13), 13) |
-        placeBit16(Xor(a14, x14), 14) |
-        placeBit16(Xor(a15, Xor(b15, Or(And(b14, carry14), And(a14, x14)))), 15);
+    return word16(
+        Xor(a0, b0),
+        Xor(a1, x1),
+        Xor(a2, x2),
+        Xor(a3, x3),
+        Xor(a4, x4),
+        Xor(a5, x5),
+        Xor(a6, x6),
+        Xor(a7, x7),
+        Xor(a8, x8),
+        Xor(a9, x9),
+        Xor(a10, x10),
+        Xor(a11, x11),
+        Xor(a12, x12),
+        Xor(a13, x13),
+        Xor(a14, x14),
+        Xor(a15, Xor(b15, Or(And(b14, carry14), And(a14, x14)))),
+    );
 }
 
 // @ts-ignore
