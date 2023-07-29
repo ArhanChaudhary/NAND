@@ -120,7 +120,7 @@ export function ALU(x: i16, y: i16, opcode: i8): i16 {
     // ny
     const y2 = Mux16(y1, Not16(y1), nBit16(opcode, 3));
     // f
-    const out1 = Mux16(And16((<i32>x2 & 65535) | (<i32>y2 << 16)), Add16(x2, y2), nBit16(opcode, 4));
+    const out1 = Mux16(And16(x2, y2), Add16(x2, y2), nBit16(opcode, 4));
     // no
     const out2 = Mux16(out1, Not16(out1), nBit16(opcode, 5));
     return out2;

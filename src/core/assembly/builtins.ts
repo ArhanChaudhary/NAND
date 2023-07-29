@@ -20,20 +20,6 @@ export function nBit16_0(n: i16): boolean {
 
 // @ts-ignore
 @inline
-export function nBit32(n: i32, i: u8): boolean {
-	// @ts-ignore
-	return <boolean>((n >> i) & 1);
-}
-
-// @ts-ignore
-@inline
-export function nBit32_0(n: i32): boolean {
-	// @ts-ignore
-	return <boolean>(n & 1);
-}
-
-// @ts-ignore
-@inline
 export function placeBit16(b: boolean, i: u8): i16 {
 	// @ts-ignore
 	return <i16>b << i;
