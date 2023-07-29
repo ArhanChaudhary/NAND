@@ -1,4 +1,4 @@
-import { concat16, nBit16, nBit16_0, nBit32, nBit32_0, placeBit16, placeBit16_0 } from "./builtins";
+import { concat16, concat16_0, nBit16, nBit16_0, nBit32, nBit32_0, placeBit16, placeBit16_0 } from "./builtins";
 import { Xor, And, Or, Mux16, Not16, And16, Or8Way, Not } from "./gates";
 
 /*
@@ -107,21 +107,24 @@ export function Inc16(in_: i16): i16 {
     return Add16(concat16(in_, 1));
 }
 
-
+ 
 // @ts-ignore
 @inline
 export function ALU(x: i16, y: i16, opcode: i8): i16 {
     // zx
-    const x1 = Mux16(x, 0, nBit16_0(opcode));
+    const x1 = Mux16(concat16_0(x), nBit16_0(opcode));
     // zy
-    const y1 = Mux16(y, 0, nBit16(opcode, 2));
+    const y1 = Mux16(concat16_0(y), nBit16(opcode, 2));
     // nx
     // ny
-    const x2y2 = concat16(Mux16(x1, Not16(x1), nBit16(opcode, 1)), Mux16(y1, Not16(y1), nBit16(opcode, 3)));
+    const x2y2 = concat16(
+        Mux16(concat16(x1, Not16(x1)), nBit16(opcode, 1)),
+        Mux16(concat16(y1, Not16(y1)), nBit16(opcode, 3))
+    );
     // f
-    const out1 = Mux16(And16(x2y2), Add16(x2y2), nBit16(opcode, 4));
+    const out1 = Mux16(concat16(And16(x2y2), Add16(x2y2)), nBit16(opcode, 4));
     // no
-    return Mux16(out1, Not16(out1), nBit16(opcode, 5));
+    return Mux16(concat16(out1, Not16(out1)), nBit16(opcode, 5));
     //     // zr
     //     placeBit16(
     //         Not(
