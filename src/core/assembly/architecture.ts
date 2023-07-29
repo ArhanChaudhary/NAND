@@ -1,4 +1,4 @@
-import { Inc16 } from "./arithmetic";
+/*import { Inc16 } from "./arithmetic";
 import { clock, false16 } from "./builtins";
 import { DMux4Way, DMux8Way, Mux, Mux16, Mux4Way16, Mux8Way16, Or } from "./gates";
 
@@ -226,3 +226,4 @@ export function PC(in_: StaticArray<boolean>, load: boolean, inc: boolean, reset
     );
 }
 
+*/
