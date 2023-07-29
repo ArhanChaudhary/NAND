@@ -22,7 +22,7 @@ function FullAdder(a: boolean, b: boolean, c: boolean): StaticArray<boolean> {
 }
 */
 
-export function Add16(a: i16, b: i16): i16 {
+export function Add16(a: u16, b: u16): u16 {
     const a0 = nBit16_0(a);
     const a1 = nBit16(a, 1);
     const a2 = nBit16(a, 2);
@@ -105,14 +105,14 @@ export function Add16(a: i16, b: i16): i16 {
 
 // @ts-ignore
 @inline
-export function Inc16(in_: i16): i16 {
+export function Inc16(in_: u16): u16 {
     return Add16(in_, 1);
 }
 
 
 // @ts-ignore
 @inline
-export function ALU(x: i16, y: i16, opcode: i8): i16 {
+export function ALU(x: u16, y: u16, opcode: u8): u16 {
     // zx
     const x1 = Mux16(x, 0, nBit16_0(opcode));
     // nx

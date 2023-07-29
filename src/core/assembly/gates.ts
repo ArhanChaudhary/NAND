@@ -33,7 +33,7 @@ export function Mux(a: boolean, b: boolean, sel: boolean): boolean {
 
 // @ts-ignore
 @inline
-export function DMux(in_: boolean, sel: boolean): i8 {
+export function DMux(in_: boolean, sel: boolean): u8 {
     return word2(
         And(in_, sel),
         And(in_, Not(sel))
@@ -42,7 +42,7 @@ export function DMux(in_: boolean, sel: boolean): i8 {
 
 // @ts-ignore
 @inline
-export function Not16(in_: i16): i16 {
+export function Not16(in_: u16): u16 {
     return word16(
         Not(nBit16_0(in_)),
         Not(nBit16(in_, 1)),
@@ -65,7 +65,7 @@ export function Not16(in_: i16): i16 {
 
 // @ts-ignore
 @inline
-export function And16(a: i16, b: i16): i16 {
+export function And16(a: u16, b: u16): u16 {
     return word16(
         And(nBit16_0(a), nBit16_0(b)),
         And(nBit16(a, 1), nBit16(b, 1)),
@@ -89,7 +89,7 @@ export function And16(a: i16, b: i16): i16 {
 
 // @ts-ignore
 @inline
-export function Or16(a: i16, b: i16): i16 {
+export function Or16(a: u16, b: u16): u16 {
     return word16(
         Or(nBit16_0(a), nBit16_0(b)),
         Or(nBit16(a, 1), nBit16(b, 1)),
@@ -112,7 +112,7 @@ export function Or16(a: i16, b: i16): i16 {
 
 // @ts-ignore
 @inline
-export function Mux16(a: i16, b: i16, sel: boolean): i16 {
+export function Mux16(a: u16, b: u16, sel: boolean): u16 {
     return word16(
         Mux(nBit16_0(a), nBit16_0(b), sel),
         Mux(nBit16(a, 1), nBit16(b, 1), sel),
@@ -135,7 +135,7 @@ export function Mux16(a: i16, b: i16, sel: boolean): i16 {
 
 // @ts-ignore
 @inline
-export function Or8Way(a: i16): boolean {
+export function Or8Way(a: u16): boolean {
     return Or(
         nBit16(a, 7),
         Or(
@@ -159,7 +159,7 @@ export function Or8Way(a: i16): boolean {
 
 // @ts-ignore
 @inline
-export function Mux4Way16(a: i16, b: i16, c: i16, d: i16, sel: u8): i16 {
+export function Mux4Way16(a: u16, b: u16, c: u16, d: u16, sel: u8): u16 {
     const lsb = nBit16_0(sel);
     return Mux16(
         Mux16(a, b, lsb),
@@ -171,7 +171,7 @@ export function Mux4Way16(a: i16, b: i16, c: i16, d: i16, sel: u8): i16 {
 
 // @ts-ignore
 @inline
-export function Mux8Way16(a: i16, b: i16, c: i16, d: i16, e: i16, f: i16, g: i16, h: i16, sel: u8): i16 {
+export function Mux8Way16(a: u16, b: u16, c: u16, d: u16, e: u16, f: u16, g: u16, h: u16, sel: u8): u16 {
     const s0 = nBit16_0(sel);
     const s1 = nBit16(sel, 1);
     return Mux16(
@@ -192,7 +192,7 @@ export function Mux8Way16(a: i16, b: i16, c: i16, d: i16, e: i16, f: i16, g: i16
 
 // @ts-ignore
 @inline
-export function DMux4Way(in_: boolean, sel: u8): i8 {
+export function DMux4Way(in_: boolean, sel: u8): u8 {
     const lsb = nBit16_0(sel);
     const msb = nBit16(sel, 1);
     const DMuxInline0 = And(in_, Not(msb));
@@ -207,7 +207,7 @@ export function DMux4Way(in_: boolean, sel: u8): i8 {
 
 // @ts-ignore
 @inline
-export function DMux8Way(in_: boolean, sel: u8): i8 {
+export function DMux8Way(in_: boolean, sel: u8): u8 {
     const s0 = nBit16_0(sel);
     const s1 = nBit16(sel, 1);
     const s2 = nBit16(sel, 2);

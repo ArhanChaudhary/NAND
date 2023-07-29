@@ -6,36 +6,36 @@ export function NAND(a: boolean, b: boolean): boolean {
 
 // @ts-ignore
 @inline
-export function nBit16(n: i16, i: u8): boolean {
+export function nBit16(n: u16, i: u8): boolean {
 	// @ts-ignore
 	return <boolean>((n >> i) & 1);
 }
 
 // @ts-ignore
 @inline
-export function nBit16_0(n: i16): boolean {
+export function nBit16_0(n: u16): boolean {
 	// @ts-ignore
 	return <boolean>(n & 1);
 }
 
 // @ts-ignore
 @inline
-function placeBit16(b: boolean, i: u8): i16 {
+function placeBit16(b: boolean, i: u8): u16 {
 	// @ts-ignore
-	return <i16>b << i;
+	return <u16>b << i;
 }
 
 // @ts-ignore
 @inline
-function placeBit16_0(b: boolean): i16 {
+function placeBit16_0(b: boolean): u16 {
 	// @ts-ignore
-	return <i16>b;
+	return <u16>b;
 }
 
 // @ts-ignore
 @inline
-export function word2(a: boolean, b: boolean): i8 {
-	return <i8>(
+export function word2(a: boolean, b: boolean): u8 {
+	return <u8>(
 		placeBit16_0(a) |
 		placeBit16(b, 1)
 	);
@@ -43,8 +43,8 @@ export function word2(a: boolean, b: boolean): i8 {
 
 // @ts-ignore
 @inline
-export function word4(a: boolean, b: boolean, c: boolean, d: boolean): i8 {
-	return <i8>(
+export function word4(a: boolean, b: boolean, c: boolean, d: boolean): u8 {
+	return <u8>(
 		placeBit16_0(a) |
 		placeBit16(b, 1) |
 		placeBit16(c, 2) |
@@ -54,8 +54,8 @@ export function word4(a: boolean, b: boolean, c: boolean, d: boolean): i8 {
 
 // @ts-ignore
 @inline
-export function word8(a: boolean, b: boolean, c: boolean, d: boolean, e: boolean, f: boolean, g: boolean, h: boolean): i8 {
-	return <i8>(
+export function word8(a: boolean, b: boolean, c: boolean, d: boolean, e: boolean, f: boolean, g: boolean, h: boolean): u8 {
+	return <u8>(
 		placeBit16_0(a) |
 		placeBit16(b, 1) |
 		placeBit16(c, 2) |
@@ -70,7 +70,7 @@ export function word8(a: boolean, b: boolean, c: boolean, d: boolean, e: boolean
 // @ts-ignore
 @inline
 export function word16(a: boolean, b: boolean, c: boolean, d: boolean, e: boolean, f: boolean, g: boolean, h: boolean, 
-						i: boolean, j: boolean, k: boolean, l: boolean, m: boolean, n: boolean, o: boolean, p: boolean): i16 {
+						i: boolean, j: boolean, k: boolean, l: boolean, m: boolean, n: boolean, o: boolean, p: boolean): u16 {
 	return placeBit16_0(a) |
 			placeBit16(b, 1) |
 			placeBit16(c, 2) |
