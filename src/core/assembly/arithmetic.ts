@@ -83,21 +83,21 @@ export function Add16(a: i16, b: i16): i16 {
     const x13 = Xor(b13, carry13);
     const carry14 = Or(And(b13, carry13), And(a13, x13));
     const x14 = Xor(b14, carry14);
-    return placeBit16_0(Xor(a0, b0)) +
-        placeBit16(Xor(a1, x1), 1) +
-        placeBit16(Xor(a2, x2), 2) +
-        placeBit16(Xor(a3, x3), 3) +
-        placeBit16(Xor(a4, x4), 4) +
-        placeBit16(Xor(a5, x5), 5) +
-        placeBit16(Xor(a6, x6), 6) +
-        placeBit16(Xor(a7, x7), 7) +
-        placeBit16(Xor(a8, x8), 8) +
-        placeBit16(Xor(a9, x9), 9) +
-        placeBit16(Xor(a10, x10), 10) +
-        placeBit16(Xor(a11, x11), 11) +
-        placeBit16(Xor(a12, x12), 12) +
-        placeBit16(Xor(a13, x13), 13) +
-        placeBit16(Xor(a14, x14), 14) +
+    return placeBit16_0(Xor(a0, b0)) |
+        placeBit16(Xor(a1, x1), 1) |
+        placeBit16(Xor(a2, x2), 2) |
+        placeBit16(Xor(a3, x3), 3) |
+        placeBit16(Xor(a4, x4), 4) |
+        placeBit16(Xor(a5, x5), 5) |
+        placeBit16(Xor(a6, x6), 6) |
+        placeBit16(Xor(a7, x7), 7) |
+        placeBit16(Xor(a8, x8), 8) |
+        placeBit16(Xor(a9, x9), 9) |
+        placeBit16(Xor(a10, x10), 10) |
+        placeBit16(Xor(a11, x11), 11) |
+        placeBit16(Xor(a12, x12), 12) |
+        placeBit16(Xor(a13, x13), 13) |
+        placeBit16(Xor(a14, x14), 14) |
         placeBit16(Xor(a15, Xor(b15, Or(And(b14, carry14), And(a14, x14)))), 15);
 }
 
@@ -122,8 +122,7 @@ export function ALU(x: i16, y: i16, opcode: i8): i16 {
     // f
     const out1 = Mux16(And16(x2, y2), Add16(x2, y2), nBit16(opcode, 4));
     // no
-    const out2 = Mux16(out1, Not16(out1), nBit16(opcode, 5));
-    return out2;
+    return Mux16(out1, Not16(out1), nBit16(opcode, 5));
     //     // zr
     //     placeBit16(
     //         Not(
@@ -172,7 +171,7 @@ export function ALU(x: i16, y: i16, opcode: i8): i16 {
     //             )
     //         ),
     //         16
-    //     ) +
+    //     ) |
     //     // ng
     //     placeBit16(nBit16(out2, 15), 17);
 }

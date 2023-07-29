@@ -34,48 +34,48 @@ export function Mux(a: boolean, b: boolean, sel: boolean): boolean {
 // @ts-ignore
 @inline
 export function DMux(in_: boolean, sel: boolean): i8 {
-    return <i8>(placeBit16(And(in_, Not(sel)), 1) + placeBit16_0(And(in_, sel)));
+    return <i8>(placeBit16(And(in_, Not(sel)), 1) | placeBit16_0(And(in_, sel)));
 }
 
 // @ts-ignore
 @inline
 export function Not16(in_: i16): i16 {
-    return placeBit16(Not(nBit16(in_, 15)), 15) +
-        placeBit16(Not(nBit16(in_, 14)), 14) +
-        placeBit16(Not(nBit16(in_, 13)), 13) +
-        placeBit16(Not(nBit16(in_, 12)), 12) +
-        placeBit16(Not(nBit16(in_, 11)), 11) +
-        placeBit16(Not(nBit16(in_, 10)), 10) +
-        placeBit16(Not(nBit16(in_, 9)), 9) +
-        placeBit16(Not(nBit16(in_, 8)), 8) +
-        placeBit16(Not(nBit16(in_, 7)), 7) +
-        placeBit16(Not(nBit16(in_, 6)), 6) +
-        placeBit16(Not(nBit16(in_, 5)), 5) +
-        placeBit16(Not(nBit16(in_, 4)), 4) +
-        placeBit16(Not(nBit16(in_, 3)), 3) +
-        placeBit16(Not(nBit16(in_, 2)), 2) +
-        placeBit16(Not(nBit16(in_, 1)), 1) +
+    return placeBit16(Not(nBit16(in_, 15)), 15) |
+        placeBit16(Not(nBit16(in_, 14)), 14) |
+        placeBit16(Not(nBit16(in_, 13)), 13) |
+        placeBit16(Not(nBit16(in_, 12)), 12) |
+        placeBit16(Not(nBit16(in_, 11)), 11) |
+        placeBit16(Not(nBit16(in_, 10)), 10) |
+        placeBit16(Not(nBit16(in_, 9)), 9) |
+        placeBit16(Not(nBit16(in_, 8)), 8) |
+        placeBit16(Not(nBit16(in_, 7)), 7) |
+        placeBit16(Not(nBit16(in_, 6)), 6) |
+        placeBit16(Not(nBit16(in_, 5)), 5) |
+        placeBit16(Not(nBit16(in_, 4)), 4) |
+        placeBit16(Not(nBit16(in_, 3)), 3) |
+        placeBit16(Not(nBit16(in_, 2)), 2) |
+        placeBit16(Not(nBit16(in_, 1)), 1) |
         placeBit16_0(Not(nBit16_0(in_)))
 }
 
 // @ts-ignore
 @inline
 export function And16(a: i16, b: i16): i16 {
-    return placeBit16(And(nBit16(a, 15), nBit16(b, 15)), 15) +
-        placeBit16(And(nBit16(a, 14), nBit16(b, 14)), 14) +
-        placeBit16(And(nBit16(a, 13), nBit16(b, 13)), 13) +
-        placeBit16(And(nBit16(a, 12), nBit16(b, 12)), 12) +
-        placeBit16(And(nBit16(a, 11), nBit16(b, 11)), 11) +
-        placeBit16(And(nBit16(a, 10), nBit16(b, 10)), 10) +
-        placeBit16(And(nBit16(a, 9), nBit16(b, 9)), 9) +
-        placeBit16(And(nBit16(a, 8), nBit16(b, 8)), 8) +
-        placeBit16(And(nBit16(a, 7), nBit16(b, 7)), 7) +
-        placeBit16(And(nBit16(a, 6), nBit16(b, 6)), 6) +
-        placeBit16(And(nBit16(a, 5), nBit16(b, 5)), 5) +
-        placeBit16(And(nBit16(a, 4), nBit16(b, 4)), 4) +
-        placeBit16(And(nBit16(a, 3), nBit16(b, 3)), 3) +
-        placeBit16(And(nBit16(a, 2), nBit16(b, 2)), 2) +
-        placeBit16(And(nBit16(a, 1), nBit16(b, 1)), 1) +
+    return placeBit16(And(nBit16(a, 15), nBit16(b, 15)), 15) |
+        placeBit16(And(nBit16(a, 14), nBit16(b, 14)), 14) |
+        placeBit16(And(nBit16(a, 13), nBit16(b, 13)), 13) |
+        placeBit16(And(nBit16(a, 12), nBit16(b, 12)), 12) |
+        placeBit16(And(nBit16(a, 11), nBit16(b, 11)), 11) |
+        placeBit16(And(nBit16(a, 10), nBit16(b, 10)), 10) |
+        placeBit16(And(nBit16(a, 9), nBit16(b, 9)), 9) |
+        placeBit16(And(nBit16(a, 8), nBit16(b, 8)), 8) |
+        placeBit16(And(nBit16(a, 7), nBit16(b, 7)), 7) |
+        placeBit16(And(nBit16(a, 6), nBit16(b, 6)), 6) |
+        placeBit16(And(nBit16(a, 5), nBit16(b, 5)), 5) |
+        placeBit16(And(nBit16(a, 4), nBit16(b, 4)), 4) |
+        placeBit16(And(nBit16(a, 3), nBit16(b, 3)), 3) |
+        placeBit16(And(nBit16(a, 2), nBit16(b, 2)), 2) |
+        placeBit16(And(nBit16(a, 1), nBit16(b, 1)), 1) |
         placeBit16_0(And(nBit16_0(a), nBit16_0(b)))
 }
 
@@ -83,42 +83,42 @@ export function And16(a: i16, b: i16): i16 {
 // @ts-ignore
 @inline
 export function Or16(a: i16, b: i16): i16 {
-    return placeBit16(Or(nBit16(a, 15), nBit16(b, 15)), 15) +
-        placeBit16(Or(nBit16(a, 14), nBit16(b, 14)), 14) +
-        placeBit16(Or(nBit16(a, 13), nBit16(b, 13)), 13) +
-        placeBit16(Or(nBit16(a, 12), nBit16(b, 12)), 12) +
-        placeBit16(Or(nBit16(a, 11), nBit16(b, 11)), 11) +
-        placeBit16(Or(nBit16(a, 10), nBit16(b, 10)), 10) +
-        placeBit16(Or(nBit16(a, 9), nBit16(b, 9)), 9) +
-        placeBit16(Or(nBit16(a, 8), nBit16(b, 8)), 8) +
-        placeBit16(Or(nBit16(a, 7), nBit16(b, 7)), 7) +
-        placeBit16(Or(nBit16(a, 6), nBit16(b, 6)), 6) +
-        placeBit16(Or(nBit16(a, 5), nBit16(b, 5)), 5) +
-        placeBit16(Or(nBit16(a, 4), nBit16(b, 4)), 4) +
-        placeBit16(Or(nBit16(a, 3), nBit16(b, 3)), 3) +
-        placeBit16(Or(nBit16(a, 2), nBit16(b, 2)), 2) +
-        placeBit16(Or(nBit16(a, 1), nBit16(b, 1)), 1) +
+    return placeBit16(Or(nBit16(a, 15), nBit16(b, 15)), 15) |
+        placeBit16(Or(nBit16(a, 14), nBit16(b, 14)), 14) |
+        placeBit16(Or(nBit16(a, 13), nBit16(b, 13)), 13) |
+        placeBit16(Or(nBit16(a, 12), nBit16(b, 12)), 12) |
+        placeBit16(Or(nBit16(a, 11), nBit16(b, 11)), 11) |
+        placeBit16(Or(nBit16(a, 10), nBit16(b, 10)), 10) |
+        placeBit16(Or(nBit16(a, 9), nBit16(b, 9)), 9) |
+        placeBit16(Or(nBit16(a, 8), nBit16(b, 8)), 8) |
+        placeBit16(Or(nBit16(a, 7), nBit16(b, 7)), 7) |
+        placeBit16(Or(nBit16(a, 6), nBit16(b, 6)), 6) |
+        placeBit16(Or(nBit16(a, 5), nBit16(b, 5)), 5) |
+        placeBit16(Or(nBit16(a, 4), nBit16(b, 4)), 4) |
+        placeBit16(Or(nBit16(a, 3), nBit16(b, 3)), 3) |
+        placeBit16(Or(nBit16(a, 2), nBit16(b, 2)), 2) |
+        placeBit16(Or(nBit16(a, 1), nBit16(b, 1)), 1) |
         placeBit16(Or(nBit16_0(a), nBit16_0(b)), 0)
 }
 
 // @ts-ignore
 @inline
 export function Mux16(a: i16, b: i16, sel: boolean): i16 {
-    return placeBit16(Mux(nBit16(a, 15), nBit16(b, 15), sel), 15) +
-        placeBit16(Mux(nBit16(a, 14), nBit16(b, 14), sel), 14) +
-        placeBit16(Mux(nBit16(a, 13), nBit16(b, 13), sel), 13) +
-        placeBit16(Mux(nBit16(a, 12), nBit16(b, 12), sel), 12) +
-        placeBit16(Mux(nBit16(a, 11), nBit16(b, 11), sel), 11) +
-        placeBit16(Mux(nBit16(a, 10), nBit16(b, 10), sel), 10) +
-        placeBit16(Mux(nBit16(a, 9), nBit16(b, 9), sel), 9) +
-        placeBit16(Mux(nBit16(a, 8), nBit16(b, 8), sel), 8) +
-        placeBit16(Mux(nBit16(a, 7), nBit16(b, 7), sel), 7) +
-        placeBit16(Mux(nBit16(a, 6), nBit16(b, 6), sel), 6) +
-        placeBit16(Mux(nBit16(a, 5), nBit16(b, 5), sel), 5) +
-        placeBit16(Mux(nBit16(a, 4), nBit16(b, 4), sel), 4) +
-        placeBit16(Mux(nBit16(a, 3), nBit16(b, 3), sel), 3) +
-        placeBit16(Mux(nBit16(a, 2), nBit16(b, 2), sel), 2) +
-        placeBit16(Mux(nBit16(a, 1), nBit16(b, 1), sel), 1) +
+    return placeBit16(Mux(nBit16(a, 15), nBit16(b, 15), sel), 15) |
+        placeBit16(Mux(nBit16(a, 14), nBit16(b, 14), sel), 14) |
+        placeBit16(Mux(nBit16(a, 13), nBit16(b, 13), sel), 13) |
+        placeBit16(Mux(nBit16(a, 12), nBit16(b, 12), sel), 12) |
+        placeBit16(Mux(nBit16(a, 11), nBit16(b, 11), sel), 11) |
+        placeBit16(Mux(nBit16(a, 10), nBit16(b, 10), sel), 10) |
+        placeBit16(Mux(nBit16(a, 9), nBit16(b, 9), sel), 9) |
+        placeBit16(Mux(nBit16(a, 8), nBit16(b, 8), sel), 8) |
+        placeBit16(Mux(nBit16(a, 7), nBit16(b, 7), sel), 7) |
+        placeBit16(Mux(nBit16(a, 6), nBit16(b, 6), sel), 6) |
+        placeBit16(Mux(nBit16(a, 5), nBit16(b, 5), sel), 5) |
+        placeBit16(Mux(nBit16(a, 4), nBit16(b, 4), sel), 4) |
+        placeBit16(Mux(nBit16(a, 3), nBit16(b, 3), sel), 3) |
+        placeBit16(Mux(nBit16(a, 2), nBit16(b, 2), sel), 2) |
+        placeBit16(Mux(nBit16(a, 1), nBit16(b, 1), sel), 1) |
         placeBit16_0(Mux(nBit16_0(a), nBit16_0(b), sel))
 }
 
@@ -187,9 +187,9 @@ export function DMux4Way(in_: boolean, sel: u8): i8 {
     const DMuxInline0 = And(in_, Not(msb));
     const DMuxInline1 = And(in_, msb);
     return <i8>(
-        placeBit16(And(DMuxInline0, Not(lsb)), 3) +
-        placeBit16(And(DMuxInline0, lsb), 2) +
-        placeBit16(And(DMuxInline1, Not(lsb)), 1) +
+        placeBit16(And(DMuxInline0, Not(lsb)), 3) |
+        placeBit16(And(DMuxInline0, lsb), 2) |
+        placeBit16(And(DMuxInline1, Not(lsb)), 1) |
         placeBit16_0(And(DMuxInline1, lsb))
     )
 }
@@ -209,13 +209,13 @@ export function DMux8Way(in_: boolean, sel: u8): i8 {
     const DMuxInline2 = And(topbottom1, nots1);
     const DMuxInline3 = And(topbottom1, s1);
     return <i8>(
-        placeBit16(And(DMuxInline0, nots2), 7) +
-        placeBit16(And(DMuxInline0, s0), 6) +
-        placeBit16(And(DMuxInline1, nots2), 5) +
-        placeBit16(And(DMuxInline1, s0), 4) +
-        placeBit16(And(DMuxInline2, nots2), 3) +
-        placeBit16(And(DMuxInline2, s0), 2) +
-        placeBit16(And(DMuxInline3, nots2), 1) +
+        placeBit16(And(DMuxInline0, nots2), 7) |
+        placeBit16(And(DMuxInline0, s0), 6) |
+        placeBit16(And(DMuxInline1, nots2), 5) |
+        placeBit16(And(DMuxInline1, s0), 4) |
+        placeBit16(And(DMuxInline2, nots2), 3) |
+        placeBit16(And(DMuxInline2, s0), 2) |
+        placeBit16(And(DMuxInline3, nots2), 1) |
         placeBit16_0(And(DMuxInline3, s0))
     );
 }
