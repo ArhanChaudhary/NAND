@@ -1,12 +1,22 @@
 // @ts-ignore
 @inline
 export function NAND(a: boolean, b: boolean): boolean {
-  return !(a && b);
+	return !(a && b);
 }
 
-export const true16: StaticArray<boolean> = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true];
-export const false16: StaticArray<boolean> = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
-export const one16: StaticArray<boolean> = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true];
+// @ts-ignore
+@inline
+export function nBit(n: i16, i: u8): boolean {
+	// @ts-ignore
+	return <boolean>((n >> i) & 1);
+}
+
+// @ts-ignore
+@inline
+export function placeBit(b: boolean, i: u8): i16 {
+	// @ts-ignore
+	return <i16>b << i;
+}
 
 export let clock = true;
 // @ts-ignore
