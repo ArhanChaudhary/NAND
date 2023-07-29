@@ -21,20 +21,6 @@ export function nBit16_0(n: u16): boolean {
 
 // @ts-ignore
 @inline
-export function nBit32(n: u32, i: u8): boolean {
-	// @ts-ignore
-	return <boolean>((n >> i) & 1);
-}
-
-// @ts-ignore
-@inline
-export function nBit32_0(n: u32): boolean {
-	// @ts-ignore
-	return <boolean>(n & 1);
-}
-
-// @ts-ignore
-@inline
 function placeBit16(b: boolean, i: u8): u16 {
 	// @ts-ignore
 	return <u16>b << i;
@@ -102,11 +88,6 @@ export function word16(a: boolean, b: boolean, c: boolean, d: boolean, e: boolea
 			placeBit16(n, 13) |
 			placeBit16(o, 14) |
 			placeBit16(p, 15)
-}
-
-export function appendBit(a: u16, b: boolean): u32 {
-	// @ts-ignore
-	return (<u32>a) | (<u32>b << 16);
 }
 
 export let clock = true;

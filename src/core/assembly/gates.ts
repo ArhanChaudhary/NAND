@@ -1,4 +1,4 @@
-import { NAND, appendBit, nBit16, nBit16_0, nBit32, nBit32_0, word16, word2, word4, word8 } from "./builtins"
+import { NAND, nBit16, nBit16_0, word16, word2, word4, word8 } from "./builtins"
 
 // @ts-ignore
 @inline
@@ -112,24 +112,24 @@ export function Or16(a: u16, b: u16): u16 {
 
 // @ts-ignore
 @inline
-export function Mux16(a: u16, b: u32): u16 {
+export function Mux16(a: u16, b: u16, sel: boolean): u16 {
     return word16(
-        Mux(nBit16_0(a), nBit32_0(b), nBit32(b, 16)),
-        Mux(nBit16(a, 1), nBit32(b, 1), nBit32(b, 16)),
-        Mux(nBit16(a, 2), nBit32(b, 2), nBit32(b, 16)),
-        Mux(nBit16(a, 3), nBit32(b, 3), nBit32(b, 16)),
-        Mux(nBit16(a, 4), nBit32(b, 4), nBit32(b, 16)),
-        Mux(nBit16(a, 5), nBit32(b, 5), nBit32(b, 16)),
-        Mux(nBit16(a, 6), nBit32(b, 6), nBit32(b, 16)),
-        Mux(nBit16(a, 7), nBit32(b, 7), nBit32(b, 16)),
-        Mux(nBit16(a, 8), nBit32(b, 8), nBit32(b, 16)),
-        Mux(nBit16(a, 9), nBit32(b, 9), nBit32(b, 16)),
-        Mux(nBit16(a, 10), nBit32(b, 10), nBit32(b, 16)),
-        Mux(nBit16(a, 11), nBit32(b, 11), nBit32(b, 16)),
-        Mux(nBit16(a, 12), nBit32(b, 12), nBit32(b, 16)),
-        Mux(nBit16(a, 13), nBit32(b, 13), nBit32(b, 16)),
-        Mux(nBit16(a, 14), nBit32(b, 14), nBit32(b, 16)),
-        Mux(nBit16(a, 15), nBit32(b, 15), nBit32(b, 16))
+        Mux(nBit16_0(a), nBit16_0(b), sel),
+        Mux(nBit16(a, 1), nBit16(b, 1), sel),
+        Mux(nBit16(a, 2), nBit16(b, 2), sel),
+        Mux(nBit16(a, 3), nBit16(b, 3), sel),
+        Mux(nBit16(a, 4), nBit16(b, 4), sel),
+        Mux(nBit16(a, 5), nBit16(b, 5), sel),
+        Mux(nBit16(a, 6), nBit16(b, 6), sel),
+        Mux(nBit16(a, 7), nBit16(b, 7), sel),
+        Mux(nBit16(a, 8), nBit16(b, 8), sel),
+        Mux(nBit16(a, 9), nBit16(b, 9), sel),
+        Mux(nBit16(a, 10), nBit16(b, 10), sel),
+        Mux(nBit16(a, 11), nBit16(b, 11), sel),
+        Mux(nBit16(a, 12), nBit16(b, 12), sel),
+        Mux(nBit16(a, 13), nBit16(b, 13), sel),
+        Mux(nBit16(a, 14), nBit16(b, 14), sel),
+        Mux(nBit16(a, 15), nBit16(b, 15), sel)
     );
 }
 
@@ -162,11 +162,9 @@ export function Or8Way(a: u16): boolean {
 export function Mux4Way16(a: u16, b: u16, c: u16, d: u16, sel: u8): u16 {
     const lsb = nBit16_0(sel);
     return Mux16(
-        Mux16(a, appendBit(b, lsb)),
-        appendBit(
-            Mux16(c, appendBit(d, lsb)),
-            nBit16(sel, 1)
-        )
+        Mux16(a, b, lsb),
+        Mux16(c, d, lsb),
+        nBit16(sel, 1)
     );
 }
 
@@ -178,22 +176,16 @@ export function Mux8Way16(a: u16, b: u16, c: u16, d: u16, e: u16, f: u16, g: u16
     const s1 = nBit16(sel, 1);
     return Mux16(
         Mux16(
-            Mux16(a, appendBit(b, s0)),
-            appendBit(
-                Mux16(c, appendBit(d, s0)),
-                s1
-            )
+            Mux16(a, b, s0),
+            Mux16(c, d, s0),
+            s1
         ),
-        appendBit(
-            Mux16(
-                Mux16(e, appendBit(f, s0)),
-                appendBit(
-                    Mux16(g, appendBit(h, s0)),
-                    s1
-                )
-            ),
-            nBit16(sel, 2)
-        )
+        Mux16(
+            Mux16(e, f, s0),
+            Mux16(g, h, s0),
+            s1
+        ),
+        nBit16(sel, 2)
     );
 }
 
