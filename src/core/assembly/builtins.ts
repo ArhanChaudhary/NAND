@@ -52,7 +52,7 @@ export function word4(a: boolean, b: boolean, c: boolean, d: boolean): u8 {
 		placeBit16(b, 1) |
 		placeBit16(c, 2) |
 		placeBit16(d, 3)
-	)
+	);
 }
 
 // @ts-ignore
@@ -67,7 +67,7 @@ export function word8(a: boolean, b: boolean, c: boolean, d: boolean, e: boolean
 		placeBit16(f, 5) |
 		placeBit16(g, 6) |
 		placeBit16(h, 7)
-	)
+	);
 }
 
 // @ts-ignore
@@ -89,7 +89,7 @@ export function word16(a: boolean, b: boolean, c: boolean, d: boolean, e: boolea
 			placeBit16(m, 12) |
 			placeBit16(n, 13) |
 			placeBit16(o, 14) |
-			placeBit16(p, 15)
+			placeBit16(p, 15);
 }
 
 export let clock = true;

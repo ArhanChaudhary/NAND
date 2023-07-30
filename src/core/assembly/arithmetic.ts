@@ -1,5 +1,5 @@
 import { nBit16, nBit16_0, word16 } from "./builtins";
-import { Xor, And, Or, Mux16, Not16, And16, Or8Way, Not } from "./gates";
+import { Xor, And, Or, Mux16, Not16, And16 } from "./gates";
 
 /*
 // @ts-ignore

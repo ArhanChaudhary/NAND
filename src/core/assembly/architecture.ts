@@ -1,5 +1,5 @@
-/*import { Inc16 } from "./arithmetic";
-import { clock, false16 } from "./builtins";
+import { Inc16 } from "./arithmetic";
+import { clock, nBit16, word16 } from "./builtins";
 import { DMux4Way, DMux8Way, Mux, Mux16, Mux4Way16, Mux8Way16, Or } from "./gates";
 
 class DFF {
@@ -40,25 +40,25 @@ class Register {
         new Bit(),
         new Bit(),
     ];
-    public call(in_: StaticArray<boolean>, load: boolean): StaticArray<boolean> {
-        return [
-            unchecked(this.bits[0]).call(unchecked(in_[0]), load),
-            unchecked(this.bits[1]).call(unchecked(in_[1]), load),
-            unchecked(this.bits[2]).call(unchecked(in_[2]), load),
-            unchecked(this.bits[3]).call(unchecked(in_[3]), load),
-            unchecked(this.bits[4]).call(unchecked(in_[4]), load),
-            unchecked(this.bits[5]).call(unchecked(in_[5]), load),
-            unchecked(this.bits[6]).call(unchecked(in_[6]), load),
-            unchecked(this.bits[7]).call(unchecked(in_[7]), load),
-            unchecked(this.bits[8]).call(unchecked(in_[8]), load),
-            unchecked(this.bits[9]).call(unchecked(in_[9]), load),
-            unchecked(this.bits[10]).call(unchecked(in_[10]), load),
-            unchecked(this.bits[11]).call(unchecked(in_[11]), load),
-            unchecked(this.bits[12]).call(unchecked(in_[12]), load),
-            unchecked(this.bits[13]).call(unchecked(in_[13]), load),
-            unchecked(this.bits[14]).call(unchecked(in_[14]), load),
-            unchecked(this.bits[15]).call(unchecked(in_[15]), load),
-        ]
+    public call(in_: u16, load: boolean): u16 {
+        return word16(
+            this.bits[0].call(nBit16(in_, 0), load),
+            this.bits[1].call(nBit16(in_, 1), load),
+            this.bits[2].call(nBit16(in_, 2), load),
+            this.bits[3].call(nBit16(in_, 3), load),
+            this.bits[4].call(nBit16(in_, 4), load),
+            this.bits[5].call(nBit16(in_, 5), load),
+            this.bits[6].call(nBit16(in_, 6), load),
+            this.bits[7].call(nBit16(in_, 7), load),
+            this.bits[8].call(nBit16(in_, 8), load),
+            this.bits[9].call(nBit16(in_, 9), load),
+            this.bits[10].call(nBit16(in_, 10), load),
+            this.bits[11].call(nBit16(in_, 11), load),
+            this.bits[12].call(nBit16(in_, 12), load),
+            this.bits[13].call(nBit16(in_, 13), load),
+            this.bits[14].call(nBit16(in_, 14), load),
+            this.bits[15].call(nBit16(in_, 15), load),
+        );
     }
 }
 
@@ -73,17 +73,17 @@ class RAM8 {
         new Register(),
         new Register(),
     ];
-    public call(in_: StaticArray<boolean>, load: boolean, address: StaticArray<boolean>): StaticArray<boolean> {
+    public call(in_: u16, load: boolean, address: u8): u16 {
         const selector = DMux8Way(load, address);
         return Mux8Way16(
-            unchecked(this.registers[0]).call(in_, unchecked(selector[0])),
-            unchecked(this.registers[1]).call(in_, unchecked(selector[1])),
-            unchecked(this.registers[2]).call(in_, unchecked(selector[2])),
-            unchecked(this.registers[3]).call(in_, unchecked(selector[3])),
-            unchecked(this.registers[4]).call(in_, unchecked(selector[4])),
-            unchecked(this.registers[5]).call(in_, unchecked(selector[5])),
-            unchecked(this.registers[6]).call(in_, unchecked(selector[6])),
-            unchecked(this.registers[7]).call(in_, unchecked(selector[7])),
+            this.registers[0].call(in_, nBit16(selector, 0)),
+            this.registers[1].call(in_, nBit16(selector, 1)),
+            this.registers[2].call(in_, nBit16(selector, 2)),
+            this.registers[3].call(in_, nBit16(selector, 3)),
+            this.registers[4].call(in_, nBit16(selector, 4)),
+            this.registers[5].call(in_, nBit16(selector, 5)),
+            this.registers[6].call(in_, nBit16(selector, 6)),
+            this.registers[7].call(in_, nBit16(selector, 7)),
             address
         )
     }
@@ -100,19 +100,19 @@ class RAM64 {
         new RAM8(),
         new RAM8(),
     ];
-    public call(in_: StaticArray<boolean>, load: boolean, address: StaticArray<boolean>): StaticArray<boolean> {
-        const selectoraddress = address.slice<StaticArray<boolean>>(0, 3);
+    public call(in_: u16, load: boolean, address: u8): u16 {
+        const selectoraddress = address >> 3;
         const selector = DMux8Way(load, selectoraddress);
-        const ramaddress = address.slice<StaticArray<boolean>>(3);
+        const ramaddress = address & 7;
         return Mux8Way16(
-            unchecked(this.RAM8s[0]).call(in_, unchecked(selector[0]), ramaddress),
-            unchecked(this.RAM8s[1]).call(in_, unchecked(selector[1]), ramaddress),
-            unchecked(this.RAM8s[2]).call(in_, unchecked(selector[2]), ramaddress),
-            unchecked(this.RAM8s[3]).call(in_, unchecked(selector[3]), ramaddress),
-            unchecked(this.RAM8s[4]).call(in_, unchecked(selector[4]), ramaddress),
-            unchecked(this.RAM8s[5]).call(in_, unchecked(selector[5]), ramaddress),
-            unchecked(this.RAM8s[6]).call(in_, unchecked(selector[6]), ramaddress),
-            unchecked(this.RAM8s[7]).call(in_, unchecked(selector[7]), ramaddress),
+            this.RAM8s[0].call(in_, nBit16(selector, 0), ramaddress),
+            this.RAM8s[1].call(in_, nBit16(selector, 1), ramaddress),
+            this.RAM8s[2].call(in_, nBit16(selector, 2), ramaddress),
+            this.RAM8s[3].call(in_, nBit16(selector, 3), ramaddress),
+            this.RAM8s[4].call(in_, nBit16(selector, 4), ramaddress),
+            this.RAM8s[5].call(in_, nBit16(selector, 5), ramaddress),
+            this.RAM8s[6].call(in_, nBit16(selector, 6), ramaddress),
+            this.RAM8s[7].call(in_, nBit16(selector, 7), ramaddress),
             selectoraddress,
         )
     }
@@ -129,19 +129,19 @@ class RAM512 {
         new RAM64(),
         new RAM64(),
     ];
-    public call(in_: StaticArray<boolean>, load: boolean, address: StaticArray<boolean>): StaticArray<boolean> {
-        const selectoraddress = address.slice<StaticArray<boolean>>(0, 3);
+    public call(in_: u16, load: boolean, address: u16): u16 {
+        const selectoraddress = <u8>(address >> 6);
         const selector = DMux8Way(load, selectoraddress);
-        const ramaddress = address.slice<StaticArray<boolean>>(3);
+        const ramaddress = <u8>(address & 63);
         return Mux8Way16(
-            unchecked(this.RAM64s[0]).call(in_, unchecked(selector[0]), ramaddress),
-            unchecked(this.RAM64s[1]).call(in_, unchecked(selector[1]), ramaddress),
-            unchecked(this.RAM64s[2]).call(in_, unchecked(selector[2]), ramaddress),
-            unchecked(this.RAM64s[3]).call(in_, unchecked(selector[3]), ramaddress),
-            unchecked(this.RAM64s[4]).call(in_, unchecked(selector[4]), ramaddress),
-            unchecked(this.RAM64s[5]).call(in_, unchecked(selector[5]), ramaddress),
-            unchecked(this.RAM64s[6]).call(in_, unchecked(selector[6]), ramaddress),
-            unchecked(this.RAM64s[7]).call(in_, unchecked(selector[7]), ramaddress),
+            this.RAM64s[0].call(in_, nBit16(selector, 0), ramaddress),
+            this.RAM64s[1].call(in_, nBit16(selector, 1), ramaddress),
+            this.RAM64s[2].call(in_, nBit16(selector, 2), ramaddress),
+            this.RAM64s[3].call(in_, nBit16(selector, 3), ramaddress),
+            this.RAM64s[4].call(in_, nBit16(selector, 4), ramaddress),
+            this.RAM64s[5].call(in_, nBit16(selector, 5), ramaddress),
+            this.RAM64s[6].call(in_, nBit16(selector, 6), ramaddress),
+            this.RAM64s[7].call(in_, nBit16(selector, 7), ramaddress),
             selectoraddress,
         )
     }
@@ -158,19 +158,19 @@ class RAM4K {
         new RAM512(),
         new RAM512(),
     ];
-    public call(in_: StaticArray<boolean>, load: boolean, address: StaticArray<boolean>): StaticArray<boolean> {
-        const selectoraddress = address.slice<StaticArray<boolean>>(0, 3);
+    public call(in_: u16, load: boolean, address: u16): u16 {
+        const selectoraddress = <u8>(address >> 9);
         const selector = DMux8Way(load, selectoraddress);
-        const ramaddress = address.slice<StaticArray<boolean>>(3);
+        const ramaddress = address & 511;
         return Mux8Way16(
-            unchecked(this.RAM512s[0]).call(in_, unchecked(selector[0]), ramaddress),
-            unchecked(this.RAM512s[1]).call(in_, unchecked(selector[1]), ramaddress),
-            unchecked(this.RAM512s[2]).call(in_, unchecked(selector[2]), ramaddress),
-            unchecked(this.RAM512s[3]).call(in_, unchecked(selector[3]), ramaddress),
-            unchecked(this.RAM512s[4]).call(in_, unchecked(selector[4]), ramaddress),
-            unchecked(this.RAM512s[5]).call(in_, unchecked(selector[5]), ramaddress),
-            unchecked(this.RAM512s[6]).call(in_, unchecked(selector[6]), ramaddress),
-            unchecked(this.RAM512s[7]).call(in_, unchecked(selector[7]), ramaddress),
+            this.RAM512s[0].call(in_, nBit16(selector, 0), ramaddress),
+            this.RAM512s[1].call(in_, nBit16(selector, 1), ramaddress),
+            this.RAM512s[2].call(in_, nBit16(selector, 2), ramaddress),
+            this.RAM512s[3].call(in_, nBit16(selector, 3), ramaddress),
+            this.RAM512s[4].call(in_, nBit16(selector, 4), ramaddress),
+            this.RAM512s[5].call(in_, nBit16(selector, 5), ramaddress),
+            this.RAM512s[6].call(in_, nBit16(selector, 6), ramaddress),
+            this.RAM512s[7].call(in_, nBit16(selector, 7), ramaddress),
             selectoraddress,
         )
     }
@@ -185,15 +185,15 @@ const RAM4Ks: StaticArray<RAM4K> = [
 
 // @ts-ignore
 @inline
-export function RAM16K(in_: StaticArray<boolean>, load: boolean, address: StaticArray<boolean>): StaticArray<boolean> {
-    const selectoraddress = address.slice<StaticArray<boolean>>(0, 2);
+export function RAM16K(in_: u16, load: boolean, address: u16): u16 {
+    const selectoraddress = <u8>(address >> 12);
     const selector = DMux4Way(load, selectoraddress);
-    const ramaddress = address.slice<StaticArray<boolean>>(2);
+    const ramaddress = address & 4095;
     return Mux4Way16(
-        unchecked(RAM4Ks[0]).call(in_, unchecked(selector[0]), ramaddress),
-        unchecked(RAM4Ks[1]).call(in_, unchecked(selector[1]), ramaddress),
-        unchecked(RAM4Ks[2]).call(in_, unchecked(selector[2]), ramaddress),
-        unchecked(RAM4Ks[3]).call(in_, unchecked(selector[3]), ramaddress),
+        RAM4Ks[0].call(in_, nBit16(selector, 0), ramaddress),
+        RAM4Ks[1].call(in_, nBit16(selector, 1), ramaddress),
+        RAM4Ks[2].call(in_, nBit16(selector, 2), ramaddress),
+        RAM4Ks[3].call(in_, nBit16(selector, 3), ramaddress),
         selectoraddress,
     );
 }

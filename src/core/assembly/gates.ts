@@ -35,8 +35,8 @@ export function Mux(a: boolean, b: boolean, sel: boolean): boolean {
 @inline
 export function DMux(in_: boolean, sel: boolean): u8 {
     return word2(
-        And(in_, sel),
-        And(in_, Not(sel))
+        And(in_, Not(sel)),
+        And(in_, sel)
     );
 }
 
@@ -198,11 +198,11 @@ export function DMux4Way(in_: boolean, sel: u8): u8 {
     const DMuxInline0 = And(in_, Not(msb));
     const DMuxInline1 = And(in_, msb);
     return word4(
-        And(DMuxInline1, lsb),
-        And(DMuxInline1, Not(lsb)),
-        And(DMuxInline0, lsb),
         And(DMuxInline0, Not(lsb)),
-    )
+        And(DMuxInline0, lsb),
+        And(DMuxInline1, Not(lsb)),
+        And(DMuxInline1, lsb),
+    );
 }
 
 // @ts-ignore
@@ -220,13 +220,13 @@ export function DMux8Way(in_: boolean, sel: u8): u8 {
     const DMuxInline2 = And(topbottom1, nots1);
     const DMuxInline3 = And(topbottom1, s1);
     return word8(
-        And(DMuxInline3, s0),
-        And(DMuxInline3, nots2),
-        And(DMuxInline2, s0),
-        And(DMuxInline2, nots2),
-        And(DMuxInline1, s0),
-        And(DMuxInline1, nots2),
-        And(DMuxInline0, s0),
         And(DMuxInline0, nots2),
+        And(DMuxInline0, s0),
+        And(DMuxInline1, nots2),
+        And(DMuxInline1, s0),
+        And(DMuxInline2, nots2),
+        And(DMuxInline2, s0),
+        And(DMuxInline3, nots2),
+        And(DMuxInline3, s0),
     );
 }
