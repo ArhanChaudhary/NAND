@@ -191,7 +191,7 @@ export function RAM16K(in_: u16, load: boolean, address: u16): u16 {
 }
 
 
-let PC_dffout = 0;
+let PC_dffout: u16 = 0;
 const PC_reg = new Register();
 // @ts-ignore
 @inline
