@@ -1,6 +1,8 @@
 // @ts-ignore
 @inline
 export function NAND(a: boolean, b: boolean): boolean {
+	// NOTE: && is somehow faster then & even though && produces one more wasm instruction
+	// this may be because of some optimization with select
 	return !(a && b);
 }
 
