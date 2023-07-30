@@ -1,5 +1,5 @@
 import { Inc16 } from "./arithmetic";
-import { clock, nBit16, slice16_0to11, slice16_0to2, slice16_0to5, slice16_0to8, slice16_12to14, slice16_3to5, slice16_6to8, slice16_9to11, word16 } from "./builtins";
+import { clock, nBit16, slice16_0to11, slice16_0to2, slice16_0to5, slice16_0to8, slice16_12to13, slice16_3to5, slice16_6to8, slice16_9to11, word16 } from "./builtins";
 import { DMux4Way, DMux8Way, Mux, Mux16, Mux4Way16, Mux8Way16, Or } from "./gates";
 
 class DFF {
@@ -148,6 +148,8 @@ class RAM4K {
     private RAM512s_5: RAM512 = new RAM512();
     private RAM512s_6: RAM512 = new RAM512();
     private RAM512s_7: RAM512 = new RAM512();
+    // @ts-ignore
+    @inline
     public call(in_: u16, load: boolean, address: u16): u16 {
         const selectoraddress = slice16_9to11(address);
         const selector = DMux8Way(load, selectoraddress);
@@ -171,10 +173,12 @@ const RAM4Ks_1 = new RAM4K();
 const RAM4Ks_2 = new RAM4K();
 const RAM4Ks_3 = new RAM4K();
 
+// TODO: combine load bit with address
+
 // @ts-ignore
 @inline
 export function RAM16K(in_: u16, load: boolean, address: u16): u16 {
-    const selectoraddress = slice16_12to14(address);
+    const selectoraddress = slice16_12to13(address);
     const selector = DMux4Way(load, selectoraddress);
     const ramaddress = slice16_0to11(address);
     return Mux4Way16(

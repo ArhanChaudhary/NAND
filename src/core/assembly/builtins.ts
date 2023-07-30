@@ -136,7 +136,7 @@ export function slice16_9to11(n: u16): u8 {
 
 // @ts-ignore
 @inline
-export function slice16_12to14(n: u16): u8 {
+export function slice16_12to13(n: u16): u8 {
 	return <u8>(n >> 12);
 }
 
