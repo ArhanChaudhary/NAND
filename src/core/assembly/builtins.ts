@@ -93,6 +93,7 @@ export function word16(a: boolean, b: boolean, c: boolean, d: boolean, e: boolea
 }
 
 export let clock = true;
+
 // @ts-ignore
 @inline
 export function tick(): void {
