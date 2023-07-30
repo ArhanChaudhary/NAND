@@ -92,6 +92,56 @@ export function word16(a: boolean, b: boolean, c: boolean, d: boolean, e: boolea
 			placeBit16(p, 15);
 }
 
+// @ts-ignore
+@inline
+export function slice16_0to2(n: u8): u8 {
+	return <u8>(n & 7);
+}
+
+// @ts-ignore
+@inline
+export function slice16_0to5(n: u16): u8 {
+	return <u8>(n & 63);
+}
+
+// @ts-ignore
+@inline
+export function slice16_0to8(n: u16): u16 {
+	return <u16>(n & 511);
+}
+
+// @ts-ignore
+@inline
+export function slice16_0to11(n: u16): u16 {
+	return <u16>(n & 4095);
+}
+
+// @ts-ignore
+@inline
+export function slice16_3to5(n: u8): u8 {
+	return <u8>(n >> 3);
+}
+
+// @ts-ignore
+@inline
+export function slice16_6to8(n: u16): u8 {
+	return <u8>(n >> 6);
+}
+
+
+// @ts-ignore
+@inline
+export function slice16_9to11(n: u16): u8 {
+	return <u8>(n >> 9);
+}
+
+
+// @ts-ignore
+@inline
+export function slice16_12to14(n: u16): u8 {
+	return <u8>(n >> 12);
+}
+
 export let clock = true;
 
 // @ts-ignore

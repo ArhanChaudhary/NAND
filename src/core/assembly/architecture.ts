@@ -1,5 +1,5 @@
 import { Inc16 } from "./arithmetic";
-import { clock, nBit16, word16 } from "./builtins";
+import { clock, nBit16, slice16_0to11, slice16_0to2, slice16_0to5, slice16_0to8, slice16_12to14, slice16_3to5, slice16_6to8, slice16_9to11, word16 } from "./builtins";
 import { DMux4Way, DMux8Way, Mux, Mux16, Mux4Way16, Mux8Way16, Or } from "./gates";
 
 class DFF {
@@ -95,9 +95,9 @@ class RAM64 {
     private RAM8s_6: RAM8 = new RAM8();
     private RAM8s_7: RAM8 = new RAM8();
     public call(in_: u16, load: boolean, address: u8): u16 {
-        const selectoraddress = address >> 3;
+        const selectoraddress = slice16_3to5(address);
         const selector = DMux8Way(load, selectoraddress);
-        const ramaddress = address & 7;
+        const ramaddress = slice16_0to2(address);
         return Mux8Way16(
             this.RAM8s_0.call(in_, nBit16(selector, 0), ramaddress),
             this.RAM8s_1.call(in_, nBit16(selector, 1), ramaddress),
@@ -122,9 +122,9 @@ class RAM512 {
     private RAM64s_6: RAM64 = new RAM64();
     private RAM64s_7: RAM64 = new RAM64();
     public call(in_: u16, load: boolean, address: u16): u16 {
-        const selectoraddress = <u8>(address >> 6);
+        const selectoraddress = slice16_6to8(address);
         const selector = DMux8Way(load, selectoraddress);
-        const ramaddress = <u8>(address & 63);
+        const ramaddress = slice16_0to5(address);
         return Mux8Way16(
             this.RAM64s_0.call(in_, nBit16(selector, 0), ramaddress),
             this.RAM64s_1.call(in_, nBit16(selector, 1), ramaddress),
@@ -149,9 +149,9 @@ class RAM4K {
     private RAM512s_6: RAM512 = new RAM512();
     private RAM512s_7: RAM512 = new RAM512();
     public call(in_: u16, load: boolean, address: u16): u16 {
-        const selectoraddress = <u8>(address >> 9);
+        const selectoraddress = slice16_9to11(address);
         const selector = DMux8Way(load, selectoraddress);
-        const ramaddress = address & 511;
+        const ramaddress = slice16_0to8(address);
         return Mux8Way16(
             this.RAM512s_0.call(in_, nBit16(selector, 0), ramaddress),
             this.RAM512s_1.call(in_, nBit16(selector, 1), ramaddress),
@@ -174,9 +174,9 @@ const RAM4Ks_3 = new RAM4K();
 // @ts-ignore
 @inline
 export function RAM16K(in_: u16, load: boolean, address: u16): u16 {
-    const selectoraddress = <u8>(address >> 12);
+    const selectoraddress = slice16_12to14(address);
     const selector = DMux4Way(load, selectoraddress);
-    const ramaddress = address & 4095;
+    const ramaddress = slice16_0to11(address);
     return Mux4Way16(
         RAM4Ks_0.call(in_, nBit16(selector, 0), ramaddress),
         RAM4Ks_1.call(in_, nBit16(selector, 1), ramaddress),
