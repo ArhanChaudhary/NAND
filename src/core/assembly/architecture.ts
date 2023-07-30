@@ -190,33 +190,25 @@ export function RAM16K(in_: u16, load: boolean, address: u16): u16 {
     );
 }
 
-/*
-let PC_dffout = false16;
+
+let PC_dffout = 0;
 const PC_reg = new Register();
 // @ts-ignore
 @inline
-export function PC(in_: StaticArray<boolean>, load: boolean, inc: boolean, reset: boolean): StaticArray<boolean> {
+export function PC(in_: u16, load: boolean, reset: boolean): u16 {
     return PC_dffout = PC_reg.call(
         // reset
         Mux16(
             // load
             Mux16(
                 // inc
-                Mux16(PC_dffout, Inc16(PC_dffout), inc),
+                Inc16(PC_dffout),
                 in_,
                 load
             ),
-            false16,
+            0,
             reset
         ),
-        Or(
-            Or(
-                load,
-                inc,
-            ),
-            reset,
-        )
+        true,
     );
 }
-
-*/
