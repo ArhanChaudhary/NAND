@@ -32,7 +32,7 @@ function placeBit16(b: boolean, i: u8): u16 {
 @inline
 function placeBit16_0(b: boolean): u16 {
 	// @ts-ignore
-	return <u16>b;
+	return b;
 }
 
 // @ts-ignore
@@ -52,6 +52,19 @@ export function word4(a: boolean, b: boolean, c: boolean, d: boolean): u8 {
 		placeBit16(b, 1) |
 		placeBit16(c, 2) |
 		placeBit16(d, 3)
+	);
+}
+
+// @ts-ignore
+@inline
+export function word6(a: boolean, b: boolean, c: boolean, d: boolean, e: boolean, f: boolean): u8 {
+	return <u8>(
+		placeBit16_0(a) |
+		placeBit16(b, 1) |
+		placeBit16(c, 2) |
+		placeBit16(d, 3) |
+		placeBit16(e, 4) |
+		placeBit16(f, 5)
 	);
 }
 
@@ -95,7 +108,7 @@ export function word16(a: boolean, b: boolean, c: boolean, d: boolean, e: boolea
 // @ts-ignore
 @inline
 export function slice16_0to2(n: u8): u8 {
-	return <u8>(n & 7);
+	return n & 7;
 }
 
 // @ts-ignore
@@ -107,19 +120,25 @@ export function slice16_0to5(n: u16): u8 {
 // @ts-ignore
 @inline
 export function slice16_0to8(n: u16): u16 {
-	return <u16>(n & 511);
+	return n & 511;
 }
 
 // @ts-ignore
 @inline
 export function slice16_0to11(n: u16): u16 {
-	return <u16>(n & 4095);
+	return n & 4095;
+}
+
+// @ts-ignore
+@inline
+export function slice16_0to14(n: u16): u16 {
+	return n & 32767;
 }
 
 // @ts-ignore
 @inline
 export function slice16_3to5(n: u8): u8 {
-	return <u8>(n >> 3);
+	return n >> 3;
 }
 
 // @ts-ignore

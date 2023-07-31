@@ -230,3 +230,53 @@ export function DMux8Way(in_: boolean, sel: u8): u8 {
         And(DMuxInline3, s0),
     );
 }
+
+// @ts-ignore
+@inline
+export function isZero(in_: u16): boolean {
+    return Not(
+        Or(
+            nBit16(in_, 15),
+            Or(
+                nBit16(in_, 14),
+                Or(
+                    nBit16(in_, 13),
+                    Or(
+                        nBit16(in_, 12),
+                        Or(
+                            nBit16(in_, 11),
+                            Or(
+                                nBit16(in_, 10),
+                                Or(
+                                    nBit16(in_, 9),
+                                    Or(
+                                        nBit16(in_, 8),
+                                        Or(
+                                            nBit16(in_, 7),
+                                            Or(
+                                                nBit16(in_, 6),
+                                                Or(
+                                                    nBit16(in_, 5),
+                                                    Or(
+                                                        nBit16(in_, 4),
+                                                        Or(
+                                                            nBit16(in_, 3),
+                                                            Or(
+                                                                nBit16(in_, 2),
+                                                                Or(nBit16(in_, 1), nBit16_0(in_))
+                                                            )
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    );
+}

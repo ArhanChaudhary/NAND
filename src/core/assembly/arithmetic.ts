@@ -109,7 +109,6 @@ export function Inc16(in_: u16): u16 {
     return Add16(in_, 1);
 }
 
-
 // @ts-ignore
 @inline
 export function ALU(x: u16, y: u16, opcode: u8): u16 {
@@ -125,55 +124,4 @@ export function ALU(x: u16, y: u16, opcode: u8): u16 {
     const out1 = Mux16(And16(x2, y2), Add16(x2, y2), nBit16(opcode, 4));
     // no
     return Mux16(out1, Not16(out1), nBit16(opcode, 5));
-    //     // zr
-    //     placeBit16(
-    //         Not(
-    //             Or(
-    //                 nBit16(out2, 15),
-    //                 Or(
-    //                     nBit16(out2, 14),
-    //                     Or(
-    //                         nBit16(out2, 13),
-    //                         Or(
-    //                             nBit16(out2, 12),
-    //                             Or(
-    //                                 nBit16(out2, 11),
-    //                                 Or(
-    //                                     nBit16(out2, 10),
-    //                                     Or(
-    //                                         nBit16(out2, 9),
-    //                                         Or(
-    //                                             nBit16(out2, 8),
-    //                                             Or(
-    //                                                 nBit16(out2, 7),
-    //                                                 Or(
-    //                                                     nBit16(out2, 6),
-    //                                                     Or(
-    //                                                         nBit16(out2, 5),
-    //                                                         Or(
-    //                                                             nBit16(out2, 4),
-    //                                                             Or(
-    //                                                                 nBit16(out2, 3),
-    //                                                                 Or(
-    //                                                                     nBit16(out2, 2),
-    //                                                                     Or(nBit16(out2, 1), nBit16_0(out2))
-    //                                                                 )
-    //                                                             )
-    //                                                         )
-    //                                                     )
-    //                                                 )
-    //                                             )
-    //                                         )
-    //                                     )
-    //                                 )
-    //                             )
-    //                         )
-    //                     )
-    //                 )
-    //             )
-    //         ),
-    //         16
-    //     ) |
-    //     // ng
-    //     placeBit16(nBit16(out2, 15), 17);
 }
