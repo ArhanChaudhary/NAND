@@ -57,19 +57,6 @@ export function word4(a: boolean, b: boolean, c: boolean, d: boolean): u8 {
 
 // @ts-ignore
 @inline
-export function word6(a: boolean, b: boolean, c: boolean, d: boolean, e: boolean, f: boolean): u8 {
-	return <u8>(
-		placeBit16_0(a) |
-		placeBit16(b, 1) |
-		placeBit16(c, 2) |
-		placeBit16(d, 3) |
-		placeBit16(e, 4) |
-		placeBit16(f, 5)
-	);
-}
-
-// @ts-ignore
-@inline
 export function word8(a: boolean, b: boolean, c: boolean, d: boolean, e: boolean, f: boolean, g: boolean, h: boolean): u8 {
 	return <u8>(
 		placeBit16_0(a) |
@@ -171,4 +158,23 @@ export function tick(): void {
 @inline
 export function tock(): void {
     clock = false;
+}
+
+const ROM32K = new StaticArray<u16>(32768);
+export function loadROM(in_: StaticArray<u16>): void {
+	let i = 0;
+    while (i < in_.length) {
+		ROM32K[i] = in_[i];
+		i++;
+	}
+	while (i < ROM32K.length) {
+		ROM32K[i] = 0;
+		i++;
+	}
+}
+
+export function nROM32K(address: u16): u16 {
+	if (address < 0 || address > <u16>ROM32K.length)
+		throw new Error(address.toString());
+	return ROM32K[address];
 }
