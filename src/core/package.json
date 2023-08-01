@@ -7,11 +7,10 @@
     }
   },
   "scripts": {
-    "asbuild:debug": "asc assembly/*.ts --target debug",
-    "asbuild:release": "asc assembly/architecture.ts --target release",
-    "asbuild": "npm run asbuild:debug && npm run asbuild:release",
-    "test": "npm run asbuild:debug && node tests",
-    "start": "npm run asbuild && npx serve ."
+    "build:debug": "asc assembly/*.ts --target debug",
+    "build": "asc assembly/architecture.ts --target release",
+    "test": "npm run build:debug && node tests",
+    "start": "npm run build && npx serve ."
   },
   "devDependencies": {
     "assemblyscript": "^0.27.6"
