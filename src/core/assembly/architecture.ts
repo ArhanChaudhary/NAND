@@ -242,41 +242,55 @@ let ALUoutisneg: boolean = false;
 let AlUoutiszero: boolean = true;
 let ALUoutispos: boolean = false;
 export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16> {
+    const instruction0 = nBit16(instruction, 0);
+    const instruction1 = nBit16(instruction, 1);
+    const instruction2 = nBit16(instruction, 2);
+    const instruction5 = nBit16(instruction, 5);
+    const instruction15 = nBit16(instruction, 15);
+    const notinstruction15 = Not(instruction15);
+
     const out = new StaticArray<u16>(4);
     // @ts-ignore
     // writeM
-    out[1] = <u16>And(nBit16(instruction, 3), nBit16(instruction, 15));
-
-    const aregin = Mux16(instruction, ALUout, nBit16(instruction, 15));
-
-    const loadareg1 = Not(nBit16(instruction, 15));
-    const aluhasouttmp = Or(ALUoutispos, AlUoutiszero);
-    const aluhasout = Or(aluhasouttmp, ALUoutisneg);
-    const loadareg2 = And(aluhasout, nBit16(instruction, 5));
-    const loadareg = Or(loadareg1, loadareg2);
+    out[1] = <u16>And(nBit16(instruction, 3), instruction15);
     
-    const ALUy1 = ARegister.call(aregin, loadareg);
-    // addressM
-    out[2] = slice16_0to14(ALUy1);
-    const pcin = slice16_0to14(ALUy1);
+    const ALUy1 = ARegister.call(
+        Mux16(instruction, ALUout, instruction15),
+        Or(
+            notinstruction15,
+            And(
+                Or(Or(ALUoutispos, AlUoutiszero), ALUoutisneg),
+                instruction5
+            )
+        )
+    );
+    const PCin = slice16_0to14(ALUy1);
 
-    const jumpcond1 = And(ALUoutispos, nBit16(instruction, 0));
-    const jumpcond2 = And(AlUoutiszero, nBit16(instruction, 1));
-    const jumpcond3 = And(ALUoutisneg, nBit16(instruction, 2));
-    const shouldjumptmp = Or(jumpcond1, jumpcond2);
-    const shouldjump = Or(shouldjumptmp, jumpcond3);
-    const shouldgoto = And(shouldjump, nBit16(instruction, 15));
+    // addressM
+    out[2] = PCin;
 
     // pc
-    out[3] = PC(pcin, shouldgoto, reset);
+    out[3] = PC(
+        PCin,
+        And(
+            Or(
+                Or(
+                    And(ALUoutispos, instruction0),
+                    And(AlUoutiszero, instruction1),
+                ),
+                And(ALUoutisneg, instruction2)
+            ),
+            instruction15
+        ),
+        reset
+    );
 
-    const loaddreg = And(nBit16(instruction, 4), nBit16(instruction, 15));
-    const ALUx = DRegister.call(ALUout, loaddreg);
-    const ALUy = Mux16(ALUy1, inM, nBit16(instruction, 12));
+    const loadDreg = And(nBit16(instruction, 4), instruction15);
 
-    ALUout = ALU(
-        ALUx,
-        ALUy,
+    // outM
+    out[0] = ALUout = ALU(
+        DRegister.call(ALUout, loadDreg),
+        Mux16(ALUy1, inM, nBit16(instruction, 12)),
         word6(
             nBit16(instruction, 11),
             nBit16(instruction, 10),
@@ -286,33 +300,39 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
             nBit16(instruction, 6),
         )
     );
-    
-    // outM
-    out[0] = ALUout;
 
     ALUoutisneg = nBit16(ALUout, 15);
     AlUoutiszero = isZero(ALUout);
     ALUoutispos = Not(Or(ALUoutisneg, AlUoutiszero));
 
-    DRegister.call(ALUout, loaddreg);
-    {
-        const aregin = Mux16(instruction, ALUout, nBit16(instruction, 15));
-        const loadareg1 = Not(nBit16(instruction, 15));
-        const aluhasouttmp = Or(ALUoutispos, AlUoutiszero);
-        const aluhasout = Or(aluhasouttmp, ALUoutisneg);
-        const loadareg2 = And(aluhasout, nBit16(instruction, 5));
-        const loadareg = Or(loadareg1, loadareg2);        
-        const ALUy1 = ARegister.call(aregin, loadareg);
-
-        const pcin = slice16_0to14(ALUy1);
-        const jumpcond1 = And(ALUoutispos, nBit16(instruction, 0));
-        const jumpcond2 = And(AlUoutiszero, nBit16(instruction, 1));
-        const jumpcond3 = And(ALUoutisneg, nBit16(instruction, 2));
-        const shouldjumptmp = Or(jumpcond1, jumpcond2);
-        const shouldjump = Or(shouldjumptmp, jumpcond3);
-        const shouldgoto = And(shouldjump, nBit16(instruction, 15));
-
-        PC(pcin, shouldgoto, reset);
-    }
+    DRegister.call(ALUout, loadDreg);
+    PC(
+        slice16_0to14(
+            ARegister.call(
+                Mux16(instruction, ALUout, instruction15),
+                Or(
+                    notinstruction15,
+                    And(
+                        Or(
+                            Or(ALUoutispos, AlUoutiszero),
+                            ALUoutisneg
+                        ),
+                        instruction5
+                    )
+                )
+            )
+        ),
+        And(
+            Or(
+                Or(
+                    And(ALUoutispos, instruction0),
+                    And(AlUoutiszero, instruction1)
+                ),
+                And(ALUoutisneg, instruction2)
+            ),
+            instruction15
+        ),
+        reset
+    );
     return out;
 }
