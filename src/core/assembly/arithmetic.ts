@@ -22,7 +22,9 @@ function FullAdder(a: boolean, b: boolean, c: boolean): StaticArray<boolean> {
 }
 */
 
-export function Add16(a: u16, b: u16): u16 {
+// @ts-ignore
+@inline
+function Add16(a: u16, b: u16): u16 {
     const a0 = nBit16_0(a);
     const a1 = nBit16(a, 1);
     const a2 = nBit16(a, 2);

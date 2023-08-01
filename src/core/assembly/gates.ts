@@ -31,6 +31,7 @@ export function Mux(a: boolean, b: boolean, sel: boolean): boolean {
     return NAND(NAND(a, Not(sel)), NAND(b, sel));
 }
 
+/*
 // @ts-ignore
 @inline
 export function DMux(in_: boolean, sel: boolean): u8 {
@@ -39,6 +40,7 @@ export function DMux(in_: boolean, sel: boolean): u8 {
         And(in_, sel)
     );
 }
+*/
 
 // @ts-ignore
 @inline
@@ -86,7 +88,7 @@ export function And16(a: u16, b: u16): u16 {
     );
 }
 
-
+/*
 // @ts-ignore
 @inline
 export function Or16(a: u16, b: u16): u16 {
@@ -109,6 +111,7 @@ export function Or16(a: u16, b: u16): u16 {
         Or(nBit16(a, 15), nBit16(b, 15))
     );
 }
+*/
 
 // @ts-ignore
 @inline
@@ -133,6 +136,7 @@ export function Mux16(a: u16, b: u16, sel: boolean): u16 {
     );
 }
 
+/*
 // @ts-ignore
 @inline
 export function Or8Way(a: u16): boolean {
@@ -156,6 +160,7 @@ export function Or8Way(a: u16): boolean {
         )
     );
 }
+*/
 
 // @ts-ignore
 @inline

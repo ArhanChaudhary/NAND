@@ -194,8 +194,6 @@ const RAM4Ks_1 = new RAM4K();
 const RAM4Ks_2 = new RAM4K();
 const RAM4Ks_3 = new RAM4K();
 
-// TODO: combine load bit with address
-
 // @ts-ignore
 @inline
 export function RAM16K(in_: u16, load: boolean, address: u16): u16 {
@@ -216,7 +214,7 @@ let PC_dffout: u16 = 0;
 const PC_reg = new Register();
 // @ts-ignore
 @inline
-export function PC(in_: u16, load: boolean, reset: boolean): u16 {
+function PC(in_: u16, load: boolean, reset: boolean): u16 {
     return PC_dffout = PC_reg.call(
         // reset
         Mux16(
@@ -242,9 +240,13 @@ let ALUoutisneg: boolean = false;
 let AlUoutiszero: boolean = true;
 let ALUoutispos: boolean = false;
 
+const out = new StaticArray<u16>(4);
+
 // NOTE: CPU has been heavily optimized and thus obfuscated too
 // Please look at c57782a for a more verbose implementation of CPU
 
+// @ts-ignore
+@inline
 export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16> {
     const instruction0 = nBit16(instruction, 0);
     const instruction1 = nBit16(instruction, 1);
@@ -253,7 +255,6 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
     const instruction15 = nBit16(instruction, 15);
     const notinstruction15 = Not(instruction15);
 
-    const out = new StaticArray<u16>(4);
     // @ts-ignore
     // writeM
     out[1] = <u16>And(nBit16(instruction, 3), instruction15);
