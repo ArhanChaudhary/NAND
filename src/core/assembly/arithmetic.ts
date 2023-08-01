@@ -111,17 +111,18 @@ export function Inc16(in_: u16): u16 {
 
 // @ts-ignore
 @inline
-export function ALU(x: u16, y: u16, opcode: u8): u16 {
+// NOTE: combining all the booleans into a single opcode doesn't seem to have any performance impact
+export function ALU(x: u16, y: u16, zx: boolean, nx: boolean, zy: boolean, ny: boolean, f: boolean, no: boolean): u16 {
     // zx
-    const x1 = Mux16(x, 0, nBit16(opcode, 5));
+    const x1 = Mux16(x, 0, zx);
     // nx
-    const x2 = Mux16(x1, Not16(x1), nBit16(opcode, 4));
+    const x2 = Mux16(x1, Not16(x1), nx);
     // zy
-    const y1 = Mux16(y, 0, nBit16(opcode, 3));
+    const y1 = Mux16(y, 0, zy);
     // ny
-    const y2 = Mux16(y1, Not16(y1), nBit16(opcode, 2));
+    const y2 = Mux16(y1, Not16(y1), ny);
     // f
-    const out1 = Mux16(And16(x2, y2), Add16(x2, y2), nBit16(opcode, 1));
+    const out1 = Mux16(And16(x2, y2), Add16(x2, y2), f);
     // no
-    return Mux16(out1, Not16(out1), nBit16_0(opcode));
+    return Mux16(out1, Not16(out1), no);
 }

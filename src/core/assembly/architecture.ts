@@ -1,5 +1,5 @@
 import { ALU, Inc16 } from "./arithmetic";
-import { clock, nBit16, slice16_0to11, slice16_0to14, slice16_0to2, slice16_0to5, slice16_0to8, slice16_12to13, slice16_3to5, slice16_6to11, slice16_6to8, slice16_9to11, word16, word6 } from "./builtins";
+import { clock, nBit16, slice16_0to11, slice16_0to14, slice16_0to2, slice16_0to5, slice16_0to8, slice16_12to13, slice16_3to5, slice16_6to8, slice16_9to11, word16 } from "./builtins";
 import { And, DMux4Way, DMux8Way, Mux, Mux16, Mux4Way16, Mux8Way16, Not, Or, isZero } from "./gates";
 
 class DFF {
@@ -295,7 +295,12 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
     out[0] = ALUout = ALU(
         DRegister.call(ALUout, loadDreg),
         Mux16(ALUy1, inM, nBit16(instruction, 12)),
-        slice16_6to11(instruction)
+        nBit16(instruction, 11),
+        nBit16(instruction, 10),
+        nBit16(instruction, 9),
+        nBit16(instruction, 8),
+        nBit16(instruction, 7),
+        nBit16(instruction, 6),
     );
 
     ALUoutisneg = nBit16(ALUout, 15);
