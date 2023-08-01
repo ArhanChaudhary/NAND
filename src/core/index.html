@@ -2,7 +2,26 @@
     <html lang="en">
     <head>
         <script type="module">
-
+            const {
+                RAM16K,
+                CPU,
+            } = await (
+                async () => {
+                    const exports = await WebAssembly.instantiate(
+                        await globalThis.WebAssembly.compileStreaming(
+                            globalThis.fetch(new URL("./build/release.wasm", import.meta.url))
+                        ),
+                        {
+                            env: Object.assign(Object.create(globalThis), {
+                                abort() {
+                                    throw new Error("abort");
+                                },
+                            }),
+                        }
+                    );
+                    return exports.exports;
+                }
+            )();
         </script>
     </head>
     <body></body>

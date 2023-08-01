@@ -7,8 +7,8 @@
     }
   },
   "scripts": {
-    "asbuild:debug": "asc assembly/*.ts --target debug --uncheckedBehavior always",
-    "asbuild:release": "asc assembly/architecture.ts --target release --uncheckedBehavior always",
+    "asbuild:debug": "asc assembly/*.ts --target debug",
+    "asbuild:release": "asc assembly/architecture.ts --target release",
     "asbuild": "npm run asbuild:debug && npm run asbuild:release",
     "test": "npm run asbuild:debug && node tests",
     "start": "npm run asbuild && npx serve ."
