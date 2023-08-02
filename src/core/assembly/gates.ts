@@ -1,4 +1,4 @@
-import { NAND, nBit16, nBit16_0, word16, word2, word4, word8 } from "./builtins"
+import { NAND, nBit16, nBit16_0, word16, word4, word8 } from "./builtins"
 
 // @ts-ignore
 @inline
@@ -30,17 +30,6 @@ export function Xor(a: boolean, b: boolean): boolean {
 export function Mux(a: boolean, b: boolean, sel: boolean): boolean {
     return NAND(NAND(a, Not(sel)), NAND(b, sel));
 }
-
-/*
-// @ts-ignore
-@inline
-export function DMux(in_: boolean, sel: boolean): u8 {
-    return word2(
-        And(in_, Not(sel)),
-        And(in_, sel)
-    );
-}
-*/
 
 // @ts-ignore
 @inline
@@ -88,31 +77,6 @@ export function And16(a: u16, b: u16): u16 {
     );
 }
 
-/*
-// @ts-ignore
-@inline
-export function Or16(a: u16, b: u16): u16 {
-    return word16(
-        Or(nBit16_0(a), nBit16_0(b)),
-        Or(nBit16(a, 1), nBit16(b, 1)),
-        Or(nBit16(a, 2), nBit16(b, 2)),
-        Or(nBit16(a, 3), nBit16(b, 3)),
-        Or(nBit16(a, 4), nBit16(b, 4)),
-        Or(nBit16(a, 5), nBit16(b, 5)),
-        Or(nBit16(a, 6), nBit16(b, 6)),
-        Or(nBit16(a, 7), nBit16(b, 7)),
-        Or(nBit16(a, 8), nBit16(b, 8)),
-        Or(nBit16(a, 9), nBit16(b, 9)),
-        Or(nBit16(a, 10), nBit16(b, 10)),
-        Or(nBit16(a, 11), nBit16(b, 11)),
-        Or(nBit16(a, 12), nBit16(b, 12)),
-        Or(nBit16(a, 13), nBit16(b, 13)),
-        Or(nBit16(a, 14), nBit16(b, 14)),
-        Or(nBit16(a, 15), nBit16(b, 15))
-    );
-}
-*/
-
 // @ts-ignore
 @inline
 export function Mux16(a: u16, b: u16, sel: boolean): u16 {
@@ -135,32 +99,6 @@ export function Mux16(a: u16, b: u16, sel: boolean): u16 {
         Mux(nBit16(a, 15), nBit16(b, 15), sel)
     );
 }
-
-/*
-// @ts-ignore
-@inline
-export function Or8Way(a: u16): boolean {
-    return Or(
-        nBit16(a, 7),
-        Or(
-            nBit16(a, 6),
-            Or(
-                nBit16(a, 5),
-                Or(
-                    nBit16(a, 4),
-                    Or(
-                        nBit16(a, 3),
-                        Or(
-                            nBit16(a, 2),
-                            Or(nBit16(a, 1), nBit16_0(a))
-                        )
-                    )
-                )
-            )
-        )
-    );
-}
-*/
 
 // @ts-ignore
 @inline

@@ -1,27 +1,6 @@
 import { nBit16, nBit16_0, word16 } from "./builtins";
 import { Xor, And, Or, Mux16, Not16, And16 } from "./gates";
 
-/*
-// @ts-ignore
-@inline
-function HalfAdder(a: boolean, b: boolean): StaticArray<boolean> {
-    return [
-        Xor(a, b),
-        And(a, b),
-    ];
-}
-
-// @ts-ignore
-@inline
-function FullAdder(a: boolean, b: boolean, c: boolean): StaticArray<boolean> {
-    const x = Xor(b, c);
-    return [
-        Xor(a, x),
-        Or(And(b, c), And(a, x)),
-    ];
-}
-*/
-
 // @ts-ignore
 @inline
 function Add16(a: u16, b: u16): u16 {

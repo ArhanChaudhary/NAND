@@ -37,15 +37,6 @@ function placeBit16_0(b: boolean): u16 {
 
 // @ts-ignore
 @inline
-export function word2(a: boolean, b: boolean): u8 {
-	return <u8>(
-		placeBit16_0(a) |
-		placeBit16(b, 1)
-	);
-}
-
-// @ts-ignore
-@inline
 export function word4(a: boolean, b: boolean, c: boolean, d: boolean): u8 {
 	return <u8>(
 		placeBit16_0(a) |
