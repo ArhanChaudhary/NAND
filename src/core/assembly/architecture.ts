@@ -1,7 +1,10 @@
 import { ALU, Inc16 } from "./arithmetic";
-import { clock, nBit16, slice16_0to11, slice16_0to14, slice8_0to2, slice16_0to5, slice16_0to8, slice16_12to13, slice8_3to5, slice16_6to8, slice16_9to11, word16_16 } from "./builtins";
-import { And, DMux4Way, DMux8Way, Mux, Mux16, Mux4Way16, Mux8Way16, Not, Or, isZero } from "./gates";
+import { ARegister, DRegister, PC_reg, nBit16, slice16_0to14 } from "./builtins";
+import { And, Mux16, Not, Or, isZero } from "./gates";
 
+// a vanilla RAM16K design is too slow so we *must* emulate it (in builitins) :(
+
+/*
 class DFF {
     private prev: boolean = false;
     public call(in_: boolean): boolean {
@@ -208,14 +211,13 @@ export function RAM16K(in_: u16, load: boolean, address: u16): u16 {
         selectoraddress,
     );
 }
-
+*/
 
 let PC_dffout: u16 = 0;
-const PC_reg = new Register();
 // @ts-ignore
 @inline
 function PC(in_: u16, load: boolean, reset: boolean): u16 {
-    return PC_dffout = PC_reg.call(
+    return PC_dffout = PC_reg(
         // reset
         Mux16(
             // load
@@ -227,14 +229,10 @@ function PC(in_: u16, load: boolean, reset: boolean): u16 {
             ),
             0,
             reset
-        ),
-        true,
+        )
     );
 }
 
-
-const ARegister = new Register();
-const DRegister = new Register();
 let ALUout: u16 = 0;
 let ALUoutisneg: boolean = false;
 let AlUoutiszero: boolean = true;
@@ -259,7 +257,7 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
     // writeM
     out[1] = <u16>And(nBit16(instruction, 3), instruction15);
     
-    const ALUy1 = ARegister.call(
+    const ALUy1 = ARegister(
         Mux16(instruction, ALUout, instruction15),
         Or(
             notinstruction15,
@@ -292,9 +290,8 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
 
     const loadDreg = And(nBit16(instruction, 4), instruction15);
 
-    // outM
     out[0] = ALUout = ALU(
-        DRegister.call(ALUout, loadDreg),
+        DRegister(ALUout, loadDreg),
         Mux16(ALUy1, inM, nBit16(instruction, 12)),
         nBit16(instruction, 11),
         nBit16(instruction, 10),
@@ -308,10 +305,10 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
     AlUoutiszero = isZero(ALUout);
     ALUoutispos = Not(Or(ALUoutisneg, AlUoutiszero));
 
-    DRegister.call(ALUout, loadDreg);
+    DRegister(ALUout, loadDreg);
     PC(
         slice16_0to14(
-            ARegister.call(
+            ARegister(
                 Mux16(instruction, ALUout, instruction15),
                 Or(
                     notinstruction15,

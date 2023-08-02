@@ -6,6 +6,20 @@ export function NAND(a: boolean, b: boolean): boolean {
 	return !(a && b);
 }
 
+let clock = true;
+
+// @ts-ignore
+@inline
+export function tick(): void {
+    clock = true;
+}
+
+// @ts-ignore
+@inline
+export function tock(): void {
+    clock = false;
+}
+
 // @ts-ignore
 @inline
 export function nBit16(n: u16, i: u8): boolean {
@@ -35,6 +49,7 @@ function placeBit16_0(b: boolean): u16 {
 	return b;
 }
 
+/*
 // @ts-ignore
 @inline
 export function word8_4(a: boolean, b: boolean, c: boolean, d: boolean): u8 {
@@ -60,6 +75,7 @@ export function word8_8(a: boolean, b: boolean, c: boolean, d: boolean, e: boole
 		placeBit16(h, 7)
 	);
 }
+*/
 
 // @ts-ignore
 @inline
@@ -83,6 +99,7 @@ export function word16_16(a: boolean, b: boolean, c: boolean, d: boolean, e: boo
 			placeBit16(p, 15);
 }
 
+/*
 // @ts-ignore
 @inline
 export function slice8_0to2(n: u8): u8 {
@@ -106,6 +123,7 @@ export function slice16_0to8(n: u16): u16 {
 export function slice16_0to11(n: u16): u16 {
 	return n & 4095;
 }
+*/
 
 // @ts-ignore
 @inline
@@ -113,6 +131,7 @@ export function slice16_0to14(n: u16): u16 {
 	return n & 32767;
 }
 
+/*
 // @ts-ignore
 @inline
 export function slice8_3to5(n: u8): u8 {
@@ -136,36 +155,66 @@ export function slice16_9to11(n: u16): u8 {
 export function slice16_12to13(n: u16): u8 {
 	return <u8>(n >> 12);
 }
+*/
 
-export let clock = true;
-
+let PC_dffout: u16 = 0;
 // @ts-ignore
 @inline
-export function tick(): void {
-    clock = true;
+export function PC_reg(in_: u16): u16 {
+	const out = PC_dffout;
+	// NOTE: load is always true
+	if (clock) {
+		PC_dffout = in_;
+	}
+	return out;
 }
 
+let DRegister_dffout: u16 = 0;
 // @ts-ignore
 @inline
-export function tock(): void {
-    clock = false;
+export function DRegister(in_: u16, load: boolean): u16 {
+	const out = DRegister_dffout;
+	if (clock && load) {
+		DRegister_dffout = in_;
+	}
+	return out;
 }
 
-const ROM32K = new StaticArray<u16>(32768);
+let ARegister_dffout: u16 = 0;
+// @ts-ignore
+@inline
+export function ARegister(in_: u16, load: boolean): u16 {
+	const out = ARegister_dffout;
+	if (clock && load) {
+		ARegister_dffout = in_;
+	}
+	return out;
+}
+
+const RAM16K_memory = new StaticArray<u16>(16384);
+export function RAM16K(in_: u16, load: boolean, address: u16): u16 {
+    const out = RAM16K_memory[address];
+    if (clock && load) {
+        RAM16K_memory[address] = in_;
+    }
+    return out;
+}
+
+const ROM32K_memory = new StaticArray<u16>(32768);
 export function loadROM(in_: StaticArray<u16>): void {
 	let i = 0;
     while (i < in_.length) {
-		ROM32K[i] = in_[i];
+		ROM32K_memory[i] = in_[i];
 		i++;
 	}
-	while (i < ROM32K.length) {
-		ROM32K[i] = 0;
+	while (i < ROM32K_memory.length) {
+		ROM32K_memory[i] = 0;
 		i++;
 	}
 }
 
-export function nROM32K(address: u16): u16 {
-	if (address < 0 || address > <u16>ROM32K.length)
+export function ROM32K(address: u16): u16 {
+	if (address < 0 || address > <u16>ROM32K_memory.length)
 		throw new Error(address.toString());
-	return ROM32K[address];
+	return ROM32K_memory[address];
 }

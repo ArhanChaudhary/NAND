@@ -1,4 +1,4 @@
-import { NAND, nBit16, nBit16_0, word16_16, word8_4, word8_8 } from "./builtins"
+import { NAND, nBit16, nBit16_0, word16_16 } from "./builtins"
 
 // @ts-ignore
 @inline
@@ -27,7 +27,7 @@ export function Xor(a: boolean, b: boolean): boolean {
 
 // @ts-ignore
 @inline
-export function Mux(a: boolean, b: boolean, sel: boolean): boolean {
+function Mux(a: boolean, b: boolean, sel: boolean): boolean {
     return NAND(NAND(a, Not(sel)), NAND(b, sel));
 }
 
@@ -100,6 +100,7 @@ export function Mux16(a: u16, b: u16, sel: boolean): u16 {
     );
 }
 
+/*
 // @ts-ignore
 @inline
 export function Mux4Way16(a: u16, b: u16, c: u16, d: u16, sel: u8): u16 {
@@ -131,7 +132,6 @@ export function Mux8Way16(a: u16, b: u16, c: u16, d: u16, e: u16, f: u16, g: u16
         nBit16(sel, 2)
     );
 }
-
 
 // @ts-ignore
 @inline
@@ -173,7 +173,7 @@ export function DMux8Way(in_: boolean, sel: u8): u8 {
         And(DMuxInline3, s0),
     );
 }
-
+*/
 // @ts-ignore
 @inline
 export function isZero(in_: u16): boolean {
