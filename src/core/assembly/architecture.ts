@@ -240,12 +240,14 @@ let ALUoutisneg: boolean = false;
 let AlUoutiszero: boolean = true;
 let ALUoutispos: boolean = false;
 
+const out = new StaticArray<u16>(4);
+
 // NOTE: CPU has been heavily optimized and thus obfuscated too
 // Please look at c57782a for a more verbose implementation of CPU
 
 // @ts-ignore
 @inline
-export function CPU(inM: u16, instruction: u16, reset: boolean): u64 {
+export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16> {
     const instruction0 = nBit16(instruction, 0);
     const instruction1 = nBit16(instruction, 1);
     const instruction2 = nBit16(instruction, 2);
@@ -253,9 +255,9 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): u64 {
     const instruction15 = nBit16(instruction, 15);
     const notinstruction15 = Not(instruction15);
 
-    // writeM
     // @ts-ignore
-    let out: u64 = <u64>And(nBit16(instruction, 3), instruction15) << 16;
+    // writeM
+    out[1] = <u16>And(nBit16(instruction, 3), instruction15);
     
     const ALUy1 = ARegister.call(
         Mux16(instruction, ALUout, instruction15),
@@ -270,10 +272,10 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): u64 {
     const PCin = slice16_0to14(ALUy1);
 
     // addressM
-    out |= <u64>PCin << 17;
+    out[2] = PCin;
 
     // pc
-    out |= <u64>PC(
+    out[3] = PC(
         PCin,
         And(
             Or(
@@ -286,11 +288,12 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): u64 {
             instruction15
         ),
         reset
-    ) << 32;
+    );
 
     const loadDreg = And(nBit16(instruction, 4), instruction15);
 
-    ALUout = ALU(
+    // outM
+    out[0] = ALUout = ALU(
         DRegister.call(ALUout, loadDreg),
         Mux16(ALUy1, inM, nBit16(instruction, 12)),
         nBit16(instruction, 11),
@@ -300,8 +303,6 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): u64 {
         nBit16(instruction, 7),
         nBit16(instruction, 6),
     );
-    // outM
-    out |= ALUout;
 
     ALUoutisneg = nBit16(ALUout, 15);
     AlUoutiszero = isZero(ALUout);
