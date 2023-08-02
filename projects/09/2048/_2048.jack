@@ -288,6 +288,8 @@ class _2048 {
         let lcg = lcg - ((lcg / 1638) * 1638);
         let chosenPosition = available[lcg - ((lcg / availableCount) * availableCount)];
 
+        do Memory.deAlloc(available);
+
         if ((lcg - ((lcg / 6) * 6)) = 3) {
             do setPosition(chosenPosition, 4, true);
             let score = score + 4;
@@ -373,6 +375,8 @@ class _2048 {
         let i = 0;
         while (i < size) {
             let tmp = grid[i];
+            do tmp.dispose();
+            let tmp = prevGrid[i];
             do tmp.dispose();
             let i = i + 1;
         }
