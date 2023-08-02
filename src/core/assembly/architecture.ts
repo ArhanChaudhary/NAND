@@ -1,5 +1,5 @@
 import { ALU, Inc16 } from "./arithmetic";
-import { clock, nBit16, slice16_0to11, slice16_0to14, slice16_0to2, slice16_0to5, slice16_0to8, slice16_12to13, slice16_3to5, slice16_6to8, slice16_9to11, word16 } from "./builtins";
+import { clock, nBit16, slice16_0to11, slice16_0to14, slice8_0to2, slice16_0to5, slice16_0to8, slice16_12to13, slice8_3to5, slice16_6to8, slice16_9to11, word16_16 } from "./builtins";
 import { And, DMux4Way, DMux8Way, Mux, Mux16, Mux4Way16, Mux8Way16, Not, Or, isZero } from "./gates";
 
 class DFF {
@@ -39,7 +39,7 @@ class Register {
     private bits_14: Bit = new Bit();
     private bits_15: Bit = new Bit();
     public call(in_: u16, load: boolean): u16 {
-        return word16(
+        return word16_16(
             this.bits_0.call(nBit16(in_, 0), load),
             this.bits_1.call(nBit16(in_, 1), load),
             this.bits_2.call(nBit16(in_, 2), load),
@@ -60,7 +60,7 @@ class Register {
     }
     // For CPU debugging:
     // public toString(): u16 {
-    //     return word16(
+    //     return word16_16(
     //         this.bits_0.dff.prev,
     //         this.bits_1.dff.prev,
     //         this.bits_2.dff.prev,
@@ -116,9 +116,9 @@ class RAM64 {
     private RAM8s_6: RAM8 = new RAM8();
     private RAM8s_7: RAM8 = new RAM8();
     public call(in_: u16, load: boolean, address: u8): u16 {
-        const selectoraddress = slice16_3to5(address);
+        const selectoraddress = slice8_3to5(address);
         const selector = DMux8Way(load, selectoraddress);
-        const ramaddress = slice16_0to2(address);
+        const ramaddress = slice8_0to2(address);
         return Mux8Way16(
             this.RAM8s_0.call(in_, nBit16(selector, 0), ramaddress),
             this.RAM8s_1.call(in_, nBit16(selector, 1), ramaddress),

@@ -1,4 +1,4 @@
-import { nBit16, nBit16_0, word16 } from "./builtins";
+import { nBit16, nBit16_0, word16_16 } from "./builtins";
 import { Xor, And, Or, Mux16, Not16, And16 } from "./gates";
 
 // @ts-ignore
@@ -64,7 +64,7 @@ function Add16(a: u16, b: u16): u16 {
     const x13 = Xor(b13, carry13);
     const carry14 = Or(And(b13, carry13), And(a13, x13));
     const x14 = Xor(b14, carry14);
-    return word16(
+    return word16_16(
         Xor(a0, b0),
         Xor(a1, x1),
         Xor(a2, x2),

@@ -1,4 +1,4 @@
-import { NAND, nBit16, nBit16_0, word16, word4, word8 } from "./builtins"
+import { NAND, nBit16, nBit16_0, word16_16, word8_4, word8_8 } from "./builtins"
 
 // @ts-ignore
 @inline
@@ -34,7 +34,7 @@ export function Mux(a: boolean, b: boolean, sel: boolean): boolean {
 // @ts-ignore
 @inline
 export function Not16(in_: u16): u16 {
-    return word16(
+    return word16_16(
         Not(nBit16_0(in_)),
         Not(nBit16(in_, 1)),
         Not(nBit16(in_, 2)),
@@ -57,7 +57,7 @@ export function Not16(in_: u16): u16 {
 // @ts-ignore
 @inline
 export function And16(a: u16, b: u16): u16 {
-    return word16(
+    return word16_16(
         And(nBit16_0(a), nBit16_0(b)),
         And(nBit16(a, 1), nBit16(b, 1)),
         And(nBit16(a, 2), nBit16(b, 2)),
@@ -80,7 +80,7 @@ export function And16(a: u16, b: u16): u16 {
 // @ts-ignore
 @inline
 export function Mux16(a: u16, b: u16, sel: boolean): u16 {
-    return word16(
+    return word16_16(
         Mux(nBit16_0(a), nBit16_0(b), sel),
         Mux(nBit16(a, 1), nBit16(b, 1), sel),
         Mux(nBit16(a, 2), nBit16(b, 2), sel),
@@ -140,7 +140,7 @@ export function DMux4Way(in_: boolean, sel: u8): u8 {
     const msb = nBit16(sel, 1);
     const DMuxInline0 = And(in_, Not(msb));
     const DMuxInline1 = And(in_, msb);
-    return word4(
+    return word8_4(
         And(DMuxInline0, Not(lsb)),
         And(DMuxInline0, lsb),
         And(DMuxInline1, Not(lsb)),
@@ -162,7 +162,7 @@ export function DMux8Way(in_: boolean, sel: u8): u8 {
     const DMuxInline1 = And(topbottom0, s1);
     const DMuxInline2 = And(topbottom1, nots1);
     const DMuxInline3 = And(topbottom1, s1);
-    return word8(
+    return word8_8(
         And(DMuxInline0, nots2),
         And(DMuxInline0, s0),
         And(DMuxInline1, nots2),
