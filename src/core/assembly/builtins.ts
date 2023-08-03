@@ -201,20 +201,18 @@ export function RAM16K(in_: u16, load: boolean, address: u16): u16 {
 }
 
 const ROM32K_memory = new StaticArray<u16>(32768);
+let ROM32K_end: u16 = 0;
 export function loadROM(in_: StaticArray<u16>): void {
-	let i = 0;
+	let i: u16 = 0;
     while (i < in_.length) {
 		ROM32K_memory[i] = in_[i];
 		i++;
 	}
-	while (i < ROM32K_memory.length) {
-		ROM32K_memory[i] = 0;
-		i++;
-	}
+	ROM32K_end = in_.length - 1;
 }
 
 export function ROM32K(address: u16): u16 {
-	if (address < 0 || address > <u16>ROM32K_memory.length)
+	if (address > ROM32K_end)
 		throw new Error(address.toString());
 	return ROM32K_memory[address];
 }

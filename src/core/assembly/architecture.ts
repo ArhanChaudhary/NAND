@@ -313,10 +313,7 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
                 Or(
                     notinstruction15,
                     And(
-                        Or(
-                            Or(ALUoutispos, AlUoutiszero),
-                            ALUoutisneg
-                        ),
+                        Or(Or(ALUoutispos, AlUoutiszero), ALUoutisneg),
                         instruction5
                     )
                 )
