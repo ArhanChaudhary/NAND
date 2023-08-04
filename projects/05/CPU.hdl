@@ -46,10 +46,7 @@ CHIP CPU {
     Mux16(a=instruction, b=aluout, sel=instruction[15], out=aregin);
 
     Not(in=instruction[15], out=loadareg1);
-    Or(a=aluoutispos, b=aluoutiszero, out=aluhasouttmp);
-    Or(a=aluhasouttmp, b=aluoutisneg, out=aluhasout);
-    And(a=aluhasout, b=instruction[5], out=loadareg2);
-    Or(a=loadareg1, b=loadareg2, out=loadareg);
+    Or(a=loadareg1, b=instruction[5], out=loadareg);
 
     ARegister(in=aregin, load=loadareg, out[0..14]=addressM, out=aluy1, out=pcin);
 

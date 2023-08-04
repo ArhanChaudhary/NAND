@@ -305,13 +305,7 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
         slice16_0to14(
             ARegister(
                 Mux16(instruction, ALUout, instruction15),
-                Or(
-                    notinstruction15,
-                    And(
-                        Or(Or(ALUoutispos, AlUoutiszero), ALUoutisneg),
-                        instruction5
-                    )
-                )
+                Or(notinstruction15, instruction5)
             )
         ),
         And(
