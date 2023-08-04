@@ -100,19 +100,18 @@ export function Mux16(a: u16, b: u16, sel: boolean): u16 {
     );
 }
 
-/*
 // @ts-ignore
 @inline
 export function Mux4Way16(a: u16, b: u16, c: u16, d: u16, sel: u8): u16 {
     const lsb = nBit16_0(sel);
     return Mux16(
-        Mux16(a, b, lsb),
+        Mux16(a, a, lsb),
         Mux16(c, d, lsb),
         nBit16(sel, 1)
     );
 }
 
-
+/*
 // @ts-ignore
 @inline
 export function Mux8Way16(a: u16, b: u16, c: u16, d: u16, e: u16, f: u16, g: u16, h: u16, sel: u8): u16 {

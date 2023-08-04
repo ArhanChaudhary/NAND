@@ -127,6 +127,17 @@ export function slice16_0to11(n: u16): u16 {
 
 // @ts-ignore
 @inline
+export function slice16_0to12(n: u16): u16 {
+	return n & 8191;
+}
+// @ts-ignore
+@inline
+export function slice16_0to13(n: u16): u16 {
+	return n & 16383;
+}
+
+// @ts-ignore
+@inline
 export function slice16_0to14(n: u16): u16 {
 	return n & 32767;
 }
@@ -157,6 +168,12 @@ export function slice16_12to13(n: u16): u8 {
 }
 */
 
+// @ts-ignore
+@inline
+export function slice16_13to14(n: u16): u8 {
+	return <u8>(n >> 13);
+}
+
 let PC_dffout: u16 = 0;
 // @ts-ignore
 @inline
@@ -169,7 +186,7 @@ export function PC_reg(in_: u16): u16 {
 	return out;
 }
 
-let DRegister_dffout: u16 = 0;
+export let DRegister_dffout: u16 = 0;
 // @ts-ignore
 @inline
 export function DRegister(in_: u16, load: boolean): u16 {
@@ -181,7 +198,7 @@ export function DRegister(in_: u16, load: boolean): u16 {
 	return out;
 }
 
-let ARegister_dffout: u16 = 0;
+export let ARegister_dffout: u16 = 0;
 // @ts-ignore
 @inline
 export function ARegister(in_: u16, load: boolean): u16 {
@@ -194,6 +211,8 @@ export function ARegister(in_: u16, load: boolean): u16 {
 }
 
 const RAM16K_memory = new StaticArray<u16>(16384);
+// @ts-ignore
+@inline
 export function RAM16K(in_: u16, load: boolean, address: u16): u16 {
     const out = RAM16K_memory[address];
     if (clock && load) {
@@ -202,19 +221,49 @@ export function RAM16K(in_: u16, load: boolean, address: u16): u16 {
     return out;
 }
 
+export function getRAM(): StaticArray<u16> {
+	return RAM16K_memory;
+}
+
+export function getROM(): StaticArray<u16> {
+	return ROM32K_memory;
+}
+
 const ROM32K_memory = new StaticArray<u16>(32768);
 let ROM32K_end: u16 = 0;
+// @ts-ignore
+@inline
 export function loadROM(in_: StaticArray<u16>): void {
 	let i: u16 = 0;
-    while (i < in_.length) {
+	const in_length = <u16>in_.length;
+    while (i < in_length) {
 		ROM32K_memory[i] = in_[i];
 		i++;
 	}
-	ROM32K_end = in_.length - 1;
+	ROM32K_end = in_length - 1;
 }
 
+// @ts-ignore
+@inline
 export function ROM32K(address: u16): u16 {
 	if (address > ROM32K_end)
 		throw new Error(address.toString());
 	return ROM32K_memory[address];
+}
+
+const screen_memory = new StaticArray<u16>(8192);
+// @ts-ignore
+@inline
+export function Screen(in_: u16, load: boolean, address: u16): u16 {
+    const out = screen_memory[address];
+	if (load)
+    if (clock && load) {
+        screen_memory[address] = in_;
+    }
+    return out;
+}
+
+let current_key: u16 = 0;
+export function Keyboard(): u16 {
+	return current_key;
 }
