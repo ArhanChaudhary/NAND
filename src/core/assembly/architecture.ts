@@ -259,13 +259,7 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
     
     const ALUy1 = ARegister(
         Mux16(instruction, ALUout, instruction15),
-        Or(
-            notinstruction15,
-            And(
-                Or(Or(ALUoutispos, AlUoutiszero), ALUoutisneg),
-                instruction5
-            )
-        )
+        false,
     );
     const PCin = slice16_0to14(ALUy1);
 
@@ -288,10 +282,8 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
         reset
     );
 
-    const loadDreg = And(nBit16(instruction, 4), instruction15);
-
     out[0] = ALUout = ALU(
-        DRegister(ALUout, loadDreg),
+        DRegister(ALUout, false),
         Mux16(ALUy1, inM, nBit16(instruction, 12)),
         nBit16(instruction, 11),
         nBit16(instruction, 10),
@@ -305,7 +297,10 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
     AlUoutiszero = isZero(ALUout);
     ALUoutispos = Not(Or(ALUoutisneg, AlUoutiszero));
 
-    DRegister(ALUout, loadDreg);
+    DRegister(
+        ALUout,
+        And(nBit16(instruction, 4), instruction15)
+    );
     PC(
         slice16_0to14(
             ARegister(

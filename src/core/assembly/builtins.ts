@@ -176,6 +176,7 @@ export function DRegister(in_: u16, load: boolean): u16 {
 	const out = DRegister_dffout;
 	if (clock && load) {
 		DRegister_dffout = in_;
+		return in_;
 	}
 	return out;
 }
@@ -187,6 +188,7 @@ export function ARegister(in_: u16, load: boolean): u16 {
 	const out = ARegister_dffout;
 	if (clock && load) {
 		ARegister_dffout = in_;
+		return in_;
 	}
 	return out;
 }
