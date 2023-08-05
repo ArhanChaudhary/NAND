@@ -2,26 +2,24 @@
     <html lang="en">
     <head>
         <script type="module">
-            const {
-                RAM16K,
-                CPU,
-            } = await (
-                async () => {
-                    const exports = await WebAssembly.instantiate(
-                        await globalThis.WebAssembly.compileStreaming(
-                            globalThis.fetch(new URL("./build/release.wasm", import.meta.url))
-                        ),
-                        {
-                            env: Object.assign(Object.create(globalThis), {
-                                abort() {
-                                    throw new Error("abort");
-                                },
-                            }),
-                        }
-                    );
-                    return exports.exports;
-                }
-            )();
+            import {
+                step,
+                loadROM,
+                getRAM,
+            } from "./build/release.js"
+            window.step = step;
+            window.loadROM = loadROM;
+            window.getRAM = getRAM;
+            loadROM([0,64528,23,58118,16,58120,16384,60432,17,58120,17,64544,61064,17,64528,32,57488,17,58120,16,64664,10,58113,23,60039]);
+            let counter = 0;
+            let now = new Date();
+            while (true) {
+                if (new Date() - now > 10000) break;
+                step();
+                counter++;
+            }
+            console.log(counter / 10);
+            console.log(getRAM());
         </script>
     </head>
     <body></body>

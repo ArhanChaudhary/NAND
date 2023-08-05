@@ -186,7 +186,7 @@ export function PC_reg(in_: u16): u16 {
 	return out;
 }
 
-export let DRegister_dffout: u16 = 0;
+let DRegister_dffout: u16 = 0;
 // @ts-ignore
 @inline
 export function DRegister(in_: u16, load: boolean): u16 {
@@ -198,7 +198,7 @@ export function DRegister(in_: u16, load: boolean): u16 {
 	return out;
 }
 
-export let ARegister_dffout: u16 = 0;
+let ARegister_dffout: u16 = 0;
 // @ts-ignore
 @inline
 export function ARegister(in_: u16, load: boolean): u16 {
@@ -217,6 +217,8 @@ export function RAM16K(in_: u16, load: boolean, address: u16): u16 {
     const out = RAM16K_memory[address];
     if (clock && load) {
         RAM16K_memory[address] = in_;
+		// technically needed but it still works without
+		// return in_;
     }
     return out;
 }
@@ -225,14 +227,8 @@ export function getRAM(): StaticArray<u16> {
 	return RAM16K_memory;
 }
 
-export function getROM(): StaticArray<u16> {
-	return ROM32K_memory;
-}
-
 const ROM32K_memory = new StaticArray<u16>(32768);
 let ROM32K_end: u16 = 0;
-// @ts-ignore
-@inline
 export function loadROM(in_: StaticArray<u16>): void {
 	let i: u16 = 0;
 	const in_length = <u16>in_.length;
@@ -240,7 +236,7 @@ export function loadROM(in_: StaticArray<u16>): void {
 		ROM32K_memory[i] = in_[i];
 		i++;
 	}
-	ROM32K_end = in_length - 1;
+	ROM32K_end = in_length;
 }
 
 // @ts-ignore
@@ -256,7 +252,6 @@ const screen_memory = new StaticArray<u16>(8192);
 @inline
 export function Screen(in_: u16, load: boolean, address: u16): u16 {
     const out = screen_memory[address];
-	if (load)
     if (clock && load) {
         screen_memory[address] = in_;
     }
@@ -264,6 +259,8 @@ export function Screen(in_: u16, load: boolean, address: u16): u16 {
 }
 
 let current_key: u16 = 0;
+// @ts-ignore
+@inline
 export function Keyboard(): u16 {
 	return current_key;
 }
