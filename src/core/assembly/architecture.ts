@@ -368,10 +368,12 @@ let CPUout: StaticArray<u16> = [0, 0, 0, 0];
 function Computer(reset: boolean): void {
     CPUout = CPU(
         // @ts-ignore
-        Memory(CPUout[0], <boolean>CPUout[1], CPUout[2]),
+        Memory(CPUout[0], false, CPUout[2]),
         ROM32K(CPUout[3]),
         reset
     );
+    // @ts-ignore
+    Memory(CPUout[0], <boolean>CPUout[1], CPUout[2]);
 }
 
 export function step(reset: boolean = false): void {

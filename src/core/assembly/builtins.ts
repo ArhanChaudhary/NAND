@@ -217,8 +217,6 @@ export function RAM16K(in_: u16, load: boolean, address: u16): u16 {
     const out = RAM16K_memory[address];
     if (clock && load) {
         RAM16K_memory[address] = in_;
-		// technically needed but it still works without
-		// return in_;
     }
     return out;
 }
@@ -253,6 +251,7 @@ const screen_memory = new StaticArray<u16>(8192);
 export function Screen(in_: u16, load: boolean, address: u16): u16 {
     const out = screen_memory[address];
     if (clock && load) {
+		console.log(`wrote to screen ${address}: ${in_}`);
         screen_memory[address] = in_;
     }
     return out;
