@@ -6,7 +6,7 @@ export function NAND(a: boolean, b: boolean): boolean {
 	return !(a && b);
 }
 
-let clock = true;
+let clock = false;
 
 // @ts-ignore
 @inline
@@ -221,26 +221,12 @@ export function RAM16K(in_: u16, load: boolean, address: u16): u16 {
     return out;
 }
 
-export function getRAM(): StaticArray<u16> {
-	return RAM16K_memory;
-}
-
-const ROM32K_memory = new StaticArray<u16>(32768);
-let ROM32K_end: u16 = 0;
-export function loadROM(in_: StaticArray<u16>): void {
-	let i: u16 = 0;
-	const in_length = <u16>in_.length;
-    while (i < in_length) {
-		ROM32K_memory[i] = in_[i];
-		i++;
-	}
-	ROM32K_end = in_length;
-}
-
 // @ts-ignore
 @inline
 export function ROM32K(address: u16): u16 {
-	if (address > ROM32K_end)
+	// add leeway because resetting the computer has the side effect of 
+	// erraneously asking for an invalid rom address right after its end
+	if (address > ROM32K_end + 1)
 		throw new Error(address.toString());
 	return ROM32K_memory[address];
 }
@@ -262,4 +248,24 @@ let current_key: u16 = 0;
 @inline
 export function Keyboard(): u16 {
 	return current_key;
+}
+
+const ROM32K_memory = new StaticArray<u16>(32768);
+let ROM32K_end: u16 = 0;
+export function loadROM(in_: StaticArray<u16>): void {
+	let i: u16 = 0;
+	const in_length = <u16>in_.length;
+    while (i < in_length) {
+		ROM32K_memory[i] = in_[i];
+		i++;
+	}
+	ROM32K_end = in_length - 1;
+}
+
+export function getRAM(): StaticArray<u16> {
+	return RAM16K_memory;
+}
+
+export function getScreen(): StaticArray<u16> {
+	return screen_memory;
 }

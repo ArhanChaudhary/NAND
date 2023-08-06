@@ -257,10 +257,7 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
     // writeM
     out[1] = <u16>And(nBit16(instruction, 3), instruction15);
     
-    const ALUy1 = ARegister(
-        Mux16(instruction, ALUout, instruction15),
-        false,
-    );
+    const ALUy1 = ARegister(0, false);
     const PCin = slice16_0to14(ALUy1);
 
     // addressM
@@ -270,11 +267,9 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
     out[3] = PC(
         PCin,
         And(
-            Or(
-                Or(
-                    And(ALUoutispos, instruction0),
-                    And(AlUoutiszero, instruction1),
-                ),
+            Or(Or(
+                And(ALUoutispos, instruction0),
+                And(AlUoutiszero, instruction1)),
                 And(ALUoutisneg, instruction2)
             ),
             instruction15
@@ -284,7 +279,7 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
 
     // outM
     out[0] = ALUout = ALU(
-        DRegister(ALUout, false),
+        DRegister(0, false),
         Mux16(ALUy1, inM, nBit16(instruction, 12)),
         nBit16(instruction, 11),
         nBit16(instruction, 10),
@@ -310,11 +305,9 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
             )
         ),
         And(
-            Or(
-                Or(
-                    And(ALUoutispos, instruction0),
-                    And(AlUoutiszero, instruction1)
-                ),
+            Or(Or(
+                And(ALUoutispos, instruction0),
+                And(AlUoutiszero, instruction1)),
                 And(ALUoutisneg, instruction2)
             ),
             instruction15
@@ -348,11 +341,9 @@ function Memory(in_: u16, load: boolean, address: u16): u16 {
         out1,
         Screen(
             in_,
-            And(
-                And(
-                    Not(nBit16(address, 13)),
-                    address14
-                ),
+            And(And(
+                Not(nBit16(address, 13)),
+                address14),
                 load
             ),
             slice16_0to12(address)
@@ -367,8 +358,7 @@ let CPUout: StaticArray<u16> = [0, 0, 0, 0];
 @inline
 function Computer(reset: boolean): void {
     CPUout = CPU(
-        // @ts-ignore
-        Memory(CPUout[0], false, CPUout[2]),
+        Memory(0, false, CPUout[2]),
         ROM32K(CPUout[3]),
         reset
     );
