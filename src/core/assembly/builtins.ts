@@ -238,9 +238,10 @@ export function Screen(in_: u16, load: boolean, address: u16): u16 {
 }
 
 let current_key: u16 = 0;
-// @ts-ignore
-@inline
-export function Keyboard(): u16 {
+export function Keyboard(load: boolean = false, pressed: u16 = 0): u16 {
+	if (load) {
+		current_key = pressed;
+	}
 	return current_key;
 }
 

@@ -7,8 +7,8 @@
                 loadROM,
                 getRAM,
                 getScreen,
+                Keyboard,
             } from "./build/release.js"
-            window.getScreen = getScreen;
             loadROM();
 
             const offscreen = document.querySelector('canvas').transferControlToOffscreen();
@@ -17,7 +17,7 @@
 
             function computer() {
                 let now = performance.now();
-                while (performance.now() - now < 50) {
+                while (performance.now() - now < 75) {
                     step();
                 }
                 screen.postMessage(getScreen());
@@ -25,6 +25,37 @@
             }
             computer();
 
+            document.addEventListener('keydown', e => {
+                let keyValue = {
+                    'Enter': 128,
+                    'Backspace': 129,
+                    'ArrowLeft': 130,
+                    'ArrowUp': 131,
+                    'ArrowRight': 132,
+                    'ArrowDown': 133,
+                    'Delete': 139,
+                    'Escape': 140,
+                    'F1': 141,
+                    'F2': 142,
+                    'F3': 143,
+                    'F4': 144,
+                    'F5': 145,
+                    'F6': 146,
+                    'F7': 147,
+                    'F8': 148,
+                    'F9': 149,
+                    'F10': 150,
+                    'F11': 151,
+                    'F12': 152,
+                }[e.key];
+                if (!keyValue)
+                    keyValue = e.key.charCodeAt(0);
+                Keyboard(true, keyValue);
+            });
+
+            document.addEventListener('keyup', e => {
+                Keyboard(true, 0);
+            });
         </script>
         <style>
             body {
