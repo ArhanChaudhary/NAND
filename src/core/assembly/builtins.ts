@@ -232,7 +232,6 @@ const screen_memory = new StaticArray<u16>(8192);
 export function Screen(in_: u16, load: boolean, address: u16): u16 {
     const out = screen_memory[address];
     if (clock && load) {
-		console.log(`wrote to screen ${address}: ${in_}`);
         screen_memory[address] = in_;
     }
     return out;

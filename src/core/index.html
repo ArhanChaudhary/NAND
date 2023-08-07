@@ -6,21 +6,42 @@
                 step,
                 loadROM,
                 getRAM,
+                getScreen,
             } from "./build/release.js"
-            window.step = step;
-            window.loadROM = loadROM;
-            window.getRAM = getRAM;
-            loadROM([0,64528,23,58118,16,58120,16384,60432,17,58120,17,64544,61064,17,64528,32,57488,17,58120,16,64664,10,58113,23,60039]);
-            let counter = 0;
-            let now = new Date();
-            while (true) {
-                if (new Date() - now > 10000) break;
-                step();
-                counter++;
+            window.getScreen = getScreen;
+            loadROM();
+
+            const offscreen = document.querySelector('canvas').transferControlToOffscreen();
+            const screen = new Worker('screen.js');
+            screen.postMessage(offscreen, [offscreen]);
+
+            function computer() {
+                let now = performance.now();
+                while (performance.now() - now < 50) {
+                    step();
+                }
+                screen.postMessage(getScreen());
+                setTimeout(computer, 0);
             }
-            console.log(counter / 10);
-            console.log(getRAM());
+            computer();
+
         </script>
+        <style>
+            body {
+                background-color: tan;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            canvas {
+                image-rendering: pixelated;
+                image-rendering: crisp-edges;
+                border: 2px solid black;
+                background: white;
+            }
+        </style>
     </head>
-    <body></body>
+    <body>
+        <canvas width="512" height="256"></canvas>
+    </body>
 </html>
