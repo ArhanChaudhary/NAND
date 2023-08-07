@@ -130,11 +130,6 @@ export function slice16_0to11(n: u16): u16 {
 export function slice16_0to12(n: u16): u16 {
 	return n & 8191;
 }
-// @ts-ignore
-@inline
-export function slice16_0to13(n: u16): u16 {
-	return n & 16383;
-}
 
 // @ts-ignore
 @inline
