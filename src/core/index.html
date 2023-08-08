@@ -16,8 +16,7 @@
             screen.postMessage(offscreen, [offscreen]);
 
             function computer() {
-                let now = performance.now();
-                while (performance.now() - now < 75) {
+                for (let i = 0; i < 100_000; i++) {
                     step();
                 }
                 screen.postMessage(getScreen());
@@ -25,6 +24,7 @@
             }
             computer();
 
+            let prev;
             document.addEventListener('keydown', e => {
                 let keyValue = {
                     'Enter': 128,
@@ -50,10 +50,15 @@
                 }[e.key];
                 if (!keyValue)
                     keyValue = e.key.charCodeAt(0);
+                if (keyValue !== prev && prev !== 0) {
+                    keyValue = 0;
+                }
+                prev = keyValue;
                 Keyboard(true, keyValue);
             });
 
             document.addEventListener('keyup', e => {
+                prev = 0;
                 Keyboard(true, 0);
             });
         </script>
