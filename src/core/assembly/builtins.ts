@@ -247,11 +247,11 @@ export function Keyboard(load: boolean = false, pressed: u16 = 0): u16 {
 
 const ROM32K_memory = new StaticArray<u16>(32768);
 let ROM32K_end: u16 = 0;
-export function loadROM(in_: StaticArray<u16>): void {
+export function loadROM(in_: StaticArray<string>): void {
 	let i: u16 = 0;
 	const in_length = <u16>in_.length;
     while (i < in_length) {
-		ROM32K_memory[i] = in_[i];
+		ROM32K_memory[i] = <u16>parseInt(in_[i], 2);
 		i++;
 	}
 	ROM32K_end = in_length - 1;
