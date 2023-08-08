@@ -233,11 +233,6 @@ function PC(in_: u16, load: boolean, reset: boolean): u16 {
     );
 }
 
-let ALUout: u16 = 0;
-let ALUoutisneg: boolean = false;
-let AlUoutiszero: boolean = true;
-let ALUoutispos: boolean = false;
-
 const out = new StaticArray<u16>(4);
 
 // NOTE: CPU has been heavily optimized and thus obfuscated too
@@ -246,12 +241,7 @@ const out = new StaticArray<u16>(4);
 // @ts-ignore
 @inline
 export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16> {
-    const instruction0 = nBit16(instruction, 0);
-    const instruction1 = nBit16(instruction, 1);
-    const instruction2 = nBit16(instruction, 2);
-    const instruction5 = nBit16(instruction, 5);
     const instruction15 = nBit16(instruction, 15);
-    const notinstruction15 = Not(instruction15);
 
     // @ts-ignore
     // writeM
@@ -264,21 +254,9 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
     out[2] = PCin;
 
     // pc
-    out[3] = PC(
-        PCin,
-        And(
-            Or(Or(
-                And(ALUoutispos, instruction0),
-                And(AlUoutiszero, instruction1)),
-                And(ALUoutisneg, instruction2)
-            ),
-            instruction15
-        ),
-        reset
-    );
+    out[3] = PC(PCin, false, reset);
 
-    // outM
-    out[0] = ALUout = ALU(
+    const ALUout = ALU(
         DRegister(0, false),
         Mux16(ALUy1, inM, nBit16(instruction, 12)),
         nBit16(instruction, 11),
@@ -289,9 +267,11 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
         nBit16(instruction, 6),
     );
 
-    ALUoutisneg = nBit16(ALUout, 15);
-    AlUoutiszero = isZero(ALUout);
-    ALUoutispos = Not(Or(ALUoutisneg, AlUoutiszero));
+    // outM
+    out[0] = ALUout;
+
+    const ALUoutisneg = nBit16(ALUout, 15);
+    const AlUoutiszero = isZero(ALUout);
 
     DRegister(
         ALUout,
@@ -301,14 +281,14 @@ export function CPU(inM: u16, instruction: u16, reset: boolean): StaticArray<u16
         slice16_0to14(
             ARegister(
                 Mux16(instruction, ALUout, instruction15),
-                Or(notinstruction15, instruction5)
+                Or(Not(instruction15), nBit16(instruction, 5))
             )
         ),
         And(
             Or(Or(
-                And(ALUoutispos, instruction0),
-                And(AlUoutiszero, instruction1)),
-                And(ALUoutisneg, instruction2)
+                And(Not(Or(ALUoutisneg, AlUoutiszero)), nBit16(instruction, 0)), // positive
+                And(AlUoutiszero, nBit16(instruction, 1))),
+                And(ALUoutisneg, nBit16(instruction, 2))
             ),
             instruction15
         ),
