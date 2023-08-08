@@ -7,7 +7,7 @@
     }
   },
   "scripts": {
-    "build:debug": "asc assembly/*.ts --target release",
+    "build:debug": "asc assembly/*.ts --target debug",
     "build": "asc assembly/architecture.ts assembly/builtins.ts --target release",
     "test": "npm run build:debug && node tests",
     "start": "npm run build && npx serve ."
