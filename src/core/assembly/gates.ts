@@ -110,68 +110,6 @@ export function Mux3Way16(ab: u16, c: u16, d: u16, sel: u8): u16 {
     );
 }
 
-/*
-// @ts-ignore
-@inline
-export function Mux8Way16(a: u16, b: u16, c: u16, d: u16, e: u16, f: u16, g: u16, h: u16, sel: u8): u16 {
-    const s0 = nBit16_0(sel);
-    const s1 = nBit16(sel, 1);
-    return Mux16(
-        Mux16(
-            Mux16(a, b, s0),
-            Mux16(c, d, s0),
-            s1
-        ),
-        Mux16(
-            Mux16(e, f, s0),
-            Mux16(g, h, s0),
-            s1
-        ),
-        nBit16(sel, 2)
-    );
-}
-
-// @ts-ignore
-@inline
-export function DMux4Way(in_: boolean, sel: u8): u8 {
-    const lsb = nBit16_0(sel);
-    const msb = nBit16(sel, 1);
-    const DMuxInline0 = And(in_, Not(msb));
-    const DMuxInline1 = And(in_, msb);
-    return word8_4(
-        And(DMuxInline0, Not(lsb)),
-        And(DMuxInline0, lsb),
-        And(DMuxInline1, Not(lsb)),
-        And(DMuxInline1, lsb),
-    );
-}
-
-// @ts-ignore
-@inline
-export function DMux8Way(in_: boolean, sel: u8): u8 {
-    const s0 = nBit16_0(sel);
-    const s1 = nBit16(sel, 1);
-    const s2 = nBit16(sel, 2);
-    const nots1 = Not(s1);
-    const nots2 = Not(s0);
-    const topbottom0 = And(in_, Not(s2));
-    const topbottom1 = And(in_, s2);
-    const DMuxInline0 = And(topbottom0, nots1);
-    const DMuxInline1 = And(topbottom0, s1);
-    const DMuxInline2 = And(topbottom1, nots1);
-    const DMuxInline3 = And(topbottom1, s1);
-    return word8_8(
-        And(DMuxInline0, nots2),
-        And(DMuxInline0, s0),
-        And(DMuxInline1, nots2),
-        And(DMuxInline1, s0),
-        And(DMuxInline2, nots2),
-        And(DMuxInline2, s0),
-        And(DMuxInline3, nots2),
-        And(DMuxInline3, s0),
-    );
-}
-*/
 // @ts-ignore
 @inline
 export function isZero(in_: u16): boolean {
