@@ -1,1 +1,0 @@
-export class NANDException extends Error {}

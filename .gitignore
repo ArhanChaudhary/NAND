@@ -1,7 +1,7 @@
 .DS_Store
 src/dist
 src/node_modules
-src/core/build
+src/core2
 Keyboard.vm
 Memory.vm
 Output.vm
