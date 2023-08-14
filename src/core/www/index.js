@@ -1,3 +1,3 @@
 import * as wasm from "core";
 
-wasm.greet();
+window.nand = wasm.nand;

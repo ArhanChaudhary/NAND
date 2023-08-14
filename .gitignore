@@ -1,5 +1,4 @@
 .DS_Store
-src/dist
 node_modules
 src/core2
 Keyboard.vm

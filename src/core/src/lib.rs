@@ -1,13 +1,6 @@
-mod utils;
-
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-extern "C" {
-    fn alert(s: &str);
-}
-
-#[wasm_bindgen]
-pub fn greet() {
-    alert("test");
+pub fn nand(a: bool, b: bool) -> bool {
+    !(a && b)
 }
