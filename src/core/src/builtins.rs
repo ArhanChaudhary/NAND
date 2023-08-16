@@ -1,0 +1,152 @@
+use wasm_bindgen::prelude::*;
+
+pub fn nand(a: bool, b: bool) -> bool {
+    !(a && b)
+}
+
+static mut CLOCK: bool = false;
+
+pub fn tick() {
+    unsafe { CLOCK = true };
+}
+
+pub fn tock() {
+    unsafe { CLOCK = false };
+}
+
+pub fn nBit16(n: u16, i: u8) -> bool {
+	// TODO: this and placebit when used together can be further optimized
+	((n >> i) & 1) != 0
+}
+
+pub fn nBit16_0(n: u16) -> bool {
+	(n & 1) != 0
+}
+
+
+fn placeBit16(b: bool, i: u8) -> u16 {
+	u16::from(b) << i
+}
+
+
+fn placeBit16_0(b: bool) -> u16 {
+	u16::from(b)
+}
+
+pub fn word16_16(a: bool, b: bool, c: bool, d: bool, e: bool, f: bool, g: bool, h: bool, 
+        i: bool, j: bool, k: bool, l: bool, m: bool, n: bool, o: bool, p: bool) -> u16 {
+	placeBit16_0(a) |
+    placeBit16(b, 1) |
+    placeBit16(c, 2) |
+    placeBit16(d, 3) |
+    placeBit16(e, 4) |
+    placeBit16(f, 5) |
+    placeBit16(g, 6) |
+    placeBit16(h, 7) |
+    placeBit16(i, 8) |
+    placeBit16(j, 9) |
+    placeBit16(k, 10) |
+    placeBit16(l, 11) |
+    placeBit16(m, 12) |
+    placeBit16(n, 13) |
+    placeBit16(o, 14) |
+    placeBit16(p, 15)
+}
+
+
+pub fn slice16_0to12(n: u16) -> u16 {
+	n & 8191
+}
+
+
+pub fn slice16_0to14(n: u16) -> u16 {
+	n & 32767
+}
+
+
+pub fn slice16_13to14(n: u16) -> u8 {
+	(n >> 13) as u8
+}
+
+static mut PC_dffout: u16 = 0;
+
+pub fn PC_reg(in_: u16) -> u16 {
+	let out = unsafe { PC_dffout };
+	// NOTE: load is always true
+	if unsafe { CLOCK } {
+		unsafe { PC_dffout = in_ };
+	}
+	out
+}
+
+static mut DRegister_dffout: u16 = 0;
+
+pub fn DRegister(in_: u16, load: bool) -> u16 {
+    let out = unsafe { DRegister_dffout };
+	if unsafe { CLOCK } && load {
+		unsafe { DRegister_dffout = in_ };
+		return in_;
+	}
+	out
+}
+
+static mut ARegister_dffout: u16 = 0;
+
+pub fn ARegister(in_: u16, load: bool) -> u16 {
+	let out = unsafe { ARegister_dffout };
+	if unsafe { CLOCK } && load {
+		unsafe { ARegister_dffout = in_ };
+		return in_;
+	}
+	out
+}
+
+static mut RAM16K_memory: [u16; 16384] = [0; 16384];
+
+pub fn RAM16K(in_: u16, load: bool, address: usize) -> u16 {
+    let out = unsafe { RAM16K_memory }[address];
+    if unsafe { CLOCK } && load {
+        unsafe { RAM16K_memory[address] = in_ };
+    }
+    out
+}
+
+
+pub fn ROM32K(address: usize) -> u16 {
+	unsafe { ROM32K_memory[address] }
+}
+
+static mut screen_memory: [u16; 8192] = [0; 8192];
+
+pub fn Screen(in_: u16, load: bool, address: usize) -> u16 {
+    let out = unsafe { screen_memory }[address];
+    if unsafe { CLOCK } && load {
+        unsafe { screen_memory[address] = in_ };
+    }
+    out
+}
+
+static mut current_key: u16 = 0;
+#[wasm_bindgen]
+pub fn Keyboard(load: bool, pressed: u16) -> u16 {
+	if load {
+		unsafe { current_key = pressed };
+	}
+	unsafe { current_key }
+}
+
+static mut ROM32K_memory: [u16; 32768] = [0; 32768];
+#[wasm_bindgen]
+pub fn loadROM(in_: JsValue) {
+	unsafe { ROM32K_memory = in_.into_serde().unwrap() };
+}
+/*
+#[wasm_bindgen]
+pub fn getRAM() -> [u16; 16384] {
+	RAM16K_memory
+}
+
+#[wasm_bindgen]
+pub fn getScreen() -> [u16; 8192] {
+	screen_memory
+}*/
