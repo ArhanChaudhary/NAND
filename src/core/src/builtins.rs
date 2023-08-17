@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::*;
 
-pub fn nand(a: bool, b: bool) -> bool {
+pub fn NAND(a: bool, b: bool) -> bool {
     !(a && b)
 }
 
@@ -68,85 +68,84 @@ pub fn slice16_13to14(n: u16) -> u8 {
 	(n >> 13) as u8
 }
 
-static mut PC_dffout: u16 = 0;
+static mut PC_DFFOUT: u16 = 0;
 
 pub fn PC_reg(in_: u16) -> u16 {
-	let out = unsafe { PC_dffout };
+	let out = unsafe { PC_DFFOUT };
 	// NOTE: load is always true
 	if unsafe { CLOCK } {
-		unsafe { PC_dffout = in_ };
+		unsafe { PC_DFFOUT = in_ };
 	}
 	out
 }
 
-static mut DRegister_dffout: u16 = 0;
+static mut DREGISTER_DFFOUT: u16 = 0;
 
 pub fn DRegister(in_: u16, load: bool) -> u16 {
-    let out = unsafe { DRegister_dffout };
+    let out = unsafe { DREGISTER_DFFOUT };
 	if unsafe { CLOCK } && load {
-		unsafe { DRegister_dffout = in_ };
+		unsafe { DREGISTER_DFFOUT = in_ };
 		return in_;
 	}
 	out
 }
 
-static mut ARegister_dffout: u16 = 0;
+static mut AREGISTER_DFFOUT: u16 = 0;
 
 pub fn ARegister(in_: u16, load: bool) -> u16 {
-	let out = unsafe { ARegister_dffout };
+	let out = unsafe { AREGISTER_DFFOUT };
 	if unsafe { CLOCK } && load {
-		unsafe { ARegister_dffout = in_ };
+		unsafe { AREGISTER_DFFOUT = in_ };
 		return in_;
 	}
 	out
 }
 
-static mut RAM16K_memory: [u16; 16384] = [0; 16384];
+pub fn getScreen() -> [u16; 8192] {
+	unsafe { SCREEN_MEMORY }
+}
+
+static mut RAM16K_MEMORY: Vec<u16> = Vec::new();
 
 pub fn RAM16K(in_: u16, load: bool, address: usize) -> u16 {
-    let out = unsafe { RAM16K_memory }[address];
+    let out = unsafe { &mut RAM16K_MEMORY }[address];
     if unsafe { CLOCK } && load {
-        unsafe { RAM16K_memory[address] = in_ };
+        unsafe { RAM16K_MEMORY[address] = in_ };
     }
     out
 }
 
 
 pub fn ROM32K(address: usize) -> u16 {
-	unsafe { ROM32K_memory[address] }
+	unsafe { ROM32K_MEMORY[address] }
 }
 
-static mut screen_memory: [u16; 8192] = [0; 8192];
+static mut SCREEN_MEMORY: [u16; 8192] = [0; 8192];
 
 pub fn Screen(in_: u16, load: bool, address: usize) -> u16 {
-    let out = unsafe { screen_memory }[address];
+    let out = unsafe { SCREEN_MEMORY }[address];
     if unsafe { CLOCK } && load {
-        unsafe { screen_memory[address] = in_ };
+        unsafe { SCREEN_MEMORY[address] = in_ };
     }
     out
 }
 
-static mut current_key: u16 = 0;
+static mut CURRENT_KEY: u16 = 0;
 #[wasm_bindgen]
 pub fn Keyboard(load: bool, pressed: u16) -> u16 {
 	if load {
-		unsafe { current_key = pressed };
+		unsafe { CURRENT_KEY = pressed };
 	}
-	unsafe { current_key }
+	unsafe { CURRENT_KEY }
 }
 
-static mut ROM32K_memory: [u16; 32768] = [0; 32768];
+static mut ROM32K_MEMORY: Vec<u16> = Vec::new();
 #[wasm_bindgen]
 pub fn loadROM(in_: JsValue) {
-	unsafe { ROM32K_memory = in_.into_serde().unwrap() };
-}
-/*
-#[wasm_bindgen]
-pub fn getRAM() -> [u16; 16384] {
-	RAM16K_memory
+	unsafe { ROM32K_MEMORY = serde_wasm_bindgen::from_value(in_).unwrap() };
 }
 
-#[wasm_bindgen]
-pub fn getScreen() -> [u16; 8192] {
-	screen_memory
-}*/
+// #[wasm_bindgen]
+// pub fn getRAM() -> Result<JsValue, serde_wasm_bindgen::Error> {
+// 	unsafe { serde_wasm_bindgen::to_value(&RAM16K_MEMORY) }
+// }

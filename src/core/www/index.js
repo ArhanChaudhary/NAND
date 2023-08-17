@@ -1,3 +1,3 @@
 import * as wasm from "core";
 
-window.nand = wasm.nand;
+window.loadROM = wasm.loadROM;
