@@ -1,37 +1,42 @@
-static mut PC_dffout: u16 = 0;
+use wasm_bindgen::prelude::wasm_bindgen;
+
+use crate::{PC_reg, gates::{Mux16, And, isZero, Or, Not, Mux3Way16}, arithmetic::{Inc16, ALU}, nBit16, ARegister, slice16_0to14, DRegister, Screen, Keyboard, slice16_0to12, slice16_13to14, ROM32K, tick, tock, RAM16K};
+
+static mut PC_DFFOUT: u16 = 0;
 fn PC(in_: u16, load: bool, reset: bool) -> u16 {
-    return PC_dffout = PC_reg(
+    unsafe { PC_DFFOUT = PC_reg(
         // reset
         Mux16(
             // load
             Mux16(
                 // inc
-                Inc16(PC_dffout),
+                Inc16(PC_DFFOUT),
                 in_,
                 load
             ),
             0,
             reset
         )
-    );
+    )};
+    unsafe { PC_DFFOUT }
 }
 
 static mut out: [u16; 4] = [0; 4];
 
-pub fn CPU(inM: u16, instruction: u16, reset: bool) -> StaticArray<u16> {
+pub fn CPU(inM: u16, instruction: u16, reset: bool) -> [u16; 4] {
     let instruction15 = nBit16(instruction, 15);
 
     // writeM
-    out[1] = u16::from(And(nBit16(instruction, 3), instruction15));
+    unsafe { out[1] = u16::from(And(nBit16(instruction, 3), instruction15)) };
     
     let ALUy1 = ARegister(0, false);
     let PCin = slice16_0to14(ALUy1);
 
     // addressM
-    out[2] = PCin;
+    unsafe { out[2] = PCin };
 
     // pc
-    out[3] = PC(PCin, false, reset);
+    unsafe { out[3] = PC(PCin, false, reset) };
 
     let ALUout = ALU(
         DRegister(0, false),
@@ -45,7 +50,7 @@ pub fn CPU(inM: u16, instruction: u16, reset: bool) -> StaticArray<u16> {
     );
 
     // outM
-    out[0] = ALUout;
+    unsafe { out[0] = ALUout };
 
     let ALUoutisneg = nBit16(ALUout, 15);
     let AlUoutiszero = isZero(ALUout);
@@ -71,7 +76,7 @@ pub fn CPU(inM: u16, instruction: u16, reset: bool) -> StaticArray<u16> {
         ),
         reset
     );
-    return out;
+    unsafe { out }
 }
 
 fn Memory(in_: u16, load: bool, address: u16) -> u16 {
@@ -103,21 +108,22 @@ fn Memory(in_: u16, load: bool, address: u16) -> u16 {
             ),
             slice16_0to12(address)
         ),
-        Keyboard(),
+        Keyboard(false, 0),
         slice16_13to14(address),
     );
 }
 
 static mut CPUout: [u16; 4] = [0; 4];
-fn Computer(reset: bool) -> void {
-    CPUout = CPU(
+fn Computer(reset: bool) {
+    unsafe { CPUout = CPU(
         Memory(0, false, CPUout[2]),
         ROM32K(CPUout[3]),
         reset
-    );
-    Memory(CPUout[0], CPUout[1] != 0, CPUout[2]);
+    ) };
+    unsafe { Memory(CPUout[0], CPUout[1] != 0, CPUout[2]) };
 }
 
+#[wasm_bindgen]
 pub fn step(reset: bool) {
     tick();
     Computer(reset);

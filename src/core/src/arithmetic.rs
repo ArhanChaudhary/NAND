@@ -1,3 +1,5 @@
+use crate::{nBit16, nBit16_0, gates::{And, Or, Xor, Not16, Mux16, And16}, word16_16};
+
 fn Add16(a: u16, b: u16) -> u16 {
     let a0 = nBit16_0(a);
     let a1 = nBit16(a, 1);
@@ -80,11 +82,11 @@ fn Add16(a: u16, b: u16) -> u16 {
 }
 
 pub fn Inc16(in_: u16) -> u16 {
-    return Add16(in_, 1);
+    Add16(in_, 1)
 }
 
-// NOTE: combining all the booleans into a single opcode doesn't seem to have any performance impact
-pub fn ALU(x: u16, y: u16, zx: boolean, nx: boolean, zy: boolean, ny: boolean, f: boolean, no: boolean) -> u16 {
+// NOTE: combining all the bools into a single opcode doesn't seem to have any performance impact
+pub fn ALU(x: u16, y: u16, zx: bool, nx: bool, zy: bool, ny: bool, f: bool, no: bool) -> u16 {
     // zx
     let x1 = Mux16(x, 0, zx);
     // nx
@@ -96,5 +98,5 @@ pub fn ALU(x: u16, y: u16, zx: boolean, nx: boolean, zy: boolean, ny: boolean, f
     // f
     let out1 = Mux16(And16(x2, y2), Add16(x2, y2), f);
     // no
-    return Mux16(out1, Not16(out1), no);
+    Mux16(out1, Not16(out1), no)
 }

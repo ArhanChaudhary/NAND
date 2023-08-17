@@ -1,22 +1,24 @@
+use crate::{NAND, nBit16, nBit16_0, word16_16};
+
 pub fn Not(a: bool) -> bool {
-    return NAND(a, a);
+    NAND(a, a)
 }
 
 pub fn And(a: bool, b: bool) -> bool {
-    return Not(NAND(a, b));
+    Not(NAND(a, b))
 }
 
 pub fn Or(a: bool, b: bool) -> bool {
-    return NAND(Not(a), Not(b));
+    NAND(Not(a), Not(b))
 }
 
 pub fn Xor(a: bool, b: bool) -> bool {
     let t1 = NAND(a, b);
-    return NAND(NAND(a, t1), NAND(b, t1));
+    NAND(NAND(a, t1), NAND(b, t1))
 }
 
 fn Mux(a: bool, b: bool, sel: bool) -> bool {
-    return NAND(NAND(a, Not(sel)), NAND(b, sel));
+    NAND(NAND(a, Not(sel)), NAND(b, sel))
 }
 
 pub fn Not16(in_: u16) -> u16 {
@@ -82,7 +84,7 @@ pub fn Mux16(a: u16, b: u16, sel: bool) -> u16 {
     );
 }
 
-pub fn Mux3Way16(ab: u16, c: u16, d: u16, sel: u8) -> u16 {
+pub fn Mux3Way16(ab: u16, c: u16, d: u16, sel: u16) -> u16 {
     return Mux16(
         ab,
         Mux16(c, d, nBit16_0(sel)),

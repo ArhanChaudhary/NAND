@@ -1,3 +1,7 @@
+mod arithmetic;
+mod gates;
+mod architecture;
+
 use wasm_bindgen::prelude::*;
 
 pub fn NAND(a: bool, b: bool) -> bool {
@@ -64,8 +68,8 @@ pub fn slice16_0to14(n: u16) -> u16 {
 }
 
 
-pub fn slice16_13to14(n: u16) -> u8 {
-	(n >> 13) as u8
+pub fn slice16_13to14(n: u16) -> u16 {
+	n >> 13
 }
 
 static mut PC_DFFOUT: u16 = 0;
@@ -107,25 +111,25 @@ pub fn getScreen() -> [u16; 8192] {
 
 static mut RAM16K_MEMORY: [u16; 16384] = [0; 16384];
 
-pub fn RAM16K(in_: u16, load: bool, address: usize) -> u16 {
-    let out = unsafe { RAM16K_MEMORY }[address];
+pub fn RAM16K(in_: u16, load: bool, address: u16) -> u16 {
+    let out = unsafe { RAM16K_MEMORY }[address as usize];
     if unsafe { CLOCK } && load {
-        unsafe { RAM16K_MEMORY[address] = in_ };
+        unsafe { RAM16K_MEMORY[address as usize] = in_ };
     }
     out
 }
 
 
-pub fn ROM32K(address: usize) -> u16 {
-	unsafe { ROM32K_MEMORY[address] }
+pub fn ROM32K(address: u16) -> u16 {
+	unsafe { ROM32K_MEMORY[address as usize] }
 }
 
 static mut SCREEN_MEMORY: [u16; 8192] = [0; 8192];
 
-pub fn Screen(in_: u16, load: bool, address: usize) -> u16 {
-    let out = unsafe { SCREEN_MEMORY }[address];
+pub fn Screen(in_: u16, load: bool, address: u16) -> u16 {
+    let out = unsafe { SCREEN_MEMORY }[address as usize];
     if unsafe { CLOCK } && load {
-        unsafe { SCREEN_MEMORY[address] = in_ };
+        unsafe { SCREEN_MEMORY[address as usize] = in_ };
     }
     out
 }
