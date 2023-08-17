@@ -105,10 +105,10 @@ pub fn getScreen() -> [u16; 8192] {
 	unsafe { SCREEN_MEMORY }
 }
 
-static mut RAM16K_MEMORY: Vec<u16> = Vec::new();
+static mut RAM16K_MEMORY: [u16; 16384] = [0; 16384];
 
 pub fn RAM16K(in_: u16, load: bool, address: usize) -> u16 {
-    let out = unsafe { &mut RAM16K_MEMORY }[address];
+    let out = unsafe { RAM16K_MEMORY }[address];
     if unsafe { CLOCK } && load {
         unsafe { RAM16K_MEMORY[address] = in_ };
     }
