@@ -105,33 +105,19 @@ pub fn ARegister(in_: u16, load: bool) -> u16 {
 	out
 }
 
-pub fn getScreen() -> [u16; 8192] {
-	unsafe { SCREEN_MEMORY }
-}
-
-static mut RAM16K_MEMORY: [u16; 16384] = [0; 16384];
+static mut RAM16K_MEMORY: Vec<u16> = Vec::new();
 
 pub fn RAM16K(in_: u16, load: bool, address: u16) -> u16 {
-    let out = unsafe { RAM16K_MEMORY }[address as usize];
+    let out = unsafe { &RAM16K_MEMORY }[address as usize];
     if unsafe { CLOCK } && load {
         unsafe { RAM16K_MEMORY[address as usize] = in_ };
     }
     out
 }
 
-
-pub fn ROM32K(address: u16) -> u16 {
-	unsafe { ROM32K_MEMORY[address as usize] }
-}
-
-static mut SCREEN_MEMORY: [u16; 8192] = [0; 8192];
-
-pub fn Screen(in_: u16, load: bool, address: u16) -> u16 {
-    let out = unsafe { SCREEN_MEMORY }[address as usize];
-    if unsafe { CLOCK } && load {
-        unsafe { SCREEN_MEMORY[address as usize] = in_ };
-    }
-    out
+#[wasm_bindgen]
+pub fn getRAM() -> Vec<u16> {
+	unsafe { RAM16K_MEMORY.clone() }
 }
 
 static mut CURRENT_KEY: u16 = 0;
@@ -144,12 +130,40 @@ pub fn Keyboard(load: bool, pressed: u16) -> u16 {
 }
 
 static mut ROM32K_MEMORY: Vec<u16> = Vec::new();
-#[wasm_bindgen]
-pub fn loadROM(in_: JsValue) {
-	unsafe { ROM32K_MEMORY = serde_wasm_bindgen::from_value(in_).unwrap() };
+
+pub fn ROM32K(address: u16) -> u16 {
+	unsafe { ROM32K_MEMORY[address as usize] }
 }
 
-// #[wasm_bindgen]
-// pub fn getRAM() -> Result<JsValue, serde_wasm_bindgen::Error> {
-// 	unsafe { serde_wasm_bindgen::to_value(&RAM16K_MEMORY) }
-// }
+#[wasm_bindgen]
+pub fn loadROM(in_: JsValue) {
+	unsafe { ROM32K_MEMORY = Vec::new() };
+	let arr: js_sys::Array = in_.into();
+	for i in 0..arr.length() {
+		let s = arr.get(i).as_string().unwrap();
+		let n = u16::from_str_radix(&s, 2).unwrap();
+		unsafe { ROM32K_MEMORY.push(n) };
+	}
+}
+
+static mut SCREEN_MEMORY: Vec<u16> = Vec::new();
+
+pub fn Screen(in_: u16, load: bool, address: u16) -> u16 {
+    let out = unsafe { &SCREEN_MEMORY }[address as usize];
+    if unsafe { CLOCK } && load {
+        unsafe { SCREEN_MEMORY[address as usize] = in_ };
+    }
+    out
+}
+
+#[wasm_bindgen]
+pub fn getScreen() -> Vec<u16> {
+	unsafe { SCREEN_MEMORY.clone() }
+}
+
+#[wasm_bindgen]
+pub fn init() {
+	unsafe { RAM16K_MEMORY = vec![0; 16384] };
+	// unsafe { ROM32K_MEMORY = vec![0; 32768] };
+	unsafe { SCREEN_MEMORY = vec![0; 8192] };
+}
