@@ -108,6 +108,9 @@ pub fn aregister(in_: u16, load: bool) -> u16 {
 static mut RAM16K_MEMORY: Vec<u16> = Vec::new();
 
 pub fn ram16k(in_: u16, load: bool, address: u16) -> u16 {
+	if address >= 16384 {
+		return 0;
+	}
     let out = unsafe { &RAM16K_MEMORY }[address as usize];
     if unsafe { CLOCK } && load {
         unsafe { RAM16K_MEMORY[address as usize] = in_ };
@@ -149,7 +152,7 @@ pub fn load_rom(in_: JsValue) {
 static mut SCREEN_MEMORY: Vec<u16> = Vec::new();
 
 pub fn screen(in_: u16, load: bool, address: u16) -> u16 {
-    let out = unsafe { &SCREEN_MEMORY }[address as usize];
+	let out = unsafe { &SCREEN_MEMORY }[address as usize];
     if unsafe { CLOCK } && load {
         unsafe { SCREEN_MEMORY[address as usize] = in_ };
     }

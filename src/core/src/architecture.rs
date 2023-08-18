@@ -89,16 +89,15 @@ fn memory(in_: u16, load: bool, address: u16) -> u16 {
     // 11 => KEYBOARD
 
     let address14 = n_bit16(address, 14);
-    let out1 = ram16k(
-        in_,
-        and(
-            not(address14),
-            load
-        ),
-        address,
-    );
     return mux3_way16(
-        out1,
+        ram16k(
+            in_,
+            and(
+                not(address14),
+                load
+            ),
+            address,
+        ),
         screen(
             in_,
             and(and(
