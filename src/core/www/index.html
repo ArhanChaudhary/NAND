@@ -2,10 +2,26 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Hello wasm-pack!</title>
+    <title>NAND</title>
+    <script src="./bootstrap.js"></script>
+  </head>
+  <style>
+    body {
+      background-color: tan;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    canvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      border: 2px solid black;
+      background: white;
+    }
+  </style>
   </head>
   <body>
-    <noscript>This page contains webassembly and javascript content, please enable javascript in your browser.</noscript>
-    <script src="./bootstrap.js"></script>
+    <canvas width="512" height="256"></canvas>
   </body>
 </html>
