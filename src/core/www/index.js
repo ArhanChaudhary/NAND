@@ -1,6 +1,6 @@
 import * as wasm from "core";
 wasm.init();
 
-window.loadROM = wasm.loadROM;
+window.loadROM = wasm.load_rom;
 window.step = wasm.step;
-window.getRAM = wasm.getRAM;
+window.getRAM = wasm.get_ram;

@@ -1,16 +1,16 @@
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{PC_reg, gates::{Mux16, And, isZero, Or, Not, Mux3Way16}, arithmetic::{Inc16, ALU}, nBit16, ARegister, slice16_0to14, DRegister, Screen, Keyboard, slice16_0to12, slice16_13to14, ROM32K, tick, tock, RAM16K};
+use crate::{pc_reg, gates::{mux16, and, is_zero, or, not, mux3_way16}, arithmetic::{inc16, alu}, n_bit16, aregister, slice16_0to14, dregister, screen, slice16_0to12, slice16_13to14, rom32k, tick, tock, ram16k, keyboard};
 
 static mut PC_DFFOUT: u16 = 0;
-fn PC(in_: u16, load: bool, reset: bool) -> u16 {
-    unsafe { PC_DFFOUT = PC_reg(
+fn pc(in_: u16, load: bool, reset: bool) -> u16 {
+    unsafe { PC_DFFOUT = pc_reg(
         // reset
-        Mux16(
+        mux16(
             // load
-            Mux16(
+            mux16(
                 // inc
-                Inc16(PC_DFFOUT),
+                inc16(PC_DFFOUT),
                 in_,
                 load
             ),
@@ -21,65 +21,65 @@ fn PC(in_: u16, load: bool, reset: bool) -> u16 {
     unsafe { PC_DFFOUT }
 }
 
-static mut out: [u16; 4] = [0; 4];
+static mut CPU_DFFOUT: [u16; 4] = [0; 4];
 
-pub fn CPU(inM: u16, instruction: u16, reset: bool) -> [u16; 4] {
-    let instruction15 = nBit16(instruction, 15);
+pub fn cpu(in_m: u16, instruction: u16, reset: bool) -> [u16; 4] {
+    let instruction15 = n_bit16(instruction, 15);
 
     // writeM
-    unsafe { out[1] = u16::from(And(nBit16(instruction, 3), instruction15)) };
+    unsafe { CPU_DFFOUT[1] = u16::from(and(n_bit16(instruction, 3), instruction15)) };
     
-    let ALUy1 = ARegister(0, false);
-    let PCin = slice16_0to14(ALUy1);
+    let aluy1 = aregister(0, false);
+    let pcin = slice16_0to14(aluy1);
 
     // addressM
-    unsafe { out[2] = PCin };
+    unsafe { CPU_DFFOUT[2] = pcin };
 
     // pc
-    unsafe { out[3] = PC(PCin, false, reset) };
+    unsafe { CPU_DFFOUT[3] = pc(pcin, false, reset) };
 
-    let ALUout = ALU(
-        DRegister(0, false),
-        Mux16(ALUy1, inM, nBit16(instruction, 12)),
-        nBit16(instruction, 11),
-        nBit16(instruction, 10),
-        nBit16(instruction, 9),
-        nBit16(instruction, 8),
-        nBit16(instruction, 7),
-        nBit16(instruction, 6),
+    let aluout = alu(
+        dregister(0, false),
+        mux16(aluy1, in_m, n_bit16(instruction, 12)),
+        n_bit16(instruction, 11),
+        n_bit16(instruction, 10),
+        n_bit16(instruction, 9),
+        n_bit16(instruction, 8),
+        n_bit16(instruction, 7),
+        n_bit16(instruction, 6),
     );
 
     // outM
-    unsafe { out[0] = ALUout };
+    unsafe { CPU_DFFOUT[0] = aluout };
 
-    let ALUoutisneg = nBit16(ALUout, 15);
-    let AlUoutiszero = isZero(ALUout);
+    let aluoutisneg = n_bit16(aluout, 15);
+    let aluoutiszero = is_zero(aluout);
 
-    DRegister(
-        ALUout,
-        And(nBit16(instruction, 4), instruction15)
+    dregister(
+        aluout,
+        and(n_bit16(instruction, 4), instruction15)
     );
-    PC(
+    pc(
         slice16_0to14(
-            ARegister(
-                Mux16(instruction, ALUout, instruction15),
-                Or(Not(instruction15), nBit16(instruction, 5))
+            aregister(
+                mux16(instruction, aluout, instruction15),
+                or(not(instruction15), n_bit16(instruction, 5))
             )
         ),
-        And(
-            Or(Or(
-                And(Not(Or(ALUoutisneg, AlUoutiszero)), nBit16(instruction, 0)), // positive
-                And(AlUoutiszero, nBit16(instruction, 1))),
-                And(ALUoutisneg, nBit16(instruction, 2))
+        and(
+            or(or(
+                and(not(or(aluoutisneg, aluoutiszero)), n_bit16(instruction, 0)), // positive
+                and(aluoutiszero, n_bit16(instruction, 1))),
+                and(aluoutisneg, n_bit16(instruction, 2))
             ),
             instruction15
         ),
         reset
     );
-    unsafe { out }
+    unsafe { CPU_DFFOUT }
 }
 
-fn Memory(in_: u16, load: bool, address: u16) -> u16 {
+fn memory(in_: u16, load: bool, address: u16) -> u16 {
     // address[14] == 0 means select RAM
     // address[13] == 0 means select Screen
     // address[13] == 1 and address[14] == 1 means select Keyboard
@@ -88,45 +88,45 @@ fn Memory(in_: u16, load: bool, address: u16) -> u16 {
     // 10 => SCREEN
     // 11 => KEYBOARD
 
-    let address14 = nBit16(address, 14);
-    let out1 = RAM16K(
+    let address14 = n_bit16(address, 14);
+    let out1 = ram16k(
         in_,
-        And(
-            Not(address14),
+        and(
+            not(address14),
             load
         ),
         address,
     );
-    return Mux3Way16(
+    return mux3_way16(
         out1,
-        Screen(
+        screen(
             in_,
-            And(And(
-                Not(nBit16(address, 13)),
+            and(and(
+                not(n_bit16(address, 13)),
                 address14),
                 load
             ),
             slice16_0to12(address)
         ),
-        Keyboard(false, 0),
+        keyboard(false, 0),
         slice16_13to14(address),
     );
 }
 
-static mut CPUout: [u16; 4] = [0; 4];
-fn Computer(reset: bool) {
-    unsafe { CPUout = CPU(
-        Memory(0, false, CPUout[2]),
-        ROM32K(CPUout[3]),
+static mut COMPUTER_DFFOUT: [u16; 4] = [0; 4];
+fn computer(reset: bool) {
+    unsafe { COMPUTER_DFFOUT = cpu(
+        memory(0, false, COMPUTER_DFFOUT[2]),
+        rom32k(COMPUTER_DFFOUT[3]),
         reset
     ) };
-    unsafe { Memory(CPUout[0], CPUout[1] != 0, CPUout[2]) };
+    unsafe { memory(COMPUTER_DFFOUT[0], COMPUTER_DFFOUT[1] != 0, COMPUTER_DFFOUT[2]) };
 }
 
 #[wasm_bindgen]
 pub fn step(reset: bool) {
     tick();
-    Computer(reset);
+    computer(reset);
     tock();
-    Computer(reset);
+    computer(reset);
 }

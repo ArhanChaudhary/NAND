@@ -1,128 +1,128 @@
-use crate::{NAND, nBit16, nBit16_0, word16_16};
+use crate::{nand, n_bit16, n_bit16_0, word16_16};
 
-pub fn Not(a: bool) -> bool {
-    NAND(a, a)
+pub fn not(a: bool) -> bool {
+    nand(a, a)
 }
 
-pub fn And(a: bool, b: bool) -> bool {
-    Not(NAND(a, b))
+pub fn and(a: bool, b: bool) -> bool {
+    not(nand(a, b))
 }
 
-pub fn Or(a: bool, b: bool) -> bool {
-    NAND(Not(a), Not(b))
+pub fn or(a: bool, b: bool) -> bool {
+    nand(not(a), not(b))
 }
 
-pub fn Xor(a: bool, b: bool) -> bool {
-    let t1 = NAND(a, b);
-    NAND(NAND(a, t1), NAND(b, t1))
+pub fn xor(a: bool, b: bool) -> bool {
+    let t1 = nand(a, b);
+    nand(nand(a, t1), nand(b, t1))
 }
 
-fn Mux(a: bool, b: bool, sel: bool) -> bool {
-    NAND(NAND(a, Not(sel)), NAND(b, sel))
+fn mux(a: bool, b: bool, sel: bool) -> bool {
+    nand(nand(a, not(sel)), nand(b, sel))
 }
 
-pub fn Not16(in_: u16) -> u16 {
+pub fn not16(in_: u16) -> u16 {
     return word16_16(
-        Not(nBit16_0(in_)),
-        Not(nBit16(in_, 1)),
-        Not(nBit16(in_, 2)),
-        Not(nBit16(in_, 3)),
-        Not(nBit16(in_, 4)),
-        Not(nBit16(in_, 5)),
-        Not(nBit16(in_, 6)),
-        Not(nBit16(in_, 7)),
-        Not(nBit16(in_, 8)),
-        Not(nBit16(in_, 9)),
-        Not(nBit16(in_, 10)),
-        Not(nBit16(in_, 11)),
-        Not(nBit16(in_, 12)),
-        Not(nBit16(in_, 13)),
-        Not(nBit16(in_, 14)),
-        Not(nBit16(in_, 15)),
+        not(n_bit16_0(in_)),
+        not(n_bit16(in_, 1)),
+        not(n_bit16(in_, 2)),
+        not(n_bit16(in_, 3)),
+        not(n_bit16(in_, 4)),
+        not(n_bit16(in_, 5)),
+        not(n_bit16(in_, 6)),
+        not(n_bit16(in_, 7)),
+        not(n_bit16(in_, 8)),
+        not(n_bit16(in_, 9)),
+        not(n_bit16(in_, 10)),
+        not(n_bit16(in_, 11)),
+        not(n_bit16(in_, 12)),
+        not(n_bit16(in_, 13)),
+        not(n_bit16(in_, 14)),
+        not(n_bit16(in_, 15)),
     );
 }
 
-pub fn And16(a: u16, b: u16) -> u16 {
+pub fn and16(a: u16, b: u16) -> u16 {
     return word16_16(
-        And(nBit16_0(a), nBit16_0(b)),
-        And(nBit16(a, 1), nBit16(b, 1)),
-        And(nBit16(a, 2), nBit16(b, 2)),
-        And(nBit16(a, 3), nBit16(b, 3)),
-        And(nBit16(a, 4), nBit16(b, 4)),
-        And(nBit16(a, 5), nBit16(b, 5)),
-        And(nBit16(a, 6), nBit16(b, 6)),
-        And(nBit16(a, 7), nBit16(b, 7)),
-        And(nBit16(a, 8), nBit16(b, 8)),
-        And(nBit16(a, 9), nBit16(b, 9)),
-        And(nBit16(a, 10), nBit16(b, 10)),
-        And(nBit16(a, 11), nBit16(b, 11)),
-        And(nBit16(a, 12), nBit16(b, 12)),
-        And(nBit16(a, 13), nBit16(b, 13)),
-        And(nBit16(a, 14), nBit16(b, 14)),
-        And(nBit16(a, 15), nBit16(b, 15))
+        and(n_bit16_0(a), n_bit16_0(b)),
+        and(n_bit16(a, 1), n_bit16(b, 1)),
+        and(n_bit16(a, 2), n_bit16(b, 2)),
+        and(n_bit16(a, 3), n_bit16(b, 3)),
+        and(n_bit16(a, 4), n_bit16(b, 4)),
+        and(n_bit16(a, 5), n_bit16(b, 5)),
+        and(n_bit16(a, 6), n_bit16(b, 6)),
+        and(n_bit16(a, 7), n_bit16(b, 7)),
+        and(n_bit16(a, 8), n_bit16(b, 8)),
+        and(n_bit16(a, 9), n_bit16(b, 9)),
+        and(n_bit16(a, 10), n_bit16(b, 10)),
+        and(n_bit16(a, 11), n_bit16(b, 11)),
+        and(n_bit16(a, 12), n_bit16(b, 12)),
+        and(n_bit16(a, 13), n_bit16(b, 13)),
+        and(n_bit16(a, 14), n_bit16(b, 14)),
+        and(n_bit16(a, 15), n_bit16(b, 15))
     );
 }
 
-pub fn Mux16(a: u16, b: u16, sel: bool) -> u16 {
+pub fn mux16(a: u16, b: u16, sel: bool) -> u16 {
     return word16_16(
-        Mux(nBit16_0(a), nBit16_0(b), sel),
-        Mux(nBit16(a, 1), nBit16(b, 1), sel),
-        Mux(nBit16(a, 2), nBit16(b, 2), sel),
-        Mux(nBit16(a, 3), nBit16(b, 3), sel),
-        Mux(nBit16(a, 4), nBit16(b, 4), sel),
-        Mux(nBit16(a, 5), nBit16(b, 5), sel),
-        Mux(nBit16(a, 6), nBit16(b, 6), sel),
-        Mux(nBit16(a, 7), nBit16(b, 7), sel),
-        Mux(nBit16(a, 8), nBit16(b, 8), sel),
-        Mux(nBit16(a, 9), nBit16(b, 9), sel),
-        Mux(nBit16(a, 10), nBit16(b, 10), sel),
-        Mux(nBit16(a, 11), nBit16(b, 11), sel),
-        Mux(nBit16(a, 12), nBit16(b, 12), sel),
-        Mux(nBit16(a, 13), nBit16(b, 13), sel),
-        Mux(nBit16(a, 14), nBit16(b, 14), sel),
-        Mux(nBit16(a, 15), nBit16(b, 15), sel)
+        mux(n_bit16_0(a), n_bit16_0(b), sel),
+        mux(n_bit16(a, 1), n_bit16(b, 1), sel),
+        mux(n_bit16(a, 2), n_bit16(b, 2), sel),
+        mux(n_bit16(a, 3), n_bit16(b, 3), sel),
+        mux(n_bit16(a, 4), n_bit16(b, 4), sel),
+        mux(n_bit16(a, 5), n_bit16(b, 5), sel),
+        mux(n_bit16(a, 6), n_bit16(b, 6), sel),
+        mux(n_bit16(a, 7), n_bit16(b, 7), sel),
+        mux(n_bit16(a, 8), n_bit16(b, 8), sel),
+        mux(n_bit16(a, 9), n_bit16(b, 9), sel),
+        mux(n_bit16(a, 10), n_bit16(b, 10), sel),
+        mux(n_bit16(a, 11), n_bit16(b, 11), sel),
+        mux(n_bit16(a, 12), n_bit16(b, 12), sel),
+        mux(n_bit16(a, 13), n_bit16(b, 13), sel),
+        mux(n_bit16(a, 14), n_bit16(b, 14), sel),
+        mux(n_bit16(a, 15), n_bit16(b, 15), sel)
     );
 }
 
-pub fn Mux3Way16(ab: u16, c: u16, d: u16, sel: u16) -> u16 {
-    return Mux16(
+pub fn mux3_way16(ab: u16, c: u16, d: u16, sel: u16) -> u16 {
+    return mux16(
         ab,
-        Mux16(c, d, nBit16_0(sel)),
-        nBit16(sel, 1)
+        mux16(c, d, n_bit16_0(sel)),
+        n_bit16(sel, 1)
     );
 }
 
-pub fn isZero(in_: u16) -> bool {
-    return Not(
-        Or(
-            nBit16(in_, 15),
-            Or(
-                nBit16(in_, 14),
-                Or(
-                    nBit16(in_, 13),
-                    Or(
-                        nBit16(in_, 12),
-                        Or(
-                            nBit16(in_, 11),
-                            Or(
-                                nBit16(in_, 10),
-                                Or(
-                                    nBit16(in_, 9),
-                                    Or(
-                                        nBit16(in_, 8),
-                                        Or(
-                                            nBit16(in_, 7),
-                                            Or(
-                                                nBit16(in_, 6),
-                                                Or(
-                                                    nBit16(in_, 5),
-                                                    Or(
-                                                        nBit16(in_, 4),
-                                                        Or(
-                                                            nBit16(in_, 3),
-                                                            Or(
-                                                                nBit16(in_, 2),
-                                                                Or(nBit16(in_, 1), nBit16_0(in_))
+pub fn is_zero(in_: u16) -> bool {
+    return not(
+        or(
+            n_bit16(in_, 15),
+            or(
+                n_bit16(in_, 14),
+                or(
+                    n_bit16(in_, 13),
+                    or(
+                        n_bit16(in_, 12),
+                        or(
+                            n_bit16(in_, 11),
+                            or(
+                                n_bit16(in_, 10),
+                                or(
+                                    n_bit16(in_, 9),
+                                    or(
+                                        n_bit16(in_, 8),
+                                        or(
+                                            n_bit16(in_, 7),
+                                            or(
+                                                n_bit16(in_, 6),
+                                                or(
+                                                    n_bit16(in_, 5),
+                                                    or(
+                                                        n_bit16(in_, 4),
+                                                        or(
+                                                            n_bit16(in_, 3),
+                                                            or(
+                                                                n_bit16(in_, 2),
+                                                                or(n_bit16(in_, 1), n_bit16_0(in_))
                                                             )
                                                         )
                                                     )

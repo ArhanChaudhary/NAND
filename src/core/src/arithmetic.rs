@@ -1,102 +1,102 @@
-use crate::{nBit16, nBit16_0, gates::{And, Or, Xor, Not16, Mux16, And16}, word16_16};
+use crate::{n_bit16, n_bit16_0, gates::{and, or, xor, not16, mux16, and16}, word16_16};
 
-fn Add16(a: u16, b: u16) -> u16 {
-    let a0 = nBit16_0(a);
-    let a1 = nBit16(a, 1);
-    let a2 = nBit16(a, 2);
-    let a3 = nBit16(a, 3);
-    let a4 = nBit16(a, 4);
-    let a5 = nBit16(a, 5);
-    let a6 = nBit16(a, 6);
-    let a7 = nBit16(a, 7);
-    let a8 = nBit16(a, 8);
-    let a9 = nBit16(a, 9);
-    let a10 = nBit16(a, 10);
-    let a11 = nBit16(a, 11);
-    let a12 = nBit16(a, 12);
-    let a13 = nBit16(a, 13);
-    let a14 = nBit16(a, 14);
-    let a15 = nBit16(a, 15);
-    let b0 = nBit16_0(b);
-    let b1 = nBit16(b, 1);
-    let b2 = nBit16(b, 2);
-    let b3 = nBit16(b, 3);
-    let b4 = nBit16(b, 4);
-    let b5 = nBit16(b, 5);
-    let b6 = nBit16(b, 6);
-    let b7 = nBit16(b, 7);
-    let b8 = nBit16(b, 8);
-    let b9 = nBit16(b, 9);
-    let b10 = nBit16(b, 10);
-    let b11 = nBit16(b, 11);
-    let b12 = nBit16(b, 12);
-    let b13 = nBit16(b, 13);
-    let b14 = nBit16(b, 14);
-    let b15 = nBit16(b, 15);
-    let carry1 = And(a0, b0);
-    let x1 = Xor(b1, carry1);
-    let carry2 = Or(And(b1, carry1), And(a1, x1));
-    let x2 = Xor(b2, carry2);
-    let carry3 = Or(And(b2, carry2), And(a2, x2));
-    let x3 = Xor(b3, carry3);
-    let carry4 = Or(And(b3, carry3), And(a3, x3));
-    let x4 = Xor(b4, carry4);
-    let carry5 = Or(And(b4, carry4), And(a4, x4));
-    let x5 = Xor(b5, carry5);
-    let carry6 = Or(And(b5, carry5), And(a5, x5));
-    let x6 = Xor(b6, carry6);
-    let carry7 = Or(And(b6, carry6), And(a6, x6));
-    let x7 = Xor(b7, carry7);
-    let carry8 = Or(And(b7, carry7), And(a7, x7));
-    let x8 = Xor(b8, carry8);
-    let carry9 = Or(And(b8, carry8), And(a8, x8));
-    let x9 = Xor(b9, carry9);
-    let carry10 = Or(And(b9, carry9), And(a9, x9));
-    let x10 = Xor(b10, carry10);
-    let carry11 = Or(And(b10, carry10), And(a10, x10));
-    let x11 = Xor(b11, carry11);
-    let carry12 = Or(And(b11, carry11), And(a11, x11));
-    let x12 = Xor(b12, carry12);
-    let carry13 = Or(And(b12, carry12), And(a12, x12));
-    let x13 = Xor(b13, carry13);
-    let carry14 = Or(And(b13, carry13), And(a13, x13));
-    let x14 = Xor(b14, carry14);
+fn add16(a: u16, b: u16) -> u16 {
+    let a0 = n_bit16_0(a);
+    let a1 = n_bit16(a, 1);
+    let a2 = n_bit16(a, 2);
+    let a3 = n_bit16(a, 3);
+    let a4 = n_bit16(a, 4);
+    let a5 = n_bit16(a, 5);
+    let a6 = n_bit16(a, 6);
+    let a7 = n_bit16(a, 7);
+    let a8 = n_bit16(a, 8);
+    let a9 = n_bit16(a, 9);
+    let a10 = n_bit16(a, 10);
+    let a11 = n_bit16(a, 11);
+    let a12 = n_bit16(a, 12);
+    let a13 = n_bit16(a, 13);
+    let a14 = n_bit16(a, 14);
+    let a15 = n_bit16(a, 15);
+    let b0 = n_bit16_0(b);
+    let b1 = n_bit16(b, 1);
+    let b2 = n_bit16(b, 2);
+    let b3 = n_bit16(b, 3);
+    let b4 = n_bit16(b, 4);
+    let b5 = n_bit16(b, 5);
+    let b6 = n_bit16(b, 6);
+    let b7 = n_bit16(b, 7);
+    let b8 = n_bit16(b, 8);
+    let b9 = n_bit16(b, 9);
+    let b10 = n_bit16(b, 10);
+    let b11 = n_bit16(b, 11);
+    let b12 = n_bit16(b, 12);
+    let b13 = n_bit16(b, 13);
+    let b14 = n_bit16(b, 14);
+    let b15 = n_bit16(b, 15);
+    let carry1 = and(a0, b0);
+    let x1 = xor(b1, carry1);
+    let carry2 = or(and(b1, carry1), and(a1, x1));
+    let x2 = xor(b2, carry2);
+    let carry3 = or(and(b2, carry2), and(a2, x2));
+    let x3 = xor(b3, carry3);
+    let carry4 = or(and(b3, carry3), and(a3, x3));
+    let x4 = xor(b4, carry4);
+    let carry5 = or(and(b4, carry4), and(a4, x4));
+    let x5 = xor(b5, carry5);
+    let carry6 = or(and(b5, carry5), and(a5, x5));
+    let x6 = xor(b6, carry6);
+    let carry7 = or(and(b6, carry6), and(a6, x6));
+    let x7 = xor(b7, carry7);
+    let carry8 = or(and(b7, carry7), and(a7, x7));
+    let x8 = xor(b8, carry8);
+    let carry9 = or(and(b8, carry8), and(a8, x8));
+    let x9 = xor(b9, carry9);
+    let carry10 = or(and(b9, carry9), and(a9, x9));
+    let x10 = xor(b10, carry10);
+    let carry11 = or(and(b10, carry10), and(a10, x10));
+    let x11 = xor(b11, carry11);
+    let carry12 = or(and(b11, carry11), and(a11, x11));
+    let x12 = xor(b12, carry12);
+    let carry13 = or(and(b12, carry12), and(a12, x12));
+    let x13 = xor(b13, carry13);
+    let carry14 = or(and(b13, carry13), and(a13, x13));
+    let x14 = xor(b14, carry14);
     return word16_16(
-        Xor(a0, b0),
-        Xor(a1, x1),
-        Xor(a2, x2),
-        Xor(a3, x3),
-        Xor(a4, x4),
-        Xor(a5, x5),
-        Xor(a6, x6),
-        Xor(a7, x7),
-        Xor(a8, x8),
-        Xor(a9, x9),
-        Xor(a10, x10),
-        Xor(a11, x11),
-        Xor(a12, x12),
-        Xor(a13, x13),
-        Xor(a14, x14),
-        Xor(a15, Xor(b15, Or(And(b14, carry14), And(a14, x14)))),
+        xor(a0, b0),
+        xor(a1, x1),
+        xor(a2, x2),
+        xor(a3, x3),
+        xor(a4, x4),
+        xor(a5, x5),
+        xor(a6, x6),
+        xor(a7, x7),
+        xor(a8, x8),
+        xor(a9, x9),
+        xor(a10, x10),
+        xor(a11, x11),
+        xor(a12, x12),
+        xor(a13, x13),
+        xor(a14, x14),
+        xor(a15, xor(b15, or(and(b14, carry14), and(a14, x14)))),
     );
 }
 
-pub fn Inc16(in_: u16) -> u16 {
-    Add16(in_, 1)
+pub fn inc16(in_: u16) -> u16 {
+    add16(in_, 1)
 }
 
 // NOTE: combining all the bools into a single opcode doesn't seem to have any performance impact
-pub fn ALU(x: u16, y: u16, zx: bool, nx: bool, zy: bool, ny: bool, f: bool, no: bool) -> u16 {
+pub fn alu(x: u16, y: u16, zx: bool, nx: bool, zy: bool, ny: bool, f: bool, no: bool) -> u16 {
     // zx
-    let x1 = Mux16(x, 0, zx);
+    let x1 = mux16(x, 0, zx);
     // nx
-    let x2 = Mux16(x1, Not16(x1), nx);
+    let x2 = mux16(x1, not16(x1), nx);
     // zy
-    let y1 = Mux16(y, 0, zy);
+    let y1 = mux16(y, 0, zy);
     // ny
-    let y2 = Mux16(y1, Not16(y1), ny);
+    let y2 = mux16(y1, not16(y1), ny);
     // f
-    let out1 = Mux16(And16(x2, y2), Add16(x2, y2), f);
+    let out1 = mux16(and16(x2, y2), add16(x2, y2), f);
     // no
-    Mux16(out1, Not16(out1), no)
+    mux16(out1, not16(out1), no)
 }
