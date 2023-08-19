@@ -1,7 +1,7 @@
 version: 2
 updates:
 - package-ecosystem: cargo
-  directory: "/"
+  directory: "/src/core/"
   schedule:
     interval: daily
     time: "08:00"
