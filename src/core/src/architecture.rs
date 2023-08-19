@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{pc_reg, gates::{mux16, and, is_zero, or, not, mux3_way16}, arithmetic::{inc16, alu}, n_bit16, aregister, slice16_0to14, dregister, screen, slice16_0to12, slice16_13to14, rom32k, tick, tock, ram16k, keyboard};
+use crate::{pc_reg, gates::{mux16, and, is_zero, or, not, mux3_way16}, arithmetic::{inc16, alu}, nbit16, aregister, slice16_0to14, dregister, screen, slice16_0to12, slice16_13to14, rom32k, tick, tock, ram16k, keyboard};
 
 static mut PC_DFFOUT: u16 = 0;
 fn pc(in_: u16, load: bool, reset: bool) -> u16 {
@@ -24,10 +24,10 @@ fn pc(in_: u16, load: bool, reset: bool) -> u16 {
 static mut CPU_DFFOUT: [u16; 4] = [0; 4];
 
 pub fn cpu(in_m: u16, instruction: u16, reset: bool) -> [u16; 4] {
-    let instruction15 = n_bit16(instruction, 15);
+    let instruction15 = nbit16(instruction, 15);
 
     // writeM
-    unsafe { CPU_DFFOUT[1] = u16::from(and(n_bit16(instruction, 3), instruction15)) };
+    unsafe { CPU_DFFOUT[1] = u16::from(and(nbit16(instruction, 3), instruction15)) };
     
     let aluy1 = aregister(0, false);
     let pcin = slice16_0to14(aluy1);
@@ -40,37 +40,37 @@ pub fn cpu(in_m: u16, instruction: u16, reset: bool) -> [u16; 4] {
 
     let aluout = alu(
         dregister(0, false),
-        mux16(aluy1, in_m, n_bit16(instruction, 12)),
-        n_bit16(instruction, 11),
-        n_bit16(instruction, 10),
-        n_bit16(instruction, 9),
-        n_bit16(instruction, 8),
-        n_bit16(instruction, 7),
-        n_bit16(instruction, 6),
+        mux16(aluy1, in_m, nbit16(instruction, 12)),
+        nbit16(instruction, 11),
+        nbit16(instruction, 10),
+        nbit16(instruction, 9),
+        nbit16(instruction, 8),
+        nbit16(instruction, 7),
+        nbit16(instruction, 6),
     );
 
     // outM
     unsafe { CPU_DFFOUT[0] = aluout };
 
-    let aluoutisneg = n_bit16(aluout, 15);
+    let aluoutisneg = nbit16(aluout, 15);
     let aluoutiszero = is_zero(aluout);
 
     dregister(
         aluout,
-        and(n_bit16(instruction, 4), instruction15)
+        and(nbit16(instruction, 4), instruction15)
     );
     pc(
         slice16_0to14(
             aregister(
                 mux16(instruction, aluout, instruction15),
-                or(not(instruction15), n_bit16(instruction, 5))
+                or(not(instruction15), nbit16(instruction, 5))
             )
         ),
         and(
             or(or(
-                and(not(or(aluoutisneg, aluoutiszero)), n_bit16(instruction, 0)), // positive
-                and(aluoutiszero, n_bit16(instruction, 1))),
-                and(aluoutisneg, n_bit16(instruction, 2))
+                and(not(or(aluoutisneg, aluoutiszero)), nbit16(instruction, 0)), // positive
+                and(aluoutiszero, nbit16(instruction, 1))),
+                and(aluoutisneg, nbit16(instruction, 2))
             ),
             instruction15
         ),
@@ -88,7 +88,7 @@ fn memory(in_: u16, load: bool, address: u16) -> u16 {
     // 10 => SCREEN
     // 11 => KEYBOARD
 
-    let address14 = n_bit16(address, 14);
+    let address14 = nbit16(address, 14);
     return mux3_way16(
         ram16k(
             in_,
@@ -101,7 +101,7 @@ fn memory(in_: u16, load: bool, address: u16) -> u16 {
         screen(
             in_,
             and(and(
-                not(n_bit16(address, 13)),
+                not(nbit16(address, 13)),
                 address14),
                 load
             ),

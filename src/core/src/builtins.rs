@@ -5,7 +5,8 @@ mod architecture;
 use wasm_bindgen::prelude::*;
 use web_sys::CanvasRenderingContext2d;
 
-pub fn nand(a: bool, b: bool) -> bool {
+#[allow(non_snake_case)]
+pub fn NAND(a: bool, b: bool) -> bool {
     !(a && b)
 }
 
@@ -19,43 +20,43 @@ pub fn tock() {
     unsafe { CLOCK = false };
 }
 
-pub fn n_bit16(n: u16, i: u8) -> bool {
+pub fn nbit16(n: u16, i: u8) -> bool {
 	// TODO: this and placebit when used together can be further optimized
 	((n >> i) & 1) != 0
 }
 
-pub fn n_bit16_0(n: u16) -> bool {
+pub fn nbit16_0(n: u16) -> bool {
 	(n & 1) != 0
 }
 
 
-fn place_bit16(b: bool, i: u8) -> u16 {
+fn placebit16(b: bool, i: u8) -> u16 {
 	u16::from(b) << i
 }
 
 
-fn place_bit16_0(b: bool) -> u16 {
+fn placebit16_0(b: bool) -> u16 {
 	u16::from(b)
 }
 
 pub fn word16_16(a: bool, b: bool, c: bool, d: bool, e: bool, f: bool, g: bool, h: bool, 
         i: bool, j: bool, k: bool, l: bool, m: bool, n: bool, o: bool, p: bool) -> u16 {
-	place_bit16_0(a) |
-    place_bit16(b, 1) |
-    place_bit16(c, 2) |
-    place_bit16(d, 3) |
-    place_bit16(e, 4) |
-    place_bit16(f, 5) |
-    place_bit16(g, 6) |
-    place_bit16(h, 7) |
-    place_bit16(i, 8) |
-    place_bit16(j, 9) |
-    place_bit16(k, 10) |
-    place_bit16(l, 11) |
-    place_bit16(m, 12) |
-    place_bit16(n, 13) |
-    place_bit16(o, 14) |
-    place_bit16(p, 15)
+	placebit16_0(a) |
+    placebit16(b, 1) |
+    placebit16(c, 2) |
+    placebit16(d, 3) |
+    placebit16(e, 4) |
+    placebit16(f, 5) |
+    placebit16(g, 6) |
+    placebit16(h, 7) |
+    placebit16(i, 8) |
+    placebit16(j, 9) |
+    placebit16(k, 10) |
+    placebit16(l, 11) |
+    placebit16(m, 12) |
+    placebit16(n, 13) |
+    placebit16(o, 14) |
+    placebit16(p, 15)
 }
 
 
@@ -166,7 +167,7 @@ pub fn render(ctx: CanvasRenderingContext2d) {
 	for i in 0..8192u16 {
 		let word16 = unsafe { &SCREEN_MEMORY }[i as usize];
 		for j in 0..16 {
-			if n_bit16(word16, j) {
+			if nbit16(word16, j) {
 				let x = ((i * 16) + j as u16) % 512;
 				let y = i / 32;
 				ctx.fill_rect(x as f64, y as f64, 1.0, 1.0);
