@@ -16,6 +16,10 @@ wasm-bindgen = "0.2.84"
 version = "0.3"
 features = [
   "CanvasRenderingContext2d",
+  "Document",
+  "Element",
+  "HtmlCanvasElement",
+  "Window",
 ]
 
 [profile.release]

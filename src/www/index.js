@@ -1,27 +1,19 @@
 import * as wasm from "core";
 
 window.loadROM = wasm.load_rom;
-window.step = wasm.step;
 window.getRAM = wasm.get_ram;
 window.Keyboard = wasm.keyboard;
-window.render = wasm.render;
+window.run = wasm.run;
+window.reset = wasm.reset;
 
-loadROM(prompt().split('\n'))
+loadROM(prompt().split('\n'));
 // const offscreen = document.querySelector('canvas').transferControlToOffscreen();
 // const screen = new Worker('screen.js');
 // screen.postMessage(offscreen, [offscreen]);
 
-let ctx = document.querySelector('canvas').getContext('2d');
-ctx.fillStyle = 'black';
-function computer() {
-    for (let i = 0; i < 100000; i++) {
-        step();
-    }
-    wasm.render(ctx);
-    // screen.postMessage(wasm.render);
-    setTimeout(computer, 0);
-}
-computer();
+let a = performance.now();
+run();
+console.log(performance.now() - a);
 
 let prev;
 document.addEventListener('keydown', e => {
