@@ -1,22 +1,24 @@
 import * as wasm from "core";
-wasm.init();
 
 window.loadROM = wasm.load_rom;
 window.step = wasm.step;
 window.getRAM = wasm.get_ram;
-window.getScreen = wasm.get_screen;
 window.Keyboard = wasm.keyboard;
+window.render = wasm.render;
 
 loadROM(prompt().split('\n'))
-const offscreen = document.querySelector('canvas').transferControlToOffscreen();
-const screen = new Worker('screen.js');
-screen.postMessage(offscreen, [offscreen]);
+// const offscreen = document.querySelector('canvas').transferControlToOffscreen();
+// const screen = new Worker('screen.js');
+// screen.postMessage(offscreen, [offscreen]);
 
+let ctx = document.querySelector('canvas').getContext('2d');
+ctx.fillStyle = 'black';
 function computer() {
     for (let i = 0; i < 100000; i++) {
         step();
     }
-    screen.postMessage(getScreen());
+    wasm.render(ctx);
+    // screen.postMessage(wasm.render);
     setTimeout(computer, 0);
 }
 computer();
