@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{pc_reg, gates::{mux16, and, is_zero, or, not, mux3_way16}, arithmetic::{inc16, alu}, nbit16, aregister, slice16_0to14, dregister, screen, slice16_0to12, slice16_13to14, rom32k, tick, tock, ram16k, keyboard};
+use crate::{pc_reg, gates::{mux16, and, is_zero, or, not, mux3_way16}, arithmetic::{inc16, alu}, nbit16, aregister, slice16_0to14, dregister, screen, slice16_0to12, slice16_13to14, rom32k, tick, tock, ram16k, keyboard, bool_from_u16, u16_from_bool};
 
 static mut PC_DFFOUT: u16 = 0;
 fn pc(in_: u16, load: bool, reset: bool) -> u16 {
@@ -27,7 +27,7 @@ pub fn cpu(in_m: u16, instruction: u16, reset: bool) -> [u16; 4] {
     let instruction15 = nbit16(instruction, 15);
 
     // writeM
-    unsafe { CPU_DFFOUT[1] = u16::from(and(nbit16(instruction, 3), instruction15)) };
+    unsafe { CPU_DFFOUT[1] = u16_from_bool(and(nbit16(instruction, 3), instruction15)) };
     
     let aluy1 = aregister(0, false);
     let pcin = slice16_0to14(aluy1);
@@ -119,11 +119,11 @@ fn computer(reset: bool) {
         rom32k(COMPUTER_DFFOUT[3]),
         reset
     ) };
-    unsafe { memory(COMPUTER_DFFOUT[0], COMPUTER_DFFOUT[1] != 0, COMPUTER_DFFOUT[2]) };
+    unsafe { memory(COMPUTER_DFFOUT[0], bool_from_u16(COMPUTER_DFFOUT[1]), COMPUTER_DFFOUT[2]) };
 }
 
 #[wasm_bindgen]
-pub fn step(reset: bool) {
+pub fn ticktock(reset: bool) {
     tick();
     computer(reset);
     tock();

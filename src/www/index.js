@@ -1,8 +1,7 @@
 import * as wasm from "core";
 
 window.loadROM = wasm.load_rom;
-window.step = wasm.step;
-window.getRAM = wasm.get_ram;
+window.ticktock = wasm.ticktock;
 window.Keyboard = wasm.keyboard;
 window.render = wasm.render;
 
@@ -15,7 +14,7 @@ let ctx = document.querySelector('canvas').getContext('2d');
 ctx.fillStyle = 'black';
 function computer() {
     for (let i = 0; i < 100000; i++) {
-        step();
+        ticktock();
     }
     wasm.render(ctx);
     // screen.postMessage(wasm.render);

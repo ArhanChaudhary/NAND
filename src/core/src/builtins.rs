@@ -11,7 +11,6 @@ pub fn NAND(a: bool, b: bool) -> bool {
 }
 
 static mut CLOCK: bool = false;
-
 pub fn tick() {
     unsafe { CLOCK = true };
 }
@@ -20,23 +19,29 @@ pub fn tock() {
     unsafe { CLOCK = false };
 }
 
+pub fn bool_from_u16(n: u16) -> bool {
+	n != 0
+}
+
+pub fn u16_from_bool(b: bool) -> u16 {
+	u16::from(b)
+}
+
 pub fn nbit16(n: u16, i: u8) -> bool {
 	// TODO: this and placebit when used together can be further optimized
-	((n >> i) & 1) != 0
+	bool_from_u16((n >> i) & 1)
 }
 
 pub fn nbit16_0(n: u16) -> bool {
-	(n & 1) != 0
+	bool_from_u16(n & 1)
 }
-
 
 fn placebit16(b: bool, i: u8) -> u16 {
-	u16::from(b) << i
+	u16_from_bool(b) << i
 }
 
-
 fn placebit16_0(b: bool) -> u16 {
-	u16::from(b)
+	u16_from_bool(b)
 }
 
 pub fn word16_16(a: bool, b: bool, c: bool, d: bool, e: bool, f: bool, g: bool, h: bool, 
@@ -118,11 +123,6 @@ pub fn ram16k(in_: u16, load: bool, address: u16) -> u16 {
         unsafe { RAM16K_MEMORY[address as usize] = in_ };
     }
     out
-}
-
-#[wasm_bindgen]
-pub fn get_ram() -> Vec<u16> {
-	unsafe { RAM16K_MEMORY.clone() }
 }
 
 static mut CURRENT_KEY: u16 = 0;
