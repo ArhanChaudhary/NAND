@@ -3,7 +3,7 @@ mod gates;
 mod architecture;
 
 use wasm_bindgen::prelude::*;
-use web_sys::*;
+use web_sys::CanvasRenderingContext2d;
 
 #[allow(non_snake_case)]
 pub fn NAND(a: bool, b: bool) -> bool {
@@ -161,7 +161,8 @@ pub fn screen(in_: u16, load: bool, address: u16) -> u16 {
     out
 }
 
-fn render(ctx: &CanvasRenderingContext2d) {
+#[wasm_bindgen]
+pub fn render(ctx: CanvasRenderingContext2d) {
 	ctx.clear_rect(0.0, 0.0, 512.0, 256.0);
 	for i in 0..8192u16 {
 		let word16 = unsafe { &SCREEN_MEMORY }[i as usize];
@@ -174,39 +175,6 @@ fn render(ctx: &CanvasRenderingContext2d) {
 		}
 	}
 }
-
-#[wasm_bindgen]
-pub fn run() {
-	let window = web_sys::window().unwrap();
-	let document = window.document().unwrap();
-	let canvas: HtmlCanvasElement = document.query_selector("canvas")
-		.unwrap()
-		.unwrap()
-		.dyn_into::<HtmlCanvasElement>()
-		.map_err(|_| ())
-		.unwrap();
-	let ctx = canvas
-        .get_context("2d")
-		.unwrap()
-        .unwrap()
-        .dyn_into::<CanvasRenderingContext2d>()
-        .unwrap();
-	ctx.set_fill_style(&JsValue::from_str("black"));
-	fn runner(ctx: &CanvasRenderingContext2d) {
-		for _ in 0..15000000 {
-			architecture::ticktock(false);
-		}
-		render(&ctx);
-		// runner(&window, &ctx);
-	}
-	runner(&ctx);
-}
-
-#[wasm_bindgen]
-pub fn reset() {
-	architecture::ticktock(true);
-}
-
 
 #[wasm_bindgen(start)]
 fn init() {

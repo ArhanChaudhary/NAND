@@ -1,3 +1,5 @@
+use wasm_bindgen::prelude::wasm_bindgen;
+
 use crate::{pc_reg, gates::{mux16, and, is_zero, or, not, mux3_way16}, arithmetic::{inc16, alu}, nbit16, aregister, slice16_0to14, dregister, screen, slice16_0to12, slice16_13to14, rom32k, tick, tock, ram16k, keyboard};
 
 static mut PC_DFFOUT: u16 = 0;
@@ -120,7 +122,8 @@ fn computer(reset: bool) {
     unsafe { memory(COMPUTER_DFFOUT[0], COMPUTER_DFFOUT[1] != 0, COMPUTER_DFFOUT[2]) };
 }
 
-pub fn ticktock(reset: bool) {
+#[wasm_bindgen]
+pub fn step(reset: bool) {
     tick();
     computer(reset);
     tock();
