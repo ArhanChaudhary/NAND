@@ -1,11 +1,6 @@
 import * as wasm from "core";
 
-window.loadROM = wasm.load_rom;
-window.ticktock = wasm.ticktock;
-window.Keyboard = wasm.keyboard;
-window.render = wasm.render;
-
-loadROM(prompt().split('\n'))
+wasm.load_rom(prompt().split('\n'))
 // const offscreen = document.querySelector('canvas').transferControlToOffscreen();
 // const screen = new Worker('screen.js');
 // screen.postMessage(offscreen, [offscreen]);
@@ -14,7 +9,7 @@ let ctx = document.querySelector('canvas').getContext('2d');
 ctx.fillStyle = 'black';
 function computer() {
     for (let i = 0; i < 100000; i++) {
-        ticktock();
+        wasm.ticktock();
     }
     wasm.render(ctx);
     // screen.postMessage(wasm.render);
@@ -52,10 +47,10 @@ document.addEventListener('keydown', e => {
         keyValue = 0;
     }
     prev = keyValue;
-    Keyboard(true, keyValue);
+    wasm.keyboard(true, keyValue);
 });
 
 document.addEventListener('keyup', e => {
     prev = 0;
-    Keyboard(true, 0);
+    wasm.keyboard(true, 0);
 });
