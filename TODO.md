@@ -1,6 +1,8 @@
 # TODO
 <hr>
 - port to svelte
+- postcss
+- scss/sass
 - move wasm.render to worker
 - non blocking keyboard listener
 - draw screen using prev diff

@@ -61,6 +61,7 @@
 </script>
 
 <style>
+  @import 'normalize.css';
   main {
     background-color: tan;
     display: flex;
