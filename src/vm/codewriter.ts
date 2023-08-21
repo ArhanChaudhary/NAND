@@ -1,5 +1,4 @@
 import fs, { WriteStream } from 'fs';
-import { NANDException } from '../core/exceptions';
 
 export default class CodeWriter {
     private fileStream: WriteStream;
@@ -411,7 +410,7 @@ export default class CodeWriter {
                 ];
                 break;
             default:
-                throw new NANDException("Invalid vm command: " + command);
+                throw new Error("Invalid vm command: " + command);
         }
         out[0] += ` // ${command}`;
         this.write(out);
@@ -487,7 +486,7 @@ export default class CodeWriter {
                 }
                 break;
             default:
-                throw new NANDException(`Invalid vm command segment: push ${segment} ${index}`);
+                throw new Error(`Invalid vm command segment: push ${segment} ${index}`);
         }
         out.push(...[
             '@SP',
@@ -553,7 +552,7 @@ export default class CodeWriter {
                 }
                 break;
             default:
-                throw new NANDException(`Invalid vm command segment: pop ${segment} ${index}`);
+                throw new Error(`Invalid vm command segment: pop ${segment} ${index}`);
         }
         out.push('M=D');
         out[0] += ` // pop ${segment} ${index}`;

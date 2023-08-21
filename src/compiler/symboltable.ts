@@ -1,4 +1,3 @@
-import { NANDException } from "../core/exceptions";
 import { KeywordToken } from "./tokenizer";
 
 type SymbolAttribute = {type: string, kind: string, index: number};
@@ -23,7 +22,7 @@ export default class SymbolTable {
                 this.counts.argument = 1;
                 break;
             default:
-                throw new NANDException();
+                throw new Error("Invalid subroutine type: " + subroutineType);
         }
         this.counts.local = 0;
     }
@@ -40,7 +39,7 @@ export default class SymbolTable {
                 table = this.subroutineSymbolTable;
                 break;
             default:
-                throw new NANDException();
+                throw new Error("Invalid kind: " + kind);
         }
         if (name in table)
             return false;

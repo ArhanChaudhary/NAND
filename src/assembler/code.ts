@@ -1,5 +1,3 @@
-import { NANDException } from "../core/exceptions";
-
 export default class Code {
     public static dest(mnemonic: string): string {
         const ret = [0, 0, 0];
@@ -65,7 +63,7 @@ export default class Code {
             case AOrM + '|D':
                 return ret + '010101';
             default:
-                throw new NANDException("Invalid command comp: " + mnemonic);
+                throw new Error("Invalid command comp: " + mnemonic);
         }
     }
 
@@ -81,7 +79,7 @@ export default class Code {
             'JMP': '111',
         }[mnemonic];
         if (ret === undefined)
-            throw new NANDException("Invalid command jump: " + mnemonic);
+            throw new Error("Invalid command jump: " + mnemonic);
         return ret;
     }
 }

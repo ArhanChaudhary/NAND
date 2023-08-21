@@ -1,5 +1,4 @@
 import nReadlines from "n-readlines";
-import { NANDException } from "../core/exceptions";
 
 export enum TokenType {
     KEYWORD,
@@ -92,7 +91,7 @@ export default class Tokenizer {
                 }
             } else {
                 if (!this.inComment) {
-                    throw new NANDException("Invalid end comment");
+                    throw new Error("Invalid end comment");
                 }
                 this.inComment = false;
                 this.currentLine = this.currentLine.substring(endComment);
@@ -158,7 +157,7 @@ export default class Tokenizer {
                 } else if (Tokenizer.isNumber(char)) {
                     this.currentTokenType = TokenType.INT_CONST;
                 } else {
-                    throw new NANDException("Unrecognized token: " + this.currentLine.substring(start, this.currentLineIndex))
+                    throw new Error("Unrecognized token: " + this.currentLine.substring(start, this.currentLineIndex))
                 }
                 continue;
             }
@@ -186,7 +185,7 @@ export default class Tokenizer {
                     this.currentToken = this.currentLine.substring(start, this.currentLineIndex);
                     break findToken;
                 default:
-                    throw new NANDException(`Invalid token type ${this.currentTokenType} for: ${this.currentLine.substring(start, this.currentLineIndex)}`);
+                    throw new Error(`Invalid token type ${this.currentTokenType} for: ${this.currentLine.substring(start, this.currentLineIndex)}`);
             }
         } while (++this.currentLineIndex < this.currentLine.length);
         if (this.currentToken === null) {
@@ -202,13 +201,13 @@ export default class Tokenizer {
 
     public tokenType(): TokenType {
         if (this.currentTokenType === null)
-            throw new NANDException("Null token has no type at line: " + this.currentLine);
+            throw new Error("Null token has no type at line: " + this.currentLine);
         return this.currentTokenType;
     }
 
     public token(): string {
         if (this.currentToken === null)
-            throw new NANDException("Token does not exist at line: " + this.currentLine);
+            throw new Error("Token does not exist at line: " + this.currentLine);
         return this.currentToken;
     }
 

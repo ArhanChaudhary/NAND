@@ -1,5 +1,4 @@
 import fs, { WriteStream } from "fs";
-import { NANDException } from "../core/exceptions";
 import { SymbolToken } from "./tokenizer";
 
 export default class VMWriter {
@@ -63,7 +62,7 @@ export default class VMWriter {
                 this.writeCall('Math.divide', 2);
                 break;
             default:
-                throw new NANDException();
+                throw new Error("Invalid command arithmetic: " + command);
         };
     }
     
