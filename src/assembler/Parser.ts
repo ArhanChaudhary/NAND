@@ -1,5 +1,3 @@
-import nReadlines from 'n-readlines';
-
 export enum CommandType {
     A_COMMAND,
     C_COMMAND,
@@ -7,18 +5,15 @@ export enum CommandType {
 }
 
 export default class Parser {
-    private fileStream: nReadlines;
+    constructor(private inputStream: string[]) {}
+    private inputStreamIndex = 0;
     private currentCommand = '';
 
-    constructor(file: string) {
-        this.fileStream = new nReadlines(file);
-    }
-
     public advance(): boolean {
-        let line: Buffer | boolean = this.fileStream.next();
+        let line: string | undefined = this.inputStream[this.inputStreamIndex++];
         if (!line)
             return false
-        this.currentCommand = line.toString('ascii').replace(/[ \t\r\f]/g, '');
+        this.currentCommand = line.replace(/[ \t\r\f]/g, '');
         const comment: number = this.currentCommand.indexOf("//");
         if (comment !== -1)
             this.currentCommand = this.currentCommand.substring(0, comment);

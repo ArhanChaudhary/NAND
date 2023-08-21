@@ -1,14 +1,16 @@
 <script lang="ts">
   import * as computer from "core";
+  import assemble from '../assembler/main';
   import { onMount } from "svelte";
 
   onMount(() => {
-    computer.load_rom(prompt().split("\n"));
+    const assembled = assemble(prompt().split("\n"));
+    computer.load_rom(assembled);
     // const offscreen = document.querySelector('canvas').transferControlToOffscreen();
     // const screen = new Worker('screen.js');
     // screen.postMessage(offscreen, [offscreen]);
 
-    let ctx = document.querySelector("canvas").getContext("2d");
+    const ctx = document.querySelector("canvas").getContext("2d");
     ctx.fillStyle = "black";
     function runner() {
       for (let i = 0; i < 100_000; i++) {
