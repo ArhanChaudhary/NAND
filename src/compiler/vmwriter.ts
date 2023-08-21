@@ -1,20 +1,14 @@
-import fs, { WriteStream } from "fs";
 import { SymbolToken } from "./tokenizer";
 
 export default class VMWriter {
-    private outputStream: WriteStream;
+    private out: string[] = [];
 
-    constructor(file: string) {
-        this.outputStream = fs.createWriteStream(file.substring(0, file.length - 5) + '.vm');
+    public write(out: string): void {
+        this.out.push(out);
     }
 
-    private firstWrite: boolean = true;
-    public write(out: string): void {
-        if (this.firstWrite)
-            this.outputStream.write(out);
-        else
-            this.outputStream.write('\n' + out);
-        this.firstWrite = false;
+    public getOut(): string[] {
+        return this.out;
     }
 
     public writePush(segment: string, index: number | string): void {
@@ -88,9 +82,5 @@ export default class VMWriter {
     
     public writeReturn(): void {
         this.write('return');
-    }
-    
-    public close(): void {
-        this.outputStream.close();
     }
 }

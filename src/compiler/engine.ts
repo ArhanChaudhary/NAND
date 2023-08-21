@@ -37,14 +37,19 @@ export default class Engine {
     private lastStatementIsReturn = false;
     private labelCounter = 0;
 
-    constructor(file: string) {
-        const tmp = file.split('/');
-        this.fileName = tmp[tmp.length - 1];
-        this.fileName = this.fileName.substring(0, this.fileName.indexOf('.'));
-        this.tokenizer = new Tokenizer(file);
-        this.vmwriter = new VMWriter(file);
+    constructor(fileData: {fileName: string, file: string[]}) {
+        this.fileName = fileData.fileName;
+        this.tokenizer = new Tokenizer(fileData.file);
+        this.vmwriter = new VMWriter();
         this.symbolTable = new SymbolTable();
         this.tokenizer.advance();
+    }
+
+    public getOut(): {fileName: string, file: string[]} {
+        return {
+            fileName: this.fileName,
+            file: this.vmwriter.getOut(),
+        }
     }
 
     private syntaxError(expectedToken: string | TokenType | (string | TokenType)[], info?: string): void {
@@ -107,7 +112,6 @@ export default class Engine {
             if (!this.subroutineNames.includes(call.name)) {}
                 // throw new SyntaxError();
         }
-        this.vmwriter.close();
     }
     
     private compileClassVarDec(): void {

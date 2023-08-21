@@ -1,5 +1,3 @@
-import nReadlines from "n-readlines";
-
 export enum TokenType {
     KEYWORD,
     SYMBOL,
@@ -55,18 +53,14 @@ export enum KeywordToken {
 }
 
 export default class Tokenizer {
-    private fileStream: nReadlines;
+    constructor(private inputStream: string[]) {}
+    private inputStreamIndex = 0;
     private currentLine = '';
-    private currentLineNumber = 0;
     private prevLineIndex = 0;
     private currentLineIndex = 0;
     private currentToken: string | null = null;
     private currentTokenType: TokenType | null = null;
     private inComment = false;
-
-    constructor(file: string) {
-        this.fileStream = new nReadlines(file);
-    }
 
     static isLetter(char: string): boolean {
         return /[a-z]/i.test(char) || char === '_';
@@ -112,17 +106,16 @@ export default class Tokenizer {
     }
 
     public advance(): boolean {
-        let line: Buffer | boolean;
+        let line: string | undefined;
         if (this.currentLine.length === this.currentLineIndex) {
-            line = this.fileStream.next();
-            this.currentLineNumber++;
+            line = this.inputStream[this.inputStreamIndex++];
             if (line === undefined) {
                 // without this tokens stay as their own value
                 this.currentToken = '';
                 return false;
             }
             this.currentLineIndex = 0;
-            this.currentLine = line.toString('ascii');
+            this.currentLine = line;
             this.removeComments();
             this.currentLine = this.currentLine.trim();
             if (this.currentLine === '')
@@ -216,7 +209,7 @@ export default class Tokenizer {
     }
 
     public lineNumber(): number {
-        return this.currentLineNumber;
+        return this.inputStreamIndex;
     }
     
     public lineIndex(): number {

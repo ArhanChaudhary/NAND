@@ -2,19 +2,21 @@
   import * as computer from "core";
   import assemble from '../assembler/main';
   import VMTranslator from '../vm/main';
+  import compiler from '../compiler/main';
   import { onMount } from "svelte";
 
   onMount(() => {
     const inputStream: Array<{fileName: string, file: string[]}> = [];
     let name: string;
-    while ((name = prompt("Enter the name of the file to be translated")) !== 'stop') {
+    while ((name = prompt("File name")) !== 'stop') {
       inputStream.push({
         fileName: name,
-        file: prompt("Enter the contents of the file").split('\n'),
+        file: prompt("File contents").split('\n'),
       });
     }
+    const compiled = compiler(inputStream);
     debugger;
-    const VMTranslated = VMTranslator(inputStream);
+    const VMTranslated = VMTranslator(compiled);
     const assembled = assemble(VMTranslated);
     computer.load_rom(assembled);
     // const offscreen = document.querySelector('canvas').transferControlToOffscreen();
