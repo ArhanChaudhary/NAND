@@ -1,21 +1,14 @@
-import fs, { WriteStream } from 'fs';
-
 export default class CodeWriter {
-    private fileStream: WriteStream;
+    private out: string[] = [];
     private fileName = '';
     private currentFunction = '';
     static labelCount = 0;
-
-    constructor(file: string) {
-        this.fileStream = fs.createWriteStream(file);
-    }
 
     // needed for segregating a static segment for each vm file
     public setFileName(file: string) {
         this.fileName = file;
     }
 
-    private firstWrite: boolean = true;
     private write(out: string[]): void {
         // let str = '';
         // for (let i of out) {
@@ -25,11 +18,7 @@ export default class CodeWriter {
         //         str += '\n' + i;
         //     }
         // }
-        if (this.firstWrite)
-            this.fileStream.write(out.join('\n'));
-        else
-            this.fileStream.write('\n' + out.join('\n'));
-        this.firstWrite = false;            
+        this.out.push(...out);          
     }
     
     public writeInit(): void {
@@ -559,7 +548,7 @@ export default class CodeWriter {
         this.write(out);
     }
 
-    public close(): void {
-        this.fileStream.close();
+    public getOut(): string[] {
+        return this.out;
     }
 }

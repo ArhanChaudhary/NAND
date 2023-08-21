@@ -1,5 +1,3 @@
-import nReadlines from 'n-readlines';
-
 export enum CommandType {
     C_ARITHMETIC,
     C_PUSH,
@@ -13,18 +11,15 @@ export enum CommandType {
 }
 
 export default class Parser {
-    private fileStream: nReadlines;
+    constructor(private inputStream: string[]) {}
+    private inputStreamIndex = 0;
     private currentCommand = '';
 
-    constructor(file: string) {
-        this.fileStream = new nReadlines(file);
-    }
-
     public advance(): boolean {
-        let line: Buffer | boolean = this.fileStream.next();
+        let line: string | undefined = this.inputStream[this.inputStreamIndex++];
         if (!line)
             return false;
-        this.currentCommand = line.toString('ascii');
+        this.currentCommand = line;
         const comment = this.currentCommand.indexOf("//");
         if (comment !== -1)
             this.currentCommand = this.currentCommand.substring(0, comment);

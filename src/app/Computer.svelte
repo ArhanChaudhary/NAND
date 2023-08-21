@@ -1,10 +1,21 @@
 <script lang="ts">
   import * as computer from "core";
   import assemble from '../assembler/main';
+  import VMTranslator from '../vm/main';
   import { onMount } from "svelte";
 
   onMount(() => {
-    const assembled = assemble(prompt().split("\n"));
+    const inputStream: Array<{fileName: string, file: string[]}> = [];
+    let name: string;
+    while ((name = prompt("Enter the name of the file to be translated")) !== 'stop') {
+      inputStream.push({
+        fileName: name,
+        file: prompt("Enter the contents of the file").split('\n'),
+      });
+    }
+    debugger;
+    const VMTranslated = VMTranslator(inputStream);
+    const assembled = assemble(VMTranslated);
     computer.load_rom(assembled);
     // const offscreen = document.querySelector('canvas').transferControlToOffscreen();
     // const screen = new Worker('screen.js');
