@@ -64,19 +64,12 @@ pub fn word16_16(a: bool, b: bool, c: bool, d: bool, e: bool, f: bool, g: bool, 
     placebit16(p, 15)
 }
 
-
 pub fn slice16_0to12(n: u16) -> u16 {
 	n & 8191
 }
 
-
 pub fn slice16_0to14(n: u16) -> u16 {
 	n & 32767
-}
-
-
-pub fn slice16_13to14(n: u16) -> u16 {
-	n >> 13
 }
 
 static mut PC_DFFOUT: u16 = 0;

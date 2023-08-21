@@ -84,14 +84,6 @@ pub fn mux16(a: u16, b: u16, sel: bool) -> u16 {
     );
 }
 
-pub fn mux3_way16(ab: u16, c: u16, d: u16, sel: u16) -> u16 {
-    return mux16(
-        ab,
-        mux16(c, d, nbit16_0(sel)),
-        nbit16(sel, 1)
-    );
-}
-
 pub fn is_zero(in_: u16) -> bool {
     return not(
         or(

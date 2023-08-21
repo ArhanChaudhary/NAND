@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{pc_reg, gates::{mux16, and, is_zero, or, not, mux3_way16}, arithmetic::{inc16, alu}, nbit16, aregister, slice16_0to14, dregister, screen, slice16_0to12, slice16_13to14, rom32k, tick, tock, ram16k, keyboard, bool_from_u16, u16_from_bool};
+use crate::{pc_reg, gates::{mux16, and, is_zero, or, not}, arithmetic::{inc16, alu}, nbit16, aregister, slice16_0to14, dregister, screen, slice16_0to12, rom32k, tick, tock, ram16k, keyboard, bool_from_u16, u16_from_bool};
 
 static mut PC_DFFOUT: u16 = 0;
 fn pc(in_: u16, load: bool, reset: bool) -> u16 {
@@ -89,7 +89,8 @@ fn memory(in_: u16, load: bool, address: u16) -> u16 {
     // 11 => KEYBOARD
 
     let address14 = nbit16(address, 14);
-    return mux3_way16(
+
+    mux16(
         ram16k(
             in_,
             and(
@@ -98,18 +99,21 @@ fn memory(in_: u16, load: bool, address: u16) -> u16 {
             ),
             address,
         ),
-        screen(
-            in_,
-            and(and(
-                not(nbit16(address, 13)),
-                address14),
-                load
+        mux16(
+            screen(
+                in_,
+                and(and(
+                    not(nbit16(address, 13)),
+                    address14),
+                    load
+                ),
+                slice16_0to12(address)
             ),
-            slice16_0to12(address)
+            keyboard(false, 0),
+            nbit16(address, 13)
         ),
-        keyboard(false, 0),
-        slice16_13to14(address),
-    );
+        nbit16(address, 14)
+    )
 }
 
 static mut COMPUTER_DFFOUT: [u16; 4] = [0; 4];
