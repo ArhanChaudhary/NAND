@@ -2,7 +2,8 @@
   import Computer from './Computer.svelte';
 </script>
 
-<style lang='scss'>
+<!-- no scss because it complains about unused css in normalize.css -->
+<style>
   @import 'normalize.css';
   main {
     background-color: tan;
