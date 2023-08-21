@@ -60,7 +60,7 @@
   });
 </script>
 
-<style>
+<style lang='scss'>
   @import 'normalize.css';
   main {
     background-color: tan;
