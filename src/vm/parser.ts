@@ -17,8 +17,10 @@ export default class Parser {
 
     public advance(): boolean {
         let line: string | undefined = this.inputStream[this.inputStreamIndex++];
-        if (!line)
+        if (line === undefined)
             return false;
+        if (line === '')
+            return this.advance();
         this.currentCommand = line;
         const comment = this.currentCommand.indexOf("//");
         if (comment !== -1)

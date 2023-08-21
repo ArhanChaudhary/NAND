@@ -116,7 +116,7 @@ export default class Tokenizer {
         if (this.currentLine.length === this.currentLineIndex) {
             line = this.fileStream.next();
             this.currentLineNumber++;
-            if (!line) {
+            if (line === undefined) {
                 // without this tokens stay as their own value
                 this.currentToken = '';
                 return false;
@@ -125,7 +125,7 @@ export default class Tokenizer {
             this.currentLine = line.toString('ascii');
             this.removeComments();
             this.currentLine = this.currentLine.trim();
-            if (!this.currentLine)
+            if (this.currentLine === '')
                 return this.advance();
         }
         let start = this.currentLineIndex;
