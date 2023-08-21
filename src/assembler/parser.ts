@@ -12,7 +12,7 @@ export default class Parser {
     public advance(): boolean {
         let line: string | undefined = this.inputStream[this.inputStreamIndex++];
         if (!line)
-            return false
+            return false;
         this.currentCommand = line.replace(/[ \t\r\f]/g, '');
         const comment: number = this.currentCommand.indexOf("//");
         if (comment !== -1)
