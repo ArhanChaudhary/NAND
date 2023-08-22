@@ -133,7 +133,7 @@ pub fn rom32k(address: u16) -> u16 {
 	unsafe { ROM32K_MEMORY[address as usize] }
 }
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name=loadROM)]
 pub fn load_rom(in_: JsValue) {
 	unsafe { ROM32K_MEMORY = Vec::new() };
 	let arr: js_sys::Array = in_.into();

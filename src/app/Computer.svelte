@@ -45,7 +45,7 @@
     compiled.push(...OS);
     const VMTranslated = VMTranslator(compiled);
     const assembled = assembler(VMTranslated);
-    computer.load_rom(assembled);
+    computer.loadROM(assembled);
     // const offscreen = document.querySelector('canvas').transferControlToOffscreen();
     // const screen = new Worker('screen.js');
     // screen.postMessage(offscreen, [offscreen]);
