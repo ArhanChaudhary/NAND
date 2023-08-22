@@ -1,8 +1,7 @@
 # TODO
 <hr>
-- project 12
-- port vm translator and compiler to svelte
 - move wasm.render to worker
+- project 12
 - non blocking keyboard listener
 - draw screen using prev diff
 - move timeout loop to wasm?
