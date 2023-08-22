@@ -2,7 +2,7 @@ import Parser, { CommandType } from "./parser";
 import Code from "./code";
 import SymbolTable from "./symboltable";
 
-export default function assemble(inputStream: string[]): string[] {
+export default function assembler(inputStream: string[]): string[] {
     const symbolTable = new SymbolTable();
     symbolTable.addEntry('SP', 0);
     symbolTable.addEntry('LCL', 1);

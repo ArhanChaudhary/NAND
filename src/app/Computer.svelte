@@ -1,23 +1,50 @@
 <script lang="ts">
   import * as computer from "core";
-  import assemble from '../assembler/main';
+  import assembler from '../assembler/main';
   import VMTranslator from '../vm/main';
   import compiler from '../compiler/main';
   import { onMount } from "svelte";
 
-  onMount(() => {
-    const inputStream: Array<{fileName: string, file: string[]}> = [];
+  const OS: Array<{fileName: string, file: string[]}> = [];
+  async function readFile(input: string): Promise<string> {
+    const response = await fetch(input);
+    return await response.text();
+  }
+  async function loadOS() {
+    const OSFiles: string[] = [
+      'Array',
+      'Keyboard',
+      'Math',
+      'Memory',
+      'Output',
+      'Screen',
+      'String',
+      'Sys'
+    ];
+
+    for (const OSFile of OSFiles) {
+      const content = await readFile(`../os/${OSFile}.vm`);
+      OS.push({
+        fileName: OSFile,
+        file: content.split('\n')
+      });
+    }
+  }
+
+  onMount(async () => {
+    await loadOS();
+    const jackInputStream: Array<{fileName: string, file: string[]}> = [];
     let name: string;
     while ((name = prompt("File name")) !== 'stop') {
-      inputStream.push({
+      jackInputStream.push({
         fileName: name,
         file: prompt("File contents").split('\n'),
       });
     }
-    const compiled = compiler(inputStream);
-    debugger;
+    const compiled = compiler(jackInputStream);
+    compiled.push(...OS);
     const VMTranslated = VMTranslator(compiled);
-    const assembled = assemble(VMTranslated);
+    const assembled = assembler(VMTranslated);
     computer.load_rom(assembled);
     // const offscreen = document.querySelector('canvas').transferControlToOffscreen();
     // const screen = new Worker('screen.js');
