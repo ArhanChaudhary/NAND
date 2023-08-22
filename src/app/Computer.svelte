@@ -46,18 +46,16 @@
     const VMTranslated = VMTranslator(compiled);
     const assembled = assembler(VMTranslated);
     computer.loadROM(assembled);
-    // const offscreen = document.querySelector('canvas').transferControlToOffscreen();
-    // const screen = new Worker('screen.js');
-    // screen.postMessage(offscreen, [offscreen]);
 
-    const ctx = document.querySelector("canvas").getContext("2d");
-    ctx.fillStyle = "black";
+    const offscreen = document.querySelector('canvas').transferControlToOffscreen();
+    const screen = new Worker('app/screen.ts', { type: "module" });
+    screen.postMessage(offscreen, [offscreen]);
+
     function runner() {
       for (let i = 0; i < 100_000; i++) {
         computer.ticktock(false);
       }
-      computer.render(ctx);
-      // screen.postMessage(wasm.render);
+      screen.postMessage(computer.getScreen());
       setTimeout(runner, 0);
     }
     runner();

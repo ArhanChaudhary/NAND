@@ -154,11 +154,16 @@ pub fn screen(in_: u16, load: bool, address: u16) -> u16 {
     out
 }
 
+#[wasm_bindgen(js_name=getScreen)]
+pub fn get_screen() -> Vec<u16> {
+	unsafe { SCREEN_MEMORY.clone() }
+}
+
 #[wasm_bindgen]
-pub fn render(ctx: CanvasRenderingContext2d) {
+pub fn render(ctx: CanvasRenderingContext2d, screen_memory: Vec<u16>) {
 	ctx.clear_rect(0.0, 0.0, 512.0, 256.0);
 	for i in 0..8192u16 {
-		let word16 = unsafe { &SCREEN_MEMORY }[i as usize];
+		let word16 = screen_memory[i as usize];
 		for j in 0..16 {
 			if nbit16(word16, j) {
 				let x = ((i * 16) + j as u16) % 512;
