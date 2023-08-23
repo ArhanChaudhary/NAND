@@ -35,7 +35,7 @@ function runner() {
   // https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html
   // and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
   // but for now, this is the best I can do
-  screen.postMessage(computer.getScreen());
+  screen.postMessage(computer.getScreen().buffer);
   setTimeout(runner, 0);
 }
 
