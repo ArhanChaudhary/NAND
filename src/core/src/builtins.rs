@@ -159,6 +159,11 @@ pub fn get_screen() -> Vec<u16> {
 	unsafe { SCREEN_MEMORY.clone() }
 }
 
+#[wasm_bindgen(js_name=clearScreen)]
+pub fn clear_screen() {
+	unsafe { SCREEN_MEMORY = vec![0; 8192] };
+}
+
 #[wasm_bindgen]
 pub fn render(ctx: CanvasRenderingContext2d, screen_memory: Vec<u16>) {
 	ctx.clear_rect(0.0, 0.0, 512.0, 256.0);

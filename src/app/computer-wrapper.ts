@@ -2,7 +2,15 @@
 import * as computer from "core";
 
 let ctx: OffscreenCanvasRenderingContext2D;
+let reset = false;
 function runner() {
+  if (reset) {
+    computer.ticktock(true);
+    computer.clearScreen();
+    computer.render(ctx, computer.getScreen());
+    reset = false;
+    return;
+  }
   for (let i = 0; i < 100_000; i++) {
     computer.ticktock(false);
   }
@@ -25,6 +33,9 @@ async function initialize() {
         break;
       case 'keyboard':
         computer.keyboard(true, e.data.key);
+        break;
+      case 'reset':
+        reset = true;
         break;
     }
   });
