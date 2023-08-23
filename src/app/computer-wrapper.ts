@@ -3,6 +3,9 @@ import * as computer from "core";
 
 let screen: Worker;
 let reset = false;
+let total = 0;
+let step = 100_000;
+let slowed_step = 100_000;
 function runner() {
   if (reset) {
     computer.ticktock(true);
@@ -11,9 +14,14 @@ function runner() {
     reset = false;
     return;
   }
-  for (let i = 0; i < 100_000; i++) {
+  // adjust accordingly
+  if (total >= 8_200_000) {
+    step = slowed_step;
+  }
+  for (let i = 0; i < step; i++) {
     computer.ticktock(false);
   }
+  total += step;
   screen.postMessage(computer.getScreen());
   setTimeout(runner, 0);
 }
