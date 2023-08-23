@@ -1,29 +1,37 @@
 // @ts-ignore
 import * as computer from "core";
 
-let ctx: OffscreenCanvasRenderingContext2D;
+let screen: Worker;
 let reset = false;
 function runner() {
   if (reset) {
     computer.ticktock(true);
     computer.clearScreen();
-    computer.render(ctx, computer.getScreen());
+    screen.postMessage(computer.getScreen());
     reset = false;
     return;
   }
   for (let i = 0; i < 100_000; i++) {
     computer.ticktock(false);
   }
-  computer.render(ctx, computer.getScreen());
+  screen.postMessage(computer.getScreen());
   setTimeout(runner, 0);
 }
 
 async function initialize() {
+  screen = new Worker('screen.ts', { type: 'module' });
+  await new Promise<void>(resolve => {
+    screen.addEventListener('message', e => {
+      if (e.data === 'ready') {
+        resolve();
+      }
+    });
+  });
+
   self.addEventListener('message', function(e) {
     switch (e.data.action) {
       case 'initialize':
-        ctx = e.data.canvas.getContext('2d');
-        ctx.fillStyle = 'black';
+        screen.postMessage(e.data.canvas, [e.data.canvas]);
         break;
       case 'loadROM':
         computer.loadROM(e.data.assembled);

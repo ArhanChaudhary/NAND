@@ -11,6 +11,8 @@ async function initialize() {
     }
     computer.render(ctx, e.data);
   });
+
+  self.postMessage('ready');
 }
 
 initialize();

@@ -34,7 +34,7 @@
     await loadOS();
 
     const runner = new Worker('app/computer-wrapper.ts', { type: "module" });
-    await new Promise(resolve => {
+    await new Promise<void>(resolve => {
       runner.addEventListener('message', e => {
         if (e.data === 'ready') {
           resolve();
