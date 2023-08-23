@@ -5,5 +5,5 @@
 * actually code the ui
 * graphing calculator in jack
 * draw screen using prev diff
-* move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
+* move rustwasm.render to worker
 * 32 bit architecture

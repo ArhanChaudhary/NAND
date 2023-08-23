@@ -22,6 +22,19 @@ function runner() {
     computer.ticktock(false);
   }
   total += step;
+  // NOTE: although rustwasm is able to access SCREEN_MEMORY directly,
+  // we still have to pass it as a parameter and use that because of
+  // some complications with web workers and objects
+  // According to https://stackoverflow.com/questions/69487177/how-to-call-a-external-function-inside-a-web-worker
+  // it's actually impossible to transfer the *same* non-serializable
+  // object between the main thread and workers
+  // Notice how I said same; you may think that I can just import the
+  // wasm in the other worker but that's instead an entiretly new wasm
+  // instance with its own empty screen memory bitmap
+  // this problem *may* be solved in the future with 
+  // https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html
+  // and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
+  // but for now, this is the best I can do
   screen.postMessage(computer.getScreen());
   setTimeout(runner, 0);
 }
