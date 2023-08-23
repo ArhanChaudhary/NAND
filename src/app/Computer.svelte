@@ -1,5 +1,4 @@
 <script lang="ts">
-  import * as computer from "core";
   import assembler from '../assembler/main';
   import VMTranslator from '../vm/main';
   import compiler from '../compiler/main';
@@ -33,6 +32,18 @@
 
   onMount(async () => {
     await loadOS();
+
+    const runner = new Worker('app/computer-wrapper.ts', { type: "module" });
+    await new Promise(resolve => {
+      runner.addEventListener('message', e => {
+        if (e.data === 'ready') {
+          resolve();
+        }
+      });
+    });
+    const offscreen = document.querySelector('canvas').transferControlToOffscreen();
+    runner.postMessage({action: 'initialize', canvas: offscreen}, [offscreen]);
+
     const jackInputStream: Array<{fileName: string, file: string[]}> = [];
     let name: string;
     while ((name = prompt("File name")) !== 'stop') {
@@ -45,20 +56,8 @@
     compiled.push(...OS);
     const VMTranslated = VMTranslator(compiled);
     const assembled = assembler(VMTranslated);
-    computer.loadROM(assembled);
-
-    const offscreen = document.querySelector('canvas').transferControlToOffscreen();
-    const screen = new Worker('app/screen.ts', { type: "module" });
-    screen.postMessage(offscreen, [offscreen]);
-
-    function runner() {
-      for (let i = 0; i < 100_000; i++) {
-        computer.ticktock(false);
-      }
-      screen.postMessage(computer.getScreen());
-      setTimeout(runner, 0);
-    }
-    runner();
+    runner.postMessage({action: 'loadROM', assembled});
+    runner.postMessage({action: 'start'});
 
     let prev: number;
     document.addEventListener("keydown", (e) => {
@@ -89,12 +88,12 @@
         keyValue = 0;
       }
       prev = keyValue;
-      computer.keyboard(true, keyValue);
+      runner.postMessage({action: 'keyboard', key: keyValue});
     });
 
     document.addEventListener("keyup", (e) => {
       prev = 0;
-      computer.keyboard(true, 0);
+      runner.postMessage({action: 'keyboard', key: 0});
     });
   });
 </script>
