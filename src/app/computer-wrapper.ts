@@ -14,6 +14,10 @@ function runner() {
     reset = false;
     return;
   }
+  // NOTE: there is no worry of runner being called while the previous call is
+  // running because this is a web worker, so it's single threaded and will wait
+  // for this to complete before calling it again
+  setTimeout(runner, 0);
   // adjust accordingly
   if (total >= 8_200_000) {
     step = slowed_step;
@@ -24,19 +28,17 @@ function runner() {
   total += step;
   // NOTE: although rustwasm is able to access SCREEN_MEMORY directly,
   // we still have to pass it as a parameter and use that because of
-  // some complications with web workers and objects
-  // According to https://stackoverflow.com/questions/69487177/how-to-call-a-external-function-inside-a-web-worker
+  // some complications with web workers and objects. According to
+  // https://stackoverflow.com/questions/69487177/how-to-call-a-external-function-inside-a-web-worker
   // it's actually impossible to transfer the *same* non-serializable
-  // object between the main thread and workers
-  // Notice how I said same; you may think that I can just import the
-  // wasm in the other worker but that's instead an entiretly new wasm
-  // instance with its own empty screen memory bitmap
-  // this problem *may* be solved in the future with 
+  // object between the main thread and workers. Notice how I said same;
+  // you may think that I can just import the wasm in the other worker
+  // but that's instead an entiretly new wasm instance with its own empty
+  // screen memory bitmap this problem *may* be solved in the future with
   // https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html
   // and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
   // but for now, this is the best I can do
   screen.postMessage(computer.getScreen());
-  setTimeout(runner, 0);
 }
 
 async function initialize() {
