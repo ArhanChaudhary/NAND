@@ -2,6 +2,7 @@ mod arithmetic;
 mod gates;
 mod architecture;
 
+use js_sys::Array;
 use wasm_bindgen::prelude::*;
 use web_sys::CanvasRenderingContext2d;
 
@@ -135,8 +136,8 @@ pub fn rom32k(address: u16) -> u16 {
 
 #[wasm_bindgen(js_name=loadROM)]
 pub fn load_rom(in_: JsValue) {
-	unsafe { ROM32K_MEMORY = Vec::new() };
-	let arr: js_sys::Array = in_.into();
+	unsafe { ROM32K_MEMORY.clear() };
+	let arr: Array = in_.into();
 	for i in 0..arr.length() {
 		let s = arr.get(i).as_string().unwrap();
 		let n = u16::from_str_radix(&s, 2).unwrap();
@@ -161,7 +162,9 @@ pub fn get_screen() -> Vec<u16> {
 
 #[wasm_bindgen(js_name=clearScreen)]
 pub fn clear_screen() {
-	unsafe { SCREEN_MEMORY = vec![0; 8192] };
+	for i in 0..8192 {
+		unsafe { SCREEN_MEMORY[i] = 0 };
+	}
 }
 
 #[wasm_bindgen]
