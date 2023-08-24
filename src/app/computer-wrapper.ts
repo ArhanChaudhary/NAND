@@ -4,8 +4,11 @@ import * as computer from "core";
 let screen: Worker;
 let reset = false;
 let secTotal = 0;
-let step = 100_000;
-let slowedStep = 100_000;
+// adjust accordingly
+// lowest value until the Hz starts to drop
+// we want the lowest so the keyboard is faster
+let step = 30_000;
+let slowedStep = step;
 // adjust accordingly
 const OSEnd = 8_200_000;
 function runner() {
