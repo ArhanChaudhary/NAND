@@ -1,7 +1,8 @@
 # TODO
-* can't do nested worker because of safari lol or can i??
 * project 12
 * fix 2048 point system and optimize it
+* don't allow numbers greater than usize in compiler
+* add Math.modulus to OS
 * actually code the ui
 * graphing calculator in jack
 

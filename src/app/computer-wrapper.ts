@@ -67,7 +67,7 @@ async function initialize() {
         screen.postMessage(e.data.canvas, [e.data.canvas]);
         break;
       case 'loadROM':
-        computer.loadROM(e.data.assembled);
+        computer.loadROM(e.data.machineCode);
         break;
       case 'start':
         interval = setInterval(emitHz, 1000);

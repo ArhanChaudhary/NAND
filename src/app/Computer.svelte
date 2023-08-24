@@ -54,11 +54,11 @@
         file: prompt("File contents").split('\n'),
       });
     }
-    const compiled = compiler(jackInputStream);
-    compiled.push(...OS);
-    const VMTranslated = VMTranslator(compiled);
-    const assembled = assembler(VMTranslated);
-    runner.postMessage({action: 'loadROM', assembled});
+    const VMCode = compiler(jackInputStream);
+    VMCode.push(...OS);
+    const assembly = VMTranslator(VMCode);
+    const machineCode = assembler(assembly);
+    runner.postMessage({action: 'loadROM', machineCode});
     runner.postMessage({action: 'start'});
 
     runner.addEventListener('message', e => {

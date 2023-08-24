@@ -9,7 +9,7 @@ async function initialize() {
       ctx.fillStyle = 'black';
       return;
     }
-    computer.render(ctx, e.data);
+    computer.render(ctx as unknown as CanvasRenderingContext2D, e.data);
   });
 
   self.postMessage('ready');
