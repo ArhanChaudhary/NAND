@@ -36,8 +36,10 @@
     const runner = new Worker('app/computer-wrapper.ts', { type: "module" });
     await new Promise<void>(resolve => {
       runner.addEventListener('message', e => {
-        if (e.data === 'ready') {
-          resolve();
+        switch (e.data.action) {
+          case 'ready':
+            resolve();
+            break;
         }
       });
     });
@@ -58,6 +60,14 @@
     const assembled = assembler(VMTranslated);
     runner.postMessage({action: 'loadROM', assembled});
     runner.postMessage({action: 'start'});
+
+    runner.addEventListener('message', e => {
+      switch (e.data.action) {
+        case 'emitHz':
+          console.log(e.data.hz);
+          break;
+      }
+    });
 
     let prev: number;
     document.addEventListener("keydown", (e) => {

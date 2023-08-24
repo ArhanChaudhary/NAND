@@ -3,9 +3,11 @@ import * as computer from "core";
 
 let screen: Worker;
 let reset = false;
-let total = 0;
+let secTotal = 0;
 let step = 100_000;
-let slowed_step = 100_000;
+let slowedStep = 100_000;
+// adjust accordingly
+const OSEnd = 8_200_000;
 function runner() {
   if (reset) {
     computer.ticktock(true);
@@ -18,14 +20,13 @@ function runner() {
   // running because this is a web worker, so it's single threaded and will wait
   // for this to complete before calling it again
   setTimeout(runner, 0);
-  // adjust accordingly
-  if (total >= 8_200_000) {
-    step = slowed_step;
+  if (secTotal >= OSEnd) {
+    step = slowedStep;
   }
   for (let i = 0; i < step; i++) {
     computer.ticktock(false);
   }
-  total += step;
+  secTotal += step;
   // NOTE: although rustwasm is able to access SCREEN_MEMORY directly,
   // we still have to pass it as a parameter and use that because of
   // some complications with web workers and objects. According to
@@ -41,6 +42,11 @@ function runner() {
   screen.postMessage(computer.getScreen());
 }
 
+function emitHz() {
+  self.postMessage({ action: 'emitHz', hz: secTotal });
+  secTotal = 0;
+}
+
 async function initialize() {
   screen = new Worker('screen.ts', { type: 'module' });
   await new Promise<void>(resolve => {
@@ -51,6 +57,7 @@ async function initialize() {
     });
   });
 
+  let interval: NodeJS.Timeout;
   self.addEventListener('message', function(e) {
     switch (e.data.action) {
       case 'initialize':
@@ -60,18 +67,20 @@ async function initialize() {
         computer.loadROM(e.data.assembled);
         break;
       case 'start':
+        interval = setInterval(emitHz, 1000);
         runner();
         break;
       case 'keyboard':
         computer.keyboard(true, e.data.key);
         break;
       case 'reset':
+        clearInterval(interval);
         reset = true;
         break;
     }
   });
 
-  self.postMessage('ready');
+  self.postMessage({action: 'ready'});
 }
 
 initialize();
