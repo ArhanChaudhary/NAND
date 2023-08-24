@@ -9,7 +9,7 @@ async function initialize() {
       ctx.fillStyle = 'black';
       return;
     }
-    computer.render(ctx, new Uint16Array(e.data));
+    computer.render(ctx, e.data);
   });
 
   self.postMessage('ready');
