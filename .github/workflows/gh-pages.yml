@@ -34,10 +34,11 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
+          cache-dependency-path: 'src/package-lock.json'
       - name: Install dependencies
-        run: npm install --prefix src # Install in the src directory
+        run: npm install
       - name: Build
-        run: npm run build --prefix src # Build in the src directory
+        run: npm run build
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
