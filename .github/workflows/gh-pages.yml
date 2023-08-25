@@ -38,10 +38,6 @@ jobs:
           node-version: 18
           cache: 'npm'
           cache-dependency-path: 'src/package-lock.json'
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
       - name: Install dependencies
         run: |
           npm install
