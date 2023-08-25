@@ -30,6 +30,7 @@
     }
   }
 
+  let mHz = 0;
   onMount(async () => {
     await loadOS();
 
@@ -64,7 +65,7 @@
     runner.addEventListener('message', e => {
       switch (e.data.action) {
         case 'emitHz':
-          console.log(e.data.hz);
+          mHz = e.data.hz / 1_000_000;
           break;
       }
     });
@@ -117,6 +118,12 @@
     aspect-ratio: 2 / 1;
     height: 500px;
   }
+  #secHz {
+    font-size: 30px;
+  }
 </style>
 
-<canvas width="512" height="256" />
+<div id="computer-wrapper">
+  <canvas width="512" height="256" />
+  <div id="secHz">Computer clock mHz: {mHz}</div>
+</div>
