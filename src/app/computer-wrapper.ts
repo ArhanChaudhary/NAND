@@ -47,11 +47,18 @@ function runner() {
   screen.postMessage(computer.getScreen());
 }
 
+const emitInterval = 50;
 function emitInfo() {
-  self.postMessage({ action: 'emitHz', hz: secTotal });
+  self.postMessage({ action: 'emitHz', hz: secTotal * (1000 / emitInterval) });
   secTotal = 0;
 
-  self.postMessage({ action: 'emitNANDCalls', NANDCalls: computer.NANDCalls() });
+  self.postMessage({
+    action: 'emitNANDCalls',
+    NANDCalls: Intl.NumberFormat('en-US', {
+      notation: "compact",
+      maximumFractionDigits: 1
+    }).format(computer.NANDCalls())
+  });
 }
 
 async function initialize() {
@@ -74,7 +81,7 @@ async function initialize() {
         computer.loadROM(e.data.machineCode);
         break;
       case 'start':
-        interval = setInterval(emitInfo, 1000);
+        interval = setInterval(emitInfo, emitInterval);
         runner();
         break;
       case 'keyboard':
