@@ -4,6 +4,8 @@
   import compiler from '../compiler/main';
   import { onMount } from "svelte";
 
+  import { runner } from './runner-store'
+
   const OS: Array<{fileName: string, file: string[]}> = [];
   async function readFile(input: URL): Promise<string> {
     const response = await fetch(input);
@@ -31,21 +33,19 @@
   }
 
   let mHz = 0;
+  let runner_: Worker;
   onMount(async () => {
     await loadOS();
-
-    const runner = new Worker(new URL('./computer-wrapper.ts', import.meta.url), { type: "module" });
     await new Promise<void>(resolve => {
-      runner.addEventListener('message', e => {
-        switch (e.data.action) {
-          case 'ready':
-            resolve();
-            break;
+      runner.subscribe(runner => {
+        if (runner) {
+          runner_ = runner;
+          resolve();
         }
       });
     });
     const offscreen = document.querySelector('canvas').transferControlToOffscreen();
-    runner.postMessage({action: 'initialize', canvas: offscreen}, [offscreen]);
+    runner_.postMessage({action: 'initialize', canvas: offscreen}, [offscreen]);
 
     const jackInputStream: Array<{fileName: string, file: string[]}> = [];
     let name: string;
@@ -59,10 +59,10 @@
     VMCode.push(...OS);
     const assembly = VMTranslator(VMCode);
     const machineCode = assembler(assembly);
-    runner.postMessage({action: 'loadROM', machineCode});
-    runner.postMessage({action: 'start'});
+    runner_.postMessage({action: 'loadROM', machineCode});
+    runner_.postMessage({action: 'start'});
 
-    runner.addEventListener('message', e => {
+    runner_.addEventListener('message', e => {
       switch (e.data.action) {
         case 'emitHz':
           mHz = e.data.hz / 1_000_000;
@@ -99,12 +99,12 @@
         keyValue = 0;
       }
       prev = keyValue;
-      runner.postMessage({action: 'keyboard', key: keyValue});
+      runner_.postMessage({action: 'keyboard', key: keyValue});
     });
 
     document.addEventListener("keyup", (e) => {
       prev = 0;
-      runner.postMessage({action: 'keyboard', key: 0});
+      runner_.postMessage({action: 'keyboard', key: 0});
     });
   });
 </script>
