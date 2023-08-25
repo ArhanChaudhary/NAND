@@ -35,7 +35,7 @@
   import compiler from '../compiler/main';
   import { onMount } from "svelte";
 
-  let mHz = 0;
+  let mHz = '0';
   let NANDCalls = 0;
   let runner_: Worker;
   onMount(async () => {
@@ -68,7 +68,7 @@
     runner_.addEventListener('message', e => {
       switch (e.data.action) {
         case 'emitHz':
-          mHz = e.data.hz / 1_000_000;
+          mHz = (e.data.hz / 1_000_000).toFixed(2);
           break;
         case 'emitNANDCalls':
           NANDCalls = e.data.NANDCalls;

@@ -4,7 +4,7 @@ import * as computer from "core";
 let screen: Worker;
 let reset = false;
 let total = 0;
-let secTotal = 0;
+let emitIntervalTotal = 0;
 // adjust accordingly
 // lowest value until the Hz starts to drop
 // we want the lowest so the keyboard is faster
@@ -30,7 +30,7 @@ function runner() {
   for (let i = 0; i < step; i++) {
     computer.ticktock(false);
   }
-  secTotal += step;
+  emitIntervalTotal += step;
   total += step;
   // NOTE: although rustwasm is able to access SCREEN_MEMORY directly,
   // we still have to pass it as a parameter and use that because of
@@ -48,9 +48,14 @@ function runner() {
 }
 
 const emitInterval = 50;
+let prevEmit = performance.now();
 function emitInfo() {
-  self.postMessage({ action: 'emitHz', hz: secTotal * (1000 / emitInterval) });
-  secTotal = 0;
+  const currentEmit = performance.now();
+  const emitSecTotal = emitIntervalTotal / (currentEmit - prevEmit) * 1000;
+  // emitIntervalTotal / (currentEmit - prevEmit) = emitSecTotal / 1000
+  self.postMessage({ action: 'emitHz', hz: emitSecTotal });
+  prevEmit = currentEmit;
+  emitIntervalTotal = 0;
 
   self.postMessage({
     action: 'emitNANDCalls',
