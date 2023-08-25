@@ -11,4 +11,19 @@ export default defineConfig({
     svelte({preprocess: sveltePreprocess({ postcss: true })}),
     topLevelAwait(),
   ],
+  worker: {
+    plugins: [
+      wasm(),
+      topLevelAwait()
+    ]
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: 'index.html', // This should be the entry HTML file for your app
+        "computer-wrapper": "app/computer-wrapper.ts",
+        screen: 'app/screen.ts', // Adjust the path accordingly
+      },
+    },
+  },
 })

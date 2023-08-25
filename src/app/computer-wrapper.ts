@@ -53,7 +53,7 @@ function emitHz() {
 }
 
 async function initialize() {
-  screen = new Worker('screen.ts', { type: 'module' });
+  screen = new Worker(new URL('screen.ts', import.meta.url), { type: 'module' });
   await new Promise<void>(resolve => {
     screen.addEventListener('message', e => {
       if (e.data === 'ready') {

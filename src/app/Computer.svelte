@@ -5,7 +5,7 @@
   import { onMount } from "svelte";
 
   const OS: Array<{fileName: string, file: string[]}> = [];
-  async function readFile(input: string): Promise<string> {
+  async function readFile(input: URL): Promise<string> {
     const response = await fetch(input);
     return await response.text();
   }
@@ -22,7 +22,7 @@
     ];
 
     for (const OSFile of OSFiles) {
-      const content = await readFile(`../os/${OSFile}.vm`);
+      const content = await readFile(new URL(`../os/${OSFile}.vm`, import.meta.url));
       OS.push({
         fileName: OSFile,
         file: content.split('\n')
@@ -33,7 +33,7 @@
   onMount(async () => {
     await loadOS();
 
-    const runner = new Worker('app/computer-wrapper.ts', { type: "module" });
+    const runner = new Worker(new URL('./computer-wrapper.ts', import.meta.url), { type: "module" });
     await new Promise<void>(resolve => {
       runner.addEventListener('message', e => {
         switch (e.data.action) {
