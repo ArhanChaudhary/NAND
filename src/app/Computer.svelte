@@ -1,9 +1,4 @@
-<script lang="ts">
-  import assembler from '../assembler/main';
-  import VMTranslator from '../vm/main';
-  import compiler from '../compiler/main';
-  import { onMount } from "svelte";
-
+<script lang="ts" context="module">
   import { runner } from './runner-store'
 
   const OS: Array<{fileName: string, file: string[]}> = [];
@@ -31,11 +26,18 @@
       });
     }
   }
+  await loadOS();
+</script>
+
+<script lang="ts">
+  import assembler from '../assembler/main';
+  import VMTranslator from '../vm/main';
+  import compiler from '../compiler/main';
+  import { onMount } from "svelte";
 
   let mHz = 0;
   let runner_: Worker;
   onMount(async () => {
-    await loadOS();
     await new Promise<void>(resolve => {
       runner.subscribe(runner => {
         if (runner) {
