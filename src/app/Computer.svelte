@@ -36,6 +36,7 @@
   import { onMount } from "svelte";
 
   let mHz = 0;
+  let NANDCalls = 0;
   let runner_: Worker;
   onMount(async () => {
     await new Promise<void>(resolve => {
@@ -68,6 +69,9 @@
       switch (e.data.action) {
         case 'emitHz':
           mHz = e.data.hz / 1_000_000;
+          break;
+        case 'emitNANDCalls':
+          NANDCalls = e.data.NANDCalls;
           break;
       }
     });
@@ -123,9 +127,13 @@
   #secHz {
     font-size: 30px;
   }
+  #NANDCalls {
+    font-size: 22px;
+  }
 </style>
 
 <div id="computer-wrapper">
   <canvas width="512" height="256" />
   <div id="secHz">Computer clock mHz: {mHz}</div>
+  <div id="NANDCalls">NAND Calls: {NANDCalls}</div>
 </div>

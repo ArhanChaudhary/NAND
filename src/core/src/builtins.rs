@@ -6,9 +6,16 @@ use js_sys::Array;
 use wasm_bindgen::prelude::*;
 use web_sys::CanvasRenderingContext2d;
 
+static mut NAND_CALLS: u64 = 0;
 #[allow(non_snake_case)]
 pub fn NAND(a: bool, b: bool) -> bool {
+	unsafe { NAND_CALLS += 1 };
     !(a && b)
+}
+
+#[wasm_bindgen(js_name=NANDCalls)]
+pub fn nand_calls() -> u64 {
+	unsafe { NAND_CALLS }
 }
 
 static mut CLOCK: bool = false;

@@ -47,9 +47,11 @@ function runner() {
   screen.postMessage(computer.getScreen());
 }
 
-function emitHz() {
+function emitInfo() {
   self.postMessage({ action: 'emitHz', hz: secTotal });
   secTotal = 0;
+
+  self.postMessage({ action: 'emitNANDCalls', NANDCalls: computer.NANDCalls() });
 }
 
 async function initialize() {
@@ -72,7 +74,7 @@ async function initialize() {
         computer.loadROM(e.data.machineCode);
         break;
       case 'start':
-        interval = setInterval(emitHz, 1000);
+        interval = setInterval(emitInfo, 1000);
         runner();
         break;
       case 'keyboard':
