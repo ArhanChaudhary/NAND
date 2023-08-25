@@ -39,7 +39,9 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'src/package-lock.json'
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          cargo install wasm-bindgen-cli
       - name: Build
         run: |
           npm run rwbuild
