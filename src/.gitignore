@@ -22,12 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-os/Keyboard.vm
-os/Memory.vm
-os/Output.vm
-os/Screen.vm
-os/String.vm
-os/Sys.vm
-os/Math.vm
-os/Array.vm
