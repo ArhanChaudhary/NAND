@@ -17,6 +17,11 @@ pub fn nand_calls() -> u64 {
 	unsafe { NAND_CALLS }
 }
 
+#[wasm_bindgen(js_name=resetNANDCalls)]
+pub fn reset_nand_calls() {
+	unsafe { NAND_CALLS = 0 };
+}
+
 static mut CLOCK: bool = false;
 pub fn tick() {
     unsafe { CLOCK = true };

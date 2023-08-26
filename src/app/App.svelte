@@ -1,5 +1,6 @@
 <script lang="ts">
   import Computer from './Computer.svelte';
+  import Nav from './Nav.svelte';
 
   import { onMount } from 'svelte';
   import { runner } from './runner-store.js';
@@ -32,5 +33,6 @@
 </style>
 
 <main>
+  <Nav />
   <Computer />
 </main>

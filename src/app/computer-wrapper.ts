@@ -3,19 +3,21 @@ import * as computer from "core";
 
 let screen: Worker;
 let reset = false;
-let total = 0;
 let emitIntervalTotal = 0;
 // adjust accordingly
 // lowest value until the Hz starts to drop
 // we want the lowest so the keyboard is faster
-let step = 30_000;
-let slowedStep = step;
+const fastStep = 30_000;
+const slowedStep = fastStep;
+
+let step = fastStep;
 // adjust accordingly
 function runner() {
   if (reset) {
     computer.ticktock(true);
     computer.clearScreen();
     screen.postMessage(computer.getScreen());
+    step = fastStep;
     reset = false;
     return;
   }
@@ -27,7 +29,6 @@ function runner() {
     computer.ticktock(false);
   }
   emitIntervalTotal += step;
-  total += step;
   // NOTE: although rustwasm is able to access SCREEN_MEMORY directly,
   // we still have to pass it as a parameter and use that because of
   // some complications with web workers and objects. According to
@@ -43,10 +44,10 @@ function runner() {
   screen.postMessage(computer.getScreen());
 }
 
-const emitInterval = 50;
+const emitIntervalDelay = 50;
 let prevEmit: number;
 const prevSecTotalAvgTime = 3;
-const prevSecTotals = new Array(1000 * prevSecTotalAvgTime / emitInterval);
+const prevSecTotals = new Array(1000 * prevSecTotalAvgTime / emitIntervalDelay);
 let firstEmit = true;
 function emitInfo() {
   const currentEmit = performance.now();
@@ -84,7 +85,7 @@ async function initialize() {
     }
   });
 
-  let interval: NodeJS.Timeout;
+  let emitInterval: NodeJS.Timeout;
   self.addEventListener('message', function(e) {
     switch (e.data.action) {
       case 'initialize':
@@ -94,16 +95,21 @@ async function initialize() {
         computer.loadROM(e.data.machineCode);
         break;
       case 'start':
-        interval = setInterval(emitInfo, emitInterval);
-        runner();
+        emitInterval = setInterval(emitInfo, emitIntervalDelay);
         prevEmit = performance.now();
+        runner();
         break;
       case 'keyboard':
         computer.keyboard(true, e.data.key);
         break;
       case 'reset':
-        clearInterval(interval);
         reset = true;
+        clearInterval(emitInterval);
+        
+        emitIntervalTotal = 0;
+        prevSecTotals.fill(0);
+        computer.resetNANDCalls();
+        emitInfo();
         break;
     }
   });

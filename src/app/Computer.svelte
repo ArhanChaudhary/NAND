@@ -37,7 +37,7 @@
   import { onMount } from "svelte";
 
   let mHz = '0';
-  let NANDCalls = 0;
+  let NANDCalls = '0';
   onMount(async () => {
     if (!runner_) {
       await new Promise<void>(resolve => {
@@ -65,13 +65,12 @@
     const assembly = VMTranslator(VMCode);
     const machineCode = assembler(assembly);
     runner_.postMessage({action: 'loadROM', machineCode});
-    runner_.postMessage({action: 'start'});
 
     runner_.addEventListener('message', e => {
       switch (e.data.action) {
         case 'emitInfo':
-          mHz = (e.data.hz / 1_000_000).toFixed(2);
-          NANDCalls = Number(e.data.NANDCalls * 100n / 1_000_000_000_000n) / 100
+          mHz = (e.data.hz / 1_000_000).toPrecision(3);
+          NANDCalls = (Number(e.data.NANDCalls * 100000n / 1_000_000_000_000n) / 100000).toPrecision(3);
           break;
       }
     });
@@ -134,6 +133,6 @@
 
 <div id="computer-wrapper">
   <canvas width="512" height="256" />
-  <div id="secHz">Computer clock mHz: {mHz}</div>
+  <div id="secHz">Clock speed: {mHz} mHz</div>
   <div id="NANDCalls">NAND Calls: {NANDCalls} trillion</div>
 </div>
