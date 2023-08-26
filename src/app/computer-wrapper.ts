@@ -4,13 +4,14 @@ import * as computer from "core";
 let screen: Worker;
 let stopRunner = false;
 let emitIntervalTotal = 0;
+let firstDrawn = false;
 // adjust accordingly
 // lowest value until the Hz starts to drop
 // we want the lowest so the keyboard is faster
-const fastStep = 30_000;
-const slowedStep = fastStep;
+const fastestStep = 30_000;
+const slowestStep = 10;
 
-let step = fastStep;
+let step = fastestStep;
 // adjust accordingly
 function runner() {
   if (stopRunner) {
@@ -42,7 +43,7 @@ function runner() {
 
 const emitIntervalDelay = 50;
 let prevEmit: number;
-const prevSecTotalAvgTime = 3;
+const prevSecTotalAvgTime = 1;
 const prevSecTotals = new Array(1000 * prevSecTotalAvgTime / emitIntervalDelay);
 let firstEmit = true;
 function emitInfo() {
@@ -77,7 +78,7 @@ async function initialize() {
   });
   screen.addEventListener('message', e => {
     if (e.data === 'firstDrawn') {
-      step = slowedStep;
+      firstDrawn = true;
     }
   });
 
@@ -108,7 +109,7 @@ async function initialize() {
         emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
 
         computer.ticktock(true);
-        step = fastStep;
+        step = fastestStep;
         
         emitIntervalTotal = 0;
         prevSecTotals.fill(0);
@@ -119,6 +120,14 @@ async function initialize() {
         stopRunner = true;
         emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
         break;
+      case 'speed':
+        if (!firstDrawn) return;
+        const minLogValue = Math.log10(slowestStep);      // log10 of minimum value (10)
+        const maxLogValue = Math.log10(fastestStep);   // log10 of maximum value (30000)
+        const logScaledValue = minLogValue + (e.data.speed / 100) * (maxLogValue - minLogValue);
+        // Convert the log-scaled value back to linear scale
+        const linearScaledValue = Math.pow(10, logScaledValue);
+        step = linearScaledValue;
     }
   });
 

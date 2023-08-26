@@ -24,6 +24,9 @@
   function resetRunner() {
     runner_.postMessage({ action: 'reset' });
   }
+  function speedRunner(e: Event) {
+    runner_.postMessage({ action: 'speed', speed: (e.target as HTMLInputElement).valueAsNumber });
+  }
 </script>
 <style>
   nav {
@@ -45,4 +48,6 @@
   <button on:click={resetRunner}>
     Reset
   </button>
+  Speed:
+  <input type="range" min="0" max="100" value="100" on:input={speedRunner} />
 </nav>
