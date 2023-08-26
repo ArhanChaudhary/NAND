@@ -69,7 +69,7 @@
       switch (e.data.action) {
         case 'emitInfo':
           mHz = (e.data.hz / 1_000_000).toFixed(2);
-          NANDCalls = e.data.NANDCalls;
+          NANDCalls = Number(e.data.NANDCalls * 100n / 1_000_000_000_000n) / 100
           break;
       }
     });
@@ -133,5 +133,5 @@
 <div id="computer-wrapper">
   <canvas width="512" height="256" />
   <div id="secHz">Computer clock mHz: {mHz}</div>
-  <div id="NANDCalls">NAND Calls: {NANDCalls}</div>
+  <div id="NANDCalls">NAND Calls: {NANDCalls} trillion</div>
 </div>

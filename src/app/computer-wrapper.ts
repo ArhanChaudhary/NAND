@@ -65,10 +65,7 @@ function emitInfo() {
   self.postMessage({
     action: 'emitInfo',
     hz: prevSecTotals.reduce((a, b) => a + b) / prevSecTotals.length,
-    NANDCalls: Intl.NumberFormat('en-US', {
-      notation: "compact",
-      maximumFractionDigits: 2
-    }).format(computer.NANDCalls())
+    NANDCalls: computer.NANDCalls(),
   });
 }
 
