@@ -1,4 +1,6 @@
 function Sys.init 0
+call Screen.clearScreen 0
+pop temp 0
 call Memory.init 0
 pop temp 0
 call Math.init 0

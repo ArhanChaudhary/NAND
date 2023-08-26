@@ -171,13 +171,6 @@ pub fn get_screen() -> Vec<u16> {
 	unsafe { SCREEN_MEMORY.clone() }
 }
 
-#[wasm_bindgen(js_name=clearScreen)]
-pub fn clear_screen() {
-	for i in 0..8192 {
-		unsafe { SCREEN_MEMORY[i] = 0 };
-	}
-}
-
 #[wasm_bindgen(start)]
 fn init() {
 	unsafe { RAM16K_MEMORY = vec![0; 16384] };

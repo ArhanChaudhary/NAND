@@ -15,8 +15,6 @@ let step = fastStep;
 function runner() {
   if (reset) {
     computer.ticktock(true);
-    computer.clearScreen();
-    screen.postMessage(computer.getScreen());
     step = fastStep;
     reset = false;
     return;
