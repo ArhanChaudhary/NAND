@@ -27,6 +27,7 @@
     }
   }
   await loadOS();
+  let runner_: Worker;
 </script>
 
 <script lang="ts">
@@ -37,28 +38,29 @@
 
   let mHz = '0';
   let NANDCalls = 0;
-  let runner_: Worker;
   onMount(async () => {
-    await new Promise<void>(resolve => {
-      runner.subscribe(runner => {
-        if (runner) {
-          runner_ = runner;
-          resolve();
-        }
+    if (!runner_) {
+      await new Promise<void>(resolve => {
+        runner.subscribe(runner => {
+          if (runner) {
+            runner_ = runner;
+            resolve();
+          }
+        });
       });
-    });
+    }
     const offscreen = document.querySelector('canvas').transferControlToOffscreen();
     runner_.postMessage({action: 'initialize', canvas: offscreen}, [offscreen]);
 
-    const jackInputStream: Array<{fileName: string, file: string[]}> = [];
+    const jackCode: Array<{fileName: string, file: string[]}> = [];
     let name: string;
     while ((name = prompt("File name")) !== 'stop') {
-      jackInputStream.push({
+      jackCode.push({
         fileName: name,
         file: prompt("File contents").split('\n'),
       });
     }
-    const VMCode = compiler(jackInputStream);
+    const VMCode = compiler(jackCode);
     VMCode.push(...OS);
     const assembly = VMTranslator(VMCode);
     const machineCode = assembler(assembly);
