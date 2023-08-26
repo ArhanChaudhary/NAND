@@ -48,12 +48,22 @@ function runner() {
 }
 
 const emitInterval = 50;
-let prevEmit = performance.now();
+let prevEmit: number;
+const prevSecTotalAvgTime = 3;
+const prevSecTotals = new Array(1000 * prevSecTotalAvgTime / emitInterval);
+let firstEmit = true;
 function emitInfo() {
   const currentEmit = performance.now();
-  const emitSecTotal = emitIntervalTotal / (currentEmit - prevEmit) * 1000;
+  const secTotal = emitIntervalTotal / (currentEmit - prevEmit) * 1000;
+  if (firstEmit) {
+    prevSecTotals.fill(secTotal);
+    firstEmit = false;
+  } else {
+    prevSecTotals.shift();
+    prevSecTotals.push(secTotal);
+  }
   // emitIntervalTotal / (currentEmit - prevEmit) = emitSecTotal / 1000
-  self.postMessage({ action: 'emitHz', hz: emitSecTotal });
+  self.postMessage({ action: 'emitHz', hz: prevSecTotals.reduce((a, b) => a + b) / prevSecTotals.length });
   prevEmit = currentEmit;
   emitIntervalTotal = 0;
 
@@ -61,7 +71,7 @@ function emitInfo() {
     action: 'emitNANDCalls',
     NANDCalls: Intl.NumberFormat('en-US', {
       notation: "compact",
-      maximumFractionDigits: 1
+      maximumFractionDigits: 2
     }).format(computer.NANDCalls())
   });
 }
@@ -88,6 +98,7 @@ async function initialize() {
       case 'start':
         interval = setInterval(emitInfo, emitInterval);
         runner();
+        prevEmit = performance.now();
         break;
       case 'keyboard':
         computer.keyboard(true, e.data.key);
