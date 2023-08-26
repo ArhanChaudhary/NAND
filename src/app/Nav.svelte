@@ -1,18 +1,10 @@
-<script lang="ts">
-  import { onMount } from "svelte";
+<script lang="ts" context="module">
   import { runner } from './runner-store'
 
   let runner_: Worker;
-  onMount(async () => {
-    if (!runner_) {
-      await new Promise<void>(resolve => {
-        runner.subscribe(runner => {
-          if (runner) {
-            runner_ = runner;
-            resolve();
-          }
-        });
-      });
+  runner.subscribe(runner => {
+    if (runner) {
+      runner_ = runner;
     }
   });
   function startRunner() {
@@ -28,6 +20,7 @@
     runner_.postMessage({ action: 'speed', speed: (e.target as HTMLInputElement).valueAsNumber });
   }
 </script>
+
 <style>
   nav {
     position: absolute;

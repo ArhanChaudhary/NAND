@@ -2,15 +2,25 @@
   import { runner } from './runner-store'
 
   const OS: Array<{fileName: string, file: string[]}> = [];
-  const OSFiles = import.meta.glob('../os/*.vm');
 
-  for (const OSFile of Object.keys(OSFiles)) {
+  for (const OSFile of Object.keys(import.meta.glob('../os/*.vm'))) {
     OS.push({
       fileName: OSFile.replace('../os/', '').replace('.vm', ''),
       file: (await (await fetch(OSFile)).text()).split('\n'),
     });
   }
+
   let runner_: Worker;
+  await (async () => {
+    new Promise<void>(resolve => {
+      runner.subscribe(runner => {
+        if (runner) {
+          runner_ = runner;
+          resolve();
+        }
+      });
+    });
+  })();
 </script>
 
 <script lang="ts">
@@ -21,17 +31,7 @@
 
   let mHz = '0';
   let NANDCalls = '0';
-  onMount(async () => {
-    if (!runner_) {
-      await new Promise<void>(resolve => {
-        runner.subscribe(runner => {
-          if (runner) {
-            runner_ = runner;
-            resolve();
-          }
-        });
-      });
-    }
+  onMount(() => {
     const offscreen = document.querySelector('canvas').transferControlToOffscreen();
     runner_.postMessage({action: 'initialize', canvas: offscreen}, [offscreen]);
 
