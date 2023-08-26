@@ -63,12 +63,12 @@ function emitInfo() {
     prevSecTotals.push(secTotal);
   }
   // emitIntervalTotal / (currentEmit - prevEmit) = emitSecTotal / 1000
-  self.postMessage({ action: 'emitHz', hz: prevSecTotals.reduce((a, b) => a + b) / prevSecTotals.length });
   prevEmit = currentEmit;
   emitIntervalTotal = 0;
 
   self.postMessage({
-    action: 'emitNANDCalls',
+    action: 'emitInfo',
+    hz: prevSecTotals.reduce((a, b) => a + b) / prevSecTotals.length,
     NANDCalls: Intl.NumberFormat('en-US', {
       notation: "compact",
       maximumFractionDigits: 2

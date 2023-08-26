@@ -67,10 +67,8 @@
 
     runner_.addEventListener('message', e => {
       switch (e.data.action) {
-        case 'emitHz':
+        case 'emitInfo':
           mHz = (e.data.hz / 1_000_000).toFixed(2);
-          break;
-        case 'emitNANDCalls':
           NANDCalls = e.data.NANDCalls;
           break;
       }
