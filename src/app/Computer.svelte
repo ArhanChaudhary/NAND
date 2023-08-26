@@ -2,31 +2,14 @@
   import { runner } from './runner-store'
 
   const OS: Array<{fileName: string, file: string[]}> = [];
-  async function readFile(input: URL): Promise<string> {
-    const response = await fetch(input);
-    return await response.text();
-  }
-  async function loadOS() {
-    const OSFiles: string[] = [
-      'Array',
-      'Keyboard',
-      'Math',
-      'Memory',
-      'Output',
-      'Screen',
-      'String',
-      'Sys'
-    ];
+  const OSFiles = import.meta.glob('../os/*.vm');
 
-    for (const OSFile of OSFiles) {
-      const content = await readFile(new URL(`../os/${OSFile}.vm`, import.meta.url));
-      OS.push({
-        fileName: OSFile,
-        file: content.split('\n')
-      });
-    }
+  for (const OSFile of Object.keys(OSFiles)) {
+    OS.push({
+      fileName: OSFile.replace('../os/', '').replace('.vm', ''),
+      file: (await (await fetch(OSFile)).text()).split('\n'),
+    });
   }
-  await loadOS();
   let runner_: Worker;
 </script>
 
@@ -70,7 +53,7 @@
       switch (e.data.action) {
         case 'emitInfo':
           mHz = (e.data.hz / 1_000_000).toPrecision(3);
-          NANDCalls = (Number(e.data.NANDCalls * 100000n / 1_000_000_000_000n) / 100000).toPrecision(3);
+          NANDCalls = (Number(e.data.NANDCalls * 1_000_000n / 1_000_000_000_000n) / 1_000_000).toPrecision(3).replace(/0+$/, '');
           break;
       }
     });

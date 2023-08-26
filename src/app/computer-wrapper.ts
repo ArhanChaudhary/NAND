@@ -93,10 +93,7 @@ async function initialize() {
         break;
       case 'start':
         if (emitInterval) return;
-        if (stopRunner) {
-          // burn the first call
-          runner();
-        }
+        stopRunner = false;
         emitInterval = setInterval(emitInfo, emitIntervalDelay);
         prevEmit = performance.now();
         runner();
@@ -107,10 +104,7 @@ async function initialize() {
       case 'reset':
         stopRunner = true;
         emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
-
         computer.ticktock(true);
-        step = fastestStep;
-        
         emitIntervalTotal = 0;
         prevSecTotals.fill(0);
         computer.resetNANDCalls();
@@ -121,11 +115,10 @@ async function initialize() {
         emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
         break;
       case 'speed':
-        if (!firstDrawn) return;
-        const minLogValue = Math.log10(slowestStep);      // log10 of minimum value (10)
-        const maxLogValue = Math.log10(fastestStep);   // log10 of maximum value (30000)
+        // if (!firstDrawn) return;
+        const minLogValue = Math.log10(slowestStep);
+        const maxLogValue = Math.log10(fastestStep);
         const logScaledValue = minLogValue + (e.data.speed / 100) * (maxLogValue - minLogValue);
-        // Convert the log-scaled value back to linear scale
         const linearScaledValue = Math.pow(10, logScaledValue);
         step = linearScaledValue;
     }
