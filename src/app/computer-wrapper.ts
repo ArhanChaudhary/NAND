@@ -2,7 +2,7 @@
 import * as computer from "core";
 
 let screen: Worker;
-let reset = false;
+let stopRunner = false;
 let emitIntervalTotal = 0;
 // adjust accordingly
 // lowest value until the Hz starts to drop
@@ -13,10 +13,8 @@ const slowedStep = fastStep;
 let step = fastStep;
 // adjust accordingly
 function runner() {
-  if (reset) {
-    computer.ticktock(true);
-    step = fastStep;
-    reset = false;
+  if (stopRunner) {
+    stopRunner = false;
     return;
   }
   // NOTE: there is no worry of runner being called while the previous call is
@@ -83,7 +81,7 @@ async function initialize() {
     }
   });
 
-  let emitInterval: NodeJS.Timeout;
+  let emitInterval: NodeJS.Timeout | void;
   self.addEventListener('message', function(e) {
     switch (e.data.action) {
       case 'initialize':
@@ -93,6 +91,11 @@ async function initialize() {
         computer.loadROM(e.data.machineCode);
         break;
       case 'start':
+        if (emitInterval) return;
+        if (stopRunner) {
+          // burn the first call
+          runner();
+        }
         emitInterval = setInterval(emitInfo, emitIntervalDelay);
         prevEmit = performance.now();
         runner();
@@ -101,13 +104,20 @@ async function initialize() {
         computer.keyboard(true, e.data.key);
         break;
       case 'reset':
-        reset = true;
-        clearInterval(emitInterval);
+        stopRunner = true;
+        emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
+
+        computer.ticktock(true);
+        step = fastStep;
         
         emitIntervalTotal = 0;
         prevSecTotals.fill(0);
         computer.resetNANDCalls();
         emitInfo();
+        break;
+      case 'stop':
+        stopRunner = true;
+        emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
         break;
     }
   });

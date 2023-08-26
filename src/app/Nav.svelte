@@ -18,6 +18,9 @@
   function startRunner() {
     runner_.postMessage({ action: 'start' });
   }
+  function stopRunner() {
+    runner_.postMessage({ action: 'stop' });
+  }
   function resetRunner() {
     runner_.postMessage({ action: 'reset' });
   }
@@ -35,6 +38,9 @@
 <nav>
   <button on:click={startRunner}>
     Start
+  </button>
+  <button on:click={stopRunner}>
+    Stop
   </button>
   <button on:click={resetRunner}>
     Reset
