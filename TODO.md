@@ -1,4 +1,5 @@
 # TODO
+* screen indicate slowed when first pixel is drawn
 * project 12
 * fix 2048 point system and optimize it
 * don't allow numbers greater than usize in compiler

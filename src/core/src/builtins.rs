@@ -4,7 +4,6 @@ mod architecture;
 
 use js_sys::Array;
 use wasm_bindgen::prelude::*;
-use web_sys::CanvasRenderingContext2d;
 
 static mut NAND_CALLS: u64 = 0;
 #[allow(non_snake_case)]
@@ -171,21 +170,6 @@ pub fn get_screen() -> Vec<u16> {
 pub fn clear_screen() {
 	for i in 0..8192 {
 		unsafe { SCREEN_MEMORY[i] = 0 };
-	}
-}
-
-#[wasm_bindgen]
-pub fn render(ctx: CanvasRenderingContext2d, screen_memory: Vec<u16>) {
-	ctx.clear_rect(0.0, 0.0, 512.0, 256.0);
-	for i in 0..8192u16 {
-		let word16 = screen_memory[i as usize];
-		for j in 0..16 {
-			if nbit16(word16, j) {
-				let x = ((i * 16) + j as u16) % 512;
-				let y = i / 32;
-				ctx.fill_rect(x as f64, y as f64, 1.0, 1.0);
-			}
-		}
 	}
 }
 
