@@ -1,5 +1,6 @@
 async function initialize() {
   let ctx: OffscreenCanvasRenderingContext2D;
+  let firstDrawn = false;
   self.addEventListener('message', function(e) {
     if (!ctx) {
       ctx = e.data.getContext('2d');
@@ -11,6 +12,10 @@ async function initialize() {
       const word16 = e.data[i];
       for (let j = 0; j < 16; j++) {
         if ((word16 >> j) & 1) {
+          if (!firstDrawn) {
+            firstDrawn = true;
+            self.postMessage('firstDrawn');
+          }
           const x = ((i * 16) + j) % 512;
           const y = Math.floor(i / 32);
           ctx.fillRect(x, y, 1, 1);

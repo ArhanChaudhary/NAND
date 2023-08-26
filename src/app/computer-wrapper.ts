@@ -11,7 +11,6 @@ let emitIntervalTotal = 0;
 let step = 30_000;
 let slowedStep = step;
 // adjust accordingly
-const OSEnd = 8_100_000;
 function runner() {
   if (reset) {
     computer.ticktock(true);
@@ -24,9 +23,6 @@ function runner() {
   // running because this is a web worker, so it's single threaded and will wait
   // for this to complete before calling it again
   setTimeout(runner, 0);
-  if (total > OSEnd) {
-    step = slowedStep;
-  }
   for (let i = 0; i < step; i++) {
     computer.ticktock(false);
   }
@@ -84,6 +80,11 @@ async function initialize() {
         resolve();
       }
     });
+  });
+  screen.addEventListener('message', e => {
+    if (e.data === 'firstDrawn') {
+      step = slowedStep;
+    }
   });
 
   let interval: NodeJS.Timeout;
