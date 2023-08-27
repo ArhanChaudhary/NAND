@@ -1,4 +1,4 @@
-name: Deploy static content to Pages
+name: Deploy NAND
 
 on:
   # Runs on pushes targeting the default branch
@@ -30,7 +30,7 @@ jobs:
       run:
         working-directory: ./src
     steps:
-      - name: Checkout
+      - name: Initialize repository
         uses: actions/checkout@v3
       - name: Set up Node
         uses: actions/setup-node@v3
@@ -38,7 +38,7 @@ jobs:
           node-version: 18
           cache: 'npm'
           cache-dependency-path: 'src/package-lock.json'
-      - name: Cache Rust toolchain
+      - name: Set up Rust
         uses: actions/cache@v2
         with:
           path: ~/.cargo
@@ -49,16 +49,16 @@ jobs:
         run: |
           npm install
           cargo install wasm-pack
-      - name: Build
+      - name: Build NAND
         run: |
           npm run rwbuild
           npm run build
-      - name: Setup Pages
+      - name: Setup pages
         uses: actions/configure-pages@v3
-      - name: Upload artifact
+      - name: Upload dist
         uses: actions/upload-pages-artifact@v1
         with:
           path: './src/dist' # Upload dist repository from the src directory
-      - name: Deploy to GitHub Pages
+      - name: Deploy to pages
         id: deployment
         uses: actions/deploy-pages@v1
