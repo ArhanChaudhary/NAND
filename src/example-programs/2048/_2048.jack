@@ -1,0 +1,385 @@
+class _2048 {
+    static int lcg;
+    static int characterPixelWidth, characterPixelHeight;
+    static int spaceX, spaceY;
+    field int size;
+    field int gridX, gridY;
+    field int score;
+    field int combinedPosition;
+    field boolean validDirection;
+    field boolean win, won, lose;
+    field Array grid;
+    field Array prevGrid;
+
+    function void init() {
+        let lcg = 1234;
+        let characterPixelWidth = 8;
+        let characterPixelHeight = 11;
+        let spaceX = 6;
+        let spaceY = 3;
+    }
+
+    constructor _2048 new(int size_) {
+        var int i;
+        var int j;
+        var Array prevRow;
+
+        let win = false;
+        let won = false;
+        let lose = false;
+        let score = 0;
+        let gridX = 21;
+        let gridY = 11;
+        let size = size_;
+        
+        let grid = Array.new(size);
+        let prevGrid = Array.new(size);
+        let i = 0;
+        do initUI();
+        while (i < size) {
+            let grid[i] = Array.new(size);
+            let prevGrid[i] = Array.new(size);
+            let j = 0;
+            while (j < size) {
+                let grid[i][j] = 0;
+                let prevGrid[i][j] = 0;
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
+    }
+
+    method void initUI() {
+        var int i;
+        var int rawGridX;
+        var int rawGridY;
+        let rawGridX = (gridX - 1) * characterPixelWidth;
+        let rawGridY = (gridY - 1) * characterPixelHeight;
+
+        let i = 0;
+        while (i < (size + 1)) {
+            do Screen.drawRectangle(
+                rawGridX,
+                rawGridY + ((i * spaceY) * characterPixelHeight),
+                rawGridX + ((size * spaceX) * characterPixelWidth),
+                rawGridY + ((i * spaceY) * characterPixelHeight)
+            );
+            let i = i + 1;
+        }
+        let i = 0;
+        while (i < (size + 1)) {
+            do Screen.drawRectangle(
+                rawGridX + ((i * spaceX) * characterPixelWidth),
+                rawGridY,
+                rawGridX + ((i * spaceX) * characterPixelWidth),
+                rawGridY + ((size * spaceY) * characterPixelHeight)
+            );
+            let i = i + 1;
+        }
+
+        do Output.moveCursor(gridY - 3, gridX - 1);
+        do Output.printString("Score:");
+
+        do Output.moveCursor(3, 28);
+        do Output.printString("PLAY 2048");
+    }
+
+    method void run() {
+        var int key;
+
+        do setRandomPosition();
+        while (~lose) {
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+                let lcg = Math.abs(lcg + 1649);
+            }
+            let validDirection = false;
+            if (key = 131) {
+                do moveGrid(1); // up
+            }
+            if (key = 133) {
+                do moveGrid(2); // down
+            }
+            if (key = 130) {
+                do moveGrid(3); // left
+            }
+            if (key = 132) {
+                do moveGrid(4); // right
+            }
+            if (validDirection) {
+                do drawGrid();
+                do setRandomPosition();
+            }
+            if (win) {
+                do Output.moveCursor(gridY - 3, gridX + 13);
+                do Output.printString("YOU WIN :D");
+                let win = false;
+            }
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed();
+            }
+        }
+        do Output.moveCursor(gridY - 3, gridX + 14);
+        do Output.printString("GAME OVER");
+    }
+
+    method void moveGrid(int direction) {
+        var int i;
+        var int j;
+        var int iStep;
+        var int iNext;
+        var int iStop;
+
+        if (direction = 1) {
+            let i = 0;
+            let iStep = size;
+            let iNext = 1 - (size * size);
+            let iStop = size;
+        }
+        if (direction = 2) {
+            let i = size * (size - 1);
+            let iStep = -size;
+            let iNext = (size * size) + 1;
+            let iStop = size * size;
+        }
+        if (direction = 3) {
+            let i = 0;
+            let iStep = 1;
+            let iNext = 0;
+            let iStop = size * size;
+        }
+        if (direction = 4) {
+            let i = size - 1;
+            let iStep = -1;
+            let iNext = size * 2;
+            let iStop = (size * (size + 1)) - 1;
+        }
+        
+        let j = 0;
+        let combinedPosition = -1;
+        while (~(i = iStop)) {
+            while (j < size) {
+                do tryMove(i, direction, true);
+                let i = i + iStep;
+                let j = j + 1;
+            }
+            let j = 0;
+            let i = i + iNext;
+        }
+    }
+
+    method void tryMove(int position, int direction, boolean firstIteration) {
+        var int positionValue;
+        var int nextPosition;
+        var int nextPositionValue;
+        let positionValue = getPosition(position);
+        if (positionValue = 0) {
+            return;
+        }
+        if (direction = 1) {
+            let nextPosition = position - size;
+            if (position < size) {
+                return;
+            }
+        }
+        if (direction = 2) {
+            let nextPosition = position + size;
+            if (~(position < (size * (size - 1)))) {
+                return;
+            }
+        }
+        if (direction = 3) {
+            let nextPosition = position - 1;
+            if ((position - ((position / size) * size)) = 0) {
+                return;
+            }
+        }
+        if (direction = 4) {
+            let nextPosition = position + 1;
+            if ((position - ((position / size) * size)) = (size - 1)) {
+                return;
+            }
+        }
+        let nextPositionValue = getPosition(nextPosition);
+        if (~(nextPositionValue = 0)) {
+            if ((~(position = combinedPosition)) & (~(nextPosition = combinedPosition)) & (positionValue = nextPositionValue)) {
+                let validDirection = true;
+                let combinedPosition = nextPosition;
+                do setPosition(nextPosition, positionValue * 2, false);
+                do erasePosition(position, positionValue, firstIteration);
+            }
+            return;
+        }
+        let validDirection = true;
+        do setPosition(nextPosition, positionValue, false);
+        do erasePosition(position, positionValue, firstIteration);
+        do tryMove(nextPosition, direction, false);
+    }
+
+    method void erasePosition(int position, int positionValue, boolean draw) {
+        var int div;
+        var int mod;
+        let div = position / size;
+        let mod = position - (div * size);
+
+        let grid[div][mod] = 0;
+
+        if (draw & (positionValue > 9)) {
+            do cursorTo(div, mod);
+            // 0 32 16 16 press left doesnt draw the second 32
+            // because prevGrid over there was 32
+            let prevGrid[div][mod] = -1;
+            if (positionValue > 999) {
+                do Output.printString("    ");
+            } else {if (positionValue > 99) {
+                do Output.printString("   ");
+            } else {
+                do Output.printString("  ");
+            }}
+        }
+        do setPosition(position, 0, false);
+    }
+
+    method void cursorTo(int row, int col) {
+        do Output.moveCursor((row * spaceY) + gridY, (col * spaceX) + gridX);
+    }
+
+    method void drawGrid() {
+        var int i;
+        var int j;
+        var int positionValue;
+        let i = 0;
+        while (i < size) {
+            let j = 0;
+            while (j < size) {
+                let positionValue = grid[i][j];
+                if (positionValue = 0) {
+                    do cursorTo(i, j);
+                } else {if (~(prevGrid[i][j] = positionValue)) {
+                    do cursorTo(i, j);
+                    do Output.printInt(positionValue);
+                }}
+                let prevGrid[i][j] = positionValue;
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
+        return;
+    }
+
+    method void setRandomPosition() {
+        var Array available;
+        var int i;
+        var int availableCount;
+        var int chosenPosition;
+
+        let available = Array.new(size * size);
+        let availableCount = 0;
+        let i = 0;
+        while (i < (size * size)) {
+            if (getPosition(i) = 0) {
+                let available[availableCount] = i;
+                let availableCount = availableCount + 1;
+            }
+            let i = i + 1;
+        }
+
+        let lcg = Math.abs((473 * lcg) + 12534);
+        let lcg = lcg - ((lcg / 1638) * 1638);
+        let chosenPosition = available[lcg - ((lcg / availableCount) * availableCount)];
+
+        do available.dispose();
+
+        if ((lcg - ((lcg / 6) * 6)) = 3) {
+            do setPosition(chosenPosition, 4, true);
+            let score = score + 4;
+        } else {
+            do setPosition(chosenPosition, 2, true);
+            let score = score + 2;
+        }
+        do Output.moveCursor(gridY - 3, gridX + 6);
+        do Output.printInt(score);
+        if ((~(score < 2048)) & (~won)) {
+            let win = true;
+            let won = true;
+        }
+        if (checkLose()) {
+            let lose = true;
+        }
+    }
+
+    method boolean checkLose() {
+        var int i;
+        var int j;
+        var int positionValue;
+        var int prevPositionValue;
+
+        let i = 0;
+        let prevPositionValue = -1;
+        while (i < size) {
+            let j = 0;
+            while (j < size) {
+                let positionValue = grid[i][j];
+                if ((prevPositionValue = positionValue) | (positionValue = 0)) {
+                    return false;
+                }
+                let prevPositionValue = positionValue;
+                let j = j + 1;
+            }
+            let prevPositionValue = -1;
+            let i = i + 1;
+        }
+        let i = 0;
+        let prevPositionValue = -1;
+        while (i < size) {
+            let j = 0;
+            while (j < size) {
+                let positionValue = grid[j][i];
+                if ((prevPositionValue = positionValue) | (positionValue = 0)) {
+                    return false;
+                }
+                let prevPositionValue = positionValue;
+                let j = j + 1;
+            }
+            let prevPositionValue = -1;
+            let i = i + 1;
+        }
+        return true;
+    }
+
+    method int getPosition(int pos) {
+        var int div;
+        var int mod;
+        let div = pos / size;
+        let mod = pos - (div * size);
+
+        return grid[div][mod];
+    }
+
+    method void setPosition(int pos, int value, boolean draw) {
+        var int div;
+        var int mod;
+        let div = pos / size;
+        let mod = pos - (div * size);
+        if (draw) {
+            do cursorTo(div, mod);
+            do Output.printInt(value);
+        }
+
+        let grid[div][mod] = value;
+    }
+
+    method void dispose() {
+        var int i;
+        var Array tmp;
+        let i = 0;
+        while (i < size) {
+            let tmp = grid[i];
+            do tmp.dispose();
+            let tmp = prevGrid[i];
+            do tmp.dispose();
+            let i = i + 1;
+        }
+        do Memory.deAlloc(this);
+    }
+}

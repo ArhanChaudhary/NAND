@@ -1,4 +1,5 @@
 # TODO
+* export runner instead of store
 * screenload thing in screen.ts
 * load 2048 and load pong etc and put them in an /examples (?) directory
 * project 12 and make initial clear screen native to the OS

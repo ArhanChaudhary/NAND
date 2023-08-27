@@ -1,12 +1,14 @@
 <script lang="ts" context="module">
   import { runner } from './runner-store'
 
-  const OS: Array<{fileName: string, file: string[]}> = [];
+  export const OS: Array<{fileName: string, file: string[]}> = [];
 
-  for (const OSFile of Object.keys(import.meta.glob('../os/*.vm'))) {
+  for (const [OSFilePath, OSFile] of Object.entries(
+    import.meta.glob('../os/*.vm', { as: 'raw' })
+  )) {
     OS.push({
-      fileName: OSFile.replace('../os/', '').replace('.vm', ''),
-      file: (await (await fetch(OSFile)).text()).split('\n'),
+      fileName: OSFilePath.replace('../os/', '').replace('.vm', ''),
+      file: (await OSFile() as string).split('\n'),
     });
   }
 
@@ -24,9 +26,6 @@
 </script>
 
 <script lang="ts">
-  import assembler from '../assembler/main';
-  import VMTranslator from '../vm/main';
-  import compiler from '../compiler/main';
   import { onMount } from "svelte";
 
   let mHz = '0';
@@ -34,21 +33,6 @@
   onMount(() => {
     const offscreen = document.querySelector('canvas').transferControlToOffscreen();
     runner_.postMessage({action: 'initialize', canvas: offscreen}, [offscreen]);
-
-    const jackCode: Array<{fileName: string, file: string[]}> = [];
-    let name: string;
-    while ((name = prompt("File name")) !== 'stop') {
-      jackCode.push({
-        fileName: name,
-        file: prompt("File contents").split('\n'),
-      });
-    }
-    const VMCode = compiler(jackCode);
-    VMCode.push(...OS);
-    const assembly = VMTranslator(VMCode);
-    const machineCode = assembler(assembly);
-    runner_.postMessage({action: 'loadROM', machineCode});
-
     runner_.addEventListener('message', e => {
       switch (e.data.action) {
         case 'emitInfo':
