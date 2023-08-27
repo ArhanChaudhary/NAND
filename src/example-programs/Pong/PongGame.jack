@@ -21,7 +21,6 @@ class PongGame {
 
     /** Constructs a new Pong game. */
     constructor PongGame new() {
-	    do Screen.clearScreen();
         let batWidth = 50;  // initial bat size
         let bat = Bat.new(230, 229, batWidth, 7);
         let ball = Ball.new(253, 222, 0, 511, 0, 229);

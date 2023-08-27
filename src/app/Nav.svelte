@@ -58,6 +58,7 @@
     runner_.postMessage({ action: 'reset' });
     const exampleProgramName = (e.target as HTMLSelectElement).value;
     const exampleProgram = examplePrograms.find(exampleProgram => exampleProgram.exampleProgramName === exampleProgramName);
+    if (!exampleProgram) return;
     const VMCode = compiler(exampleProgram.exampleProgramData);
     VMCode.push(...OS);
     const assembly = VMTranslator(VMCode);

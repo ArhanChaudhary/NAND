@@ -102,6 +102,7 @@ async function initialize() {
         computer.keyboard(true, e.data.key);
         break;
       case 'reset':
+        if (!prevEmit) return;
         stopRunner = true;
         emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
         computer.ticktock(true);
