@@ -38,6 +38,13 @@ jobs:
           node-version: 18
           cache: 'npm'
           cache-dependency-path: 'src/package-lock.json'
+      - name: Cache Rust toolchain
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo
+          key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-rust-
       - name: Install dependencies
         run: |
           npm install
