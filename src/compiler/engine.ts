@@ -436,6 +436,9 @@ export default class Engine {
     private compileTerm(): void {
         switch (this.tokenizer.tokenType()) {
             case TokenType.INT_CONST:
+                if (Number(this.tokenizer.token()) >= 32768) {
+                    this.syntaxError('32767 or less', 'integer literal is too large');
+                }
                 this.vmwriter.writePush('constant', this.tokenizer.token());
                 this.assertToken(TokenType.INT_CONST);
                 break;
