@@ -55,9 +55,11 @@ function emitInfo() {
   prevEmit = currentEmit;
   emitIntervalTotal = 0;
 
+  let hz = prevSecTotals.reduce((a, b) => a + b) / prevSecTotals.length;
+
   self.postMessage({
     action: 'emitInfo',
-    hz: prevSecTotals.reduce((a, b) => a + b) / prevSecTotals.length,
+    hz: hz,
     NANDCalls: computer.NANDCalls(),
   });
 }
@@ -98,12 +100,16 @@ async function initialize() {
       case 'reset':
         if (!prevEmit) return;
         stopRunner = true;
-        emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
         computer.ticktock(true);
-        emitIntervalTotal = 0;
-        prevSecTotals.fill(0);
         computer.resetNANDCalls();
-        emitInfo();
+        emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
+        emitIntervalTotal = 0;
+        prevSecTotals.length = 0;
+        self.postMessage({
+          action: 'emitInfo',
+          hz: 0,
+          NANDCalls: 0,
+        });   
         break;
       case 'stop':
         stopRunner = true;

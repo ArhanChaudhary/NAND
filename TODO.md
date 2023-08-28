@@ -1,8 +1,5 @@
 # TODO
-* computer clock doesnt work on start up
-* fix NaN mhz bug
-* screenload thing in screen.ts
-* project 12 and make initial clear screen native to the OS
+* project 12
 * fix 2048 point system and optimize it
 * don't allow numbers greater than usize in compiler
 * add Math.modulus to OS
