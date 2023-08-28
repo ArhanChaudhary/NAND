@@ -181,32 +181,27 @@ class _2048 {
         var int nextPosition;
         var int nextPositionValue;
         let positionValue = getPosition(position);
-        if (positionValue = 0) {
+        if (positionValue = 0)
             return;
-        }
         if (direction = 1) {
             let nextPosition = position - size;
-            if (position < size) {
+            if (position < size)
                 return;
-            }
         }
         if (direction = 2) {
             let nextPosition = position + size;
-            if (~(position < (size * (size - 1)))) {
+            if (~(position < (size * (size - 1))))
                 return;
-            }
         }
         if (direction = 3) {
             let nextPosition = position - 1;
-            if ((position - ((position / size) * size)) = 0) {
+            if ((position - ((position / size) * size)) = 0)
                 return;
-            }
         }
         if (direction = 4) {
             let nextPosition = position + 1;
-            if ((position - ((position / size) * size)) = (size - 1)) {
+            if ((position - ((position / size) * size)) = (size - 1))
                 return;
-            }
         }
         let nextPositionValue = getPosition(nextPosition);
         if (~(nextPositionValue = 0)) {
@@ -238,13 +233,12 @@ class _2048 {
             // 0 32 16 16 press left doesnt draw the second 32
             // because prevGrid over there was 32
             let prevGrid[div][mod] = -1;
-            if (positionValue > 999) {
+            if (positionValue > 999)
                 do Output.printString("    ");
-            } else {if (positionValue > 99) {
+            else if (positionValue > 99)
                 do Output.printString("   ");
-            } else {
+            else
                 do Output.printString("  ");
-            }}
         }
         do setPosition(position, 0, false);
     }
@@ -264,10 +258,10 @@ class _2048 {
                 let positionValue = grid[i][j];
                 if (positionValue = 0) {
                     do cursorTo(i, j);
-                } else {if (~(prevGrid[i][j] = positionValue)) {
+                } else if (~(prevGrid[i][j] = positionValue)) {
                     do cursorTo(i, j);
                     do Output.printInt(positionValue);
-                }}
+                }
                 let prevGrid[i][j] = positionValue;
                 let j = j + 1;
             }
@@ -299,14 +293,12 @@ class _2048 {
 
         do available.dispose();
 
-        if ((lcg - ((lcg / 6) * 6)) = 3) {
+        if ((lcg - ((lcg / 6) * 6)) = 3)
             do setPosition(chosenPosition, 4, true);
-        } else {
+        else
             do setPosition(chosenPosition, 2, true);
-        }
-        if (checkLose()) {
+        if (checkLose())
             let lose = true;
-        }
     }
 
     method boolean checkLose() {
@@ -321,9 +313,8 @@ class _2048 {
             let j = 0;
             while (j < size) {
                 let positionValue = grid[i][j];
-                if ((prevPositionValue = positionValue) | (positionValue = 0)) {
+                if ((prevPositionValue = positionValue) | (positionValue = 0))
                     return false;
-                }
                 let prevPositionValue = positionValue;
                 let j = j + 1;
             }
@@ -336,9 +327,8 @@ class _2048 {
             let j = 0;
             while (j < size) {
                 let positionValue = grid[j][i];
-                if ((prevPositionValue = positionValue) | (positionValue = 0)) {
+                if ((prevPositionValue = positionValue) | (positionValue = 0))
                     return false;
-                }
                 let prevPositionValue = positionValue;
                 let j = j + 1;
             }
@@ -358,9 +348,8 @@ class _2048 {
             let j = 0;
             while (j < size) {
                 let positionValue = grid[i][j];
-                if (~(positionValue < 2048)) {
+                if (~(positionValue < 2048))
                     return true;
-                }
                 let j = j + 1;
             }
             let i = i + 1;

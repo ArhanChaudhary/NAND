@@ -228,37 +228,40 @@ export default class Engine {
     }
     
     private compileStatements(): void {
-        outer: while (true) {
-            switch (this.tokenizer.token()) {
-                case KeywordToken.LET:
-                case KeywordToken.IF:
-                case KeywordToken.WHILE:
-                case KeywordToken.DO:
-                    if (this.lastStatementIsReturn)
-                        this.syntaxError(SymbolToken.CLOSING_CURLY_BRACKET, 'return must be the last statement in a subroutine');
-                    switch (this.tokenizer.token()) {
-                        case KeywordToken.LET:
-                            this.compileLet();
-                            break;
-                        case KeywordToken.IF:
-                            this.compileIf();
-                            break;
-                        case KeywordToken.WHILE:
-                            this.compileWhile();
-                            break;
-                        case KeywordToken.DO:
-                            this.compileDo();
-                            break;
-                    }
-                    break;
-                case KeywordToken.RETURN:
-                    this.lastStatementIsReturn = true;
-                    this.compileReturn();
-                    break;
-                default:
-                    break outer;
-            }
+        while (this.compileStatement()) {}
+    }
+
+    private compileStatement(): boolean {
+        switch (this.tokenizer.token()) {
+            case KeywordToken.LET:
+            case KeywordToken.IF:
+            case KeywordToken.WHILE:
+            case KeywordToken.DO:
+                if (this.lastStatementIsReturn)
+                    this.syntaxError(SymbolToken.CLOSING_CURLY_BRACKET, 'return must be the last statement in a subroutine');
+                switch (this.tokenizer.token()) {
+                    case KeywordToken.LET:
+                        this.compileLet();
+                        break;
+                    case KeywordToken.IF:
+                        this.compileIf();
+                        break;
+                    case KeywordToken.WHILE:
+                        this.compileWhile();
+                        break;
+                    case KeywordToken.DO:
+                        this.compileDo();
+                        break;
+                }
+                break;
+            case KeywordToken.RETURN:
+                this.lastStatementIsReturn = true;
+                this.compileReturn();
+                break;
+            default:
+                return false;
         }
+        return true;
     }
 
     private compileSubroutineCall(prevToken: string, line: string, lineNumber: number, lineIndex: number): void {
@@ -402,22 +405,32 @@ export default class Engine {
         this.vmwriter.writeArithmetic(SymbolToken.NOT);
         this.vmwriter.writeIf('FALSE_CASE' + l1);
         this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
-        this.assertToken(SymbolToken.OPENING_CURLY_BRACKET);
-        this.compileStatements();
+        if (this.tokenizer.token() === SymbolToken.OPENING_CURLY_BRACKET) {
+            this.tokenizer.advance();
+            this.compileStatements();
+            this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
+        } else {
+            this.compileStatement();
+        }
         const returnInIfBlock = this.lastStatementIsReturn;
         this.lastStatementIsReturn = false;
-        this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
-
         if (this.tokenizer.token() === KeywordToken.ELSE) {
             const l2 = this.labelCounter++;
             this.tokenizer.advance();
-            this.assertToken(SymbolToken.OPENING_CURLY_BRACKET);
-            this.vmwriter.writeGoto('TRUE_CASE' + l2);
-            this.vmwriter.writeLabel('FALSE_CASE' + l1);
-            this.compileStatements();
+            if (this.tokenizer.token() === SymbolToken.OPENING_CURLY_BRACKET) {
+                this.tokenizer.advance();
+                this.vmwriter.writeGoto('TRUE_CASE' + l2);
+                this.vmwriter.writeLabel('FALSE_CASE' + l1);
+                this.compileStatements();
+                this.vmwriter.writeLabel('TRUE_CASE' + l2);
+                this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
+            } else {
+                this.vmwriter.writeGoto('TRUE_CASE' + l2);
+                this.vmwriter.writeLabel('FALSE_CASE' + l1);
+                this.compileStatement();
+                this.vmwriter.writeLabel('TRUE_CASE' + l2);
+            }
             this.lastStatementIsReturn &&= returnInIfBlock;
-            this.vmwriter.writeLabel('TRUE_CASE' + l2);
-            this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
         } else {
             this.vmwriter.writeLabel('FALSE_CASE' + l1);
         }

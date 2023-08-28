@@ -167,9 +167,8 @@ class Output {
     // If the given character is invalid or non-printable, returns the
     // character map of a black square.
     function Array getMap(char c) {
-        if ((c < 32) | (c > 126)) {
+        if ((c < 32) | (c > 126))
             let c = 0;
-        }
         return charMaps[c];
     }
 
