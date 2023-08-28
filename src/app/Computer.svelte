@@ -37,7 +37,19 @@
       switch (e.data.action) {
         case 'emitInfo':
           mHz = (e.data.hz / 1_000_000).toPrecision(3);
-          NANDCalls = (Number(e.data.NANDCalls * 1_000_000n / 1_000_000_000_000n) / 1_000_000).toPrecision(3).replace(/0+$/, '');
+          if (e.data.NANDCalls >= 1_000_000_000_000n) {
+            NANDCalls = Number(e.data.NANDCalls * 1000n / 1_000_000_000_000n) / 1000 + ' trillion';
+            return;
+          }
+          if (e.data.NANDCalls >= 1_000_000_000n) {
+            NANDCalls = Number(e.data.NANDCalls * 10n / 1_000_000_000n) / 10 + ' billion';
+            return;
+          }
+          if (e.data.NANDCalls >= 1_000_000n) {
+            NANDCalls = Number(e.data.NANDCalls / 1_000_000n) + ' million';
+            return;
+          }
+          NANDCalls = '0';
           break;
       }
     });
@@ -101,5 +113,5 @@
 <div id="computer-wrapper">
   <canvas width="512" height="256" />
   <div id="secHz">Clock speed: {mHz} mHz</div>
-  <div id="NANDCalls">NAND Calls: {NANDCalls} trillion</div>
+  <div id="NANDCalls">NAND Calls: {NANDCalls}</div>
 </div>
