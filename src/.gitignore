@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Rust stuff
+/target
+**/*.rs.bk
+Cargo.lock
+wasm-pack.log
+core/dist/

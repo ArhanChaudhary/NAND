@@ -5,14 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "rwbuild": "wasm-pack build core",
+    "rwbuild": "wasm-pack build",
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
     "@types/node": "^20.3.3",
-    "core": "file:./core/pkg",
+    "core": "file:./pkg",
     "cssnano": "^6.0.1",
     "normalize.css": "^8.0.1",
     "postcss-load-config": "^4.0.1",
