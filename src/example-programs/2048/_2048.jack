@@ -78,7 +78,7 @@ class _2048 {
         }
 
         do Output.moveCursor(gridY - 3, gridX - 1);
-        do Output.printString("Score:");
+        do Output.printString("Score: 0");
 
         do Output.moveCursor(3, 28);
         do Output.printString("PLAY 2048");
@@ -119,8 +119,9 @@ class _2048 {
                 let key = Keyboard.keyPressed();
             }
         }
-        do Output.moveCursor(gridY - 3, gridX + 14);
-        do Output.printString("GAME OVER");
+        do Output.moveCursor(gridY - 3, gridX + 13);
+        // erase the YOU WIN :D message
+        do Output.printString(" GAME OVER");
     }
 
     method void moveGrid(int direction) {
@@ -166,6 +167,13 @@ class _2048 {
             let j = 0;
             let i = i + iNext;
         }
+
+        do Output.moveCursor(gridY - 3, gridX + 6);
+        do Output.printInt(score);
+        if (checkWin() & ~won) {
+            let win = true;
+            let won = true;
+        }
     }
 
     method void tryMove(int position, int direction, boolean firstIteration) {
@@ -207,6 +215,7 @@ class _2048 {
                 let combinedPosition = nextPosition;
                 do setPosition(nextPosition, positionValue * 2, false);
                 do erasePosition(position, positionValue, firstIteration);
+                let score = score + (positionValue * 2);
             }
             return;
         }
@@ -292,16 +301,8 @@ class _2048 {
 
         if ((lcg - ((lcg / 6) * 6)) = 3) {
             do setPosition(chosenPosition, 4, true);
-            let score = score + 4;
         } else {
             do setPosition(chosenPosition, 2, true);
-            let score = score + 2;
-        }
-        do Output.moveCursor(gridY - 3, gridX + 6);
-        do Output.printInt(score);
-        if ((~(score < 2048)) & (~won)) {
-            let win = true;
-            let won = true;
         }
         if (checkLose()) {
             let lose = true;
@@ -345,6 +346,26 @@ class _2048 {
             let i = i + 1;
         }
         return true;
+    }
+
+    method boolean checkWin() {
+        var int i;
+        var int j;
+        var int positionValue;
+
+        let i = 0;
+        while (i < size) {
+            let j = 0;
+            while (j < size) {
+                let positionValue = grid[i][j];
+                if (~(positionValue < 2048)) {
+                    return true;
+                }
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
+        return false;
     }
 
     method int getPosition(int pos) {
