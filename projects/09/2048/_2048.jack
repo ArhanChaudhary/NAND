@@ -293,7 +293,7 @@ class _2048 {
 
         do available.dispose();
 
-        if ((lcg - ((lcg / 6) * 6)) = 3)
+        if ((lcg - ((lcg / 10) * 10)) = 0)
             do setPosition(chosenPosition, 4, true);
         else
             do setPosition(chosenPosition, 2, true);
