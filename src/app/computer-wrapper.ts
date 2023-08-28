@@ -43,18 +43,14 @@ function runner() {
 const emitIntervalDelay = 50;
 let prevEmit: number;
 const prevSecTotalAvgTime = 1;
-const prevSecTotals = new Array(1000 * prevSecTotalAvgTime / emitIntervalDelay);
-let firstEmit = true;
+const prevSecTotals: number[] = []
 function emitInfo() {
   const currentEmit = performance.now();
   const secTotal = emitIntervalTotal / (currentEmit - prevEmit) * 1000;
-  if (firstEmit) {
-    prevSecTotals.fill(secTotal);
-    firstEmit = false;
-  } else {
+  if (prevSecTotals.length === 1000 * prevSecTotalAvgTime / emitIntervalDelay) {
     prevSecTotals.shift();
-    prevSecTotals.push(secTotal);
   }
+  prevSecTotals.push(secTotal);
   // emitIntervalTotal / (currentEmit - prevEmit) = emitSecTotal / 1000
   prevEmit = currentEmit;
   emitIntervalTotal = 0;
@@ -88,9 +84,13 @@ async function initialize() {
       case 'start':
         if (emitInterval) return;
         stopRunner = false;
-        emitInterval = setInterval(emitInfo, emitIntervalDelay);
-        prevEmit = performance.now();
+        // runner first because worker startup is slow and the very first emit
+        // will be like half as fast as the following ones. So, we can call runner
+        // first and then define the interval and prevEmit to sort of nudge it
+        // closer to the actual value.
         runner();
+        prevEmit = performance.now();
+        emitInterval = setInterval(emitInfo, emitIntervalDelay);
         break;
       case 'keyboard':
         computer.keyboard(true, e.data.key);
