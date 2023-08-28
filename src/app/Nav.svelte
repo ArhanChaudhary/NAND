@@ -63,6 +63,10 @@
     VMCode.push(...OS);
     const assembly = VMTranslator(VMCode);
     const machineCode = assembler(assembly);
+    if (machineCode.length >= 32768) {
+      alert('Program too large to load into memory.');
+      return;
+    }
     runner_.postMessage({ action: 'loadROM', machineCode });
   }
 </script>

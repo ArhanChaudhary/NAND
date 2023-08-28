@@ -1,8 +1,8 @@
 # TODO
 * project 12
-* fix 2048 point system and optimize it
 * don't allow numbers greater than usize in compiler
 * add Math.modulus to OS
+* add else if to compiler
 * actually code the ui
 * graphing calculator in jack
 
