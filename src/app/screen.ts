@@ -1,3 +1,6 @@
+// @ts-ignore
+import * as computer from "core";
+
 async function initialize() {
   let ctx: OffscreenCanvasRenderingContext2D;
   self.addEventListener('message', function(e) {
@@ -6,17 +9,7 @@ async function initialize() {
       ctx.fillStyle = 'black';
       return;
     }
-    ctx.clearRect(0, 0, 512, 256);
-    for (let i = 0; i < e.data.length; i++) {
-      const word16 = e.data[i];
-      for (let j = 0; j < 16; j++) {
-        if ((word16 >> j) & 1) {
-          const x = ((i * 16) + j) % 512;
-          const y = Math.floor(i / 32);
-          ctx.fillRect(x, y, 1, 1);
-        }
-      }
-    }
+    computer.render(ctx as unknown as CanvasRenderingContext2D, e.data);
   });
 
   self.postMessage('ready');
