@@ -4,7 +4,6 @@ import * as computer from "core";
 let screen: Worker;
 let stopRunner = false;
 let emitIntervalTotal = 0;
-let firstDrawn = false;
 // adjust accordingly
 // lowest value until the Hz starts to drop
 // we want the lowest so the keyboard is faster
@@ -76,11 +75,6 @@ async function initialize() {
       }
     });
   });
-  screen.addEventListener('message', e => {
-    if (e.data === 'firstDrawn') {
-      firstDrawn = true;
-    }
-  });
 
   let emitInterval: NodeJS.Timeout | void;
   self.addEventListener('message', function(e) {
@@ -116,7 +110,6 @@ async function initialize() {
         emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
         break;
       case 'speed':
-        // if (!firstDrawn) return;
         const minLogValue = Math.log10(slowestStep);
         const maxLogValue = Math.log10(fastestStep);
         const logScaledValue = minLogValue + (e.data.speed / 100) * (maxLogValue - minLogValue);

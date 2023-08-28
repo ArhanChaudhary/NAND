@@ -1,7 +1,7 @@
 # TODO
-* export runner instead of store
+* computer clock doesnt work on start up
+* fix NaN mhz bug
 * screenload thing in screen.ts
-* load 2048 and load pong etc and put them in an /examples (?) directory
 * project 12 and make initial clear screen native to the OS
 * fix 2048 point system and optimize it
 * don't allow numbers greater than usize in compiler
