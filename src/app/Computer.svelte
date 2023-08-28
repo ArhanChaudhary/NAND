@@ -55,7 +55,7 @@
     });
 
     let prev: number;
-    document.addEventListener("keydown", (e) => {
+    document.addEventListener("keydown", e => {
       let keyValue: number | undefined = {
         Enter: 128,
         Backspace: 129,
@@ -78,7 +78,10 @@
         F11: 151,
         F12: 152,
       }[e.key];
-      if (keyValue === undefined) keyValue = e.key.charCodeAt(0);
+      if (keyValue === undefined) {
+        if (e.key.length !== 1) return;
+        keyValue = e.key.charCodeAt(0);
+      }
       if (keyValue !== prev && prev !== 0) {
         keyValue = 0;
       }
@@ -86,7 +89,7 @@
       runner_.postMessage({action: 'keyboard', key: keyValue});
     });
 
-    document.addEventListener("keyup", (e) => {
+    document.addEventListener("keyup", () => {
       prev = 0;
       runner_.postMessage({action: 'keyboard', key: 0});
     });
