@@ -20,7 +20,6 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['core'],
       input: {
         main: 'index.html', // This should be the entry HTML file for your app
         "computer-wrapper": "app/computer-wrapper.ts",
