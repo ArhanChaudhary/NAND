@@ -5,6 +5,7 @@
 * actually code the ui
 * graphing calculator in jack
 * mandelbrot in jack
+* mouse input and click input
 
 # TODO (for later)
 * draw screen using prev diff
