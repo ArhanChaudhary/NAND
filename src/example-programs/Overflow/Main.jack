@@ -1,0 +1,23 @@
+class Main {
+    function void main() {
+        do Main.foo();
+        do Main.main();
+    }
+     
+    function void foo() {
+        var int b;
+        var int c;
+        let b = 5;
+        let c = (b * 3 / 10) * 14;
+        do Main.bar(4);
+    }
+
+    function void bar(int b) {
+        var int a;
+        if (b = 0)
+            return;
+        let a = 5;
+        let a = Math.sqrt(10);
+        do Main.bar(b - 1);
+    }
+}
