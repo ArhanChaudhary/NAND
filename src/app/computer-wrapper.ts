@@ -8,7 +8,7 @@ let emitIntervalTotal = 0;
 // lowest value until the Hz starts to drop
 // we want the lowest so the keyboard is faster
 const fastestStep = 30_000;
-const slowestStep = 10;
+const slowestStep = 1;
 
 let step = fastestStep;
 // adjust accordingly
