@@ -59,7 +59,7 @@ function emitInfo() {
 
   self.postMessage({
     action: 'emitInfo',
-    hz: hz,
+    hz,
     NANDCalls: computer.NANDCalls(),
   });
 }

@@ -36,20 +36,23 @@
     runner_.addEventListener('message', e => {
       switch (e.data.action) {
         case 'emitInfo':
-          mHz = (e.data.hz / 1_000_000).toPrecision(3);
+          if (e.data.hz >= 100_000) {
+            mHz = Number(e.data.hz / 1_000_000).toPrecision(3) + ' MHz';
+          } else if (e.data.hz >= 1_000) {
+            mHz = Number(e.data.hz / 1_000).toPrecision(3) + ' KHz';
+          } else {
+            mHz = Number(e.data.hz).toPrecision(3) + ' Hz';
+          }
+
           if (e.data.NANDCalls >= 1_000_000_000_000n) {
             NANDCalls = Number(e.data.NANDCalls * 1000n / 1_000_000_000_000n) / 1000 + ' trillion';
-            return;
-          }
-          if (e.data.NANDCalls >= 1_000_000_000n) {
+          } else if (e.data.NANDCalls >= 1_000_000_000n) {
             NANDCalls = Number(e.data.NANDCalls * 10n / 1_000_000_000n) / 10 + ' billion';
-            return;
-          }
-          if (e.data.NANDCalls >= 1_000_000n) {
+          } else if (e.data.NANDCalls >= 1_000_000n) {
             NANDCalls = Number(e.data.NANDCalls / 1_000_000n) + ' million';
-            return;
+          } else {
+            NANDCalls = '0';
           }
-          NANDCalls = '0';
           break;
       }
     });
@@ -115,6 +118,6 @@
 
 <div id="computer-wrapper">
   <canvas width="512" height="256" />
-  <div id="secHz">Clock speed: {mHz} mHz</div>
+  <div id="secHz">Clock speed: {mHz}</div>
   <div id="NANDCalls">NAND Calls: {NANDCalls}</div>
 </div>
