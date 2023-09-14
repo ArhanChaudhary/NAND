@@ -12,7 +12,7 @@ pop that 0
 push constant 2049
 push static 0
 add
-push constant 0
+push constant 16384
 pop temp 0
 pop pointer 1
 push temp 0
@@ -57,7 +57,7 @@ not
 not
 if-goto WHILE_END0
 push local 0
-push constant 10
+push constant 16384
 eq
 if-goto IF_TRUE1
 goto IF_FALSE1
@@ -104,7 +104,11 @@ push constant 1
 add
 push local 0
 add
-push constant 10
+push local 0
+push local 1
+add
+push constant 2
+add
 pop temp 0
 pop pointer 1
 push temp 0
@@ -143,6 +147,69 @@ goto WHILE_EXP0
 label WHILE_END0
 push constant 0
 return
-function Memory.deAlloc 0
+function Memory.deAlloc 2
+push argument 0
+push constant 2
+sub
+pop local 0
+push constant 1
+push local 0
+add
+pop pointer 1
+push that 0
+pop local 1
+push constant 0
+push local 1
+add
+pop pointer 1
+push that 0
+push constant 0
+eq
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+push constant 0
+push local 0
+add
+push local 1
+push local 0
+sub
+push constant 2
+sub
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+goto IF_END0
+label IF_FALSE0
+push constant 0
+push local 0
+add
+push local 1
+push local 0
+sub
+push constant 0
+push local 1
+add
+pop pointer 1
+push that 0
+add
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 1
+push local 0
+add
+push constant 1
+push local 1
+add
+pop pointer 1
+push that 0
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+label IF_END0
 push constant 0
 return

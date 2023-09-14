@@ -1,0 +1,465 @@
+function Main.main 5
+push constant 17000
+pop local 4
+push constant 0
+push local 4
+add
+push constant 10
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 4
+push constant 1
+add
+push constant 333
+call Memory.poke 2
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 11
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 4
+push constant 1
+add
+call Memory.peek 1
+pop local 0
+push constant 2
+push local 4
+add
+push local 0
+push constant 1
+add
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push local 4
+add
+push constant 12
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push local 4
+add
+push constant 20
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 20
+call Memory.alloc 1
+pop local 1
+push constant 3
+push local 4
+add
+push local 1
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push local 4
+add
+push constant 21
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 1
+push constant 20
+call Main.checkRange 2
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 22
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push local 4
+add
+push constant 30
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 3
+call Memory.alloc 1
+pop local 2
+push constant 4
+push local 4
+add
+push local 2
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push local 4
+add
+push constant 31
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 2
+push constant 3
+call Main.checkRange 2
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 32
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 2
+push constant 3
+push local 1
+push constant 3
+call Main.checkOverlap 4
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 33
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push local 4
+add
+push constant 40
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 500
+call Memory.alloc 1
+pop local 3
+push constant 5
+push local 4
+add
+push local 3
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push local 4
+add
+push constant 41
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 3
+push constant 500
+call Main.checkRange 2
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 42
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 3
+push constant 500
+push local 1
+push constant 3
+call Main.checkOverlap 4
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 43
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 3
+push constant 500
+push local 2
+push constant 3
+call Main.checkOverlap 4
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 44
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push local 4
+add
+push constant 50
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 1
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 51
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 2
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 52
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push local 4
+add
+push constant 60
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 3
+call Memory.alloc 1
+pop local 2
+push constant 6
+push local 4
+add
+push local 2
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push local 4
+add
+push constant 61
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 2
+push constant 3
+call Main.checkRange 2
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 62
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 2
+push constant 3
+push local 3
+push constant 500
+call Main.checkOverlap 4
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 63
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push local 4
+add
+push constant 70
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 3
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 71
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 2
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 72
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push local 4
+add
+push constant 70
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 8000
+call Memory.alloc 1
+pop local 1
+push constant 7
+push local 4
+add
+push local 1
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push local 4
+add
+push constant 71
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 1
+push constant 8000
+call Main.checkRange 2
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 72
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 1
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 73
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 7000
+call Memory.alloc 1
+pop local 1
+push constant 0
+push local 4
+add
+push constant 74
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 1
+push constant 7000
+call Main.checkRange 2
+pop temp 0
+push constant 0
+push local 4
+add
+push constant 75
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 1
+call Memory.deAlloc 1
+pop temp 0
+push constant 8
+push local 4
+add
+push local 1
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+push local 4
+add
+push constant 100
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+return
+function Main.checkRange 1
+push argument 0
+push argument 1
+add
+push constant 1
+sub
+pop local 0
+push argument 0
+push constant 2048
+lt
+push local 0
+push constant 16383
+gt
+or
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+call Sys.halt 0
+pop temp 0
+label IF_FALSE0
+push constant 0
+return
+function Main.checkOverlap 2
+push argument 0
+push argument 1
+add
+push constant 1
+sub
+pop local 0
+push argument 2
+push argument 3
+add
+push constant 1
+sub
+pop local 1
+push argument 0
+push local 1
+gt
+push local 0
+push argument 2
+lt
+or
+not
+if-goto IF_TRUE0
+goto IF_FALSE0
+label IF_TRUE0
+call Sys.halt 0
+pop temp 0
+label IF_FALSE0
+push constant 0
+return
