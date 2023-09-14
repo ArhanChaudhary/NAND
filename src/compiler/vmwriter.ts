@@ -22,17 +22,41 @@ export default class VMWriter {
     public writeArithmetic(command: SymbolToken, sub: boolean = true): void {
         switch (command) {
             case SymbolToken.ADD:
-                this.write('add');
+                if (this.out[this.out.length - 1] === 'push constant 0') {
+                    this.out.pop();
+                } else if (this.out[this.out.length - 2] === 'push constant 0') {
+                    const temp = this.out.pop();
+                    this.out.pop();
+                    this.write(temp);
+                } else {
+                    this.write('add');
+                }
                 break;
             case SymbolToken.SUBTRACT:
                 if (sub) {
-                    this.write('sub');
+                    if (this.out[this.out.length - 1] === 'push constant 0') {
+                        this.out.pop();
+                    } else {
+                        this.write('sub');
+                    }
                 } else {
-                    this.write('neg');
+                    if (this.out[this.out.length - 1] === 'neg') {
+                        this.out.pop();
+                    } else {
+                        this.write('neg');
+                    }
                 }
                 break;
             case SymbolToken.AND:
-                this.write('and');
+                if (this.out[this.out.length - 1] === 'push constant 0') {
+                    const temp = this.out.pop();
+                    this.out.pop();
+                    this.write(temp);
+                } else if (this.out[this.out.length - 2] === 'push constant 0') {
+                    this.out.pop();
+                } else {
+                    this.write('and');
+                }
                 break;
             case SymbolToken.OR:
                 this.write('or');
@@ -47,7 +71,11 @@ export default class VMWriter {
                 this.write('eq');
                 break;
             case SymbolToken.NOT:
-                this.write('not');
+                if (this.out[this.out.length - 1] === 'not') {
+                    this.out.pop();
+                } else {
+                    this.write('not');
+                }
                 break;
             case SymbolToken.MULTIPLY:
                 this.writeCall('Math.multiply', 2);
