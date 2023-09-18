@@ -24,7 +24,10 @@ export default class VMWriter {
             case SymbolToken.ADD:
                 if (this.out[this.out.length - 1] === 'push constant 0') {
                     this.out.pop();
-                } else if (this.out[this.out.length - 2] === 'push constant 0') {
+                } else if (
+                    this.out[this.out.length - 2] === 'push constant 0'
+                    && this.out[this.out.length - 1].startsWith('push')
+                ) {
                     const temp = this.out.pop();
                     this.out.pop();
                     this.write(temp);
@@ -52,7 +55,10 @@ export default class VMWriter {
                     const temp = this.out.pop();
                     this.out.pop();
                     this.write(temp);
-                } else if (this.out[this.out.length - 2] === 'push constant 0') {
+                } else if (
+                    this.out[this.out.length - 2] === 'push constant 0'
+                    && this.out[this.out.length - 1].startsWith('push')
+                ) {
                     this.out.pop();
                 } else {
                     this.write('and');
