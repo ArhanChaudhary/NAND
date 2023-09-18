@@ -1,0 +1,100 @@
+function Math.init 2
+push constant 16
+call Array.new 1
+pop static 0
+push constant 1
+pop local 0
+push constant 0
+pop local 1
+label WHILE_ITER0
+push local 1
+push constant 15
+gt
+if-goto WHILE_BREAKER1
+push static 0
+push local 1
+add
+push local 0
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push local 0
+add
+pop local 0
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_ITER0
+label WHILE_BREAKER1
+push constant 0
+return
+function Math.abs 0
+push argument 0
+push constant 0
+gt
+if-goto FALSE_CASE2
+push argument 0
+neg
+return
+label FALSE_CASE2
+push argument 0
+return
+function Math.multiply 3
+push constant 0
+pop local 1
+push argument 0
+pop local 2
+push constant 0
+pop local 0
+label WHILE_ITER3
+push local 0
+push constant 15
+gt
+if-goto WHILE_BREAKER4
+push argument 1
+push static 0
+push local 0
+add
+pop pointer 1
+push that 0
+and
+push static 0
+push local 0
+add
+pop pointer 1
+push that 0
+eq
+not
+if-goto FALSE_CASE5
+push local 1
+push local 2
+add
+pop local 1
+label FALSE_CASE5
+push local 2
+push local 2
+add
+pop local 2
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_ITER3
+label WHILE_BREAKER4
+push local 1
+return
+function Math.divide 0
+push constant 0
+return
+function Math.sqrt 0
+push constant 0
+return
+function Math.max 0
+push constant 0
+return
+function Math.min 0
+push constant 0
+return

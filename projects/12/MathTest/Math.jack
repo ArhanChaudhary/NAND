@@ -8,13 +8,26 @@
  * Note: Jack compilers implement multiplication and division using OS method calls.
  */
 class Math {
+    static Array masks;
 
     /** Initializes the library. */
     function void init() {
+        var int maskCounter;
+        var int i;
+        let masks = Array.new(16);
+        let maskCounter = 1;
+        let i = 0;
+        while (~(i > 15)) {
+            let masks[i] = maskCounter;
+            let maskCounter = maskCounter + maskCounter;
+            let i = i + 1;
+        }
     }
 
     /** Returns the absolute value of x. */
     function int abs(int x) {
+        if (~(x > 0)) return -x;
+        return x;
     }
 
     /** Returns the product of x and y. 
@@ -23,6 +36,19 @@ class Math {
      *  the Jack expressions x*y and multiply(x,y) return the same value.
      */
     function int multiply(int x, int y) {
+        var int j;
+        var int sum;
+        var int shiftedX;
+        let sum = 0;
+        let shiftedX = x;
+        let j = 0;
+        while (~(j > 15)) {
+            if ((y & masks[j]) = masks[j])
+                let sum = sum + shiftedX;
+            let shiftedX = shiftedX + shiftedX;
+            let j = j + 1;
+        }
+        return sum;
     }
 
     /** Returns the integer part of x/y.
@@ -31,17 +57,28 @@ class Math {
      *  the Jack expressions x/y and divide(x,y) return the same value.
      */
     function int divide(int x, int y) {
+        // var int q;
+        // if (y > x)
+        //     return 0;
+        // let q = Math.divide(x, y + y);
+        // if ((x - (2 * q * y)) < y)
+        //     return 2 * q;
+        // return 2 * q + 1;
+        return 0;
     }
 
     /** Returns the integer part of the square root of x. */
     function int sqrt(int x) {
+        return 0;
     }
 
     /** Returns the greater number. */
     function int max(int a, int b) {
+        return 0;
     }
 
     /** Returns the smaller number. */
     function int min(int a, int b) {
+        return 0;
     }
 }

@@ -1,0 +1,68 @@
+function Main.main 1
+push constant 8000
+pop local 0
+push local 0
+push constant 2
+push constant 3
+call Math.multiply 2
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push constant 1
+add
+push local 0
+pop pointer 1
+push that 0
+push constant 30
+neg
+call Math.multiply 2
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push constant 2
+add
+push local 0
+push constant 1
+add
+pop pointer 1
+push that 0
+push constant 100
+call Math.multiply 2
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push constant 3
+add
+push constant 1
+push local 0
+push constant 2
+add
+pop pointer 1
+push that 0
+call Math.multiply 2
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push constant 4
+add
+push local 0
+push constant 3
+add
+pop pointer 1
+push that 0
+push constant 0
+call Math.multiply 2
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push constant 0
+return
