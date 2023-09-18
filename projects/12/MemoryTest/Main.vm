@@ -15,8 +15,8 @@ pop temp 0
 push constant 3
 call Array.new 1
 pop local 2
-push constant 2
 push local 2
+push constant 2
 add
 push constant 222
 pop temp 0
@@ -24,8 +24,8 @@ pop pointer 1
 push temp 0
 pop that 0
 push constant 8002
-push constant 2
 push local 2
+push constant 2
 add
 pop pointer 1
 push that 0
@@ -36,11 +36,11 @@ pop local 1
 push constant 3
 call Array.new 1
 pop local 3
-push constant 1
 push local 3
+push constant 1
 add
-push constant 2
 push local 2
+push constant 2
 add
 pop pointer 1
 push that 0
@@ -53,15 +53,14 @@ pop that 0
 push local 3
 push local 2
 eq
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
+not
+if-goto FALSE_CASE0
 push constant 1
 pop local 1
-label IF_FALSE0
+label FALSE_CASE0
 push constant 8003
-push constant 1
 push local 3
+push constant 1
 add
 pop pointer 1
 push that 0
@@ -74,16 +73,16 @@ pop local 1
 push constant 500
 call Array.new 1
 pop local 4
-push constant 499
 push local 4
+push constant 499
 add
-push constant 2
 push local 2
+push constant 2
 add
 pop pointer 1
 push that 0
-push constant 1
 push local 3
+push constant 1
 add
 pop pointer 1
 push that 0
@@ -95,26 +94,24 @@ pop that 0
 push local 4
 push local 2
 eq
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
+not
+if-goto FALSE_CASE1
 push constant 1
 pop local 1
-label IF_FALSE1
+label FALSE_CASE1
 push local 4
 push local 3
 eq
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
+not
+if-goto FALSE_CASE2
 push local 1
 push constant 10
 add
 pop local 1
-label IF_FALSE2
+label FALSE_CASE2
 push constant 8004
-push constant 499
 push local 4
+push constant 499
 add
 pop pointer 1
 push that 0
@@ -133,11 +130,9 @@ pop local 1
 push constant 3
 call Array.new 1
 pop local 3
-push constant 0
 push local 3
-add
-push constant 499
 push local 4
+push constant 499
 add
 pop pointer 1
 push that 0
@@ -150,16 +145,13 @@ pop that 0
 push local 3
 push local 4
 eq
-if-goto IF_TRUE3
-goto IF_FALSE3
-label IF_TRUE3
+not
+if-goto FALSE_CASE3
 push constant 1
 pop local 1
-label IF_FALSE3
+label FALSE_CASE3
 push constant 8005
-push constant 0
 push local 3
-add
 pop pointer 1
 push that 0
 push local 1

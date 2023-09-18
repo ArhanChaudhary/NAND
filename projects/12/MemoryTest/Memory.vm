@@ -1,16 +1,16 @@
 function Memory.init 0
 push constant 0
 pop static 0
-push constant 2048
 push static 0
+push constant 2048
 add
 push constant 14334
 pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
-push constant 2049
 push static 0
+push constant 2049
 add
 push constant 16384
 pop temp 0
@@ -20,15 +20,15 @@ pop that 0
 push constant 0
 return
 function Memory.peek 0
-push argument 0
 push static 0
+push argument 0
 add
 pop pointer 1
 push that 0
 return
 function Memory.poke 0
-push argument 0
 push static 0
+push argument 0
 add
 push argument 1
 pop temp 0
@@ -41,44 +41,35 @@ function Memory.alloc 2
 push argument 0
 push constant 1
 gt
-not
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
+if-goto FALSE_CASE0
 push constant 5
 call Sys.error 1
 pop temp 0
-label IF_FALSE0
+label FALSE_CASE0
 push constant 2048
 pop local 0
-label WHILE_EXP0
-push constant 0
+label WHILE_ITER1
+push constant 1
+neg
 not
-not
-if-goto WHILE_END0
+if-goto WHILE_BREAKER2
 push local 0
 push constant 16384
 eq
-if-goto IF_TRUE1
-goto IF_FALSE1
-label IF_TRUE1
+not
+if-goto FALSE_CASE3
 push constant 6
 call Sys.error 1
 pop temp 0
-label IF_FALSE1
-push constant 0
+label FALSE_CASE3
 push local 0
-add
 pop pointer 1
 push that 0
 pop local 1
 push local 1
 push argument 0
 lt
-not
-if-goto IF_TRUE2
-goto IF_FALSE2
-label IF_TRUE2
+if-goto FALSE_CASE4
 push argument 0
 push constant 2
 add
@@ -86,11 +77,10 @@ pop argument 0
 push local 1
 push argument 0
 gt
-if-goto IF_TRUE3
-goto IF_FALSE3
-label IF_TRUE3
-push argument 0
+not
+if-goto FALSE_CASE5
 push local 0
+push argument 0
 add
 push local 1
 push argument 0
@@ -99,22 +89,22 @@ pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
+push local 0
 push argument 0
 push constant 1
 add
-push local 0
 add
 push local 0
 push local 1
-add
 push constant 2
+add
 add
 pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
-push constant 1
 push local 0
+push constant 1
 add
 push local 0
 push argument 0
@@ -123,10 +113,8 @@ pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
-label IF_FALSE3
-push constant 0
+label FALSE_CASE5
 push local 0
-add
 push constant 0
 pop temp 0
 pop pointer 1
@@ -136,15 +124,15 @@ push local 0
 push constant 2
 add
 return
-label IF_FALSE2
-push constant 1
+label FALSE_CASE4
 push local 0
+push constant 1
 add
 pop pointer 1
 push that 0
 pop local 0
-goto WHILE_EXP0
-label WHILE_END0
+goto WHILE_ITER1
+label WHILE_BREAKER2
 push constant 0
 return
 function Memory.deAlloc 2
@@ -152,25 +140,20 @@ push argument 0
 push constant 2
 sub
 pop local 0
-push constant 1
 push local 0
+push constant 1
 add
 pop pointer 1
 push that 0
 pop local 1
-push constant 0
 push local 1
-add
 pop pointer 1
 push that 0
 push constant 0
 eq
-if-goto IF_TRUE0
-goto IF_FALSE0
-label IF_TRUE0
-push constant 0
+not
+if-goto FALSE_CASE6
 push local 0
-add
 push local 1
 push local 0
 sub
@@ -180,17 +163,13 @@ pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
-goto IF_END0
-label IF_FALSE0
-push constant 0
+goto TRUE_CASE7
+label FALSE_CASE6
 push local 0
-add
 push local 1
 push local 0
 sub
-push constant 0
 push local 1
-add
 pop pointer 1
 push that 0
 add
@@ -198,11 +177,11 @@ pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
-push constant 1
 push local 0
-add
 push constant 1
+add
 push local 1
+push constant 1
 add
 pop pointer 1
 push that 0
@@ -210,6 +189,6 @@ pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
-label IF_END0
+label TRUE_CASE7
 push constant 0
 return
