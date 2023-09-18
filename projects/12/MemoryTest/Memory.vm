@@ -49,9 +49,7 @@ label FALSE_CASE0
 push constant 2048
 pop local 0
 label WHILE_ITER1
-push constant 1
-neg
-not
+push constant 0
 if-goto WHILE_BREAKER2
 push local 0
 push constant 16384
@@ -151,14 +149,27 @@ pop pointer 1
 push that 0
 push constant 0
 eq
-not
 if-goto FALSE_CASE6
 push local 0
 push local 1
 push local 0
 sub
-push constant 2
-sub
+push local 1
+pop pointer 1
+push that 0
+add
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push constant 1
+add
+push local 1
+push constant 1
+add
+pop pointer 1
+push that 0
 pop temp 0
 pop pointer 1
 push temp 0
@@ -169,22 +180,8 @@ push local 0
 push local 1
 push local 0
 sub
-push local 1
-pop pointer 1
-push that 0
-add
-pop temp 0
-pop pointer 1
-push temp 0
-pop that 0
-push local 0
-push constant 1
-add
-push local 1
-push constant 1
-add
-pop pointer 1
-push that 0
+push constant 2
+sub
 pop temp 0
 pop pointer 1
 push temp 0

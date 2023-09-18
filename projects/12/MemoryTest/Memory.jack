@@ -16,7 +16,6 @@ class Memory {
         let ptr = 0;
         let ptr[2048] = 14334;
         let ptr[2049] = 16384;
-        return;
     }
 
     /** Returns the RAM value at the given address. */
@@ -27,7 +26,6 @@ class Memory {
     /** Sets the RAM value at the given address to the given value. */
     function void poke(int address, int value) {
         let ptr[address] = value;
-        return;
     }
 
     /** Finds an available RAM block of the given size and returns
@@ -35,14 +33,12 @@ class Memory {
     function int alloc(int size) {
         var Array segment;
         var int length;
-        if (~(size > 1)) {
+        if (~(size > 1)) 
             do Sys.error(5);
-        }
         let segment = 2048;  
-        while (true) {
-            if (segment = 16384) {
+        while (~false) {
+            if (segment = 16384)
                 do Sys.error(6);
-            }
             let length = segment[0];
             if (~(length < size)) {
                 let size = size + 2;
@@ -66,12 +62,11 @@ class Memory {
         var Array nextSegment;
         let segment = o - 2;
         let nextSegment = segment[1];
-        if (nextSegment[0] = 0) {
-            let segment[0] = (nextSegment - segment) - 2;
-        } else {
+        if (~(nextSegment[0] = 0)) {
             let segment[0] = (nextSegment - segment) + nextSegment[0];
             let segment[1] = nextSegment[1];
+        } else {
+            let segment[0] = (nextSegment - segment) - 2;
         }
-        return;
     }    
 }
