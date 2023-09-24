@@ -97,6 +97,24 @@ pop pointer 1
 push temp 0
 pop that 0
 push local 0
+push constant 8
+add
+push constant 9
+call Math.sqrt 1
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push constant 9
+add
+push constant 32767
+call Math.sqrt 1
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
 push constant 10
 add
 push constant 345
