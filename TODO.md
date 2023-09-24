@@ -1,5 +1,6 @@
 # TODO
 * project 12
+* ml thing
 * add Math.modulus to OS
 * compilererror stash
 * actually code the ui
