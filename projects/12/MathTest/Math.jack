@@ -7,8 +7,9 @@
  * A library of commonly used mathematical functions.
  * Note: Jack compilers implement multiplication and division using OS method calls.
  */
-class Math {
+ class Math {
     static Array masks;
+    static Array shifted;
 
     /** Initializes the library. */
     function void init() {
@@ -16,12 +17,12 @@ class Math {
         var int i;
         let masks = Array.new(16);
         let maskCounter = 1;
-        let i = 0;
         while (~(i > 15)) {
             let masks[i] = maskCounter;
             let maskCounter = maskCounter + maskCounter;
             let i = i + 1;
         }
+        let shifted = Array.new(16);
     }
 
     /** Returns the absolute value of x. */
@@ -31,17 +32,15 @@ class Math {
     }
 
     /** Returns the product of x and y. 
-     *  When a Jack compiler detects the multiplication operator '*' in the 
-     *  program's code, it handles it by invoking this method. In other words,
-     *  the Jack expressions x*y and multiply(x,y) return the same value.
-     */
+    *  When a Jack compiler detects the multiplication operator '*' in the 
+    *  program's code, it handles it by invoking this method. In other words,
+    *  the Jack expressions x*y and multiply(x,y) return the same value.
+    */
     function int multiply(int x, int y) {
         var int j;
         var int sum;
         var int shiftedX;
-        let sum = 0;
         let shiftedX = x;
-        let j = 0;
         while (~(j > 15)) {
             if ((y & masks[j]) = masks[j])
                 let sum = sum + shiftedX;
@@ -56,15 +55,51 @@ class Math {
      *  program's code, it handles it by invoking this method. In other words,
      *  the Jack expressions x/y and divide(x,y) return the same value.
      */
-    function int divide(int x, int y) {
-        // var int q;
-        // if (y > x)
-        //     return 0;
-        // let q = Math.divide(x, y + y);
-        // if ((x - (2 * q * y)) < y)
-        //     return 2 * q;
-        // return 2 * q + 1;
-        return 0;
+    function int divide(int dividend, int divisor) {
+        var int i, quotient;
+        var boolean negDividend, negDivisor;
+        var boolean breaker;
+        
+        if (divisor = 0) {
+            do Sys.error(3);
+        }
+
+        let negDividend = dividend < 0;
+        let negDivisor = divisor < 0;
+
+        if (negDividend) {
+            let dividend = -dividend;
+        }
+
+        if (negDivisor) {
+            let shifted[0] = -divisor;
+        } else {
+            let shifted[0] = divisor;
+        }
+        
+        while (~((i > 14) | breaker)) {
+            let breaker = (32767 - (shifted[i] - 1)) < (shifted[i] - 1);
+            if (~breaker) {
+                let shifted[i + 1] = shifted[i] + shifted[i];
+                let breaker = (shifted[i + 1] - 1) > (dividend - 1);
+                if (~breaker) {
+                    let i = i + 1;
+                }
+            }
+        }
+
+        while (~(i < 0)) {
+            if (~((shifted[i] - 1) > (dividend - 1))) {
+                let quotient = quotient + masks[i];
+                let dividend = dividend - shifted[i];
+            }
+            let i = i - 1;
+        }
+
+        if (~(negDividend = negDivisor)) {
+            return -quotient;
+        }
+        return quotient;
     }
 
     /** Returns the integer part of the square root of x. */

@@ -4,8 +4,6 @@ call Array.new 1
 pop static 0
 push constant 1
 pop local 0
-push constant 0
-pop local 1
 label WHILE_ITER0
 push local 1
 push constant 15
@@ -29,6 +27,9 @@ add
 pop local 1
 goto WHILE_ITER0
 label WHILE_BREAKER1
+push constant 16
+call Array.new 1
+pop static 1
 push constant 0
 return
 function Math.abs 0
@@ -43,12 +44,8 @@ label FALSE_CASE2
 push argument 0
 return
 function Math.multiply 3
-push constant 0
-pop local 1
 push argument 0
 pop local 2
-push constant 0
-pop local 0
 label WHILE_ITER3
 push local 0
 push constant 15
@@ -86,8 +83,170 @@ goto WHILE_ITER3
 label WHILE_BREAKER4
 push local 1
 return
-function Math.divide 0
+function Math.divide 5
+push argument 1
 push constant 0
+eq
+not
+if-goto FALSE_CASE6
+push constant 3
+call Sys.error 1
+pop temp 0
+label FALSE_CASE6
+push argument 0
+push constant 0
+lt
+pop local 2
+push argument 1
+push constant 0
+lt
+pop local 3
+push local 2
+not
+if-goto FALSE_CASE7
+push argument 0
+neg
+pop argument 0
+label FALSE_CASE7
+push local 3
+not
+if-goto FALSE_CASE8
+push static 1
+push argument 1
+neg
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+goto TRUE_CASE9
+label FALSE_CASE8
+push static 1
+push argument 1
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+label TRUE_CASE9
+label WHILE_ITER10
+push local 0
+push constant 14
+gt
+push local 4
+or
+if-goto WHILE_BREAKER11
+push constant 32767
+push static 1
+push local 0
+add
+pop pointer 1
+push that 0
+push constant 1
+sub
+sub
+push static 1
+push local 0
+add
+pop pointer 1
+push that 0
+push constant 1
+sub
+lt
+pop local 4
+push local 4
+if-goto FALSE_CASE12
+push static 1
+push local 0
+push constant 1
+add
+add
+push static 1
+push local 0
+add
+pop pointer 1
+push that 0
+push static 1
+push local 0
+add
+pop pointer 1
+push that 0
+add
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 1
+push local 0
+push constant 1
+add
+add
+pop pointer 1
+push that 0
+push constant 1
+sub
+push argument 0
+push constant 1
+sub
+gt
+pop local 4
+push local 4
+if-goto FALSE_CASE13
+push local 0
+push constant 1
+add
+pop local 0
+label FALSE_CASE13
+label FALSE_CASE12
+goto WHILE_ITER10
+label WHILE_BREAKER11
+label WHILE_ITER14
+push local 0
+push constant 0
+lt
+if-goto WHILE_BREAKER15
+push static 1
+push local 0
+add
+pop pointer 1
+push that 0
+push constant 1
+sub
+push argument 0
+push constant 1
+sub
+gt
+if-goto FALSE_CASE16
+push local 1
+push static 0
+push local 0
+add
+pop pointer 1
+push that 0
+add
+pop local 1
+push argument 0
+push static 1
+push local 0
+add
+pop pointer 1
+push that 0
+sub
+pop argument 0
+label FALSE_CASE16
+push local 0
+push constant 1
+sub
+pop local 0
+goto WHILE_ITER14
+label WHILE_BREAKER15
+push local 2
+push local 3
+eq
+if-goto FALSE_CASE17
+push local 1
+neg
+return
+label FALSE_CASE17
+push local 1
 return
 function Math.sqrt 0
 push constant 0
