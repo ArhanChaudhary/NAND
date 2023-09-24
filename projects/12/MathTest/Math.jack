@@ -109,11 +109,13 @@
 
     /** Returns the greater number. */
     function int max(int a, int b) {
-        return 0;
+        if (~(a > b)) return b;
+        return a;   
     }
 
     /** Returns the smaller number. */
     function int min(int a, int b) {
-        return 0;
+        if (~(a > b)) return a;
+        return b;
     }
 }

@@ -25,10 +25,10 @@ class Main {
         // let r[8] = Math.sqrt(9);           // 3
         // let r[9] = Math.sqrt(32767);       // 181
         
-        // let r[10] = Math.min(345, 123);    // 123
-        // let r[11] = Math.max(123, -345);   // 123
-        // let r[12] = Math.abs(27);          // 27
-        // let r[13] = Math.abs(-32767);      // 32767
+        let r[10] = Math.min(345, 123);    // 123
+        let r[11] = Math.max(123, -345);   // 123
+        let r[12] = Math.abs(27);          // 27
+        let r[13] = Math.abs(-32767);      // 32767
         
     }
 }

@@ -252,8 +252,22 @@ function Math.sqrt 0
 push constant 0
 return
 function Math.max 0
-push constant 0
+push argument 0
+push argument 1
+gt
+if-goto FALSE_CASE18
+push argument 1
+return
+label FALSE_CASE18
+push argument 0
 return
 function Math.min 0
-push constant 0
+push argument 0
+push argument 1
+gt
+if-goto FALSE_CASE19
+push argument 0
+return
+label FALSE_CASE19
+push argument 1
 return

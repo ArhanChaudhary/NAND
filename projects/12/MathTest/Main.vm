@@ -96,5 +96,45 @@ pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
+push local 0
+push constant 10
+add
+push constant 345
+push constant 123
+call Math.min 2
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push constant 11
+add
+push constant 123
+push constant 345
+neg
+call Math.max 2
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push constant 12
+add
+push constant 27
+call Math.abs 1
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push constant 13
+add
+push constant 32767
+neg
+call Math.abs 1
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
 push constant 0
 return
