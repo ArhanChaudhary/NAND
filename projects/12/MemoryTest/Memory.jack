@@ -8,7 +8,7 @@
  * memory (RAM), and allocation and recycling of memory blocks. The Hack RAM
  * consists of 32,768 words, each holding a 16-bit binary number.
  */ 
-class Memory {
+ class Memory {
     static Array ptr;
 
     /** Initializes the class. */
@@ -33,7 +33,7 @@ class Memory {
     function int alloc(int size) {
         var Array segment;
         var int length;
-        if (~(size > 1)) 
+        if (size < 0)
             do Sys.error(5);
         let segment = 2048;  
         while (~false) {
