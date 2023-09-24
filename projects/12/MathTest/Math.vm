@@ -244,13 +244,22 @@ label FALSE_CASE17
 push local 1
 return
 function Math.sqrt 4
+push argument 0
+push constant 0
+lt
+not
+if-goto FALSE_CASE18
+push constant 4
+call Sys.error 1
+pop temp 0
+label FALSE_CASE18
 push constant 7
 pop local 0
-label WHILE_ITER18
+label WHILE_ITER19
 push local 0
 push constant 0
 lt
-if-goto WHILE_BREAKER19
+if-goto WHILE_BREAKER20
 push local 1
 push static 0
 push local 0
@@ -270,35 +279,35 @@ push local 3
 push constant 1
 lt
 or
-if-goto FALSE_CASE20
+if-goto FALSE_CASE21
 push local 2
 pop local 1
-label FALSE_CASE20
+label FALSE_CASE21
 push local 0
 push constant 1
 sub
 pop local 0
-goto WHILE_ITER18
-label WHILE_BREAKER19
+goto WHILE_ITER19
+label WHILE_BREAKER20
 push local 1
 return
 function Math.max 0
 push argument 0
 push argument 1
 gt
-if-goto FALSE_CASE21
+if-goto FALSE_CASE22
 push argument 1
 return
-label FALSE_CASE21
+label FALSE_CASE22
 push argument 0
 return
 function Math.min 0
 push argument 0
 push argument 1
 gt
-if-goto FALSE_CASE22
+if-goto FALSE_CASE23
 push argument 0
 return
-label FALSE_CASE22
+label FALSE_CASE23
 push argument 1
 return

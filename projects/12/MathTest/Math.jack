@@ -108,6 +108,9 @@
         var int y;
         var int nextY;
         var int testNextY;
+        if (x < 0) {
+            do Sys.error(4);
+        }
         let j = 7;
         while (~(j < 0)) {
             let nextY = y + masks[j];
