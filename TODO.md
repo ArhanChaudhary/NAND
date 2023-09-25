@@ -1,6 +1,7 @@
 # TODO
 * project 12
 * ml thing
+* push constant -1
 * add Math.modulus to OS
 * compilererror stash
 * actually code the ui
@@ -12,7 +13,6 @@
 * automatic dealloc in compiler
 
 changed:
-ERR2 (array positive size) removed
 if and else doesn't require bracket
 [][] works
 

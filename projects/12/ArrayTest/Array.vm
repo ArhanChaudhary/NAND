@@ -1,5 +1,13 @@
 function Array.new 0
 push argument 0
+push constant 0
+gt
+if-goto FALSE_CASE0
+push constant 2
+call Sys.error 1
+pop temp 0
+label FALSE_CASE0
+push argument 0
 call Memory.alloc 1
 return
 function Array.dispose 0
