@@ -15,6 +15,7 @@
 changed:
 if and else doesn't require bracket
 [][] works
+you can malloc 0 even if the rules dont say so
 
 # TODO (for later)
 * draw screen using prev diff
