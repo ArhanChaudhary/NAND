@@ -136,16 +136,14 @@ class Output {
         do Output.create(124,12,12,12,12,12,12,12,12,12,0,0);  // |
         do Output.create(125,7,12,12,12,56,12,12,12,7,0,0);    // }
         do Output.create(126,38,45,25,0,0,0,0,0,0,0,0);        // ~
-
-	return;
     }
 
     // Creates the character map array of the given character index, using the given values.
     function void create(int index, int a, int b, int c, int d, int e,
                          int f, int g, int h, int i, int j, int k) {
-	var Array map;
+        var Array map;
 
-	let map = Array.new(11);
+        let map = Array.new(11);
         let charMaps[index] = map;
 
         let map[0] = a;
@@ -159,16 +157,14 @@ class Output {
         let map[8] = i;
         let map[9] = j;
         let map[10] = k;
-
-        return;
     }
     
     // Returns the character map (array of size 11) of the given character.
     // If the given character is invalid or non-printable, returns the
     // character map of a black square.
     function Array getMap(char c) {
-        if ((c < 32) | (c > 126))
-            let c = 0;
+        if (~((c > 31) & (c < 127)))
+            return charMaps[0];
         return charMaps[c];
     }
 
