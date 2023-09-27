@@ -1,5 +1,6 @@
 # TODO
 * project 12
+* add to compiler malloc 0 isnt allowed when creating class
 * ml thing
 * push constant -1
 * add Math.modulus to OS
@@ -15,7 +16,9 @@
 changed:
 if and else doesn't require bracket
 [][] works
-you can malloc 0 even if the rules dont say so
+you cant malloc 0 even if the original OS could
+theres no Sys.error(18) String.eraseLastChar String is empty
+
 
 # TODO (for later)
 * draw screen using prev diff

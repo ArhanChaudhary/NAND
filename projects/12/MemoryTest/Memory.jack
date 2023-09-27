@@ -33,7 +33,7 @@
     function int alloc(int size) {
         var Array segment;
         var int length;
-        if (size < 0)
+        if (~(size > 0))
             do Sys.error(5);
         let segment = 2048;  
         while (~false) {
