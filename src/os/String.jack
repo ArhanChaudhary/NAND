@@ -37,16 +37,22 @@
 
     /** Returns the character at the j-th location of this string. */
     method char charAt(int j) {
+        if (~(j < currentLength))
+            do Sys.error(15);
         return stringArray[j];
     }
 
     /** Sets the character at the j-th location of this string to c. */
     method void setCharAt(int j, char c) {
+        if (~(j < currentLength))
+            do Sys.error(16);
         let stringArray[j] = c;
     }
 
     /** Appends c to this string's end and returns this string. */
     method String appendChar(char c) {
+        if (currentLength = maxLength)
+            do Sys.error(17);
         let stringArray[currentLength] = c;
         let currentLength = currentLength + 1;
         return this;
@@ -54,14 +60,14 @@
 
     /** Erases the last character from this string. */
     method void eraseLastChar() {
-        let currentLength = currentLength - 1;
+        if (~(currentLength = 0))
+            let currentLength = currentLength - 1;
     }
 
     /** Returns the integer value of this string, 
      *  until a non-digit character is detected. */
     method int intValue() {
         var int v, i, isNegative;
-        // error??
         let isNegative = stringArray[0] = 45;
         if (isNegative) {
             let i = 1;
@@ -82,7 +88,6 @@
         if (~(val < 0)) {
             let currentLength = 0;
         } else {
-            // error??
             let stringArray[0] = 45;
             let currentLength = 1;
             let val = -val;
@@ -99,6 +104,8 @@
             let valMagnitude = 1;
         }
         let currentLength = currentLength + valMagnitude;
+        if (currentLength > maxLength)
+            do Sys.error(19);
         let valMagnitude = currentLength;
         let shifted = 1;
         while (~(shifted = 0)) {
