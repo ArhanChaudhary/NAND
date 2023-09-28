@@ -72,22 +72,23 @@
         }
 
         if (negDivisor) {
-            let shifted[0] = -divisor;
-        } else {
-            let shifted[0] = divisor;
+            let divisor = -divisor;
         }
-        
+
+        let shifted[0] = divisor;
         while (~((i > 14) | breaker)) {
-            let breaker = (32767 - (shifted[i] - 1)) < (shifted[i] - 1);
+            let quotient = shifted[i];
+            let breaker = (32767 - (quotient - 1)) < (quotient - 1);
             if (~breaker) {
-                let shifted[i + 1] = shifted[i] + shifted[i];
-                let breaker = (shifted[i + 1] - 1) > (dividend - 1);
+                let shifted[i + 1] = quotient + quotient;
+                let breaker = ((quotient + quotient) - 1) > (dividend - 1);
                 if (~breaker) {
                     let i = i + 1;
                 }
             }
         }
 
+        let quotient = 0;
         while (~(i < 0)) {
             if (~((shifted[i] - 1) > (dividend - 1))) {
                 let quotient = quotient + masks[i];
