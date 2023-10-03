@@ -1,12 +1,21 @@
-function Output.init 0
+function Output.init 1
+push constant 16384
+pop static 3
+push constant 32
+pop static 4
 push constant 0
-return
-function Output.initMap 1
+pop static 5
 push constant 127
 call Array.new 1
 pop static 0
-push constant 0
+push constant 127
+call Array.new 1
 pop static 1
+push constant 0
+pop static 2
+push constant 6
+call String.new 1
+pop static 6
 push constant 63
 push constant 63
 push constant 63
@@ -21,7 +30,7 @@ push constant 0
 call Output.create 11
 pop temp 0
 push constant 32
-pop static 1
+pop static 2
 push constant 0
 push constant 0
 push constant 0
@@ -1259,12 +1268,15 @@ call Output.create 11
 pop temp 0
 push constant 0
 return
-function Output.create 1
+function Output.create 3
 push constant 11
 call Array.new 1
 pop local 0
+push constant 11
+call Array.new 1
+pop local 1
 push static 0
-push static 1
+push static 2
 add
 push local 0
 pop temp 0
@@ -1272,9 +1284,13 @@ pop pointer 1
 push temp 0
 pop that 0
 push static 1
-push constant 1
+push static 2
 add
-pop static 1
+push local 1
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
 push local 0
 push argument 0
 pop temp 0
@@ -1361,6 +1377,35 @@ pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
+label WHILE_ITER0
+push local 2
+push constant 10
+gt
+if-goto WHILE_BREAKER1
+push local 1
+push local 2
+add
+push local 0
+push local 2
+add
+pop pointer 1
+push that 0
+push constant 256
+call Math.multiply 2
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 2
+push constant 1
+add
+pop local 2
+goto WHILE_ITER0
+label WHILE_BREAKER1
+push static 2
+push constant 1
+add
+pop static 2
 push constant 0
 return
 function Output.getMap 0
@@ -1371,12 +1416,10 @@ push argument 0
 push constant 127
 lt
 and
-if-goto FALSE_CASE0
-push static 0
-pop pointer 1
-push that 0
-return
-label FALSE_CASE0
+if-goto FALSE_CASE2
+push constant 0
+pop argument 0
+label FALSE_CASE2
 push static 0
 push argument 0
 add
@@ -1384,20 +1427,203 @@ pop pointer 1
 push that 0
 return
 function Output.moveCursor 0
+push argument 1
+push constant 1
+and
+push constant 1
+eq
+pop static 5
+push argument 1
+push constant 2
+call Math.divide 2
+push constant 352
+push argument 0
+call Math.multiply 2
+push constant 32
+add
+add
+pop static 4
+push constant 32
+call Output.drawChar 1
+pop temp 0
+push constant 0
+return
+function Output.drawChar 3
+push static 5
+if-goto FALSE_CASE3
+push static 0
+push argument 0
+add
+pop pointer 1
+push that 0
+pop local 0
+push constant 256
+neg
+pop local 1
+goto TRUE_CASE4
+label FALSE_CASE3
+push static 1
+push argument 0
+add
+pop pointer 1
+push that 0
+pop local 0
+push constant 255
+pop local 1
+label TRUE_CASE4
+label WHILE_ITER5
+push local 2
+push constant 10
+gt
+if-goto WHILE_BREAKER6
+push static 3
+push static 4
+add
+push static 3
+push static 4
+add
+pop pointer 1
+push that 0
+push local 1
+and
+push local 0
+push local 2
+add
+pop pointer 1
+push that 0
+or
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 4
+push constant 32
+add
+pop static 4
+push local 2
+push constant 1
+add
+pop local 2
+goto WHILE_ITER5
+label WHILE_BREAKER6
+push static 4
+push constant 352
+sub
+pop static 4
 push constant 0
 return
 function Output.printChar 0
+push argument 0
+call Output.drawChar 1
+pop temp 0
+push static 4
+push constant 7807
+eq
+push static 5
+and
+not
+if-goto FALSE_CASE7
+push constant 32
+pop static 4
+push constant 0
+pop static 5
+goto TRUE_CASE8
+label FALSE_CASE7
+push static 5
+not
+pop static 5
+push static 5
+if-goto FALSE_CASE9
+push static 4
+push constant 1
+add
+pop static 4
+label FALSE_CASE9
+label TRUE_CASE8
 push constant 0
 return
-function Output.printString 0
+function Output.printString 2
+push argument 0
+call String.length 1
+pop local 0
+label WHILE_ITER10
+push local 1
+push local 0
+lt
+not
+if-goto WHILE_BREAKER11
+push argument 0
+push local 1
+call String.charAt 2
+call Output.printChar 1
+pop temp 0
+push local 1
+push constant 1
+add
+pop local 1
+goto WHILE_ITER10
+label WHILE_BREAKER11
 push constant 0
 return
 function Output.printInt 0
+push static 6
+push argument 0
+call String.setInt 2
+pop temp 0
+push static 6
+call Output.printString 1
+pop temp 0
 push constant 0
 return
-function Output.println 0
+function Output.println 1
+push constant 32
+pop local 0
+label WHILE_ITER12
+push local 0
+push static 4
+lt
+not
+if-goto WHILE_BREAKER13
+push local 0
+push constant 352
+add
+pop local 0
+goto WHILE_ITER12
+label WHILE_BREAKER13
+push local 0
+pop static 4
+push constant 0
+pop static 5
 push constant 0
 return
 function Output.backSpace 0
+push static 4
+push constant 32
+eq
+not
+push static 5
+or
+if-goto FALSE_CASE14
+push constant 7807
+pop static 4
+push constant 1
+neg
+pop static 5
+goto TRUE_CASE15
+label FALSE_CASE14
+push static 5
+if-goto FALSE_CASE16
+push static 4
+push constant 1
+sub
+pop static 4
+label FALSE_CASE16
+push static 5
+not
+pop static 5
+label TRUE_CASE15
+push constant 32
+call Output.drawChar 1
+pop temp 0
 push constant 0
 return
