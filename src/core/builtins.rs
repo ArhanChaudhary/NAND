@@ -182,10 +182,10 @@ pub fn render(ctx: CanvasRenderingContext2d, screen_memory: Vec<u16>) {
 	ctx.clear_rect(0.0, 0.0, 512.0, 256.0);
 	for i in 0..8192u16 {
 		let word16 = screen_memory[i as usize];
+		let y = i / 32;
 		for j in 0..16 {
 			if nbit16(word16, j) {
 				let x = ((i * 16) + j as u16) % 512;
-				let y = i / 32;
 				ctx.fill_rect(x as f64, y as f64, 1.0, 1.0);
 			}
 		}
