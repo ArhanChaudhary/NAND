@@ -1,6 +1,6 @@
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{pc_reg, gates::{mux16, and, is_zero, or, not}, arithmetic::{inc16, alu}, nbit16, aregister, slice16_0to14, dregister, screen, slice16_0to12, rom32k, tick, tock, ram16k, keyboard, bool_from_u16, u16_from_bool};
+use crate::{pc_reg, gates::{mux16, and, is_zero, or, not}, arithmetic::{inc16, alu}, nbit16, aregister, slice16_0to14, dregister, screen, slice16_0to12, rom32k, tick, tock, ram16k, keyboard, u16_from_bool, bool_from_u16};
 
 static mut PC_DFFOUT: u16 = 0;
 fn pc(in_: u16, load: bool, reset: bool) -> u16 {
@@ -22,21 +22,14 @@ fn pc(in_: u16, load: bool, reset: bool) -> u16 {
 }
 
 static mut CPU_DFFOUT: [u16; 4] = [0; 4];
-
-pub fn cpu(in_m: u16, instruction: u16, reset: bool) -> [u16; 4] {
-    let instruction15 = nbit16(instruction, 15);
-
-    // writeM
-    unsafe { CPU_DFFOUT[1] = u16_from_bool(and(nbit16(instruction, 3), instruction15)) };
+pub fn cpu(in_m: u16, instruction: u16, reset: bool) {
+    unsafe { CPU_DFFOUT[1] = u16_from_bool(and(nbit16(instruction, 3), nbit16(instruction, 15))) };
     
     let aluy1 = aregister(0, false);
-    let pcin = slice16_0to14(aluy1);
 
-    // addressM
-    unsafe { CPU_DFFOUT[2] = pcin };
+    unsafe { CPU_DFFOUT[2] = slice16_0to14(aluy1) };
 
-    // pc
-    unsafe { CPU_DFFOUT[3] = pc(pcin, false, reset) };
+    unsafe { CPU_DFFOUT[3] = pc(slice16_0to14(aluy1), false, reset) };
 
     let aluout = alu(
         dregister(0, false),
@@ -49,34 +42,31 @@ pub fn cpu(in_m: u16, instruction: u16, reset: bool) -> [u16; 4] {
         nbit16(instruction, 6),
     );
 
-    // outM
     unsafe { CPU_DFFOUT[0] = aluout };
 
-    let aluoutisneg = nbit16(aluout, 15);
     let aluoutiszero = is_zero(aluout);
 
     dregister(
         aluout,
-        and(nbit16(instruction, 4), instruction15)
+        and(nbit16(instruction, 4), nbit16(instruction, 15))
     );
     pc(
         slice16_0to14(
             aregister(
-                mux16(instruction, aluout, instruction15),
-                or(not(instruction15), nbit16(instruction, 5))
+                mux16(instruction, aluout, nbit16(instruction, 15)),
+                or(not(nbit16(instruction, 15)), nbit16(instruction, 5))
             )
         ),
         and(
             or(or(
-                and(not(or(aluoutisneg, aluoutiszero)), nbit16(instruction, 0)), // positive
+                and(not(or(nbit16(aluout, 15), aluoutiszero)), nbit16(instruction, 0)), // positive
                 and(aluoutiszero, nbit16(instruction, 1))),
-                and(aluoutisneg, nbit16(instruction, 2))
+                and(nbit16(aluout, 15), nbit16(instruction, 2))
             ),
-            instruction15
+            nbit16(instruction, 15)
         ),
         reset
     );
-    unsafe { CPU_DFFOUT }
 }
 
 fn memory(in_: u16, load: bool, address: u16) -> u16 {
@@ -88,13 +78,11 @@ fn memory(in_: u16, load: bool, address: u16) -> u16 {
     // 10 => SCREEN
     // 11 => KEYBOARD
 
-    let address14 = nbit16(address, 14);
-
     mux16(
         ram16k(
             in_,
             and(
-                not(address14),
+                not(nbit16(address, 14)),
                 load
             ),
             address,
@@ -104,7 +92,7 @@ fn memory(in_: u16, load: bool, address: u16) -> u16 {
                 in_,
                 and(and(
                     not(nbit16(address, 13)),
-                    address14),
+                    nbit16(address, 14)),
                     load
                 ),
                 slice16_0to12(address)
@@ -116,14 +104,13 @@ fn memory(in_: u16, load: bool, address: u16) -> u16 {
     )
 }
 
-static mut COMPUTER_DFFOUT: [u16; 4] = [0; 4];
 fn computer(reset: bool) {
-    unsafe { COMPUTER_DFFOUT = cpu(
-        memory(0, false, COMPUTER_DFFOUT[2]),
-        rom32k(COMPUTER_DFFOUT[3]),
+    cpu(
+        memory(0, false, unsafe { CPU_DFFOUT[2] }),
+        rom32k(unsafe { CPU_DFFOUT[3] }),
         reset
-    ) };
-    unsafe { memory(COMPUTER_DFFOUT[0], bool_from_u16(COMPUTER_DFFOUT[1]), COMPUTER_DFFOUT[2]) };
+    );
+    memory(unsafe { CPU_DFFOUT[0] }, bool_from_u16(unsafe { CPU_DFFOUT[1] }), unsafe { CPU_DFFOUT[2] });
 }
 
 #[wasm_bindgen]
