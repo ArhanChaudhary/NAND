@@ -32,12 +32,22 @@ pop local 1
 label IF_FALSE0
 goto WHILE_EXP0
 label WHILE_END0
-call String.backSpace 0
-call Output.printChar 1
+call Output.backSpace 0
 pop temp 0
+push local 1
+call String.backSpace 0
+eq
+if-goto IF_TRUE2
+goto IF_FALSE2
+label IF_TRUE2
+call Output.backSpace 0
+pop temp 0
+goto IF_END2
+label IF_FALSE2
 push local 1
 call Output.printChar 1
 pop temp 0
+label IF_END2
 push local 1
 return
 function Keyboard.readLine 5
