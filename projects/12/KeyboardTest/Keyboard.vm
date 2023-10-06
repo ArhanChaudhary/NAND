@@ -35,26 +35,24 @@ pop temp 0
 push local 1
 call String.newLine 0
 eq
-not
 if-goto FALSE_CASE3
-call Output.println 0
-pop temp 0
-goto TRUE_CASE4
-label FALSE_CASE3
 push local 1
 call String.backSpace 0
 eq
-not
-if-goto FALSE_CASE5
-call Output.backSpace 0
-pop temp 0
-goto TRUE_CASE6
-label FALSE_CASE5
+if-goto FALSE_CASE4
 push local 1
 call Output.printChar 1
 pop temp 0
+goto TRUE_CASE5
+label FALSE_CASE4
+call Output.backSpace 0
+pop temp 0
+label TRUE_CASE5
+goto TRUE_CASE6
+label FALSE_CASE3
+call Output.println 0
+pop temp 0
 label TRUE_CASE6
-label TRUE_CASE4
 push local 1
 return
 function Keyboard.readLine 2
@@ -72,28 +70,26 @@ pop local 0
 push local 0
 call String.newLine 0
 eq
-not
 if-goto FALSE_CASE9
-push local 1
-return
-goto TRUE_CASE10
-label FALSE_CASE9
 push local 0
 call String.backSpace 0
 eq
-not
-if-goto FALSE_CASE11
-push local 1
-call String.eraseLastChar 1
-pop temp 0
-goto TRUE_CASE12
-label FALSE_CASE11
+if-goto FALSE_CASE10
 push local 1
 push local 0
 call String.appendChar 2
 pop temp 0
+goto TRUE_CASE11
+label FALSE_CASE10
+push local 1
+call String.eraseLastChar 1
+pop temp 0
+label TRUE_CASE11
+goto TRUE_CASE12
+label FALSE_CASE9
+push local 1
+return
 label TRUE_CASE12
-label TRUE_CASE10
 goto WHILE_ITER7
 label WHILE_BREAKER8
 push constant 0

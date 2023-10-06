@@ -40,8 +40,7 @@ pop local 0
 label WHILE_ITER3
 push argument 0
 push constant 0
-gt
-not
+lt
 if-goto WHILE_BREAKER4
 push local 0
 push constant 1

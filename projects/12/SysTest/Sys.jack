@@ -6,7 +6,7 @@
 /**
  * A library that supports various program execution services.
  */
-class Sys {
+ class Sys {
 
     /** Performs all the initializations required by the OS. */
     function void init() {
@@ -32,7 +32,7 @@ class Sys {
             do Sys.error(1);
         }
         let durationCounter = 50;
-        while (duration > 0) {
+        while (~(duration < 0)) {
             let durationCounter = durationCounter - 1;
             if (durationCounter = 0) {
                 let durationCounter = 50;

@@ -6,7 +6,7 @@
 /**
  * A library for handling user input from the keyboard.
  */
-class Keyboard {
+ class Keyboard {
 
     /** Initializes the keyboard. */
     function void init() {
@@ -51,12 +51,14 @@ class Keyboard {
             }
         }
         do Output.backSpace();
-        if (pressFalling = String.newLine()) {
-            do Output.println();
-        } else if (pressFalling = String.backSpace()) {
-            do Output.backSpace();
+        if (~(pressFalling = String.newLine())) {
+            if (~(pressFalling = String.backSpace())) {
+                do Output.printChar(pressFalling);
+            } else {
+                do Output.backSpace();
+            }
         } else {
-            do Output.printChar(pressFalling);
+            do Output.println();
         }
         return pressFalling;
     }
@@ -73,12 +75,14 @@ class Keyboard {
         let keyboardInput = String.new(200);
         while (~false) {
             let pressed = Keyboard.readChar();
-            if (pressed = String.newLine()) {
-                return keyboardInput;
-            } else if (pressed = String.backSpace()) {
-                do keyboardInput.eraseLastChar();
+            if (~(pressed = String.newLine())) {
+                if (~(pressed = String.backSpace())) {
+                    do keyboardInput.appendChar(pressed);
+                } else {
+                    do keyboardInput.eraseLastChar();
+                }
             } else {
-                do keyboardInput.appendChar(pressed);
+                return keyboardInput;
             }
         }
         return null;

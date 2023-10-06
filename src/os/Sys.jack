@@ -32,7 +32,7 @@
             do Sys.error(1);
         }
         let durationCounter = 50;
-        while (duration > 0) {
+        while (~(duration < 0)) {
             let durationCounter = durationCounter - 1;
             if (durationCounter = 0) {
                 let durationCounter = 50;
