@@ -1,0 +1,112 @@
+function Keyboard.init 0
+push constant 0
+return
+function Keyboard.keyPressed 0
+push constant 24576
+call Memory.peek 1
+return
+function Keyboard.readChar 2
+push constant 0
+call Output.printChar 1
+pop temp 0
+label WHILE_ITER0
+push local 1
+push constant 0
+eq
+push local 0
+push constant 0
+gt
+or
+not
+if-goto WHILE_BREAKER1
+call Keyboard.keyPressed 0
+pop local 0
+push local 0
+push constant 0
+eq
+if-goto FALSE_CASE2
+push local 0
+pop local 1
+label FALSE_CASE2
+goto WHILE_ITER0
+label WHILE_BREAKER1
+call Output.backSpace 0
+pop temp 0
+push local 1
+call String.newLine 0
+eq
+not
+if-goto FALSE_CASE3
+call Output.println 0
+pop temp 0
+goto TRUE_CASE4
+label FALSE_CASE3
+push local 1
+call String.backSpace 0
+eq
+not
+if-goto FALSE_CASE5
+call Output.backSpace 0
+pop temp 0
+goto TRUE_CASE6
+label FALSE_CASE5
+push local 1
+call Output.printChar 1
+pop temp 0
+label TRUE_CASE6
+label TRUE_CASE4
+push local 1
+return
+function Keyboard.readLine 2
+push argument 0
+call Output.printString 1
+pop temp 0
+push constant 200
+call String.new 1
+pop local 1
+label WHILE_ITER7
+push constant 0
+if-goto WHILE_BREAKER8
+call Keyboard.readChar 0
+pop local 0
+push local 0
+call String.newLine 0
+eq
+not
+if-goto FALSE_CASE9
+push local 1
+return
+goto TRUE_CASE10
+label FALSE_CASE9
+push local 0
+call String.backSpace 0
+eq
+not
+if-goto FALSE_CASE11
+push local 1
+call String.eraseLastChar 1
+pop temp 0
+goto TRUE_CASE12
+label FALSE_CASE11
+push local 1
+push local 0
+call String.appendChar 2
+pop temp 0
+label TRUE_CASE12
+label TRUE_CASE10
+goto WHILE_ITER7
+label WHILE_BREAKER8
+push constant 0
+return
+function Keyboard.readInt 2
+push argument 0
+call Keyboard.readLine 1
+pop local 0
+push local 0
+call String.intValue 1
+pop local 1
+push local 0
+call String.dispose 1
+pop temp 0
+push local 1
+return
