@@ -255,20 +255,28 @@ class Output {
         let charMaps[createIndex] = map;
         let shiftedCharMaps[createIndex] = shiftedMap;
         while (~(i > 10)) {
-            if ((i = 0) | (i = 5)) {
-                let unpacked = abc / 512;
-            } else if ((i = 1) | (i = 6)) {
-                let unpacked = (abc & 504) / 8;
-            } else if ((i = 2) | (i = 7)) {
-                let unpacked = ((abc & 7) * 8) | (cde / 4096);
-            } else if ((i = 3) | (i = 8)) {
-                let unpacked = (cde & 4032) / 64;
-            } else if ((i = 4) | (i = 9)) {
-                let unpacked = cde & 63;
-                let abc = fgh;
-                let cde = hij;
+            if (~((i = 0) | (i = 5))) {
+                if (~((i = 1) | (i = 6))) {
+                    if (~((i = 2) | (i = 7))) {
+                        if (~((i = 3) | (i = 8))) {
+                            if (~((i = 4) | (i = 9))) {
+                                let unpacked = 0;
+                            } else {
+                                let unpacked = cde & 63;
+                                let abc = fgh;
+                                let cde = hij;
+                            }
+                        } else {
+                            let unpacked = (cde & 4032) / 64;
+                        }
+                    } else {
+                        let unpacked = ((abc & 7) * 8) | (cde / 4096);
+                    }
+                } else {
+                    let unpacked = (abc & 504) / 8;
+                }
             } else {
-                let unpacked = 0;
+                let unpacked = abc / 512;
             }
             let map[i] = unpacked;
             let shiftedMap[i] = unpacked * 256;
@@ -320,14 +328,14 @@ class Output {
      *  and advances the cursor one column forward. */
     function void printChar(char c) {
         do Output.drawChar(c);
-        if ((cursor = 7807) & cursorIsOdd) {
-            let cursor = 32;
-            let cursorIsOdd = false;
-        } else {
+        if (~((cursor = 7807) & cursorIsOdd)) {
             let cursorIsOdd = ~cursorIsOdd;
             if (~cursorIsOdd) {
                 let cursor = cursor + 1;
             }
+        } else {
+            let cursor = 32;
+            let cursorIsOdd = false;
         }
     }
 
