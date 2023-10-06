@@ -332,6 +332,9 @@ class Output {
             let cursorIsOdd = ~cursorIsOdd;
             if (~cursorIsOdd) {
                 let cursor = cursor + 1;
+                if ((cursor & 31) = 0) {
+                    let cursor = cursor + 320;
+                }
             }
         } else {
             let cursor = 32;
@@ -376,6 +379,9 @@ class Output {
             let cursorIsOdd = true;
         } else {
             if (~cursorIsOdd) {
+                if ((cursor & 31) = 0) {
+                    let cursor = cursor - 320;
+                }
                 let cursor = cursor - 1;
             }
             let cursorIsOdd = ~cursorIsOdd;
