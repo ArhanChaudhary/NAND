@@ -368,6 +368,9 @@
         while (currentRow < cursor) {
             let currentRow = currentRow + 352;
         }
+        if (currentRow = 8128) {
+            let currentRow = 32;
+        }
         let cursor = currentRow;
         let cursorIsOdd = false;
     }
