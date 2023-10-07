@@ -9,7 +9,7 @@
  * of 512 pixels each (indexed 0..511, left to right). The top left pixel on 
  * the screen is indexed (0,0).
  */
- class Screen {
+class Screen {
     static int screenPtr;
     static boolean black;
     static Array masks;
@@ -51,10 +51,71 @@
         let pixelCol = x / 16;
         do Screen.updateLocation(pixelCol + (y * 32), masks[x - (pixelCol * 16)]);
     }
+
+    function void drawConditional(int x, int y, boolean switch) {
+        if (~switch) {
+            do Screen.drawPixel(x, y);
+        } else {
+            do Screen.drawPixel(y, x);
+        }
     }
 
     /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
     function void drawLine(int x1, int y1, int x2, int y2) {
+        var int loc0, loc1, loc2, loc3, loc4, loc5, loc6, loc7, loc8, loc9, loc10;
+
+        if ((x1 < 0) | (x2 > 511) | (y1 < 0) | (y2 > 255))
+            do Sys.error(8);
+
+        let loc3 = Math.abs(x2 - x1);
+        let loc2 = Math.abs(y2 - y1);
+        let loc6 = (loc3 < loc2);
+
+        if ((loc6 & (y2 < y1)) | ((~loc6) & (x2 < x1))) {
+            let loc4 = x1;
+            let x1 = x2;
+            let x2 = loc4;
+
+            let loc4 = y1;
+            let y1 = y2;
+            let y2 = loc4;
+        }
+
+        if (loc6) {
+            let loc4 = loc3;
+            let loc3 = loc2;
+            let loc2 = loc4;
+
+            let loc1 = y1;
+            let loc0 = x1;
+            let loc8 = y2;
+            let loc7 = (x1 > x2);
+        } else {
+            let loc1 = x1;
+            let loc0 = y1;
+            let loc8 = x2;
+            let loc7 = (y1 > y2);
+        }
+
+        let loc5 = (2 * loc2) - loc3;
+        let loc9 = 2 * loc2;
+        let loc10 = 2 * (loc2 - loc3);
+
+        do Screen.drawConditional(loc1, loc0, loc6);
+        while (loc1 < loc8) {
+            if (loc5 < 0) {
+                let loc5 = loc5 + loc9;
+            } else {
+                let loc5 = loc5 + loc10;
+                if (loc7) {
+                    let loc0 = loc0 - 1;
+                } else {
+                    let loc0 = loc0 + 1;
+                }
+            }
+            let loc1 = loc1 + 1;
+            do Screen.drawConditional(loc1, loc0, loc6);
+        }
     }
 
     /** Draws a filled rectangle whose top left corner is (x1, y1)
