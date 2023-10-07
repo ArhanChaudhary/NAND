@@ -25,6 +25,10 @@
         let shifted = Array.new(16);
     }
 
+    function Array getMasks() {
+        return masks;
+    }
+
     /** Returns the absolute value of x. */
     function int abs(int x) {
         if (~(x > 0)) return -x;

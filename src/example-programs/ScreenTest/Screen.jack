@@ -10,22 +10,47 @@
  * the screen is indexed (0,0).
  */
  class Screen {
+    static int screenPtr;
+    static boolean black;
+    static Array masks;
 
     /** Initializes the Screen. */
     function void init() {
+        let screenPtr = 16384;
+        let black = true;
+        let masks = Math.getMasks();
     }
 
     /** Erases the entire screen. */
     function void clearScreen() {
+        var int i;
+        while (i < 8192) {
+            let screenPtr[i] = 0;
+            let i = i + 1;
+        }
     }
 
     /** Sets the current color, to be used for all subsequent drawXXX commands.
      *  Black is represented by true, white by false. */
     function void setColor(boolean b) {
+        let black = b;
+    }
+
+    function void updateLocation(int pixelMap, int mask) {
+        if (black)
+            let screenPtr[pixelMap] = screenPtr[pixelMap] | mask;
+        else
+            let screenPtr[pixelMap] = screenPtr[pixelMap] & ~mask;
     }
 
     /** Draws the (x,y) pixel, using the current color. */
     function void drawPixel(int x, int y) {
+        var int pixelCol;
+        if ((x < 0) | (x > 511) | (y < 0) | (y > 255))
+            do Sys.error(7);
+        let pixelCol = x / 16;
+        do Screen.updateLocation(pixelCol + (y * 32), masks[x - (pixelCol * 16)]);
+    }
     }
 
     /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */

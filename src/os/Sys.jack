@@ -11,9 +11,9 @@
     /** Performs all the initializations required by the OS. */
     function void init() {
         do Memory.init();
+        do Math.init();
         do Screen.init();
         do Screen.clearScreen();
-        do Math.init();
         do Output.init();
         do Keyboard.init();
         do Main.main();
