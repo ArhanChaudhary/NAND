@@ -1,0 +1,307 @@
+function Screen.init 0
+push constant 16384
+pop static 0
+push constant 1
+neg
+pop static 1
+call Math.getMasks 0
+pop static 2
+push constant 0
+return
+function Screen.clearScreen 1
+label WHILE_ITER0
+push local 0
+push constant 8192
+lt
+not
+if-goto WHILE_BREAKER1
+push static 0
+push local 0
+add
+push constant 0
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_ITER0
+label WHILE_BREAKER1
+push constant 0
+return
+function Screen.setColor 0
+push argument 0
+pop static 1
+push constant 0
+return
+function Screen.updateLocation 0
+push static 1
+not
+if-goto FALSE_CASE2
+push static 0
+push argument 0
+add
+push static 0
+push argument 0
+add
+pop pointer 1
+push that 0
+push argument 1
+or
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+goto TRUE_CASE3
+label FALSE_CASE2
+push static 0
+push argument 0
+add
+push static 0
+push argument 0
+add
+pop pointer 1
+push that 0
+push argument 1
+not
+and
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+label TRUE_CASE3
+push constant 0
+return
+function Screen.drawPixel 1
+push argument 0
+push constant 0
+lt
+push argument 0
+push constant 511
+gt
+push argument 1
+push constant 0
+lt
+push argument 1
+push constant 255
+gt
+or
+or
+or
+not
+if-goto FALSE_CASE4
+push constant 7
+call Sys.error 1
+pop temp 0
+label FALSE_CASE4
+push argument 0
+push constant 16
+call Math.divide 2
+pop local 0
+push local 0
+push argument 1
+push constant 32
+call Math.multiply 2
+add
+push static 2
+push argument 0
+push local 0
+push constant 16
+call Math.multiply 2
+sub
+add
+pop pointer 1
+push that 0
+call Screen.updateLocation 2
+pop temp 0
+push constant 0
+return
+function Screen.drawConditional 0
+push argument 2
+if-goto FALSE_CASE5
+push argument 0
+push argument 1
+call Screen.drawPixel 2
+pop temp 0
+goto TRUE_CASE6
+label FALSE_CASE5
+push argument 1
+push argument 0
+call Screen.drawPixel 2
+pop temp 0
+label TRUE_CASE6
+push constant 0
+return
+function Screen.drawLine 11
+push argument 0
+push constant 0
+lt
+push argument 2
+push constant 511
+gt
+push argument 1
+push constant 0
+lt
+push argument 3
+push constant 255
+gt
+or
+or
+or
+not
+if-goto FALSE_CASE7
+push constant 8
+call Sys.error 1
+pop temp 0
+label FALSE_CASE7
+push argument 2
+push argument 0
+sub
+call Math.abs 1
+pop local 3
+push argument 3
+push argument 1
+sub
+call Math.abs 1
+pop local 2
+push local 3
+push local 2
+lt
+pop local 6
+push local 6
+push argument 3
+push argument 1
+lt
+and
+push local 6
+not
+push argument 2
+push argument 0
+lt
+and
+or
+not
+if-goto FALSE_CASE8
+push argument 0
+pop local 4
+push argument 2
+pop argument 0
+push local 4
+pop argument 2
+push argument 1
+pop local 4
+push argument 3
+pop argument 1
+push local 4
+pop argument 3
+label FALSE_CASE8
+push local 6
+not
+if-goto FALSE_CASE9
+push local 3
+pop local 4
+push local 2
+pop local 3
+push local 4
+pop local 2
+push argument 1
+pop local 1
+push argument 0
+pop local 0
+push argument 3
+pop local 8
+push argument 0
+push argument 2
+gt
+pop local 7
+goto TRUE_CASE10
+label FALSE_CASE9
+push argument 0
+pop local 1
+push argument 1
+pop local 0
+push argument 2
+pop local 8
+push argument 1
+push argument 3
+gt
+pop local 7
+label TRUE_CASE10
+push constant 2
+push local 2
+call Math.multiply 2
+push local 3
+sub
+pop local 5
+push constant 2
+push local 2
+call Math.multiply 2
+pop local 9
+push constant 2
+push local 2
+push local 3
+sub
+call Math.multiply 2
+pop local 10
+push local 1
+push local 0
+push local 6
+call Screen.drawConditional 3
+pop temp 0
+label WHILE_ITER11
+push local 1
+push local 8
+lt
+not
+if-goto WHILE_BREAKER12
+push local 5
+push constant 0
+lt
+not
+if-goto FALSE_CASE13
+push local 5
+push local 9
+add
+pop local 5
+goto TRUE_CASE14
+label FALSE_CASE13
+push local 5
+push local 10
+add
+pop local 5
+push local 7
+not
+if-goto FALSE_CASE15
+push local 0
+push constant 1
+sub
+pop local 0
+goto TRUE_CASE16
+label FALSE_CASE15
+push local 0
+push constant 1
+add
+pop local 0
+label TRUE_CASE16
+label TRUE_CASE14
+push local 1
+push constant 1
+add
+pop local 1
+push local 1
+push local 0
+push local 6
+call Screen.drawConditional 3
+pop temp 0
+goto WHILE_ITER11
+label WHILE_BREAKER12
+push constant 0
+return
+function Screen.drawRectangle 0
+push constant 0
+return
+function Screen.drawCircle 0
+push constant 0
+return
