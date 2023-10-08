@@ -293,7 +293,144 @@ goto WHILE_ITER11
 label WHILE_BREAKER12
 push constant 0
 return
-function Screen.drawRectangle 0
+function Screen.drawRectangle 7
+push argument 0
+push argument 2
+gt
+push argument 1
+push argument 3
+gt
+push argument 0
+push constant 0
+lt
+push argument 2
+push constant 511
+gt
+push argument 1
+push constant 0
+lt
+push argument 3
+push constant 255
+gt
+or
+or
+or
+or
+or
+not
+if-goto FALSE_CASE17
+push constant 9
+call Sys.error 1
+pop temp 0
+label FALSE_CASE17
+push argument 0
+push constant 16
+call Math.divide 2
+pop local 3
+push argument 2
+push constant 16
+call Math.divide 2
+pop local 4
+push static 2
+push argument 0
+push local 3
+push constant 16
+call Math.multiply 2
+sub
+add
+pop pointer 1
+push that 0
+push constant 1
+sub
+not
+pop local 5
+push static 2
+push argument 2
+push local 4
+push constant 16
+call Math.multiply 2
+sub
+push constant 1
+add
+add
+pop pointer 1
+push that 0
+push constant 1
+sub
+pop local 6
+push argument 1
+push constant 32
+call Math.multiply 2
+push local 3
+add
+pop local 0
+push local 4
+push local 3
+sub
+pop local 2
+label WHILE_ITER18
+push argument 1
+push argument 3
+gt
+if-goto WHILE_BREAKER19
+push local 0
+push local 2
+add
+pop local 1
+push local 2
+push constant 0
+eq
+if-goto FALSE_CASE20
+push local 0
+push local 5
+call Screen.updateLocation 2
+pop temp 0
+push local 0
+push constant 1
+add
+pop local 0
+label WHILE_ITER21
+push local 0
+push local 1
+lt
+not
+if-goto WHILE_BREAKER22
+push local 0
+push constant 1
+neg
+call Screen.updateLocation 2
+pop temp 0
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_ITER21
+label WHILE_BREAKER22
+push local 1
+push local 6
+call Screen.updateLocation 2
+pop temp 0
+goto TRUE_CASE23
+label FALSE_CASE20
+push local 0
+push local 6
+push local 5
+and
+call Screen.updateLocation 2
+pop temp 0
+label TRUE_CASE23
+push argument 1
+push constant 1
+add
+pop argument 1
+push local 1
+push constant 32
+push local 2
+sub
+add
+pop local 0
+goto WHILE_ITER18
+label WHILE_BREAKER19
 push constant 0
 return
 function Screen.drawCircle 0

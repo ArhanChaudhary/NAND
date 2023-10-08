@@ -131,9 +131,45 @@ class Screen {
     /** Draws a filled rectangle whose top left corner is (x1, y1)
      * and bottom right corner is (x2,y2), using the current color. */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
+        var int rectangleLeft;
+        var int rectangleRight;
+        var int rectangleWidth;
+        var int x1PixelCol;
+        var int x2PixelCol;
+        var int leftMask;
+        var int rightMask;
+
+        if ((x1 > x2) | (y1 > y2) | (x1 < 0) | (x2 > 511) | (y1 < 0) | (y2 > 255))
+            do Sys.error(9);
+
+        let x1PixelCol = x1 / 16;        
+        let x2PixelCol = x2 / 16;        
+        let leftMask = ~(masks[x1 - (x1PixelCol * 16)] - 1);        
+        let rightMask = masks[(x2 - (x2PixelCol * 16)) + 1] - 1;        
+        let rectangleLeft = (y1 * 32) + x1PixelCol;
+        let rectangleWidth = x2PixelCol - x1PixelCol;
+
+        while (~(y1 > y2)) {
+            let rectangleRight = rectangleLeft + rectangleWidth;
+            if (~(rectangleWidth = 0)) {
+                do Screen.updateLocation(rectangleLeft, leftMask);
+                let rectangleLeft = rectangleLeft + 1;
+
+                while (rectangleLeft < rectangleRight) {
+                    do Screen.updateLocation(rectangleLeft, -1);
+                    let rectangleLeft = rectangleLeft + 1;
+                }                
+
+                do Screen.updateLocation(rectangleRight, rightMask);
+            } else {
+                do Screen.updateLocation(rectangleLeft, rightMask & leftMask);
+            }
+            let y1 = y1 + 1;
+            let rectangleLeft = rectangleRight + 32 - rectangleWidth;
+        }
     }
 
     /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
-    function void drawCircle(int x, int y, int r) {
+    function void drawCircle(int x, int y, int r) { 
     }
 }
