@@ -62,59 +62,69 @@ class Screen {
 
     /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
     function void drawLine(int x1, int y1, int x2, int y2) {
-        var int loc0, loc1, loc2, loc3, loc4, loc5, loc6, loc7, loc8, loc9, loc10;
+        var boolean invertSlope;
+        var boolean invertDirection;
+        var int drawY;
+        var int drawX;
+        var int dy;
+        var int dx;
+        var int tmp;
+        var int adyMinusbdx;
+        var int finalIterator;
+        var int incLT;
+        var int incGT;
 
         if ((x1 < 0) | (x2 > 511) | (y1 < 0) | (y2 > 255))
             do Sys.error(8);
 
-        let loc3 = Math.abs(x2 - x1);
-        let loc2 = Math.abs(y2 - y1);
-        let loc6 = (loc3 < loc2);
+        let dx = Math.abs(x2 - x1);
+        let dy = Math.abs(y2 - y1);
+        let invertSlope = dx < dy;
 
-        if ((loc6 & (y2 < y1)) | ((~loc6) & (x2 < x1))) {
-            let loc4 = x1;
+        if ((invertSlope & (y2 < y1)) | ((~invertSlope) & (x2 < x1))) {
+            let tmp = x1;
             let x1 = x2;
-            let x2 = loc4;
+            let x2 = tmp;
 
-            let loc4 = y1;
+            let tmp = y1;
             let y1 = y2;
-            let y2 = loc4;
+            let y2 = tmp;
         }
 
-        if (loc6) {
-            let loc4 = loc3;
-            let loc3 = loc2;
-            let loc2 = loc4;
-
-            let loc1 = y1;
-            let loc0 = x1;
-            let loc8 = y2;
-            let loc7 = (x1 > x2);
+        if (~invertSlope) {
+            let drawX = x1;
+            let drawY = y1;
+            let finalIterator = x2;
+            let invertDirection = y1 > y2;
         } else {
-            let loc1 = x1;
-            let loc0 = y1;
-            let loc8 = x2;
-            let loc7 = (y1 > y2);
+            let tmp = dx;
+            let dx = dy;
+            let dy = tmp;
+
+            let drawX = y1;
+            let drawY = x1;
+            let finalIterator = y2;
+            let invertDirection = x1 > x2;
         }
 
-        let loc5 = (2 * loc2) - loc3;
-        let loc9 = 2 * loc2;
-        let loc10 = 2 * (loc2 - loc3);
+        let incLT = dy + dy;
+        let adyMinusbdx = incLT - dx;
+        let incGT = adyMinusbdx - dx;
 
-        do Screen.drawConditional(loc1, loc0, loc6);
-        while (loc1 < loc8) {
-            if (loc5 < 0) {
-                let loc5 = loc5 + loc9;
-            } else {
-                let loc5 = loc5 + loc10;
-                if (loc7) {
-                    let loc0 = loc0 - 1;
+        do Screen.drawConditional(drawX, drawY, invertSlope);
+        while (drawX < finalIterator) {
+            if (~(adyMinusbdx < 0)) {
+                let adyMinusbdx = adyMinusbdx + incGT;
+                if (invertDirection) {
+                    let drawY = drawY - 1;
                 } else {
-                    let loc0 = loc0 + 1;
+                    let drawY = drawY + 1;
                 }
+            } else {
+                let adyMinusbdx = adyMinusbdx + incLT;
             }
-            let loc1 = loc1 + 1;
-            do Screen.drawConditional(loc1, loc0, loc6);
+            let drawX = drawX + 1;
+            do Screen.drawConditional(drawX, drawY, invertSlope);
         }
     }
 

@@ -160,22 +160,22 @@ push argument 2
 push argument 0
 sub
 call Math.abs 1
-pop local 3
+pop local 5
 push argument 3
 push argument 1
 sub
 call Math.abs 1
-pop local 2
-push local 3
-push local 2
+pop local 4
+push local 5
+push local 4
 lt
-pop local 6
-push local 6
+pop local 0
+push local 0
 push argument 3
 push argument 1
 lt
 and
-push local 6
+push local 0
 not
 push argument 2
 push argument 0
@@ -185,114 +185,108 @@ or
 not
 if-goto FALSE_CASE8
 push argument 0
-pop local 4
+pop local 6
 push argument 2
 pop argument 0
-push local 4
+push local 6
 pop argument 2
 push argument 1
-pop local 4
+pop local 6
 push argument 3
 pop argument 1
-push local 4
+push local 6
 pop argument 3
 label FALSE_CASE8
-push local 6
-not
+push local 0
 if-goto FALSE_CASE9
-push local 3
-pop local 4
-push local 2
+push argument 0
 pop local 3
-push local 4
-pop local 2
 push argument 1
-pop local 1
-push argument 0
-pop local 0
-push argument 3
-pop local 8
-push argument 0
+pop local 2
 push argument 2
+pop local 8
+push argument 1
+push argument 3
 gt
-pop local 7
+pop local 1
 goto TRUE_CASE10
 label FALSE_CASE9
-push argument 0
-pop local 1
-push argument 1
-pop local 0
-push argument 2
-pop local 8
-push argument 1
-push argument 3
-gt
-pop local 7
-label TRUE_CASE10
-push constant 2
-push local 2
-call Math.multiply 2
-push local 3
-sub
+push local 5
+pop local 6
+push local 4
 pop local 5
-push constant 2
-push local 2
-call Math.multiply 2
-pop local 9
-push constant 2
-push local 2
-push local 3
-sub
-call Math.multiply 2
-pop local 10
-push local 1
-push local 0
 push local 6
+pop local 4
+push argument 1
+pop local 3
+push argument 0
+pop local 2
+push argument 3
+pop local 8
+push argument 0
+push argument 2
+gt
+pop local 1
+label TRUE_CASE10
+push local 4
+push local 4
+add
+pop local 9
+push local 9
+push local 5
+sub
+pop local 7
+push local 7
+push local 5
+sub
+pop local 10
+push local 3
+push local 2
+push local 0
 call Screen.drawConditional 3
 pop temp 0
 label WHILE_ITER11
-push local 1
+push local 3
 push local 8
 lt
 not
 if-goto WHILE_BREAKER12
-push local 5
+push local 7
 push constant 0
 lt
-not
 if-goto FALSE_CASE13
-push local 5
-push local 9
-add
-pop local 5
-goto TRUE_CASE14
-label FALSE_CASE13
-push local 5
+push local 7
 push local 10
 add
-pop local 5
-push local 7
+pop local 7
+push local 1
 not
-if-goto FALSE_CASE15
-push local 0
+if-goto FALSE_CASE14
+push local 2
 push constant 1
 sub
-pop local 0
+pop local 2
+goto TRUE_CASE15
+label FALSE_CASE14
+push local 2
+push constant 1
+add
+pop local 2
+label TRUE_CASE15
 goto TRUE_CASE16
-label FALSE_CASE15
-push local 0
-push constant 1
+label FALSE_CASE13
+push local 7
+push local 9
 add
-pop local 0
+pop local 7
 label TRUE_CASE16
-label TRUE_CASE14
-push local 1
+push local 3
 push constant 1
 add
-pop local 1
-push local 1
+pop local 3
+push local 3
+push local 2
 push local 0
-push local 6
 call Screen.drawConditional 3
 pop temp 0
 goto WHILE_ITER11
