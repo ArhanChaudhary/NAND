@@ -1,23 +1,15 @@
 <script lang="ts" context="module">
   import { runner } from './runner-store'
 
-  export const VMOS: Array<{fileName: string, file: string[]}> = [];
   export const JackOS: Array<{fileName: string, file: string[]}> = [];
 
   for (const [OSFilePath, OSFile] of Object.entries(
-    import.meta.glob('../os/*.{vm,jack}', { as: 'raw' })
+    import.meta.glob('../os/*.jack', { as: 'raw' })
   )) {
-    if (OSFilePath.endsWith('.vm')) {
-      VMOS.push({
-        fileName: OSFilePath.replace('../os/', '').replace('.vm', ''),
-        file: (await OSFile() as string).split('\n'),
-      });
-    } else {
-      JackOS.push({
-        fileName: OSFilePath.replace('../os/', '').replace('.jack', ''),
-        file: (await OSFile() as string).split('\n'),
-      });
-    }
+    JackOS.push({
+      fileName: OSFilePath.replace('../os/', '').replace('.jack', ''),
+      file: (await OSFile() as string).split('\n'),
+    });
   }
 
   let runner_: Worker;

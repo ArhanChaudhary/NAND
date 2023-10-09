@@ -3,7 +3,7 @@
   import VMTranslator from '../vm/main';
   import compiler from '../compiler/main';
 
-  import { VMOS, JackOS } from './Computer.svelte';
+  import { JackOS } from './Computer.svelte';
 
   import { runner } from './runner-store'
 
@@ -60,7 +60,6 @@
     const exampleProgram = examplePrograms.find(exampleProgram => exampleProgram.exampleProgramName === exampleProgramName);
     if (!exampleProgram) return;
     const VMCode = compiler([...exampleProgram.exampleProgramData, ...JackOS]);
-    VMCode.push(...VMOS);
     const assembly = VMTranslator(VMCode);
     const machineCode = assembler(assembly);
     if (machineCode.length >= 32768) {

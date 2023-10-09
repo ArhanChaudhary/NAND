@@ -6,11 +6,8 @@
   const runner_ = new Worker(new URL('./computer-wrapper.ts', import.meta.url), { type: "module" });
   await new Promise<void>(resolve => {
     runner_.addEventListener('message', e => {
-      switch (e.data.action) {
-        case 'ready':
-          resolve();
-          break;
-      }
+      if (e.data.action === 'ready')
+        resolve();
     });
   });
   runner.set(runner_);

@@ -1,5 +1,4 @@
 # TODO
-* push constant -1
 * ml thing
 * compilererror stash
 * graphing calculator in jack
@@ -7,7 +6,7 @@
 * mandelbrot in jack
 * barrel shifter
 * mouse input and click input
-* automatic dealloc in compiler
+* ensure all subroutines are defined at compile time, automatic dealloc in compiler
 
 changed:
 if and else doesn't require bracket
