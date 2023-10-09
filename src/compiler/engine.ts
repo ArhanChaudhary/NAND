@@ -99,6 +99,10 @@ export default class Engine {
         this.assertToken(TokenType.IDENTIFIER);
         this.assertToken(SymbolToken.OPENING_CURLY_BRACKET);
 
+        if ([KeywordToken.CONSTRUCTOR, KeywordToken.METHOD, KeywordToken.FUNCTION].includes(this.tokenizer.token() as KeywordToken)) {
+            this.syntaxError([KeywordToken.FIELD, KeywordToken.STATIC], 'at least one class variable must be declared before subroutines');
+        }
+
         while ([KeywordToken.FIELD, KeywordToken.STATIC].includes(this.tokenizer.token() as KeywordToken)) {
             this.compileClassVarDec();
         }

@@ -1,14 +1,10 @@
 # TODO
-* project 12
-* add to compiler malloc 0 isnt allowed when creating class
-* ml thing
 * push constant -1
-* add Math.modulus to OS
+* ml thing
 * compilererror stash
-* actually code the ui
 * graphing calculator in jack
+* actually code the ui
 * mandelbrot in jack
-* optimize -1 | X = -1
 * barrel shifter
 * mouse input and click input
 * automatic dealloc in compiler
