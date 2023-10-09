@@ -482,7 +482,7 @@ export default class CodeWriter {
             'AM=M+1',
             'A=A-1',
         ]);
-        if (segment === 'constant' && (index === 0 || index === 1)) {
+        if (segment === 'constant' && (index === -1 || index === 0 || index === 1)) {
             out.push('M=' + index);
         } else {
             out.push('M=D');

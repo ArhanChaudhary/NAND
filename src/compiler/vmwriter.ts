@@ -45,6 +45,9 @@ export default class VMWriter {
                 } else {
                     if (this.out[this.out.length - 1] === 'neg') {
                         this.out.pop();
+                    } else if (this.out[this.out.length - 1] === 'push constant 1') {
+                        this.out.pop();
+                        this.writePush('constant', -1);
                     } else {
                         this.write('neg');
                     }
