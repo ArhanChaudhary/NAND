@@ -1,6 +1,4 @@
 <script lang="ts" context="module">
-  import { runner } from './runner-store'
-
   export const JackOS: Array<{fileName: string, file: string[]}> = [];
 
   for (const [OSFilePath, OSFile] of Object.entries(
@@ -11,29 +9,17 @@
       file: (await OSFile() as string).split('\n'),
     });
   }
-
-  let runner_: Worker;
-  await (async () => {
-    new Promise<void>(resolve => {
-      runner.subscribe(runner => {
-        if (runner) {
-          runner_ = runner;
-          resolve();
-        }
-      });
-    });
-  })();
 </script>
 
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { runner } from './runner-store'
 
   let mHz = '0';
   let NANDCalls = '0';
-  onMount(() => {
+  $: if ($runner) {
     const offscreen = document.querySelector('canvas').transferControlToOffscreen();
-    runner_.postMessage({action: 'initialize', canvas: offscreen}, [offscreen]);
-    runner_.addEventListener('message', e => {
+    $runner.postMessage({action: 'initialize', canvas: offscreen}, [offscreen]);
+    $runner.addEventListener('message', (e: { data: { action: any; hz: number; NANDCalls: bigint; }; }) => {
       switch (e.data.action) {
         case 'emitInfo':
           if (e.data.hz >= 100_000) {
@@ -94,14 +80,14 @@
         keyValue = 0;
       }
       prev = keyValue;
-      runner_.postMessage({action: 'keyboard', key: keyValue});
+      $runner.postMessage({action: 'keyboard', key: keyValue});
     });
 
     document.addEventListener("keyup", () => {
       prev = 0;
-      runner_.postMessage({action: 'keyboard', key: 0});
+      $runner.postMessage({action: 'keyboard', key: 0});
     });
-  });
+  }
 </script>
 
 <style lang="scss">

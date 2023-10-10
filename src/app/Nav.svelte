@@ -1,31 +1,4 @@
 <script lang="ts" context="module">
-  import assembler from '../assembler/main';
-  import VMTranslator from '../vm/main';
-  import compiler from '../compiler/main';
-
-  import { JackOS } from './Computer.svelte';
-
-  import { runner } from './runner-store'
-
-  let runner_: Worker;
-  runner.subscribe(runner => {
-    if (runner) {
-      runner_ = runner;
-    }
-  });
-  function startRunner() {
-    runner_.postMessage({ action: 'start' });
-  }
-  function stopRunner() {
-    runner_.postMessage({ action: 'stop' });
-  }
-  function resetRunner() {
-    runner_.postMessage({ action: 'reset' });
-  }
-  function speedRunner(e: Event) {
-    runner_.postMessage({ action: 'speed', speed: (e.target as HTMLInputElement).valueAsNumber });
-  }
-
   const examplePrograms: Array<{
     exampleProgramName: string,
     exampleProgramData: Array<{
@@ -53,9 +26,28 @@
       });
     }
   }
+</script>
 
+<script lang="ts">
+  import assembler from '../assembler/main';
+  import VMTranslator from '../vm/main';
+  import compiler from '../compiler/main';
+  import { JackOS } from './Computer.svelte';
+  import { runner } from './runner-store';
+  function startRunner() {
+    $runner.postMessage({ action: 'start' });
+  }
+  function stopRunner() {
+    $runner.postMessage({ action: 'stop' });
+  }
+  function resetRunner() {
+    $runner.postMessage({ action: 'reset' });
+  }
+  function speedRunner(e: Event) {
+    $runner.postMessage({ action: 'speed', speed: (e.target as HTMLInputElement).valueAsNumber });
+  }
   function loadExampleProgram(e: Event) {
-    runner_.postMessage({ action: 'reset' });
+    resetRunner();
     const exampleProgramName = (e.target as HTMLSelectElement).value;
     const exampleProgram = examplePrograms.find(exampleProgram => exampleProgram.exampleProgramName === exampleProgramName);
     if (!exampleProgram) return;
@@ -66,7 +58,7 @@
       alert(`Program of length ${machineCode.length} too large to load into memory.`);
       return;
     }
-    runner_.postMessage({ action: 'loadROM', machineCode });
+    $runner.postMessage({ action: 'loadROM', machineCode });
   }
 </script>
 

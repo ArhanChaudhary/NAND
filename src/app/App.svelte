@@ -1,16 +1,13 @@
-<script lang="ts" context="module">
+<script lang="ts">
   import Computer from './Computer.svelte';
   import Nav from './Nav.svelte';
   import { runner } from './runner-store.js';
 
   const runner_ = new Worker(new URL('./computer-wrapper.ts', import.meta.url), { type: "module" });
-  await new Promise<void>(resolve => {
-    runner_.addEventListener('message', e => {
-      if (e.data.action === 'ready')
-        resolve();
-    });
+  runner_.addEventListener('message', e => {
+    if (e.data.action === 'ready')
+      $runner = runner_;
   });
-  runner.set(runner_);
 </script>
 
 <!-- no scss because it complains about unused css in normalize.css -->
