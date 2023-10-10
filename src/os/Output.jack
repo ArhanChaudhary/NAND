@@ -298,7 +298,7 @@ class Output {
     /** Moves the cursor to the j-th column of the i-th row,
      *  and erases the character displayed there. */
     function void moveCursor(int i, int j) {
-        if ((i < 0) | (i > 22) | (j < 0) | (j > 63)) 
+        if (~((i > -1) & (i < 23) & (j > -1) & (j < 64))) 
             do Sys.error(20);
         let cursorIsOdd = (j & 1) = 1;
         let cursor = (j / 2) + (352 * i) + 32;

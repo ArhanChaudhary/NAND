@@ -113,7 +113,7 @@ class Math {
         var int y;
         var int nextY;
         var int testNextY;
-        if (x < 0) {
+        if (~(x > -1)) {
             do Sys.error(4);
         }
         let j = 7;

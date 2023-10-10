@@ -631,14 +631,7 @@ push local 2
 push constant 5
 eq
 or
-not
 if-goto FALSE_CASE2
-push argument 0
-push constant 512
-call Math.divide 2
-pop local 3
-goto TRUE_CASE3
-label FALSE_CASE2
 push local 2
 push constant 1
 eq
@@ -646,16 +639,7 @@ push local 2
 push constant 6
 eq
 or
-not
-if-goto FALSE_CASE4
-push argument 0
-push constant 504
-and
-push constant 8
-call Math.divide 2
-pop local 3
-goto TRUE_CASE5
-label FALSE_CASE4
+if-goto FALSE_CASE3
 push local 2
 push constant 2
 eq
@@ -663,8 +647,47 @@ push local 2
 push constant 7
 eq
 or
-not
+if-goto FALSE_CASE4
+push local 2
+push constant 3
+eq
+push local 2
+push constant 8
+eq
+or
+if-goto FALSE_CASE5
+push local 2
+push constant 4
+eq
+push local 2
+push constant 9
+eq
+or
 if-goto FALSE_CASE6
+push constant 0
+pop local 3
+goto TRUE_CASE7
+label FALSE_CASE6
+push argument 1
+push constant 63
+and
+pop local 3
+push argument 2
+pop argument 0
+push argument 3
+pop argument 1
+label TRUE_CASE7
+goto TRUE_CASE8
+label FALSE_CASE5
+push argument 1
+push constant 4032
+and
+push constant 64
+call Math.divide 2
+pop local 3
+label TRUE_CASE8
+goto TRUE_CASE9
+label FALSE_CASE4
 push argument 0
 push constant 7
 and
@@ -675,51 +698,23 @@ push constant 4096
 call Math.divide 2
 or
 pop local 3
-goto TRUE_CASE7
-label FALSE_CASE6
-push local 2
-push constant 3
-eq
-push local 2
-push constant 8
-eq
-or
-not
-if-goto FALSE_CASE8
-push argument 1
-push constant 4032
+label TRUE_CASE9
+goto TRUE_CASE10
+label FALSE_CASE3
+push argument 0
+push constant 504
 and
-push constant 64
+push constant 8
 call Math.divide 2
 pop local 3
-goto TRUE_CASE9
-label FALSE_CASE8
-push local 2
-push constant 4
-eq
-push local 2
-push constant 9
-eq
-or
-not
-if-goto FALSE_CASE10
-push argument 1
-push constant 63
-and
-pop local 3
-push argument 2
-pop argument 0
-push argument 3
-pop argument 1
+label TRUE_CASE10
 goto TRUE_CASE11
-label FALSE_CASE10
-push constant 0
+label FALSE_CASE2
+push argument 0
+push constant 512
+call Math.divide 2
 pop local 3
 label TRUE_CASE11
-label TRUE_CASE9
-label TRUE_CASE7
-label TRUE_CASE5
-label TRUE_CASE3
 push local 0
 push local 2
 add
@@ -770,21 +765,20 @@ push that 0
 return
 function Output.moveCursor 0
 push argument 0
-push constant 0
-lt
+push constant -1
+gt
 push argument 0
-push constant 22
-gt
-push argument 1
-push constant 0
+push constant 23
 lt
 push argument 1
-push constant 63
+push constant -1
 gt
-or
-or
-or
-not
+push argument 1
+push constant 64
+lt
+and
+and
+and
 if-goto FALSE_CASE13
 push constant 20
 call Sys.error 1
@@ -884,37 +878,48 @@ push constant 7807
 eq
 push static 5
 and
-not
 if-goto FALSE_CASE18
-push constant 32
-pop static 4
-push constant 0
-pop static 5
-goto TRUE_CASE19
-label FALSE_CASE18
 push static 5
 not
 pop static 5
 push static 5
-if-goto FALSE_CASE20
+if-goto FALSE_CASE19
 push static 4
 push constant 1
 add
 pop static 4
+push static 4
+push constant 31
+and
+push constant 0
+eq
+not
+if-goto FALSE_CASE20
+push static 4
+push constant 320
+add
+pop static 4
 label FALSE_CASE20
-label TRUE_CASE19
+label FALSE_CASE19
+goto TRUE_CASE21
+label FALSE_CASE18
+push constant 32
+pop static 4
+push constant 0
+pop static 5
+label TRUE_CASE21
 push constant 0
 return
 function Output.printString 2
 push argument 0
 call String.length 1
 pop local 0
-label WHILE_ITER21
+label WHILE_ITER22
 push local 1
 push local 0
 lt
 not
-if-goto WHILE_BREAKER22
+if-goto WHILE_BREAKER23
 push argument 0
 push local 1
 call String.charAt 2
@@ -924,8 +929,8 @@ push local 1
 push constant 1
 add
 pop local 1
-goto WHILE_ITER21
-label WHILE_BREAKER22
+goto WHILE_ITER22
+label WHILE_BREAKER23
 push constant 0
 return
 function Output.printInt 0
@@ -941,18 +946,26 @@ return
 function Output.println 1
 push constant 32
 pop local 0
-label WHILE_ITER23
+label WHILE_ITER24
 push local 0
 push static 4
 lt
 not
-if-goto WHILE_BREAKER24
+if-goto WHILE_BREAKER25
 push local 0
 push constant 352
 add
 pop local 0
-goto WHILE_ITER23
-label WHILE_BREAKER24
+goto WHILE_ITER24
+label WHILE_BREAKER25
+push local 0
+push constant 8128
+eq
+not
+if-goto FALSE_CASE26
+push constant 32
+pop local 0
+label FALSE_CASE26
 push local 0
 pop static 4
 push constant 0
@@ -966,25 +979,36 @@ eq
 not
 push static 5
 or
-if-goto FALSE_CASE25
+if-goto FALSE_CASE27
 push constant 7807
 pop static 4
-push constant 1
-neg
+push constant -1
 pop static 5
-goto TRUE_CASE26
-label FALSE_CASE25
+goto TRUE_CASE28
+label FALSE_CASE27
 push static 5
-if-goto FALSE_CASE27
+if-goto FALSE_CASE29
+push static 4
+push constant 31
+and
+push constant 0
+eq
+not
+if-goto FALSE_CASE30
+push static 4
+push constant 320
+sub
+pop static 4
+label FALSE_CASE30
 push static 4
 push constant 1
 sub
 pop static 4
-label FALSE_CASE27
+label FALSE_CASE29
 push static 5
 not
 pop static 5
-label TRUE_CASE26
+label TRUE_CASE28
 push constant 32
 call Output.drawChar 1
 pop temp 0

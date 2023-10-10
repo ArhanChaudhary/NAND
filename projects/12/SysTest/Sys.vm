@@ -1,11 +1,11 @@
 function Sys.init 0
 call Memory.init 0
 pop temp 0
+call Math.init 0
+pop temp 0
 call Screen.init 0
 pop temp 0
 call Screen.clearScreen 0
-pop temp 0
-call Math.init 0
 pop temp 0
 call Output.init 0
 pop temp 0
@@ -27,9 +27,8 @@ push constant 0
 return
 function Sys.wait 1
 push argument 0
-push constant 0
-lt
-not
+push constant -1
+gt
 if-goto FALSE_CASE2
 push constant 1
 call Sys.error 1

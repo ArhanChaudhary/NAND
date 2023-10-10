@@ -1,8 +1,7 @@
 function Screen.init 0
 push constant 16384
 pop static 0
-push constant 1
-neg
+push constant -1
 pop static 1
 call Math.getMasks 0
 pop static 2
@@ -11,9 +10,8 @@ return
 function Screen.clearScreen 1
 label WHILE_ITER0
 push local 0
-push constant 8192
-lt
-not
+push constant 8191
+gt
 if-goto WHILE_BREAKER1
 push static 0
 push local 0
@@ -76,21 +74,20 @@ push constant 0
 return
 function Screen.drawPixel 1
 push argument 0
-push constant 0
-lt
+push constant -1
+gt
 push argument 0
-push constant 511
-gt
-push argument 1
-push constant 0
+push constant 512
 lt
 push argument 1
-push constant 255
+push constant -1
 gt
-or
-or
-or
-not
+push argument 1
+push constant 256
+lt
+and
+and
+and
 if-goto FALSE_CASE4
 push constant 7
 call Sys.error 1
@@ -136,21 +133,20 @@ push constant 0
 return
 function Screen.drawLine 11
 push argument 0
-push constant 0
-lt
+push constant -1
+gt
 push argument 2
-push constant 511
-gt
-push argument 1
-push constant 0
+push constant 512
 lt
-push argument 3
-push constant 255
+push argument 1
+push constant -1
 gt
-or
-or
-or
-not
+push argument 3
+push constant 256
+lt
+and
+and
+and
 if-goto FALSE_CASE7
 push constant 8
 call Sys.error 1
@@ -260,17 +256,16 @@ push local 10
 add
 pop local 7
 push local 1
-not
 if-goto FALSE_CASE14
 push local 2
 push constant 1
-sub
+add
 pop local 2
 goto TRUE_CASE15
 label FALSE_CASE14
 push local 2
 push constant 1
-add
+sub
 pop local 2
 label TRUE_CASE15
 goto TRUE_CASE16
@@ -396,8 +391,7 @@ lt
 not
 if-goto WHILE_BREAKER22
 push local 0
-push constant 1
-neg
+push constant -1
 call Screen.updateLocation 2
 pop temp 0
 push local 0
@@ -433,6 +427,90 @@ goto WHILE_ITER18
 label WHILE_BREAKER19
 push constant 0
 return
-function Screen.drawCircle 0
+function Screen.drawCircle 3
+push argument 0
+push constant -1
+gt
+push argument 0
+push constant 512
+lt
+push argument 1
+push constant -1
+gt
+push argument 1
+push constant 256
+lt
+and
+and
+and
+if-goto FALSE_CASE24
+push constant 12
+call Sys.error 1
+pop temp 0
+label FALSE_CASE24
+push argument 0
+push argument 2
+lt
+push argument 0
+push argument 2
+add
+push constant 511
+gt
+push argument 1
+push argument 2
+lt
+push argument 1
+push argument 2
+add
+push constant 255
+gt
+or
+or
+or
+not
+if-goto FALSE_CASE25
+push constant 13
+call Sys.error 1
+pop temp 0
+label FALSE_CASE25
+push argument 2
+neg
+pop local 0
+push argument 2
+push argument 2
+call Math.multiply 2
+pop local 2
+label WHILE_ITER26
+push local 0
+push argument 2
+gt
+if-goto WHILE_BREAKER27
+push local 2
+push local 0
+push local 0
+call Math.multiply 2
+sub
+call Math.sqrt 1
+pop local 1
+push argument 0
+push local 1
+sub
+push argument 1
+push local 0
+add
+push argument 0
+push local 1
+add
+push argument 1
+push local 0
+add
+call Screen.drawRectangle 4
+pop temp 0
+push local 0
+push constant 1
+add
+pop local 0
+goto WHILE_ITER26
+label WHILE_BREAKER27
 push constant 0
 return
