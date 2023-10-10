@@ -1,0 +1,142 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Math.jack
+
+/**
+ * A library of commonly used mathematical functions.
+ * Note: Jack compilers implement multiplication and division using OS method calls.
+ */
+class Math {
+    static Array masks;
+    static Array shifted;
+
+    /** Initializes the library. */
+    function void init() {
+        var int maskCounter;
+        var int i;
+        let masks = Array.new(16);
+        let maskCounter = 1;
+        while (~(i > 15)) {
+            let masks[i] = maskCounter;
+            let maskCounter = maskCounter + maskCounter;
+            let i = i + 1;
+        }
+        let shifted = Array.new(16);
+    }
+
+    function Array getMasks() {
+        return masks;
+    }
+
+    /** Returns the absolute value of x. */
+    function int abs(int x) {
+        if (~(x > 0)) return -x;
+        return x;
+    }
+
+    /** Returns the product of x and y. 
+    *  When a Jack compiler detects the multiplication operator '*' in the 
+    *  program's code, it handles it by invoking this method. In other words,
+    *  the Jack expressions x*y and multiply(x,y) return the same value.
+    */
+    function int multiply(int x, int y) {
+        var int j;
+        var int sum;
+        var int shiftedX;
+        let shiftedX = x;
+        while (~(j > 15)) {
+            if (~((y & masks[j]) = 0))
+                let sum = sum + shiftedX;
+            let shiftedX = shiftedX + shiftedX;
+            let j = j + 1;
+        }
+        return sum;
+    }
+
+    /** Returns the integer part of x/y.
+     *  When a Jack compiler detects the multiplication operator '/' in the 
+     *  program's code, it handles it by invoking this method. In other words,
+     *  the Jack expressions x/y and divide(x,y) return the same value.
+     */
+    function int divide(int dividend, int divisor) {
+        var int i, quotient;
+        var boolean negDividend, negDivisor;
+        var boolean breaker;
+        
+        if (divisor = 0) {
+            do Sys.error(3);
+        }
+
+        let negDividend = dividend < 0;
+        let negDivisor = divisor < 0;
+
+        if (negDividend) {
+            let dividend = -dividend;
+        }
+
+        if (negDivisor) {
+            let divisor = -divisor;
+        }
+
+        let shifted[0] = divisor;
+        while (~((i > 14) | breaker)) {
+            let quotient = shifted[i];
+            let breaker = (32767 - (quotient - 1)) < (quotient - 1);
+            if (~breaker) {
+                let shifted[i + 1] = quotient + quotient;
+                let breaker = ((quotient + quotient) - 1) > (dividend - 1);
+                if (~breaker) {
+                    let i = i + 1;
+                }
+            }
+        }
+
+        let quotient = 0;
+        while (~(i < 0)) {
+            if (~((shifted[i] - 1) > (dividend - 1))) {
+                let quotient = quotient + masks[i];
+                let dividend = dividend - shifted[i];
+            }
+            let i = i - 1;
+        }
+
+        if (~(negDividend = negDivisor)) {
+            return -quotient;
+        }
+        return quotient;
+    }
+
+    /** Returns the integer part of the square root of x. */
+    function int sqrt(int x) {
+        var int j;
+        var int y;
+        var int nextY;
+        var int testNextY;
+        if (~(x > -1)) {
+            do Sys.error(4);
+        }
+        let j = 7;
+        while (~(j < 0)) {
+            let nextY = y + masks[j];
+            let testNextY = nextY * nextY;
+            if (~((testNextY > x) | (testNextY < 1))) {
+                let y = nextY;
+            }
+            let j = j - 1;
+        }
+        return y;
+    }
+
+    /** Returns the greater number. */
+    function int max(int a, int b) {
+        if (~(a > b)) return b;
+        return a;   
+    }
+
+    /** Returns the smaller number. */
+    function int min(int a, int b) {
+        if (~(a > b)) return a;
+        return b;
+    }
+}
