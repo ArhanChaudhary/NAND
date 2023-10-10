@@ -419,7 +419,7 @@ export default class CodeWriter {
         switch (segment) {
             // sets D to the value that needs to be pushed
             case 'constant':
-                if (index === 0 || index === 1) {
+                if (index === -1 || index === 0 || index === 1) {
                     out = [];
                 } else {
                     out = [
