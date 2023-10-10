@@ -51,7 +51,14 @@
     const exampleProgramName = (e.target as HTMLSelectElement).value;
     const exampleProgram = examplePrograms.find(exampleProgram => exampleProgram.exampleProgramName === exampleProgramName);
     if (!exampleProgram) return;
-    const VMCode = compiler([...exampleProgram.exampleProgramData, ...JackOS]);
+
+    const program = [
+      ...exampleProgram.exampleProgramData,
+      ...JackOS.filter(OSFile => !exampleProgram.exampleProgramData.find(
+        exampleProgramFile => exampleProgramFile.fileName === OSFile.fileName
+      ))
+    ];
+    const VMCode = compiler(program);
     const assembly = VMTranslator(VMCode);
     const machineCode = assembler(assembly);
     if (machineCode.length >= 32768) {
