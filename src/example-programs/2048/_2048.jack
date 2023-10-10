@@ -233,12 +233,14 @@ class _2048 {
             // 0 32 16 16 press left doesnt draw the second 32
             // because prevGrid over there was 32
             let prevGrid[div][mod] = -1;
-            if (positionValue > 999)
-                do Output.printString("    ");
-            else if (positionValue > 99)
-                do Output.printString("   ");
-            else
-                do Output.printString("  ");
+            if (positionValue > 999) {
+                do Output.printChar(32);
+                do Output.printChar(32);
+            } else if (positionValue > 99) {
+                do Output.printChar(32);
+            }
+            do Output.printChar(32);
+            do Output.printChar(32);
         }
         do setPosition(position, 0, false);
     }
