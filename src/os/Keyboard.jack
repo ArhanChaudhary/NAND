@@ -6,7 +6,7 @@
 /**
  * A library for handling user input from the keyboard.
  */
- class Keyboard {
+class Keyboard {
 
     /** Initializes the keyboard. */
     function void init() {

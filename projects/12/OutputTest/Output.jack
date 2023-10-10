@@ -14,7 +14,7 @@
  * character position on the screen is indexed (0,0). A cursor, implemented
  * as a small filled square, indicates where the next character will be displayed.
  */
- class Output {
+class Output {
 
     // Character map for displaying characters
     static Array charMaps, shiftedCharMaps;

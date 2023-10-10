@@ -6,7 +6,7 @@
 /**
  * A library that supports various program execution services.
  */
- class Sys {
+class Sys {
 
     /** Performs all the initializations required by the OS. */
     function void init() {

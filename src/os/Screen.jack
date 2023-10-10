@@ -9,7 +9,7 @@
  * of 512 pixels each (indexed 0..511, left to right). The top left pixel on 
  * the screen is indexed (0,0).
  */
- class Screen {
+class Screen {
     static int screenPtr;
     static boolean black;
     static Array masks;

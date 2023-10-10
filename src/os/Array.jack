@@ -11,7 +11,7 @@
  * well as any object type. Different array entries can have different 
  * data types.
  */
- class Array {
+class Array {
     /** Constructs a new Array of the given size. */
     function Array new(int size) {
         if (~(size > 0))
