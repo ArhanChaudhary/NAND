@@ -1,5 +1,6 @@
 import Vector from "./vector.js";
 import Brain from "./brain.js";
+import { drawRect } from "./main.js";
 
 export default class Dot {
     #pos;
@@ -12,25 +13,18 @@ export default class Dot {
 
     constructor() {
         this.#brain = new Brain(200);
-        this.#pos = new Vector(256, 128);
+        this.#pos = new Vector(256, 246);
         this.#vel = new Vector(0, 0, 5);
         this.#acc = new Vector(0, 0);
     }
 
-    show(ctx) {
+    show() {
         if (this.#prevX !== 0 && this.#prevY !== 0) {
-            ctx.beginPath();
-            ctx.fillStyle = "white";
-            ctx.rect(this.#prevX, this.#prevY, 2, 2);
-            ctx.fill();
+            drawRect(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2, "white");
         }
-        ctx.beginPath();
-        ctx.fillStyle = "black";
-        // draw as a 2x2 rectangle
-        ctx.rect(this.#pos.getX(), this.#pos.getY(), 2, 2);
-        ctx.fill();
-        this.#prevX = this.#pos.getX();
-        this.#prevY = this.#pos.getY();
+        this.#prevX = this.#pos.getX() - 1;
+        this.#prevY = this.#pos.getY() - 1;
+        drawRect(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2, "black");
     }
 
     move() {

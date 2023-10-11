@@ -10,9 +10,9 @@ export default class Population {
         }
     }
 
-    show(ctx) {
+    show() {
         for (let dot of this.#dots) {
-            dot.show(ctx);
+            dot.show();
         }
     }
 
