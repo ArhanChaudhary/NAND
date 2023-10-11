@@ -1,10 +1,16 @@
 export default class Vector {
     #x;
     #y;
+    #limit;
 
-    constructor(x, y) {
+    constructor(x, y, limit) {
         this.#x = x;
         this.#y = y;
+        if (limit === undefined) {
+            this.#limit = Infinity;
+        } else {
+            this.#limit = limit;
+        }
     }
 
     getX() {
@@ -16,7 +22,7 @@ export default class Vector {
     }
 
     add(v) {
-        this.#x += v.getX();
-        this.#y += v.getY();
+        this.#x = Math.min(this.#limit, this.#x + v.getX());
+        this.#y = Math.min(this.#limit, this.#y + v.getY());
     }
 }

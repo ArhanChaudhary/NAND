@@ -1,16 +1,19 @@
 import Vector from "./vector.js";
+import Brain from "./brain.js";
 
 export class Dot {
     #pos;
     #vel;
     #acc;
+    #brain;
     #prevX = 0;
     #prevY = 0;
 
     constructor() {
+        this.#brain = new Brain(200);
         this.#pos = new Vector(256, 128);
-        this.#vel = new Vector(10, 10);
-        this.#acc = new Vector(10, 10);
+        this.#vel = new Vector(0, 0, 5);
+        this.#acc = new Vector(0, 0);
     }
 
     show(ctx) {
@@ -30,6 +33,10 @@ export class Dot {
     }
 
     move() {
+        if (this.#brain.getDirections().length > this.#brain.getStep()) {
+            this.#acc = this.#brain.getDirections()[this.#brain.getStep()];
+            this.#brain.incStep();
+        }
         this.#vel.add(this.#acc);
         this.#pos.add(this.#vel);
     }
