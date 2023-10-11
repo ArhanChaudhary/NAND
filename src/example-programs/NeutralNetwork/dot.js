@@ -1,11 +1,12 @@
 import Vector from "./vector.js";
 import Brain from "./brain.js";
 
-export class Dot {
+export default class Dot {
     #pos;
     #vel;
     #acc;
     #brain;
+    #dead = false;
     #prevX = 0;
     #prevY = 0;
 
@@ -36,8 +37,18 @@ export class Dot {
         if (this.#brain.getDirections().length > this.#brain.getStep()) {
             this.#acc = this.#brain.getDirections()[this.#brain.getStep()];
             this.#brain.incStep();
+        } else {
+            this.#dead = true;
         }
         this.#vel.add(this.#acc);
         this.#pos.add(this.#vel);
+    }
+
+    update() {
+        if (this.#dead) return;
+        this.move();
+        if (this.#pos.getX() < 2 | this.#pos.getY() < 2 | this.#pos.getX() > 510 | this.#pos.getY() > 254) {
+            this.#dead = true;
+        }
     }
 }
