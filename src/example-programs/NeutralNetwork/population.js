@@ -21,4 +21,17 @@ export default class Population {
             dot.update();
         }
     }
+
+    calculateFitness() {
+        for (let dot of this.#dots) {
+            dot.calculateFitness();
+        }
+    }
+
+    allDotsDead() {
+        for (let dot of this.#dots) {
+            if (!dot.getDead() && !dot.checkReachedGoal()) return false;
+        }
+        return true;
+    }
 }
