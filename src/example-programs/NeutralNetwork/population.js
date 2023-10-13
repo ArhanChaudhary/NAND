@@ -38,17 +38,12 @@ export default class Population {
     }
 
     naturalSelection() {
-        // this.#newDots[0] = this.#getBestDot();
-        // this.#newDots[0].setBest();
-        // for (let i = 1; i < this.#newDots.length; i++) {
-        //     const parent = this.#selectParent();
-        //     this.#newDots[i] = new Dot(parent.getBrain());
-        // }
-        // this.#dots = this.#newDots;
+        const newDots = new Array(this.#dots.length);
         this.calculateFitnessSum();
-        for (let i = 0; i < this.#dots.length; i++) {
-            this.#dots[i] = this.selectParent().getChild();
+        for (let i = 0; i < newDots.length; i++) {
+            newDots[i] = this.selectParent().getBaby();
         }
+        this.#dots = newDots;
         this.#gen++;
     }
 
@@ -61,12 +56,18 @@ export default class Population {
     }
 
     selectParent() {
-        let rand = Math.random() * sum;
+        let rand = Math.random() * this.#fitnessSum;
         let sum = 0;
         for (let dot of this.#dots) {
             sum += dot.getFitness();
             if (sum > rand) return dot;
         }
-        return null;
+        throw new Error();
+    }
+
+    mutateBabies() {
+        for (let i = 1; i < this.#dots.length; i++) {
+            this.#dots[i].getBrain().mutate();
+        }
     }
 }

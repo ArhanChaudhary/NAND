@@ -11,7 +11,7 @@ export default class Brain {
 
     #randomize() {
         for (let i = 0; i < this.#directions.length; i++) {
-            this.#directions[i] = new Vector(Math.round(Math.random() * 2 - 1), Math.round(Math.random() * 2 - 1));
+            this.#directions[i] = Vector.randomAcc();
         }
     }
 
@@ -33,5 +33,15 @@ export default class Brain {
             brain.getDirections()[i] = this.#directions[i].clone();
         }
         return brain;
+    }
+
+    mutate() {
+        const mutationRate = 0.01;
+        for (let i = 0; i < this.#directions.length; i++) {
+            const rand = Math.random();
+            if (rand < mutationRate) {
+                this.#directions[i] = Vector.randomAcc();
+            }
+        }
     }
 }

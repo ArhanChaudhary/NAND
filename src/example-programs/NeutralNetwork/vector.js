@@ -13,6 +13,10 @@ export default class Vector {
         }
     }
 
+    static randomAcc() {
+        return new Vector(Math.floor(Math.random() * 11 - 5), Math.floor(Math.random() * 11 - 5));
+    }
+
     getX() {
         return this.#x;
     }
@@ -22,8 +26,11 @@ export default class Vector {
     }
 
     add(v) {
-        this.#x = Math.min(this.#limit, this.#x + v.getX());
-        this.#y = Math.min(this.#limit, this.#y + v.getY());
+        // add vector v to this vector but limit at positive and negative limit
+        this.#x = Math.min(this.#x + v.getX(), this.#limit);
+        this.#y = Math.min(this.#y + v.getY(), this.#limit);
+        this.#x = Math.max(this.#x, -this.#limit);
+        this.#y = Math.max(this.#y, -this.#limit);
     }
 
     clone() {
