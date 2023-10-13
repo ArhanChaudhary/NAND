@@ -4,14 +4,15 @@ export default class Population {
     #dots;
     #fitnessSum;
     #gen = 1;
-
     #bestDot = 0;
+    #minStep = 32767;
 
     constructor(size) {
         this.#dots = new Array(size);
         for (let i = 0; i < this.#dots.length; i++) {
             this.#dots[i] = new Dot();
         }
+        this.#dots[0].setIsBest(true);
     }
 
     show() {
@@ -23,7 +24,11 @@ export default class Population {
 
     update() {
         for (let dot of this.#dots) {
-            dot.update();
+            if (dot.getBrain().getStep() > this.#minStep) {
+                dot.setDead(true);
+            } else {
+                dot.update();
+            }
         }
     }
 
@@ -69,7 +74,7 @@ export default class Population {
             sum += dot.getFitness();
             if (sum > rand) return dot;
         }
-        throw new Error();
+        return this.#dots[0];
     }
 
     mutateBabies() {
@@ -87,6 +92,11 @@ export default class Population {
                 maxIndex = i;
             }
         }
+        console.log("Best dot fitness: ",  this.#dots[maxIndex].getFitness(), new Date());
         this.#bestDot = maxIndex;
+
+        if (this.#dots[this.#bestDot].checkReachedGoal()) {
+            this.#minStep = this.#dots[this.#bestDot].getBrain().getStep();
+        }
     }
 }

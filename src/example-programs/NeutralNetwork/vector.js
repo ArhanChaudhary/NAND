@@ -14,7 +14,13 @@ export default class Vector {
     }
 
     static randomAcc() {
-        return new Vector(Math.floor(Math.random() * 11 - 5), Math.floor(Math.random() * 11 - 5));
+        const mag = 2;
+        const x = Math.floor(Math.random() * (mag * 2 + 1) - mag);
+        const y = Math.floor(Math.random() * (mag * 2 + 1) - mag);
+        if (x * x + y * y > mag * mag) {
+            return Vector.randomAcc();
+        }
+        return new Vector(x, y);
     }
 
     getX() {

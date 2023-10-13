@@ -36,10 +36,9 @@ export default class Brain {
     }
 
     mutate() {
-        const mutationRate = 0.01;
         for (let i = 0; i < this.#directions.length; i++) {
             const rand = Math.random();
-            if (rand < mutationRate) {
+            if (Math.floor(rand * 100) === 0) {
                 this.#directions[i] = Vector.randomAcc();
             }
         }
