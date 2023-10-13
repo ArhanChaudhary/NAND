@@ -26,4 +26,12 @@ export default class Brain {
     incStep() {
         this.#step++;
     }
+
+    clone() {
+        const brain = new Brain(this.#directions.length);
+        for (let i = 0; i < this.#directions.length; i++) {
+            brain.getDirections()[i] = this.#directions[i].clone();
+        }
+        return brain;
+    }
 }

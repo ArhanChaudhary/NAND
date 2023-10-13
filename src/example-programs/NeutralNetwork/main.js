@@ -11,13 +11,13 @@ drawRect(goal.getX() - 2, goal.getY() - 2, goal.getX() + 2, goal.getY() + 2, "bl
 setInterval(() => {
     if (population.allDotsDead()) {
         population.calculateFitness();
-        population.naturalSelection();
-        population.mutateBabies();
+        // population.naturalSelection();
+        // population.mutateBabies();
     } else {
         population.update();
         population.show();
     }
-}, 50);
+}, 200);
 
 export function drawRect(x1, y1, x2, y2, color) {
     ctx.beginPath();

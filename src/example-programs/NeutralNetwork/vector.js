@@ -25,4 +25,8 @@ export default class Vector {
         this.#x = Math.min(this.#limit, this.#x + v.getX());
         this.#y = Math.min(this.#limit, this.#y + v.getY());
     }
+
+    clone() {
+        return new Vector(this.#x, this.#y, this.#limit);
+    }
 }

@@ -20,8 +20,19 @@ export default class Dot {
         this.#acc = new Vector(0, 0);
     }
 
+    constructor(brain) {
+        this.#brain = brain;
+        this.#pos = new Vector(256, 128);
+        this.#vel = new Vector(0, 0, 5);
+        this.#acc = new Vector(0, 0);
+    }
+
     getDead() {
         return this.#dead;
+    }
+
+    setBrain(brain) {
+        this.#brain = brain;
     }
 
     show() {
@@ -33,7 +44,7 @@ export default class Dot {
         drawRect(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2, "black");
     }
 
-    move() {
+    #move() {
         if (this.#brain.getDirections().length > this.#brain.getStep()) {
             this.#acc = this.#brain.getDirections()[this.#brain.getStep()];
             this.#brain.incStep();
@@ -46,29 +57,23 @@ export default class Dot {
 
     update() {
         if (!this.#dead && !this.#reachedGoal) {
-            this.move();
+            this.#move();
             if (this.#pos.getX() < 2 | this.#pos.getY() < 2 | this.#pos.getX() > 510 | this.#pos.getY() > 254) {
                 this.#dead = true;
-            } else if (this.checkReachedGoal()) {
+            } else if (Math.abs(this.#pos.getX() - goal.getX()) < 4 && Math.abs(this.#pos.getY() - goal.getY()) < 4) {
                 this.#reachedGoal = true;
             }
         }
     }
 
     calculateFitness() {
-        const x = Math.abs(this.#pos.getX() - goal.getX());
-        const y = Math.abs(this.#pos.getY() - goal.getY());
-        const xTimesY = x * y;
-        if (xTimesY > 32767) {
-            this.#fitness = 0;
-            return;
-        }
-        const distance = (x + y) - xTimesY / (x + y);
-        this.#fitness = Math.floor(250 / (distance * distance));
+        const x = Math.abs(this.#pos.getX() - goal.getX()) / 2;
+        const y = Math.abs(this.#pos.getY() - goal.getY()) / 2;
+        this.#fitness = Math.floor(250 / (x * x + y * y));
     }
 
-    checkReachedGoal() {
-        // compare the gets of the goal and the pos. They can be up to 4 off
-        return Math.abs(this.#pos.getX() - goal.getX()) < 4 && Math.abs(this.#pos.getY() - goal.getY()) < 4;
+    getBaby() {
+        const brain = this.#brain.clone();
+        return new Dot(brain);
     }
 }
