@@ -5,6 +5,8 @@ export default class Population {
     #fitnessSum;
     #gen = 1;
 
+    #bestDot = 0;
+
     constructor(size) {
         this.#dots = new Array(size);
         for (let i = 0; i < this.#dots.length; i++) {
@@ -13,9 +15,10 @@ export default class Population {
     }
 
     show() {
-        for (let dot of this.#dots) {
-            dot.show();
+        for (let i = 1; i < this.#dots.length; i++) {
+            this.#dots[i].show();
         }
+        this.#dots[0].show();
     }
 
     update() {
@@ -39,8 +42,12 @@ export default class Population {
 
     naturalSelection() {
         const newDots = new Array(this.#dots.length);
+        this.setIsBest();
         this.calculateFitnessSum();
-        for (let i = 0; i < newDots.length; i++) {
+
+        newDots[0] = this.#dots[this.#bestDot].getBaby();
+        newDots[0].setIsBest(true);
+        for (let i = 1; i < newDots.length; i++) {
             newDots[i] = this.selectParent().getBaby();
         }
         this.#dots = newDots;
@@ -69,5 +76,17 @@ export default class Population {
         for (let i = 1; i < this.#dots.length; i++) {
             this.#dots[i].getBrain().mutate();
         }
+    }
+
+    setIsBest() {
+        let max = 0;
+        let maxIndex = 0;
+        for (let i = 0; i < this.#dots.length; i++) {
+            if (this.#dots[i].getFitness() > max) {
+                max = this.#dots[i].getFitness();
+                maxIndex = i;
+            }
+        }
+        this.#bestDot = maxIndex;
     }
 }

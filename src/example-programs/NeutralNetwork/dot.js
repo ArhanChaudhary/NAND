@@ -10,6 +10,7 @@ export default class Dot {
     #dead = false;
     #fitness = 0;
     #reachedGoal = false;
+    #isBest = false;
     #prevX = 0;
     #prevY = 0;
 
@@ -36,6 +37,10 @@ export default class Dot {
         this.#brain = brain;
     }
 
+    setIsBest(isBest) {
+        this.#isBest = isBest;
+    }
+
     show() {
         if (this.#prevX !== 0 && this.#prevY !== 0) {
             drawRect(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2, "white");
@@ -43,7 +48,11 @@ export default class Dot {
         if (!this.#dead) {
             this.#prevX = this.#pos.getX() - 1;
             this.#prevY = this.#pos.getY() - 1;
-            drawRect(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2, "black");
+            if (this.#isBest) {
+                drawRect(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2, "red");
+            } else {
+                drawRect(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2, "black");
+            }
         }
     }
 
@@ -74,9 +83,13 @@ export default class Dot {
     }
 
     calculateFitness() {
-        const x = Math.abs(this.#pos.getX() - goal.getX()) / 2;
-        const y = Math.abs(this.#pos.getY() - goal.getY()) / 2;
-        this.#fitness = Math.floor(250 / (x * x + y * y + 1));
+        if (this.#reachedGoal) {
+            this.#fitness = 32767 - 100 * this.#brain.getStep();
+        } else {
+            const x = Math.abs(this.#pos.getX() - goal.getX()) / 2;
+            const y = Math.abs(this.#pos.getY() - goal.getY()) / 2;
+            this.#fitness = Math.floor(250 / (x * x + y * y + 1));
+        }
     }
 
     getBaby() {
