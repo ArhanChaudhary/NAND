@@ -16,8 +16,8 @@ export default class Dot {
 
     constructor(brain) {
         this.#brain = brain || new Brain(450);
-        this.#pos = new Vector(480, 25);
-        this.#vel = new Vector(0, 0, 5);
+        this.#pos = new Vector(502, 128);
+        this.#vel = new Vector(0, 0, 6);
         this.#acc = new Vector(0, 0);
     }
 
@@ -73,13 +73,8 @@ export default class Dot {
     update() {
         if (!this.#dead && !this.#reachedGoal) {
             this.#move();
-            const inFirstBarrier = this.#pos.getX() > 250 && this.#pos.getX() < 260 && this.#pos.getY() > 0 && this.#pos.getY() < 200;
-            const inSecondBarrier = this.#pos.getX() > 300 && this.#pos.getX() < 512 && this.#pos.getY() > 110 && this.#pos.getY() < 120;
-            const inThirdBarrier = this.#pos.getX() > 250 && this.#pos.getX() < 300 && this.#pos.getY() > 190 && this.#pos.getY() < 200;
-            const inFourthBarrier = this.#pos.getX() > 150 && this.#pos.getX() < 160 && this.#pos.getY() > 100 && this.#pos.getY() < 256;
-            const inFifthBarrier = this.#pos.getX() > 40 && this.#pos.getX() < 170 && this.#pos.getY() > 140 && this.#pos.getY() < 150;
-            const inBarrier = inFirstBarrier || inSecondBarrier || inThirdBarrier || inFourthBarrier || inFifthBarrier;
-            if (this.#pos.getX() < 2 || this.#pos.getY() < 2 || this.#pos.getX() > 510 || this.#pos.getY() > 254 || inBarrier || inSecondBarrier) {
+            const inFirstBarrier = this.#pos.getX() > 250 && this.#pos.getX() < 260 && this.#pos.getY() > 50 && this.#pos.getY() < 206;
+            if (this.#pos.getX() < 2 || this.#pos.getY() < 2 || this.#pos.getX() > 510 || this.#pos.getY() > 254|| inFirstBarrier) {
                 this.#dead = true;
             } else if (this.checkReachedGoal()) {
                 this.#reachedGoal = true;
