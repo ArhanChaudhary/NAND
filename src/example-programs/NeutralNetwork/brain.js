@@ -51,13 +51,15 @@ export default class Brain {
 
     mutate() {
         let i = 0;
+
+        let count = 0;
         while (i < this.#directions.length) {
-            const rand = Util.random();
-            debugger;
-            if (rand & 127 === 0) {
+            if ((Util.random() & 127) === 0) {
+                count++;
                 this.#directions[i] = Vector.randomAcc();
             }
             i++;
         }
+        console.log(count / this.#directions.length);
     }
 }

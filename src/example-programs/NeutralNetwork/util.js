@@ -17,4 +17,8 @@ export default class Util {
         Util.#next = (Util.#next * 11753 + 2489) % 65536;
         return Util.#next;
     }
+
+    static clearScreen() {
+        ctx.clearRect(0, 0, 512, 256);
+    }
 }
