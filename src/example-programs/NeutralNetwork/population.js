@@ -12,7 +12,6 @@ export default class Population {
         for (let i = 0; i < this.#dots.length; i++) {
             this.#dots[i] = new Dot();
         }
-        this.#dots[0].setIsBest(true);
     }
 
     show() {
@@ -51,7 +50,6 @@ export default class Population {
         this.calculateFitnessSum();
 
         newDots[0] = this.#dots[this.#bestDot].getBaby();
-        newDots[0].setIsBest(true);
         for (let i = 1; i < newDots.length; i++) {
             newDots[i] = this.selectParent().getBaby();
         }

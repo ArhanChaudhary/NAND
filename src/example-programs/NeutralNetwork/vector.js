@@ -77,8 +77,4 @@ export default class Vector {
         this.#x = x;
         this.#y = y;
     }
-
-    clone() {
-        return new Vector(this.#x, this.#y);
-    }
 }

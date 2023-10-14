@@ -1,21 +1,31 @@
 import Vector from "./vector.js";
 import Brain from "./brain.js";
-import { drawRect, goal } from "./main.js";
+import Util, { ctx } from "./util.js";
 
 export default class Dot {
     #pos;
     #vel;
     #acc;
     #brain;
-    #dead = false;
-    #fitness = 0;
-    #reachedGoal = false;
-    #isBest = false;
-    #prevX = 0;
-    #prevY = 0;
+    #dead;
+    #fitness;
+    #reachedGoal;
+    #prevX;
+    #prevY;
+    static #goal;
+
+    static setGoal(goal) {
+        Dot.#goal = goal;
+    }
 
     constructor(brain) {
-        this.#brain = brain || new Brain(200);
+        this.#dead = false;
+        this.#fitness = 0;
+        this.#reachedGoal = false;
+        this.#prevX = 0;
+        this.#prevY = 0;
+
+        this.#brain = brain || Brain.new(150);
         this.#pos = new Vector(10, 128);
         this.#vel = new Vector(0, 0);
         this.#acc = new Vector(0, 0);
@@ -41,21 +51,19 @@ export default class Dot {
         this.#brain = brain;
     }
 
-    setIsBest(isBest) {
-        this.#isBest = isBest;
-    }
-
     show() {
-        if (this.#prevX !== 0 && this.#prevY !== 0) {
-            drawRect(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2, "white");
+        if (!(this.#prevX === 0 || this.#prevY === 0)) {
+            ctx.fillStyle = 'white';
+            Util.drawRect(this.#prevX, this.#prevY, 2, 2);
+            ctx.fillStyle = 'black';
         }
-        if (this.#dead || this.#reachedGoal) {
-            this.#prevX = 0;
-            this.#prevY = 0;
-        } else {
+        if (!(this.#dead || this.#reachedGoal)) {
             this.#prevX = this.#pos.getX() - 1;
             this.#prevY = this.#pos.getY() - 1;
-            drawRect(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2, "black");
+            Util.drawRect(this.#prevX, this.#prevY, 2, 2);
+        } else {
+            this.#prevX = 0;
+            this.#prevY = 0;
         }
     }
 
@@ -82,15 +90,15 @@ export default class Dot {
     }
 
     checkReachedGoal() {
-        return Math.abs(this.#pos.getX() - goal.getX()) < 4 && Math.abs(this.#pos.getY() - goal.getY()) < 4;
+        return Math.abs(this.#pos.getX() - Dot.#goal.getX()) < 4 && Math.abs(this.#pos.getY() - Dot.#goal.getY()) < 4;
     }
 
     calculateFitness() {
         if (this.#reachedGoal) {
             this.#fitness = Math.max(10000, 32767 - Math.floor((32767 - 10000) / this.#brain.getDirections().length) * this.#brain.getStep());
         } else {
-            const x = Math.abs(this.#pos.getX() - goal.getX()) / 2;
-            const y = Math.abs(this.#pos.getY() - goal.getY()) / 2;
+            const x = Math.abs(this.#pos.getX() - Dot.#goal.getX()) / 2;
+            const y = Math.abs(this.#pos.getY() - Dot.#goal.getY()) / 2;
             this.#fitness = Math.floor(32767 / Math.max(10, x * x + y * y - 100));
         }
     }

@@ -1,18 +1,30 @@
 import Vector from "./vector.js";
+import Util from "./util.js";
 
 export default class Brain {
     #directions;
-    #step = 0;
+    #step;
 
-    constructor(size) {
-        this.#directions = new Array(size);
-        this.#randomize();
+    constructor(size, directions) {
+        this.#step = 0;
+        if (directions) {
+            this.#directions = directions;
+        } else {
+            this.#directions = new Array(size);
+            let i = 0;
+            while (i < this.#directions.length) {
+                this.#directions[i] = Vector.randomAcc();
+                i++;
+            }
+        }
     }
 
-    #randomize() {
-        for (let i = 0; i < this.#directions.length; i++) {
-            this.#directions[i] = Vector.randomAcc();
-        }
+    static new(size) {
+        return new Brain(size);
+    }
+
+    static newWithDirections(directions) {
+        return new Brain(null, directions);
     }
 
     getDirections() {
@@ -28,19 +40,24 @@ export default class Brain {
     }
 
     clone() {
-        const brain = new Brain(this.#directions.length);
-        for (let i = 0; i < this.#directions.length; i++) {
-            brain.getDirections()[i] = this.#directions[i].clone();
+        const directions = new Array(this.#directions.length);
+        let i = 0;
+        while (i < this.#directions.length) {
+            directions[i] = this.#directions[i];
+            i++;
         }
-        return brain;
+        return Brain.newWithDirections(directions);
     }
 
     mutate() {
-        for (let i = 0; i < this.#directions.length; i++) {
-            const rand = Math.random();
-            if (Math.floor(rand * 100) === 0) {
+        let i = 0;
+        while (i < this.#directions.length) {
+            const rand = Util.random();
+            debugger;
+            if (rand & 127 === 0) {
                 this.#directions[i] = Vector.randomAcc();
             }
+            i++;
         }
     }
 }
