@@ -92,7 +92,6 @@ export default class Population {
                 maxIndex = i;
             }
         }
-        console.log("Best dot fitness: ",  this.#dots[maxIndex].getFitness(), new Date());
         this.#bestDot = maxIndex;
 
         if (this.#dots[this.#bestDot].checkReachedGoal()) {

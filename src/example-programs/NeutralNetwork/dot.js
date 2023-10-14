@@ -15,9 +15,9 @@ export default class Dot {
     #prevY = 0;
 
     constructor(brain) {
-        this.#brain = brain || new Brain(450);
-        this.#pos = new Vector(502, 128);
-        this.#vel = new Vector(0, 0, 6);
+        this.#brain = brain || new Brain(200);
+        this.#pos = new Vector(10, 128);
+        this.#vel = new Vector(0, 0);
         this.#acc = new Vector(0, 0);
     }
 
@@ -49,7 +49,7 @@ export default class Dot {
         if (this.#prevX !== 0 && this.#prevY !== 0) {
             drawRect(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2, "white");
         }
-        if (this.#dead) {
+        if (this.#dead || this.#reachedGoal) {
             this.#prevX = 0;
             this.#prevY = 0;
         } else {
@@ -66,15 +66,14 @@ export default class Dot {
         } else {
             this.#dead = true;
         }
-        this.#vel.add(this.#acc);
+        this.#vel.addVelocity(this.#acc);
         this.#pos.add(this.#vel);
     }
 
     update() {
         if (!this.#dead && !this.#reachedGoal) {
             this.#move();
-            const inFirstBarrier = this.#pos.getX() > 250 && this.#pos.getX() < 260 && this.#pos.getY() > 50 && this.#pos.getY() < 206;
-            if (this.#pos.getX() < 2 || this.#pos.getY() < 2 || this.#pos.getX() > 510 || this.#pos.getY() > 254|| inFirstBarrier) {
+            if (this.#pos.getX() < 2 || this.#pos.getY() < 2 || this.#pos.getX() > 510 || this.#pos.getY() > 254) {
                 this.#dead = true;
             } else if (this.checkReachedGoal()) {
                 this.#reachedGoal = true;
@@ -88,7 +87,7 @@ export default class Dot {
 
     calculateFitness() {
         if (this.#reachedGoal) {
-            this.#fitness = Math.max(15000, 32767 - Math.floor((32767 - 15000) / this.#brain.getDirections().length) * this.#brain.getStep());
+            this.#fitness = Math.max(10000, 32767 - Math.floor((32767 - 10000) / this.#brain.getDirections().length) * this.#brain.getStep());
         } else {
             const x = Math.abs(this.#pos.getX() - goal.getX()) / 2;
             const y = Math.abs(this.#pos.getY() - goal.getY()) / 2;

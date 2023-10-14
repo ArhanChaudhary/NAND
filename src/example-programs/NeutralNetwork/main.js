@@ -5,9 +5,8 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const population = new Population(500);
 
-export const goal = new Vector(10, 128);
+export const goal = new Vector(500, 128);
 drawRect(goal.getX() - 2, goal.getY() - 2, goal.getX() + 2, goal.getY() + 2, "black");
-drawRect(250, 50, 260, 206, "red");
 
 function test() {
     let intervalTimer = 25;
