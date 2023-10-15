@@ -8,7 +8,7 @@ export class Main {
     static main() {
         let goal;
         let population;
-        Util.init();
+        Util.init(2);
         Vector.init();
         Brain.init();
         goal = new Vector(500, 128);

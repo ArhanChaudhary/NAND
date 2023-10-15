@@ -49,11 +49,9 @@ export default class Dot {
 
     show() {
         if (!(this.#dead || this.#reachedGoal)) {
-            if (!(this.#prevX === 0 || this.#prevY === 0)) {
-                ctx.fillStyle = 'white';
-                Util.drawRect(this.#prevX, this.#prevY, 2, 2);
-                ctx.fillStyle = 'black';
-            }
+            ctx.fillStyle = 'white';
+            Util.drawRect(this.#prevX, this.#prevY, 2, 2);
+            ctx.fillStyle = 'black';
             this.#prevX = this.#pos.getX() - 1;
             this.#prevY = this.#pos.getY() - 1;
             Util.drawRect(this.#prevX, this.#prevY, 2, 2);
@@ -66,7 +64,6 @@ export default class Dot {
                 this.#dead = true;
             } else {
                 this.#acc = this.#brain.getNextDirection();
-                this.#brain.incStep();
             }
             this.#vel.addVelocity(this.#acc);
             this.#pos.add(this.#vel);

@@ -3,8 +3,8 @@ ctx.fillStyle = 'black';
 export default class Util {
     static #next;
 
-    static init() {
-        Util.#next = 0;
+    static init(seed) {
+        Util.#next = seed;
     }
 
     static drawRect(x1, y1, x2, y2) {
@@ -14,7 +14,7 @@ export default class Util {
     }
 
     static random() {
-        Util.#next = (Util.#next * 11757 + 2489) % 65536;
+        Util.#next = (Util.#next * 17565 + 2489) % 65536;
         return Util.#next;
     }
 

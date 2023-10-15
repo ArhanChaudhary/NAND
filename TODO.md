@@ -8,6 +8,10 @@
 * mouse input and click input
 * ensure all subroutines are defined at compile time, automatic dealloc in compiler
 
+* read perspective
+* how fast is 2^n division?
+* override screen.drawrect
+
 changed:
 if and else doesn't require bracket
 [][] works
