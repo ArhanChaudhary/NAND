@@ -1,0 +1,116 @@
+class Population {
+    static Array dots;
+    static int gen;
+    static int minStep;
+    static int size;
+    static Array fitnessCache;
+    
+    constructor Population new() {
+        var int i;
+        let gen = 1;
+        let minStep = 32767;
+        let size = 50;
+        let fitnessCache = Array.new(size);
+        let dots = Array.new(size);
+        while (i < size) {
+            let dots[i] = Dot.new(Brain.new());
+            let i = i + 1;
+        }
+        return this;
+    }
+
+    method void show() {
+        var int i;
+        var Dot tmp;
+        while (i < size) {
+            let tmp = dots[i];
+            do tmp.show();
+            let i = i + 1;
+        }
+    }
+
+    method void update() {
+        var int i;
+        var Dot dot;
+        var Brain brain;
+        while (i < size) {
+            let dot = dots[i];
+            let brain = dot.getBrain();
+            if (~(brain.getStep() > minStep)) {
+                do dot.update();
+            } else {
+                do dot.setDead(true);
+            }
+            let i = i + 1;
+        }
+    }
+
+    method boolean allDotsDead() {
+        var int i;
+        var Dot dot;
+        while (i < size) {
+            let dot = dots[i];
+            if (~(dot.getDead() | dot.checkReachedGoal()))
+                return false;
+            let i = i + 1;
+        }
+        return true;
+    }
+
+    // naturalSelection() {
+    //     let dot;
+    //     let bestDot;
+    //     let dotFitness;
+    //     let bestFitness = -1;
+    //     let i = 0;
+    //     let j;
+    //     let newDots = new Array(size);
+    //     let sum;
+    //     let rand;
+
+    //     let fitnessSum = 0;
+    //     while (i < size) {
+    //         dot = dots[i];
+    //         dotFitness = dot.calculateFitness();
+    //         fitnessCache[i] = dotFitness;
+    //         if (dotFitness > bestFitness) {
+    //             bestFitness = dotFitness;
+    //             bestDot = dot;
+    //         }
+    //         fitnessSum = dotFitness + fitnessSum;
+    //         i++;
+    //     }
+
+    //     if (bestDot.checkReachedGoal()) {
+    //         minStep = bestDot.getBrain().getStep();
+    //     }
+
+    //     newDots[0] = bestDot.getBaby();
+    //     i = 1;
+    //     while (i < size) {
+    //         rand = Math.random() * fitnessSum;
+    //         sum = 0;
+    //         j = 0;
+    //         while (j < size) {
+    //             sum += fitnessCache[j];
+    //             if (sum > rand) {
+    //                 dot = dots[j];
+    //                 j = size;
+    //             }
+    //             j++;
+    //         }
+    //         newDots[i] = dot.getBaby();
+    //         i++;
+    //     }
+    //     dots = newDots;
+    //     gen++;
+    // }
+
+    // mutateBabies() {
+    //     let i = 1;
+    //     while (i < size) {
+    //         dots[i].getBrain().mutate();
+    //         i++;
+    //     }
+    // }
+}

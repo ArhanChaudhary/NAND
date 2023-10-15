@@ -28,7 +28,7 @@ export default class Dot {
         this.#brain = brain || new Brain();
         this.#pos = new Vector(10, 128);
         this.#vel = new Vector(0, 0);
-        this.#acc = new Vector(0, 0);
+        this.#acc = null;
     }
 
     getDead() {

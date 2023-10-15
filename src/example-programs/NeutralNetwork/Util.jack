@@ -1,0 +1,12 @@
+class Util {
+    static int next;
+
+    function void init(int seed) {
+        let next = seed;
+    }
+
+    function int random() {
+        let next = (next * 17565) + 2489;
+        return next;
+    }
+}

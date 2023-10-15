@@ -1,0 +1,96 @@
+class Dot {
+    field Vector pos;
+    field Vector vel;
+    field Vector acc;
+    field Brain brain;
+    field boolean dead;
+    field boolean reachedGoal;
+    field int prevX;
+    field int prevY;
+    static Vector goal;
+    static int stepWeight;
+
+    function void init(Vector _goal) {
+        let goal = _goal;
+        let stepWeight = (32767 - 10000) / Brain.getBrainSize();
+    }
+
+    constructor Dot new(Brain _brain) {
+        let dead = false;
+        let reachedGoal = false;
+        let prevX = 0;
+        let prevY = 0;
+
+        let brain = _brain;
+        let pos = Vector.new(10, 128);
+        let vel = Vector.new(0, 0);
+        let acc = null;
+        return this;
+    }
+
+    method boolean getDead() {
+        return dead;
+    }
+
+    method void setDead(boolean _dead) {
+        let dead = _dead;
+    }
+
+    method Brain getBrain() {
+        return brain;
+    }
+
+    method void setBrain(Brain _brain) {
+        let brain = _brain;
+    }
+
+    method void show() {
+        if (~(dead | reachedGoal)) {
+            do Screen.setColor(false);
+            do Screen.drawRectangle(prevX, prevY, prevX + 2, prevY + 2);
+            do Screen.setColor(true);
+            let prevX = pos.getX() - 1;
+            let prevY = pos.getY() - 1;
+            do Screen.drawRectangle(prevX, prevY, prevX + 2, prevY + 2);
+        }
+    }
+
+    method void update() {
+        if (~(dead | reachedGoal)) {
+            if (~(Brain.getBrainSize() > brain.getStep())) {
+                let dead = true;
+            } else {
+                let acc = brain.getNextDirection();
+            }
+            do vel.addVelocity(acc);
+            do pos.add(vel);
+
+            if (~((pos.getX() < 2) | (pos.getY() < 2) | (pos.getX() > 510) | (pos.getY() > 254))) {
+                if (checkReachedGoal()) {
+                    let reachedGoal = true;
+                }
+            } else {
+                let dead = true;
+            }
+        }
+    }
+
+    method boolean checkReachedGoal() {
+        return (Math.abs(pos.getX() - goal.getX()) < 4) & (Math.abs(pos.getY() - goal.getY()) < 4);
+    }
+
+    method int calculateFitness() {
+        var int x;
+        var int y;
+        if (~reachedGoal) {
+            let x = Math.abs(pos.getX() - goal.getX()) / 2;
+            let y = Math.abs(pos.getY() - goal.getY()) / 2;
+            return 32767 / Math.max(10, (x * x) + (y * y) - 100);
+        }
+        return Math.max(10000, 32767 - (stepWeight * brain.getStep()));
+    }
+
+    method Dot getBaby() {
+        return Dot.new(brain.clone());
+    }
+}
