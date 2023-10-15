@@ -25,7 +25,6 @@ export default class Dot {
         this.#prevX = 0;
         this.#prevY = 0;
 
-
         this.#brain = brain || new Brain();
         this.#pos = new Vector(10, 128);
         this.#vel = new Vector(0, 0);
@@ -87,9 +86,11 @@ export default class Dot {
     }
 
     calculateFitness() {
+        let x;
+        let y;
         if (!this.#reachedGoal) {
-            const x = Math.abs(this.#pos.getX() - Dot.#goal.getX()) / 2;
-            const y = Math.abs(this.#pos.getY() - Dot.#goal.getY()) / 2;
+            x = Math.abs(this.#pos.getX() - Dot.#goal.getX()) / 2;
+            y = Math.abs(this.#pos.getY() - Dot.#goal.getY()) / 2;
             return Math.floor(32767 / Math.max(10, x * x + y * y - 100));
         }
         return Math.max(10000, 32767 - Dot.#stepWeight * this.#brain.getStep());

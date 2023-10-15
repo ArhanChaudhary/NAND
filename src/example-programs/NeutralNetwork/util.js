@@ -1,4 +1,4 @@
-export const ctx = document.getElementById("canvas").getContext("2d");
+export let ctx = document.getElementById("canvas").getContext("2d");
 ctx.fillStyle = 'black';
 export default class Util {
     static #next;

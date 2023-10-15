@@ -1,94 +1,113 @@
 import Dot from './dot.js';
 
 export default class Population {
-    #dots;
-    #fitnessSum;
+    static #dots;
     static #gen;
-    static #bestDot;
     static #minStep;
     static #size;
 
     static init() {
         Population.#gen = 1;
-        Population.#bestDot = 0;
         Population.#minStep = 32767;
 
         Population.#size = 75;
     }
 
     constructor() {
-        this.#dots = new Array(Population.#size);
         let i = 0;
+        Population.#dots = new Array(Population.#size);
         while (i < Population.#size) {
-            this.#dots[i] = new Dot();
+            Population.#dots[i] = new Dot();
             i++;
         }
     }
 
     show() {
-        for (let i = 1; i < this.#dots.length; i++) {
-            this.#dots[i].show();
+        let i = 0;
+        while (i < Population.#size) {
+            Population.#dots[i].show();
+            i++;
         }
-        this.#dots[0].show();
     }
 
     update() {
-        for (let dot of this.#dots) {
-            if (dot.getBrain().getStep() > Population.#minStep) {
-                dot.setDead(true);
-            } else {
+        let i = 0;
+        let dot;
+        while (i < Population.#size) {
+            dot = Population.#dots[i];
+            if (!(dot.getBrain().getStep() > Population.#minStep)) {
                 dot.update();
+            } else {
+                dot.setDead(true);
             }
+            i++;
         }
     }
 
     allDotsDead() {
-        for (let dot of this.#dots) {
-            if (!dot.getDead() && !dot.checkReachedGoal()) return false;
+        let i = 0;
+        let dot;
+        while (i < Population.#size) {
+            dot = Population.#dots[i];
+            if (!(dot.getDead() || dot.checkReachedGoal()))
+                return false;
+            i++;
         }
         return true;
     }
 
     naturalSelection() {
-        let max = 0;
-        let maxIndex = 0;
-        this.#fitnessSum = 0;
-        for (let i = 0; i < this.#dots.length; i++) {
-            const dotFitness = this.#dots[i].calculateFitness();
-            if (dotFitness > max) {
-                max = dotFitness;
-                maxIndex = i;
+        let dot;
+        let bestDot;
+        let dotFitness;
+        let bestFitness = -1;
+        let i = 0;
+        let j;
+        let newDots = new Array(Population.#size);
+        let sum;
+        let rand;
+        let fitnessSum = 0;
+        while (i < Population.#size) {
+            dot = Population.#dots[i];
+            dotFitness = dot.calculateFitness();
+            if (dotFitness > bestFitness) {
+                bestFitness = dotFitness;
+                bestDot = dot;
             }
-            this.#fitnessSum += dotFitness;
-        }
-        Population.#bestDot = maxIndex;
-
-        if (this.#dots[Population.#bestDot].checkReachedGoal()) {
-            Population.#minStep = this.#dots[Population.#bestDot].getBrain().getStep();
+            fitnessSum += dotFitness;
+            i++;
         }
 
-        const newDots = new Array(this.#dots.length);
-        newDots[0] = this.#dots[Population.#bestDot].getBaby();
-        for (let i = 1; i < newDots.length; i++) {
-            newDots[i] = this.selectParent().getBaby();
+        if (bestDot.checkReachedGoal()) {
+            Population.#minStep = bestDot.getBrain().getStep();
         }
-        this.#dots = newDots;
+
+        newDots[0] = bestDot.getBaby();
+        i = 1;
+        while (i < Population.#size) {
+            rand = Math.random() * fitnessSum;
+            sum = 0;
+            j = 0;
+            dot = Population.#dots[0];
+            while (j < Population.#size) {
+                dot = Population.#dots[j];
+                sum += dot.calculateFitness();
+                if (sum > rand)
+                    j = Population.#size;
+                j++;
+            }
+            newDots[i] = dot.getBaby();
+            i++;
+        }
+        Population.#dots = newDots;
         Population.#gen++;
     }
 
-    selectParent() {
-        let rand = Math.random() * this.#fitnessSum;
-        let sum = 0;
-        for (let dot of this.#dots) {
-            sum += dot.calculateFitness();
-            if (sum > rand) return dot;
-        }
-        return this.#dots[0];
-    }
-
     mutateBabies() {
-        for (let i = 1; i < this.#dots.length; i++) {
-            this.#dots[i].getBrain().mutate();
+        let i = 1;
+        while (i < Population.#size) {
+            Population.#dots[i].getBrain().mutate();
+            i++;
         }
     }
 }

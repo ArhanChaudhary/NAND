@@ -45,7 +45,7 @@ export default class Brain {
     }
 
     clone() {
-        const directions = new Array(Brain.#brainSize);
+        let directions = new Array(Brain.#brainSize);
         let i = 0;
         while (i < Brain.#brainSize) {
             directions[i] = this.#directions[i];

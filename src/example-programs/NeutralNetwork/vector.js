@@ -8,9 +8,9 @@ export default class Vector {
     }
 
     static randomAcc() {
-        const mag = 2;
-        const x = Math.floor(Math.random() * (mag * 2 + 1) - mag);
-        const y = Math.floor(Math.random() * (mag * 2 + 1) - mag);
+        let mag = 2;
+        let x = Math.floor(Math.random() * (mag * 2 + 1) - mag);
+        let y = Math.floor(Math.random() * (mag * 2 + 1) - mag);
         if (x * x + y * y > mag * mag) {
             return Vector.randomAcc();
         }

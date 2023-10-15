@@ -6,14 +6,16 @@ import Brain from "./brain.js";
 
 export class Main {
     static main() {
+        let goal;
+        let population;
         Util.init();
         Brain.init();
-        const goal = new Vector(500, 128);
+        goal = new Vector(500, 128);
         Dot.init(goal);
         Population.init();
 
         Util.drawRect(goal.getX() - 2, goal.getY() - 2, 4, 4);
-        const population = new Population();
+        population = new Population();
         setInterval(() => {
             if (population.allDotsDead()) {
                 Util.clearScreen();
