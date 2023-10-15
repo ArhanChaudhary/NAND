@@ -3,14 +3,25 @@ import Dot from './dot.js';
 export default class Population {
     #dots;
     #fitnessSum;
-    #gen = 1;
-    #bestDot = 0;
-    #minStep = 32767;
+    static #gen;
+    static #bestDot;
+    static #minStep;
+    static #size;
 
-    constructor(size) {
-        this.#dots = new Array(size);
-        for (let i = 0; i < this.#dots.length; i++) {
+    static init() {
+        Population.#gen = 1;
+        Population.#bestDot = 0;
+        Population.#minStep = 32767;
+
+        Population.#size = 75;
+    }
+
+    constructor() {
+        this.#dots = new Array(Population.#size);
+        let i = 0;
+        while (i < Population.#size) {
             this.#dots[i] = new Dot();
+            i++;
         }
     }
 
@@ -23,17 +34,11 @@ export default class Population {
 
     update() {
         for (let dot of this.#dots) {
-            if (dot.getBrain().getStep() > this.#minStep) {
+            if (dot.getBrain().getStep() > Population.#minStep) {
                 dot.setDead(true);
             } else {
                 dot.update();
             }
-        }
-    }
-
-    calculateFitness() {
-        for (let dot of this.#dots) {
-            dot.calculateFitness();
         }
     }
 
@@ -45,31 +50,37 @@ export default class Population {
     }
 
     naturalSelection() {
-        const newDots = new Array(this.#dots.length);
-        this.setIsBest();
-        this.calculateFitnessSum();
+        let max = 0;
+        let maxIndex = 0;
+        this.#fitnessSum = 0;
+        for (let i = 0; i < this.#dots.length; i++) {
+            const dotFitness = this.#dots[i].calculateFitness();
+            if (dotFitness > max) {
+                max = dotFitness;
+                maxIndex = i;
+            }
+            this.#fitnessSum += dotFitness;
+        }
+        Population.#bestDot = maxIndex;
 
-        newDots[0] = this.#dots[this.#bestDot].getBaby();
+        if (this.#dots[Population.#bestDot].checkReachedGoal()) {
+            Population.#minStep = this.#dots[Population.#bestDot].getBrain().getStep();
+        }
+
+        const newDots = new Array(this.#dots.length);
+        newDots[0] = this.#dots[Population.#bestDot].getBaby();
         for (let i = 1; i < newDots.length; i++) {
             newDots[i] = this.selectParent().getBaby();
         }
         this.#dots = newDots;
-        this.#gen++;
-    }
-
-    calculateFitnessSum() {
-        this.#fitnessSum = 0;
-        for (let dot of this.#dots) {
-            this.#fitnessSum += dot.getFitness();
-        }
-
+        Population.#gen++;
     }
 
     selectParent() {
         let rand = Math.random() * this.#fitnessSum;
         let sum = 0;
         for (let dot of this.#dots) {
-            sum += dot.getFitness();
+            sum += dot.calculateFitness();
             if (sum > rand) return dot;
         }
         return this.#dots[0];
@@ -78,22 +89,6 @@ export default class Population {
     mutateBabies() {
         for (let i = 1; i < this.#dots.length; i++) {
             this.#dots[i].getBrain().mutate();
-        }
-    }
-
-    setIsBest() {
-        let max = 0;
-        let maxIndex = 0;
-        for (let i = 0; i < this.#dots.length; i++) {
-            if (this.#dots[i].getFitness() > max) {
-                max = this.#dots[i].getFitness();
-                maxIndex = i;
-            }
-        }
-        this.#bestDot = maxIndex;
-
-        if (this.#dots[this.#bestDot].checkReachedGoal()) {
-            this.#minStep = this.#dots[this.#bestDot].getBrain().getStep();
         }
     }
 }

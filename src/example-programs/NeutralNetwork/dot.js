@@ -8,36 +8,28 @@ export default class Dot {
     #acc;
     #brain;
     #dead;
-    #fitness;
     #reachedGoal;
     #prevX;
     #prevY;
     static #goal;
-    static #brainSize;
     static #stepWeight;
 
     static init(goal) {
         Dot.#goal = goal;
-        Dot.#brainSize = 150;
-        Dot.#stepWeight = Math.floor((32767 - 10000) / Dot.#brainSize);
+        Dot.#stepWeight = Math.floor((32767 - 10000) / Brain.getBrainSize());
     }
 
     constructor(brain) {
         this.#dead = false;
-        this.#fitness = 0;
         this.#reachedGoal = false;
         this.#prevX = 0;
         this.#prevY = 0;
 
 
-        this.#brain = brain || Brain.new(Dot.#brainSize);
+        this.#brain = brain || new Brain();
         this.#pos = new Vector(10, 128);
         this.#vel = new Vector(0, 0);
         this.#acc = new Vector(0, 0);
-    }
-
-    getFitness() {
-        return this.#fitness;
     }
 
     getDead() {
@@ -71,20 +63,21 @@ export default class Dot {
 
     update() {
         if (!(this.#dead || this.#reachedGoal)) {
-            // move
-            if (this.#brain.getDirections().length > this.#brain.getStep()) {
-                this.#acc = this.#brain.getDirections()[this.#brain.getStep()];
-                this.#brain.incStep();
-            } else {
+            if (!(Brain.getBrainSize() > this.#brain.getStep())) {
                 this.#dead = true;
+            } else {
+                this.#acc = this.#brain.getNextDirection();
+                this.#brain.incStep();
             }
             this.#vel.addVelocity(this.#acc);
             this.#pos.add(this.#vel);
 
-            if (this.#pos.getX() < 2 || this.#pos.getY() < 2 || this.#pos.getX() > 510 || this.#pos.getY() > 254) {
+            if (!(this.#pos.getX() < 2 || this.#pos.getY() < 2 || this.#pos.getX() > 510 || this.#pos.getY() > 254)) {
+                if (this.checkReachedGoal()) {
+                    this.#reachedGoal = true;
+                }
+            } else {
                 this.#dead = true;
-            } else if (this.checkReachedGoal()) {
-                this.#reachedGoal = true;
             }
         }
     }
@@ -94,13 +87,12 @@ export default class Dot {
     }
 
     calculateFitness() {
-        if (this.#reachedGoal) {
-            this.#fitness = Math.max(10000, 32767 - Dot.#stepWeight * this.#brain.getStep());
-        } else {
+        if (!this.#reachedGoal) {
             const x = Math.abs(this.#pos.getX() - Dot.#goal.getX()) / 2;
             const y = Math.abs(this.#pos.getY() - Dot.#goal.getY()) / 2;
-            this.#fitness = Math.floor(32767 / Math.max(10, x * x + y * y - 100));
+            return Math.floor(32767 / Math.max(10, x * x + y * y - 100));
         }
+        return Math.max(10000, 32767 - Dot.#stepWeight * this.#brain.getStep());
     }
 
     getBaby() {

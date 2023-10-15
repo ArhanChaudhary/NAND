@@ -4,27 +4,28 @@ import Util from "./util.js";
 export default class Brain {
     #directions;
     #step;
+    static #brainSize;
+    
+    static init() {
+        Brain.#brainSize = 150;
+    }
 
-    constructor(size, directions) {
+    static getBrainSize() {
+        return Brain.#brainSize;
+    }
+
+    constructor(directions) {
         this.#step = 0;
         if (directions) {
             this.#directions = directions;
         } else {
-            this.#directions = new Array(size);
+            this.#directions = new Array(Brain.#brainSize);
             let i = 0;
-            while (i < this.#directions.length) {
+            while (i < Brain.#brainSize) {
                 this.#directions[i] = Vector.randomAcc();
                 i++;
             }
         }
-    }
-
-    static new(size) {
-        return new Brain(size);
-    }
-
-    static newWithDirections(directions) {
-        return new Brain(null, directions);
     }
 
     getDirections() {
@@ -39,27 +40,27 @@ export default class Brain {
         this.#step++;
     }
 
+    getNextDirection() {
+        return this.#directions[this.#step];
+    }
+
     clone() {
-        const directions = new Array(this.#directions.length);
+        const directions = new Array(Brain.#brainSize);
         let i = 0;
-        while (i < this.#directions.length) {
+        while (i < Brain.#brainSize) {
             directions[i] = this.#directions[i];
             i++;
         }
-        return Brain.newWithDirections(directions);
+        return new Brain(directions);
     }
 
     mutate() {
         let i = 0;
-
-        let count = 0;
-        while (i < this.#directions.length) {
+        while (i < Brain.#brainSize) {
             if ((Util.random() & 127) === 0) {
-                count++;
                 this.#directions[i] = Vector.randomAcc();
             }
             i++;
         }
-        console.log(count / this.#directions.length);
     }
 }
