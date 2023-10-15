@@ -1,6 +1,25 @@
+import Util from "./util.js";
+
 export default class Vector {
     #x;
     #y;
+    static #accVectors;
+
+    static init() {
+        Vector.#accVectors = new Array(12);
+        Vector.#accVectors[0] = new Vector(0, 0);
+        Vector.#accVectors[1] = new Vector(0, 1);
+        Vector.#accVectors[2] = new Vector(1, 0);
+        Vector.#accVectors[3] = new Vector(1, 1);
+        Vector.#accVectors[4] = new Vector(2, 0);
+        Vector.#accVectors[5] = new Vector(0, 2);
+        Vector.#accVectors[6] = new Vector(0, -1);
+        Vector.#accVectors[7] = new Vector(1, -1);
+        Vector.#accVectors[8] = new Vector(0, -2);
+        Vector.#accVectors[9] = new Vector(-1, 0);
+        Vector.#accVectors[10] = new Vector(-1, 1);
+        Vector.#accVectors[11] = new Vector(-2, 0);
+    }
 
     constructor(x, y) {
         this.#x = x;
@@ -8,13 +27,34 @@ export default class Vector {
     }
 
     static randomAcc() {
-        let mag = 2;
-        let x = Math.floor(Math.random() * (mag * 2 + 1) - mag);
-        let y = Math.floor(Math.random() * (mag * 2 + 1) - mag);
-        if (x * x + y * y > mag * mag) {
-            return Vector.randomAcc();
+        let rand = Util.random() & 30720;
+        while (!(rand < 22529)) {
+            rand = Util.random() & 30720;
         }
-        return new Vector(x, y);
+        if (rand === 2048) {
+            rand = 1;
+        } else if (rand === 4096) {
+            rand = 2;
+        } else if (rand === 6144) {
+            rand = 3;
+        } else if (rand === 8192) {
+            rand = 4;
+        } else if (rand === 10240) {
+            rand = 5;
+        } else if (rand === 12288) {
+            rand = 6;
+        } else if (rand === 14336) {
+            rand = 7;
+        } else if (rand === 16384) {
+            rand = 8;
+        } else if (rand === 18432) {
+            rand = 9;
+        } else if (rand === 20480) {
+            rand = 10;
+        } else if (rand === 22528) {
+            rand = 11;
+        }
+        return Vector.#accVectors[rand];
     }
 
     getX() {
@@ -31,25 +71,19 @@ export default class Vector {
     }
 
     addVelocity(acc) {
+        let xIsNegative = false;
+        let yIsNegative = false;
         let x = this.#x + acc.getX();
         let y = this.#y + acc.getY();
         
         if (x < 0) {
-            var xIsNegative = true;
+            xIsNegative = true;
             x = -x;
         }
         if (y < 0) {
-            var yIsNegative = true;
+            yIsNegative = true;
             y = -y;
         }
-
-        // if (x > 1) {
-        //     x--;
-        // }
-
-        // if (y > 1) {
-        //     y--;
-        // }
 
         if (x > 5) {
             x = 5;
@@ -74,6 +108,7 @@ export default class Vector {
         if (yIsNegative) {
             y = -y;
         }
+
         this.#x = x;
         this.#y = y;
     }

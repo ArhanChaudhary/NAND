@@ -14,7 +14,7 @@ export default class Util {
     }
 
     static random() {
-        Util.#next = (Util.#next * 11753 + 2489) % 65536;
+        Util.#next = (Util.#next * 11757 + 2489) % 65536;
         return Util.#next;
     }
 

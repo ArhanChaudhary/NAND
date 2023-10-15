@@ -5,16 +5,14 @@ export default class Population {
     static #gen;
     static #minStep;
     static #size;
-
-    static init() {
-        Population.#gen = 1;
-        Population.#minStep = 32767;
-
-        Population.#size = 75;
-    }
+    static #fitnessCache;
 
     constructor() {
         let i = 0;
+        Population.#gen = 1;
+        Population.#minStep = 32767;
+        Population.#size = 75;
+        Population.#fitnessCache = new Array(Population.#size);
         Population.#dots = new Array(Population.#size);
         while (i < Population.#size) {
             Population.#dots[i] = new Dot();
@@ -66,15 +64,17 @@ export default class Population {
         let newDots = new Array(Population.#size);
         let sum;
         let rand;
+
         let fitnessSum = 0;
         while (i < Population.#size) {
             dot = Population.#dots[i];
             dotFitness = dot.calculateFitness();
+            Population.#fitnessCache[i] = dotFitness;
             if (dotFitness > bestFitness) {
                 bestFitness = dotFitness;
                 bestDot = dot;
             }
-            fitnessSum += dotFitness;
+            fitnessSum = dotFitness + fitnessSum;
             i++;
         }
 
@@ -88,12 +88,12 @@ export default class Population {
             rand = Math.random() * fitnessSum;
             sum = 0;
             j = 0;
-            dot = Population.#dots[0];
             while (j < Population.#size) {
-                dot = Population.#dots[j];
-                sum += dot.calculateFitness();
-                if (sum > rand)
+                sum += Population.#fitnessCache[j];
+                if (sum > rand) {
+                    dot = Population.#dots[j];
                     j = Population.#size;
+                }
                 j++;
             }
             newDots[i] = dot.getBaby();

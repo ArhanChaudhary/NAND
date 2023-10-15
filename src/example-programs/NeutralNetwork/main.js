@@ -9,10 +9,10 @@ export class Main {
         let goal;
         let population;
         Util.init();
+        Vector.init();
         Brain.init();
         goal = new Vector(500, 128);
         Dot.init(goal);
-        Population.init();
 
         Util.drawRect(goal.getX() - 2, goal.getY() - 2, 4, 4);
         population = new Population();
