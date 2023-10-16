@@ -76,7 +76,7 @@ export default class Dot {
             this.#posY += this.#vel.getY();
 
             if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254)) {
-                if (Math.abs(this.#posX - Dot.#goal.getX()) < 4 && Math.abs(this.#posY - Dot.#goal.getY()) < 4) {
+                if (!(Math.abs(this.#posX - Dot.#goal.getX()) > 3 || Math.abs(this.#posY - Dot.#goal.getY()) > 3)) {
                     this.#reachedGoal = true;
                     this.#dead = true;
                 }

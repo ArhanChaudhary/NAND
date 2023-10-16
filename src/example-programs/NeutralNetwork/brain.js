@@ -55,7 +55,7 @@ export default class Brain {
     mutate() {
         let i = 0;
         while (i < Brain.#brainSize) {
-            if ((Util.random() & 127) === 0) {
+            if ((Util.random() & 32512) === 0) {
                 this.#directions[i] = Vector.randomAcc();
             }
             i++;

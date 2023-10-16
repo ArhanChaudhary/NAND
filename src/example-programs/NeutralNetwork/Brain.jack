@@ -61,7 +61,7 @@ class Brain {
     method void mutate() {
         var int i;
         while (i < brainSize) {
-            if ((Util.random() & 127) = 0) {
+            if ((Util.random() & 32512) = 0) {
                 let directions[i] = Vector.randomAcc();
             }
             let i = i + 1;

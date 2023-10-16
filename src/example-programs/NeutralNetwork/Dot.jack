@@ -72,7 +72,7 @@ class Dot {
             let posY = posY + vel.getY();
 
             if (~((posX < 2) | (posY < 2) | (posX > 510) | (posY > 254))) {
-                if ((Math.abs(posX - goal.getX()) < 4) & (Math.abs(posY - goal.getY()) < 4)) {
+                if (~((Math.abs(posX - goal.getX()) > 3) | (Math.abs(posY - goal.getY()) > 3))) {
                     let reachedGoal = true;
                     let dead = true;
                 }
@@ -88,7 +88,7 @@ class Dot {
         if (~reachedGoal) {
             let x = Math.abs(posX - goal.getX()) / 2;
             let y = Math.abs(posY - goal.getY()) / 2;
-            return 32767 / Math.max(10, (x * x) + (y * y) - 100);
+            return 32767 / Math.max(10, ((x * x) + (y * y)) - 100);
         }
         return Math.max(10000, 32767 - (stepWeight * brain.getStep()));
     }
