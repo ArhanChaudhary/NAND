@@ -5,11 +5,11 @@ class Population {
     static int size;
     static Array fitnessCache;
     
-    constructor Population new() {
+    constructor Population new(int _size) {
         var int i;
         let gen = 1;
         let minStep = 32767;
-        let size = 50;
+        let size = _size;
         let fitnessCache = Array.new(size);
         let dots = Array.new(size);
         while (i < size) {

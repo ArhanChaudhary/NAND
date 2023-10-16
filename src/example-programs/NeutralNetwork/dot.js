@@ -3,7 +3,8 @@ import Brain from "./brain.js";
 import Util, { ctx } from "./util.js";
 
 export default class Dot {
-    #pos;
+    #posX;
+    #posY;
     #vel;
     #acc;
     #brain;
@@ -26,7 +27,8 @@ export default class Dot {
         this.#prevY = 0;
 
         this.#brain = brain || new Brain();
-        this.#pos = new Vector(10, 128);
+        this.#posX = 10;
+        this.#posY = 128;
         this.#vel = new Vector(0, 0);
         this.#acc = null;
     }
@@ -52,8 +54,8 @@ export default class Dot {
             ctx.fillStyle = 'white';
             Util.drawRect(this.#prevX, this.#prevY, 2, 2);
             ctx.fillStyle = 'black';
-            this.#prevX = this.#pos.getX() - 1;
-            this.#prevY = this.#pos.getY() - 1;
+            this.#prevX = this.#posX - 1;
+            this.#prevY = this.#posY - 1;
             Util.drawRect(this.#prevX, this.#prevY, 2, 2);
         }
     }
@@ -66,9 +68,10 @@ export default class Dot {
                 this.#acc = this.#brain.getNextDirection();
             }
             this.#vel.addVelocity(this.#acc);
-            this.#pos.add(this.#vel);
+            this.#posX += this.#vel.getX();
+            this.#posY += this.#vel.getY();
 
-            if (!(this.#pos.getX() < 2 || this.#pos.getY() < 2 || this.#pos.getX() > 510 || this.#pos.getY() > 254)) {
+            if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254)) {
                 if (this.checkReachedGoal()) {
                     this.#reachedGoal = true;
                 }
@@ -79,15 +82,15 @@ export default class Dot {
     }
 
     checkReachedGoal() {
-        return Math.abs(this.#pos.getX() - Dot.#goal.getX()) < 4 && Math.abs(this.#pos.getY() - Dot.#goal.getY()) < 4;
+        return Math.abs(this.#posX - Dot.#goal.getX()) < 4 && Math.abs(this.#posY - Dot.#goal.getY()) < 4;
     }
 
     calculateFitness() {
         let x;
         let y;
         if (!this.#reachedGoal) {
-            x = Math.abs(this.#pos.getX() - Dot.#goal.getX()) / 2;
-            y = Math.abs(this.#pos.getY() - Dot.#goal.getY()) / 2;
+            x = Math.abs(this.#posX - Dot.#goal.getX()) / 2;
+            y = Math.abs(this.#posY - Dot.#goal.getY()) / 2;
             return Math.floor(32767 / Math.max(10, x * x + y * y - 100));
         }
         return Math.max(10000, 32767 - Dot.#stepWeight * this.#brain.getStep());

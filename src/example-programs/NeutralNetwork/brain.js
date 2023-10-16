@@ -6,8 +6,8 @@ export default class Brain {
     #step;
     static #brainSize;
     
-    static init() {
-        Brain.#brainSize = 150;
+    static init(brainSize) {
+        Brain.#brainSize = brainSize;
     }
 
     static getBrainSize() {

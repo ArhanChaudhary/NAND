@@ -8,14 +8,19 @@ export class Main {
     static main() {
         let goal;
         let population;
-        Util.init(2);
+
+        let brainSize = 135;
+        let populationCount = 60;
+        let seed = 2;
+
+        Util.init(seed);
         Vector.init();
-        Brain.init();
+        Brain.init(brainSize);
         goal = new Vector(500, 128);
         Dot.init(goal);
 
         Util.drawRect(goal.getX() - 2, goal.getY() - 2, 4, 4);
-        population = new Population();
+        population = new Population(populationCount);
         setInterval(() => {
             if (population.allDotsDead()) {
                 Util.clearScreen();

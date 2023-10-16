@@ -7,11 +7,11 @@ export default class Population {
     static #size;
     static #fitnessCache;
 
-    constructor() {
+    constructor(size) {
         let i = 0;
         Population.#gen = 1;
         Population.#minStep = 32767;
-        Population.#size = 75;
+        Population.#size = size;
         Population.#fitnessCache = new Array(Population.#size);
         Population.#dots = new Array(Population.#size);
         while (i < Population.#size) {

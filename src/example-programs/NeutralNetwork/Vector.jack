@@ -65,11 +65,6 @@ class Vector {
         return y;
     }
 
-    method void add(Vector v) {
-        let x = x + v.getX();
-        let y = y + v.getY();
-    }
-
     method void addVelocity(Vector acc) {
         var boolean xIsNegative;
         var boolean yIsNegative;

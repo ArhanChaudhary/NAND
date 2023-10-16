@@ -3,8 +3,8 @@ class Brain {
     field int step;
     static int brainSize;
     
-    function void init() {
-        let brainSize = 150;
+    function void init(int _brainSize) {
+        let brainSize = _brainSize;
     }
 
     function int getBrainSize() {
