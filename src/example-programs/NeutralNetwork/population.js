@@ -1,4 +1,5 @@
 import Dot from './dot.js';
+import Util from './util.js';
 
 export default class Population {
     static #dots;
@@ -62,10 +63,12 @@ export default class Population {
         let i = 0;
         let j;
         let newDots = new Array(Population.#size);
-        let sum;
-        let rand;
-
+        let selectionSum;
+        let selectionSumCoef;
+        let randFitness;
+        let randFitnessCoef;
         let fitnessSum = 0;
+        let fitnessSumCoef = 0;
         while (i < Population.#size) {
             dot = Population.#dots[i];
             dotFitness = dot.calculateFitness();
@@ -74,7 +77,14 @@ export default class Population {
                 bestFitness = dotFitness;
                 bestDot = dot;
             }
-            fitnessSum = dotFitness + fitnessSum;
+            fitnessSum += dotFitness;
+            if (fitnessSum >= 32768) {
+                fitnessSum -= 65536;
+            }
+            if (fitnessSum < 0) {
+                fitnessSum = fitnessSum + 32767 + 1;
+                fitnessSumCoef++;
+            }
             i++;
         }
 
@@ -85,12 +95,29 @@ export default class Population {
         newDots[0] = bestDot.getBaby();
         i = 1;
         while (i < Population.#size) {
-            rand = Math.random() * fitnessSum;
-            sum = 0;
+            randFitness = Util.random();
+            if (randFitness >= 32768) {
+                randFitness -= 65536;
+            }
+            randFitness = Math.floor(Math.abs(randFitness) / Math.floor(32767 / fitnessSum));
+            randFitnessCoef = Util.random();
+            if (randFitnessCoef >= 32768) {
+                randFitnessCoef -= 65536;
+            }
+            randFitnessCoef = Math.floor(Math.abs(randFitnessCoef) / Math.floor(32767 / fitnessSumCoef));
+            selectionSum = 0;
+            selectionSumCoef = 0;
             j = 0;
             while (j < Population.#size) {
-                sum += Population.#fitnessCache[j];
-                if (sum > rand) {
+                selectionSum += Population.#fitnessCache[j];
+                if (selectionSum >= 32768) {
+                    selectionSum -= 65536;
+                }
+                if (selectionSum < 0) {
+                    selectionSum = selectionSum + 32767 + 1;
+                    selectionSumCoef++;
+                }
+                if (selectionSumCoef > randFitnessCoef || (selectionSumCoef === randFitnessCoef && selectionSum > randFitness)) {
                     dot = Population.#dots[j];
                     j = Population.#size;
                 }

@@ -11,7 +11,7 @@ export class Main {
 
         let brainSize = 135;
         let populationCount = 60;
-        let seed = 2;
+        let seed = 4;
 
         Util.init(seed);
         Vector.init();
@@ -21,7 +21,8 @@ export class Main {
 
         Util.drawRect(goal.getX() - 2, goal.getY() - 2, 4, 4);
         population = new Population(populationCount);
-        setInterval(() => {
+        window.interval = 0;
+        function test() {
             if (population.allDotsDead()) {
                 Util.clearScreen();
                 population.naturalSelection();
@@ -30,7 +31,9 @@ export class Main {
                 population.update();
                 population.show();
             }
-        }, 25);
+            setTimeout(test, window.interval);
+        }
+        test();
     }
 }
 Main.main();
