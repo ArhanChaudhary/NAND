@@ -24,9 +24,8 @@ export class Main {
         setInterval(() => {
             if (population.allDotsDead()) {
                 Util.clearScreen();
-                Util.drawRect(goal.getX() - 2, goal.getY() - 2, 4, 4);
                 population.naturalSelection();
-                population.mutateBabies();
+                Util.drawRect(goal.getX() - 2, goal.getY() - 2, 4, 4);
             } else {
                 population.update();
                 population.show();

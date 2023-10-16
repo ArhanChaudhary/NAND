@@ -105,12 +105,4 @@ class Population {
     //     dots = newDots;
     //     gen++;
     // }
-
-    // mutateBabies() {
-    //     let i = 1;
-    //     while (i < size) {
-    //         dots[i].getBrain().mutate();
-    //         i++;
-    //     }
-    // }
 }

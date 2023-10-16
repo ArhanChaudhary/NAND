@@ -46,19 +46,13 @@ export default class Brain {
         let directions = new Array(Brain.#brainSize);
         let i = 0;
         while (i < Brain.#brainSize) {
-            directions[i] = this.#directions[i];
-            i++;
-        }
-        return new Brain(directions);
-    }
-
-    mutate() {
-        let i = 0;
-        while (i < Brain.#brainSize) {
             if ((Util.random() & 32512) === 0) {
-                this.#directions[i] = Vector.randomAcc();
+                directions[i] = Vector.randomAcc();
+            } else {
+                directions[i] = this.#directions[i];
             }
             i++;
         }
+        return new Brain(directions);
     }
 }

@@ -52,19 +52,13 @@ class Brain {
         var Array _directions;
         let _directions = Array.new(brainSize);
         while (i < brainSize) {
-            let directions[i] = _directions[i];
-            let i = i + 1;
-        }
-        return Brain.newWithDirections(_directions);
-    }
-
-    method void mutate() {
-        var int i;
-        while (i < brainSize) {
             if ((Util.random() & 32512) = 0) {
                 let directions[i] = Vector.randomAcc();
+            } else {
+                let directions[i] = _directions[i];
             }
             let i = i + 1;
         }
+        return Brain.newWithDirections(_directions);
     }
 }

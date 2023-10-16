@@ -102,12 +102,4 @@ export default class Population {
         Population.#dots = newDots;
         Population.#gen++;
     }
-
-    mutateBabies() {
-        let i = 1;
-        while (i < Population.#size) {
-            Population.#dots[i].getBrain().mutate();
-            i++;
-        }
-    }
 }

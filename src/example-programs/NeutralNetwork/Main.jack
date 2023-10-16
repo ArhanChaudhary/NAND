@@ -24,9 +24,8 @@ class Main {
                 do population.show();
             } else {
                 do Screen.clearScreen();
-                do Screen.drawRectangle(goal.getX() - 2, goal.getY() - 2, goal.getX() + 2, goal.getY() + 2);
                 // population.naturalSelection();
-                // population.mutateBabies();
+                do Screen.drawRectangle(goal.getX() - 2, goal.getY() - 2, goal.getX() + 2, goal.getY() + 2);
             }
         }
     }
