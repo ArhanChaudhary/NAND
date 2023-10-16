@@ -49,8 +49,12 @@ export default class Dot {
         this.#brain = brain;
     }
 
+    getReachedGoal() {
+        return this.#reachedGoal;
+    }
+
     show() {
-        if (!(this.#dead || this.#reachedGoal)) {
+        if (!this.#dead) {
             ctx.fillStyle = 'white';
             Util.drawRect(this.#prevX, this.#prevY, 2, 2);
             ctx.fillStyle = 'black';
@@ -61,7 +65,7 @@ export default class Dot {
     }
 
     update() {
-        if (!(this.#dead || this.#reachedGoal)) {
+        if (!this.#dead) {
             if (!(Brain.getBrainSize() > this.#brain.getStep())) {
                 this.#dead = true;
             } else {
@@ -72,17 +76,14 @@ export default class Dot {
             this.#posY += this.#vel.getY();
 
             if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254)) {
-                if (this.checkReachedGoal()) {
+                if (Math.abs(this.#posX - Dot.#goal.getX()) < 4 && Math.abs(this.#posY - Dot.#goal.getY()) < 4) {
                     this.#reachedGoal = true;
+                    this.#dead = true;
                 }
             } else {
                 this.#dead = true;
             }
         }
-    }
-
-    checkReachedGoal() {
-        return Math.abs(this.#posX - Dot.#goal.getX()) < 4 && Math.abs(this.#posY - Dot.#goal.getY()) < 4;
     }
 
     calculateFitness() {

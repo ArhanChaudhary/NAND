@@ -45,8 +45,12 @@ class Dot {
         let brain = _brain;
     }
 
+    method boolean getReachedGoal() {
+        return reachedGoal;
+    }
+
     method void show() {
-        if (~(dead | reachedGoal)) {
+        if (~dead) {
             do Screen.setColor(false);
             do Screen.drawRectangle(prevX, prevY, prevX + 2, prevY + 2);
             do Screen.setColor(true);
@@ -57,7 +61,7 @@ class Dot {
     }
 
     method void update() {
-        if (~(dead | reachedGoal)) {
+        if (~dead) {
             if (~(Brain.getBrainSize() > brain.getStep())) {
                 let dead = true;
             } else {
@@ -68,17 +72,14 @@ class Dot {
             let posY = posY + vel.getY();
 
             if (~((posX < 2) | (posY < 2) | (posX > 510) | (posY > 254))) {
-                if (checkReachedGoal()) {
+                if ((Math.abs(posX - goal.getX()) < 4) & (Math.abs(posY - goal.getY()) < 4)) {
                     let reachedGoal = true;
+                    let dead = true;
                 }
             } else {
                 let dead = true;
             }
         }
-    }
-
-    method boolean checkReachedGoal() {
-        return (Math.abs(posX - goal.getX()) < 4) & (Math.abs(posY - goal.getY()) < 4);
     }
 
     method int calculateFitness() {

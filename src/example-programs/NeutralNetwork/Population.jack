@@ -50,7 +50,7 @@ class Population {
         var Dot dot;
         while (i < size) {
             let dot = dots[i];
-            if (~(dot.getDead() | dot.checkReachedGoal()))
+            if (~dot.getDead())
                 return false;
             let i = i + 1;
         }
@@ -81,7 +81,7 @@ class Population {
     //         i++;
     //     }
 
-    //     if (bestDot.checkReachedGoal()) {
+    //     if (bestDot.getReachedGoal()) {
     //         minStep = bestDot.getBrain().getStep();
     //     }
 

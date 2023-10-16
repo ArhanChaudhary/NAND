@@ -47,7 +47,7 @@ export default class Population {
         let dot;
         while (i < Population.#size) {
             dot = Population.#dots[i];
-            if (!(dot.getDead() || dot.checkReachedGoal()))
+            if (!dot.getDead())
                 return false;
             i++;
         }
@@ -78,7 +78,7 @@ export default class Population {
             i++;
         }
 
-        if (bestDot.checkReachedGoal()) {
+        if (bestDot.getReachedGoal()) {
             Population.#minStep = bestDot.getBrain().getStep();
         }
 
