@@ -1,11 +1,11 @@
-import Vector from "./vector.js";
 import Brain from "./brain.js";
 import Util, { ctx } from "./util.js";
 
 export default class Dot {
     #posX;
     #posY;
-    #vel;
+    #velX;
+    #velY;
     #acc;
     #brain;
     #dead;
@@ -21,6 +21,10 @@ export default class Dot {
     }
 
     constructor(brain) {
+        this.instantiate(brain);
+    }
+
+    instantiate(brain) {
         this.#dead = false;
         this.#reachedGoal = false;
         this.#prevX = 0;
@@ -29,7 +33,8 @@ export default class Dot {
         this.#brain = brain || new Brain();
         this.#posX = 10;
         this.#posY = 128;
-        this.#vel = new Vector(0, 0);
+        this.#velX = 0;
+        this.#velY = 0;
         this.#acc = null;
     }
 
@@ -65,15 +70,59 @@ export default class Dot {
     }
 
     update() {
+        let newVelX;
+        let newVelY;
+        let newVelXIsNegative;
+        let newVelYIsNegative;
         if (!this.#dead) {
             if (!(Brain.getBrainSize() > this.#brain.getStep())) {
                 this.#dead = true;
             } else {
                 this.#acc = this.#brain.getNextDirection();
             }
-            this.#vel.addVelocity(this.#acc);
-            this.#posX += this.#vel.getX();
-            this.#posY += this.#vel.getY();
+
+            newVelX = this.#velX + this.#acc.getX();
+            newVelY = this.#velY + this.#acc.getY();
+            newVelXIsNegative = newVelX < 0;
+            newVelYIsNegative = newVelY < 0;
+    
+            if (newVelXIsNegative) {
+                newVelX = -newVelX;
+            }
+
+            if (newVelYIsNegative) {
+                newVelY = -newVelY;
+            }
+
+            if (newVelX > 5) {
+                newVelX = 5;
+                newVelY = 0;
+            } else if (newVelX === 4) {
+                if (newVelY > 3) {
+                    newVelY = 3;
+                }
+            } else if (newVelX === 3 || newVelX === 2 || newVelX === 1) {
+                if (newVelY > 4) {
+                    newVelY = 4;
+                }
+            } else if (newVelX === 0) {
+                if (newVelY > 5) {
+                    newVelY = 5;
+                }
+            }
+
+            if (newVelXIsNegative) {
+                newVelX = -newVelX;
+            }
+            if (newVelYIsNegative) {
+                newVelY = -newVelY;
+            }
+
+            this.#velX = newVelX;
+            this.#velY = newVelY;
+
+            this.#posX += this.#velX;
+            this.#posY += this.#velY;
 
             if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254)) {
                 if (!(Math.abs(this.#posX - Dot.#goal.getX()) > 3 || Math.abs(this.#posY - Dot.#goal.getY()) > 3)) {

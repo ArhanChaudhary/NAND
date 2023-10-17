@@ -64,46 +64,4 @@ export default class Vector {
     getY() {
         return this.#y;
     }
-
-    addVelocity(acc) {
-        let x = this.#x + acc.getX();
-        let y = this.#y + acc.getY();
-        let xIsNegative = x < 0;
-        let yIsNegative = y < 0;
- 
-        if (xIsNegative) {
-            x = -x;
-        }
-
-        if (yIsNegative) {
-            y = -y;
-        }
-
-        if (x > 5) {
-            x = 5;
-            y = 0;
-        } else if (x === 4) {
-            if (y > 3) {
-                y = 3;
-            }
-        } else if (x === 3 || x === 2 || x === 1) {
-            if (y > 4) {
-                y = 4;
-            }
-        } else if (x === 0) {
-            if (y > 5) {
-                y = 5;
-            }
-        }
-
-        if (xIsNegative) {
-            x = -x;
-        }
-        if (yIsNegative) {
-            y = -y;
-        }
-
-        this.#x = x;
-        this.#y = y;
-    }
 }
