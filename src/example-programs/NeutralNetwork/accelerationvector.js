@@ -1,24 +1,24 @@
 import Util from "./util.js";
 
-export default class Vector {
+export default class AccelerationVector {
     #x;
     #y;
-    static #accVectors;
+    static #cache;
 
     static init() {
-        Vector.#accVectors = new Array(12);
-        Vector.#accVectors[0] = new Vector(0, 0);
-        Vector.#accVectors[1] = new Vector(0, 1);
-        Vector.#accVectors[2] = new Vector(1, 0);
-        Vector.#accVectors[3] = new Vector(1, 1);
-        Vector.#accVectors[4] = new Vector(2, 0);
-        Vector.#accVectors[5] = new Vector(0, 2);
-        Vector.#accVectors[6] = new Vector(0, -1);
-        Vector.#accVectors[7] = new Vector(1, -1);
-        Vector.#accVectors[8] = new Vector(0, -2);
-        Vector.#accVectors[9] = new Vector(-1, 0);
-        Vector.#accVectors[10] = new Vector(-1, 1);
-        Vector.#accVectors[11] = new Vector(-2, 0);
+        AccelerationVector.#cache = new Array(12);
+        AccelerationVector.#cache[0] = new AccelerationVector(0, 0);
+        AccelerationVector.#cache[1] = new AccelerationVector(0, 1);
+        AccelerationVector.#cache[2] = new AccelerationVector(1, 0);
+        AccelerationVector.#cache[3] = new AccelerationVector(1, 1);
+        AccelerationVector.#cache[4] = new AccelerationVector(2, 0);
+        AccelerationVector.#cache[5] = new AccelerationVector(0, 2);
+        AccelerationVector.#cache[6] = new AccelerationVector(0, -1);
+        AccelerationVector.#cache[7] = new AccelerationVector(1, -1);
+        AccelerationVector.#cache[8] = new AccelerationVector(0, -2);
+        AccelerationVector.#cache[9] = new AccelerationVector(-1, 0);
+        AccelerationVector.#cache[10] = new AccelerationVector(-1, 1);
+        AccelerationVector.#cache[11] = new AccelerationVector(-2, 0);
     }
 
     constructor(x, y) {
@@ -26,7 +26,7 @@ export default class Vector {
         this.#y = y;
     }
 
-    static randomAcc() {
+    static random() {
         let rand = Util.random() & 30720;
         while (!(rand < 22529)) {
             rand = Util.random() & 30720;
@@ -54,7 +54,7 @@ export default class Vector {
         } else if (rand === 22528) {
             rand = 11;
         }
-        return Vector.#accVectors[rand];
+        return AccelerationVector.#cache[rand];
     }
 
     getX() {

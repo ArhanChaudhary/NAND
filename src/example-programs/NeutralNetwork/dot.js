@@ -12,11 +12,13 @@ export default class Dot {
     #reachedGoal;
     #prevX;
     #prevY;
-    static #goal;
+    static #goalX;
+    static #goalY;
     static #stepWeight;
 
-    static init(goal) {
-        Dot.#goal = goal;
+    static init(goalX, goalY) {
+        Dot.#goalX = goalX;
+        Dot.#goalY = goalY;
         Dot.#stepWeight = Math.floor((32767 - 10000) / Brain.getBrainSize());
     }
 
@@ -125,7 +127,7 @@ export default class Dot {
             this.#posY += this.#velY;
 
             if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254)) {
-                if (!(Math.abs(this.#posX - Dot.#goal.getX()) > 3 || Math.abs(this.#posY - Dot.#goal.getY()) > 3)) {
+                if (!(Math.abs(this.#posX - Dot.#goalX) > 3 || Math.abs(this.#posY - Dot.#goalY) > 3)) {
                     this.#reachedGoal = true;
                     this.#dead = true;
                 }
@@ -139,8 +141,8 @@ export default class Dot {
         let x;
         let y;
         if (!this.#reachedGoal) {
-            x = Math.abs(this.#posX - Dot.#goal.getX()) / 2;
-            y = Math.abs(this.#posY - Dot.#goal.getY()) / 2;
+            x = Math.abs(this.#posX - Dot.#goalX) / 2;
+            y = Math.abs(this.#posY - Dot.#goalY) / 2;
             return Math.floor(32767 / Math.max(10, x * x + y * y - 100));
         }
         return Math.max(10000, 32767 - Dot.#stepWeight * this.#brain.getStep());

@@ -1,4 +1,4 @@
-import Vector from "./vector.js";
+import AccelerationVector from "./accelerationvector.js";
 import Util from "./util.js";
 
 export default class Brain {
@@ -22,7 +22,7 @@ export default class Brain {
             this.#directions = new Array(Brain.#brainSize);
             let i = 0;
             while (i < Brain.#brainSize) {
-                this.#directions[i] = Vector.randomAcc();
+                this.#directions[i] = AccelerationVector.random();
                 i++;
             }
         }
@@ -47,7 +47,7 @@ export default class Brain {
         let i = 0;
         while (i < Brain.#brainSize) {
             if ((Util.random() & 32512) === 0) {
-                directions[i] = Vector.randomAcc();
+                directions[i] = AccelerationVector.random();
             } else {
                 directions[i] = this.#directions[i];
             }
