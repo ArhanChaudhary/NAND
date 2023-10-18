@@ -6,19 +6,20 @@ export default class AccelerationVector {
     static #cache;
 
     static init() {
-        AccelerationVector.#cache = new Array(12);
+        AccelerationVector.#cache = new Array(13);
         AccelerationVector.#cache[0] = new AccelerationVector(0, 0);
         AccelerationVector.#cache[1] = new AccelerationVector(0, 1);
-        AccelerationVector.#cache[2] = new AccelerationVector(1, 0);
+        AccelerationVector.#cache[2] = new AccelerationVector(0, 2);
         AccelerationVector.#cache[3] = new AccelerationVector(1, 1);
-        AccelerationVector.#cache[4] = new AccelerationVector(2, 0);
-        AccelerationVector.#cache[5] = new AccelerationVector(0, 2);
-        AccelerationVector.#cache[6] = new AccelerationVector(0, -1);
-        AccelerationVector.#cache[7] = new AccelerationVector(1, -1);
+        AccelerationVector.#cache[4] = new AccelerationVector(1, 0);
+        AccelerationVector.#cache[5] = new AccelerationVector(2, 0);
+        AccelerationVector.#cache[6] = new AccelerationVector(1, -1);
+        AccelerationVector.#cache[7] = new AccelerationVector(0, -1);
         AccelerationVector.#cache[8] = new AccelerationVector(0, -2);
-        AccelerationVector.#cache[9] = new AccelerationVector(-1, 0);
-        AccelerationVector.#cache[10] = new AccelerationVector(-1, 1);
+        AccelerationVector.#cache[9] = new AccelerationVector(-1, -1);
+        AccelerationVector.#cache[10] = new AccelerationVector(-1, 0);
         AccelerationVector.#cache[11] = new AccelerationVector(-2, 0);
+        AccelerationVector.#cache[12] = new AccelerationVector(-1, 1);
     }
 
     constructor(x, y) {
@@ -28,7 +29,7 @@ export default class AccelerationVector {
 
     static random() {
         let rand = Util.random() & 30720;
-        while (!(rand < 22529)) {
+        while (!(rand < 24577)) {
             rand = Util.random() & 30720;
         }
         if (rand === 2048) {
@@ -53,6 +54,8 @@ export default class AccelerationVector {
             rand = 10;
         } else if (rand === 22528) {
             rand = 11;
+        } else if (rand === 24576) {
+            rand = 12;
         }
         return AccelerationVector.#cache[rand];
     }
