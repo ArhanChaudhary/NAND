@@ -143,14 +143,28 @@ export default class Dot {
         let x;
         let y;
         if (!this.#reachedGoal) {
-            x = Math.abs(this.#posX - Dot.#goalX) / 2;
-            y = Math.abs(this.#posY - Dot.#goalY) / 2;
-            return Math.floor(32767 / Math.max(10, x * x + y * y - 100));
+            x = Math.floor(Math.abs(this.#posX - Dot.#goalX) / 4);
+            y = Math.floor(Math.abs(this.#posY - Dot.#goalY) / 4);
+            return Math.floor(32767 / Math.max(10, x * x + y * y));
+            // x = Math.floor(Math.abs(this.#posX - Dot.#goalX) / 2);
+            // y = Math.floor(Math.abs(this.#posY - Dot.#goalY) / 2);
+            // dist = x * x;
+            // if (dist < 0) {
+            //     switchToNewton = true;
+            // } else {
+            //     tmp = y * y;
+            //     if (tmp < 0) {
+            //         switchToNewton = true;
+            //     } else {
+            //         switchToNewton = (dist > 16384) || (tmp > 16384);
+            //     }
+            // }
+            // if (switchToNewton) {
+            //     dist = x + y - x * y / (x + y);
+            //     return (32767 / dist) / dist;
+            // }
+            // return 32767 / (dist + tmp);
         }
         return Math.max(10000, 32767 - Dot.#stepWeight * this.#brain.getStep());
-    }
-
-    getBaby() {
-        return new Dot(this.#brain.clone());
     }
 }
