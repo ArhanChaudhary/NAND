@@ -6,7 +6,6 @@ import Brain from "./brain.js";
 
 export class Main {
     static main() {
-        let goal;
         let population;
 
         let brainSize = 135;
@@ -18,11 +17,11 @@ export class Main {
         Util.init(seed);
         AccelerationVector.init();
         Brain.init(brainSize);
-        Dot.init(goalX, goalY);
+        Dot.init(goalX, goalY, brainSize);
 
         Util.drawRect(goalX - 2, goalY - 2, 4, 4);
-        population = new Population(populationCount);
-        window.interval = 0;
+        population = new Population(populationCount, brainSize);
+        window.interval = 25;
         function test() {
             if (population.allDotsDead()) {
                 Util.clearScreen();

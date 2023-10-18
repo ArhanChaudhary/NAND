@@ -15,24 +15,26 @@ export default class Dot {
     static #goalX;
     static #goalY;
     static #stepWeight;
+    static #brainSize;
 
-    static init(goalX, goalY) {
+    static init(goalX, goalY, brainSize) {
         Dot.#goalX = goalX;
         Dot.#goalY = goalY;
+        Dot.#brainSize = brainSize;
         Dot.#stepWeight = Math.floor((32767 - 10000) / Brain.getBrainSize());
     }
 
     constructor(brain) {
-        this.instantiate(brain);
+        this.#brain = brain;
+        this.instantiate();
     }
 
-    instantiate(brain) {
+    instantiate() {
         this.#dead = false;
         this.#reachedGoal = false;
         this.#prevX = 0;
         this.#prevY = 0;
 
-        this.#brain = brain || new Brain();
         this.#posX = 10;
         this.#posY = 128;
         this.#velX = 0;
@@ -77,7 +79,7 @@ export default class Dot {
         let newVelXIsNegative;
         let newVelYIsNegative;
         if (!this.#dead) {
-            if (!(Brain.getBrainSize() > this.#brain.getStep())) {
+            if (!(Dot.#brainSize > this.#brain.getStep())) {
                 this.#dead = true;
             } else {
                 this.#acc = this.#brain.getNextDirection();

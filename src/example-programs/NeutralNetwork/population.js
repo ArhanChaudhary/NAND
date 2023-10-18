@@ -1,22 +1,33 @@
+import Brain from './brain.js';
 import Dot from './dot.js';
 import Util from './util.js';
+import AccelerationVector from './accelerationvector.js';
 
 export default class Population {
     static #dots;
+    static #newBrainDirections;
     static #gen;
     static #minStep;
     static #size;
     static #fitnessCache;
+    static #brainSize;
 
-    constructor(size) {
+    constructor(size, brainSize) {
         let i = 0;
+        Population.#brainSize = brainSize;
         Population.#gen = 1;
         Population.#minStep = 32767;
         Population.#size = size;
         Population.#fitnessCache = new Array(Population.#size);
         Population.#dots = new Array(Population.#size);
+        Population.#newBrainDirections = new Array(Population.#size - 1);
         while (i < Population.#size) {
-            Population.#dots[i] = new Dot();
+            Population.#dots[i] = new Dot(new Brain());
+            i++;
+        }
+        i = 0;
+        while (i < Population.#size - 1) {
+            Population.#newBrainDirections[i] = new Array(Population.#brainSize);
             i++;
         }
     }
@@ -62,13 +73,14 @@ export default class Population {
         let bestFitness = -1;
         let i = 0;
         let j;
-        let newDots = new Array(Population.#size);
         let selectionSum;
         let selectionSumCoef;
         let randFitness;
         let randFitnessCoef;
         let fitnessSum = 0;
         let fitnessSumCoef = 0;
+        let directions;
+        let newDirections;
         while (i < Population.#size) {
             dot = Population.#dots[i];
             dotFitness = dot.calculateFitness();
@@ -92,9 +104,8 @@ export default class Population {
             Population.#minStep = bestDot.getBrain().getStep();
         }
 
-        newDots[0] = bestDot.getBaby();
-        i = 1;
-        while (i < Population.#size) {
+        i = 0;
+        while (i < Population.#size - 1) {
             randFitness = Util.random();
             if (randFitness >= 32768) {
                 randFitness -= 65536;
@@ -123,10 +134,36 @@ export default class Population {
                 }
                 j++;
             }
-            newDots[i] = dot.getBaby();
+            directions = dot.getBrain().getDirections();
+            newDirections = Population.#newBrainDirections[i];
+            j = 0;
+            while (j < Population.#brainSize) {
+                if ((Util.random() & 32512) !== 0) {
+                    newDirections[j] = directions[j];
+                } else {
+                    newDirections[j] = AccelerationVector.random();
+                }
+                j++;
+            }
             i++;
         }
-        Population.#dots = newDots;
+        i = 0;
+        while (i < Population.#size) {
+            j = 0;
+            directions = Population.#dots[i].getBrain().getDirections();
+            Population.#dots[i].instantiate();
+            Population.#dots[i].getBrain().instantiate();
+            if (i !== 0) {
+                newDirections = Population.#newBrainDirections[i - 1];
+            } else {
+                newDirections = bestDot.getBrain().getDirections();
+            }
+            while (j < Population.#brainSize) {
+                directions[j] = newDirections[j];
+                j++;
+            }
+            i++;
+        }
         Population.#gen++;
     }
 }
