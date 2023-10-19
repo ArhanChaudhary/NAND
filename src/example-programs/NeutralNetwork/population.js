@@ -111,7 +111,8 @@ export default class Population {
             while (randFitnessCoef > fitnessSumCoef) {
                 // fitnessSumCoef = 296, randFitnessCoef = 32698
                 // this results in randFitnessCoef = 297 which is out of bounds
-                randFitnessCoef = Math.floor(Math.abs(Util.random()) / Math.floor(32767 / fitnessSumCoef));
+                randFitnessCoef = Util.random();
+                randFitnessCoef = Math.floor(Math.abs(randFitnessCoef) / Math.floor(32767 / fitnessSumCoef));
             }
             if (randFitnessCoef === fitnessSumCoef) {
                 while (randFitness >= fitnessSum) {
