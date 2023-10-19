@@ -7,13 +7,13 @@ export default class Dot {
     #velX;
     #velY;
     #acc;
+    static #goalX;
+    static #goalY;
+    #prevX;
+    #prevY;
     #brain;
     #dead;
     #reachedGoal;
-    #prevX;
-    #prevY;
-    static #goalX;
-    static #goalY;
     static #stepWeight;
     static #brainSize;
 
@@ -74,8 +74,6 @@ export default class Dot {
     }
 
     update() {
-        let newVelX;
-        let newVelY;
         let newVelXIsNegative;
         let newVelYIsNegative;
         if (!this.#dead) {
@@ -85,45 +83,42 @@ export default class Dot {
                 this.#acc = this.#brain.getNextDirection();
             }
 
-            newVelX = this.#velX + this.#acc.getX();
-            newVelY = this.#velY + this.#acc.getY();
-            newVelXIsNegative = newVelX < 0;
-            newVelYIsNegative = newVelY < 0;
+            this.#velX += this.#acc.getX();
+            this.#velY += this.#acc.getY();
+            newVelXIsNegative = this.#velX < 0;
+            newVelYIsNegative = this.#velY < 0;
     
             if (newVelXIsNegative) {
-                newVelX = -newVelX;
+                this.#velX = -this.#velX;
             }
 
             if (newVelYIsNegative) {
-                newVelY = -newVelY;
+                this.#velY = -this.#velY;
             }
 
-            if (newVelX > 5) {
-                newVelX = 5;
-                newVelY = 0;
-            } else if (newVelX === 4) {
-                if (newVelY > 3) {
-                    newVelY = 3;
+            if (this.#velX > 5) {
+                this.#velX = 5;
+                this.#velY = 0;
+            } else if (this.#velX === 4) {
+                if (this.#velY > 3) {
+                    this.#velY = 3;
                 }
-            } else if (newVelX === 3 || newVelX === 2 || newVelX === 1) {
-                if (newVelY > 4) {
-                    newVelY = 4;
+            } else if (this.#velX === 3 || this.#velX === 2 || this.#velX === 1) {
+                if (this.#velY > 4) {
+                    this.#velY = 4;
                 }
-            } else if (newVelX === 0) {
-                if (newVelY > 5) {
-                    newVelY = 5;
+            } else if (this.#velX === 0) {
+                if (this.#velY > 5) {
+                    this.#velY = 5;
                 }
             }
 
             if (newVelXIsNegative) {
-                newVelX = -newVelX;
+                this.#velX = -this.#velX;
             }
             if (newVelYIsNegative) {
-                newVelY = -newVelY;
+                this.#velY = -this.#velY;
             }
-
-            this.#velX = newVelX;
-            this.#velY = newVelY;
 
             this.#posX += this.#velX;
             this.#posY += this.#velY;

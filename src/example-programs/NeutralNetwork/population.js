@@ -85,6 +85,7 @@ export default class Population {
         let fitnessSumCoef = 0;
         let directions;
         let newDirections;
+
         while (i < Population.#size) {
             dot = Population.#dots[i];
             dotFitness = dot.calculateFitness();
@@ -112,11 +113,14 @@ export default class Population {
         while (i < Population.#size - 1) {
             randFitness = Math.abs(Util.random());
             randFitnessCoef = 32767;
-            while (randFitnessCoef > fitnessSumCoef) {
-                // fitnessSumCoef = 296, randFitnessCoef = 32698
-                // this results in randFitnessCoef = 297 which is out of bounds
-                randFitnessCoef = Util.random();
-                randFitnessCoef = Math.floor(Math.abs(randFitnessCoef) / Math.floor(32767 / fitnessSumCoef));
+            if (!(fitnessSumCoef === 0)) {
+                while (randFitnessCoef > fitnessSumCoef) {
+                    // fitnessSumCoef = 296, randFitnessCoef = 32698
+                    // this results in randFitnessCoef = 297 which is out of bounds
+                    randFitnessCoef = Math.floor(Math.abs(Util.random()) / Math.floor(32767 / fitnessSumCoef));
+                }
+            } else {
+                randFitnessCoef = 0;
             }
             if (randFitnessCoef === fitnessSumCoef) {
                 while (randFitness >= fitnessSum) {

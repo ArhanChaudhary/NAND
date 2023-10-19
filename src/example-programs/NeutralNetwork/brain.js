@@ -14,12 +14,13 @@ export default class Brain {
     }
 
     constructor(directions) {
-        this.#step = 0;
         if (directions) {
+            this.#step = 0;
             this.#directions = directions;
         } else {
-            this.#directions = new Array(Brain.#brainSize);
             let i = 0;
+            this.#step = 0;
+            this.#directions = new Array(Brain.#brainSize);
             while (i < Brain.#brainSize) {
                 this.#directions[i] = AccelerationVector.random();
                 i++;

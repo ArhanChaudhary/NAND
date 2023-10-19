@@ -24,13 +24,13 @@ export class Main {
         population = new Population(populationCount, brainSize);
         window.interval = 25;
         function test() {
-            if (population.allDotsDead()) {
+            if (!population.allDotsDead()) {
+                population.update();
+                population.show(onlyBest);
+            } else {
                 Util.clearScreen();
                 population.naturalSelection();
                 Util.drawRect(goalX - 2, goalY - 2, 4, 4);
-            } else {
-                population.update();
-                population.show(onlyBest);
             }
             setTimeout(test, window.interval);
         }
