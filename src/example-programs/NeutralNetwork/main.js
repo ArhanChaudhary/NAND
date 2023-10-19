@@ -13,6 +13,7 @@ export class Main {
         let seed = 4;
         let goalX = 500;
         let goalY = 128;
+        let onlyBest = false;
 
         Util.init(seed);
         AccelerationVector.init();
@@ -29,7 +30,7 @@ export class Main {
                 Util.drawRect(goalX - 2, goalY - 2, 4, 4);
             } else {
                 population.update();
-                population.show();
+                population.show(onlyBest);
             }
             setTimeout(test, window.interval);
         }

@@ -32,11 +32,15 @@ export default class Population {
         }
     }
 
-    show() {
+    show(onlyBest) {
         let i = 0;
-        while (i < Population.#size) {
-            Population.#dots[i].show();
-            i++;
+        if (!onlyBest) {
+            while (i < Population.#size) {
+                Population.#dots[i].show();
+                i++;
+            }
+        } else {
+            Population.#dots[0].show();
         }
     }
 
