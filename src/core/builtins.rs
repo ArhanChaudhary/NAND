@@ -131,10 +131,10 @@ pub fn ram16k(in_: u16, load: bool, address: u16) -> u16 {
     out
 }
 
-// #[wasm_bindgen(js_name=getRAM)]
-// pub fn get_ram() -> Vec<u16> {
-// 	unsafe { RAM16K_MEMORY.clone() }
-// }
+#[wasm_bindgen(js_name=getRAM)]
+pub fn get_ram() -> Vec<u16> {
+	unsafe { RAM16K_MEMORY.clone() }
+}
 
 static mut CURRENT_KEY: u16 = 0;
 #[wasm_bindgen]
