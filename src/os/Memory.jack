@@ -14,8 +14,8 @@ class Memory {
     /** Initializes the class. */
     function void init() {
         let ptr = 0;
-        let ptr[2048] = 14334;
-        let ptr[2049] = 16384;
+        let ptr[2048] = 22526;
+        let ptr[2049] = 24576;
     }
 
     /** Returns the RAM value at the given address. */
@@ -37,8 +37,8 @@ class Memory {
             do Sys.error(5);
         let segment = 2048;  
         while (~false) {
-            if (segment = 16384)
-                do Sys.error(6);
+            // if (segment = 16384)
+            //     do Sys.error(6);
             let length = segment[0];
             if (~(length < size)) {
                 let size = size + 2;

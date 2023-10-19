@@ -16,7 +16,7 @@ class Brain {
         let step = 0;
         let directions = Array.new(brainSize);
         while (i < brainSize) {
-            let directions[i] = Vector.randomAcc();
+            let directions[i] = AccelerationVector.random();
             let i = i + 1;
         }
         return this;
@@ -28,6 +28,10 @@ class Brain {
         return this;
     }
 
+    method void instantiate() {
+        let step = 0;
+    }
+
     method Array getDirections() {
         return directions;
     }
@@ -36,29 +40,10 @@ class Brain {
         return step;
     }
 
-    method void incStep() {
-        let step = step + 1;
-    }
-
     method int getNextDirection() {
         var int ret;
         let ret = directions[step];
         let step = step + 1;
         return ret;
-    }
-
-    method Brain clone() {
-        var int i;
-        var Array _directions;
-        let _directions = Array.new(brainSize);
-        while (i < brainSize) {
-            if ((Util.random() & 32512) = 0) {
-                let directions[i] = Vector.randomAcc();
-            } else {
-                let directions[i] = _directions[i];
-            }
-            let i = i + 1;
-        }
-        return Brain.newWithDirections(_directions);
     }
 }

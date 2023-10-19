@@ -1,32 +1,39 @@
 class Dot {
     field int posX, posY;
-    field Vector vel;
-    field Vector acc;
-    static Vector goal;
+    field int velX, velY;
+    field AccelerationVector acc;
+    static int goalX, goalY;
+    field int prevX, prevY;
     field Brain brain;
     field boolean dead;
     field boolean reachedGoal;
     static int stepWeight;
-    field int prevX;
-    field int prevY;
+    static int brainSize;
 
-    function void init(Vector _goal) {
-        let goal = _goal;
-        let stepWeight = (32767 - 10000) / Brain.getBrainSize();
+    function void init(int _goalX, int _goalY, int _brainSize) {
+        let goalX = _goalX;
+        let goalY = _goalY;
+        let brainSize = _brainSize;
+        let stepWeight = (32767 - 10000) / _brainSize;
     }
 
     constructor Dot new(Brain _brain) {
+        let brain = _brain;
+        do instantiate();
+        return this;
+    }
+
+    method void instantiate() {
         let dead = false;
         let reachedGoal = false;
         let prevX = 0;
         let prevY = 0;
 
-        let brain = _brain;
         let posX = 10;
         let posY = 128;
-        let vel = Vector.new(0, 0);
+        let velX = 0;
+        let velY = 0;
         let acc = null;
-        return this;
     }
 
     method boolean getDead() {
@@ -61,18 +68,57 @@ class Dot {
     }
 
     method void update() {
+        var boolean newVelXIsNegative;
+        var boolean newVelYIsNegative;
         if (~dead) {
-            if (~(Brain.getBrainSize() > brain.getStep())) {
+            if (~(brainSize > brain.getStep())) {
                 let dead = true;
             } else {
                 let acc = brain.getNextDirection();
             }
-            do vel.addVelocity(acc);
-            let posX = posX + vel.getX();
-            let posY = posY + vel.getY();
+
+            let velX = velX + acc.getX();
+            let velY = velY + acc.getY();
+            let newVelXIsNegative = velX < 0;
+            let newVelYIsNegative = velY < 0;
+
+            if (newVelXIsNegative) {
+                let velX = -velX;
+            }
+
+            if (newVelYIsNegative) {
+                let velY = -velY;
+            }
+
+            if (velX > 5) {
+                let velX = 5;
+                let velY = 0;
+            } else if (velX = 4) {
+                if (velY > 3) {
+                    let velY = 3;
+                }
+            } else if ((velX = 3) | (velX = 2) | (velX = 1)) {
+                if (velY > 4) {
+                    let velY = 4;
+                }
+            } else if (velX = 0) {
+                if (velY > 5) {
+                    let velY = 5;
+                }
+            }
+
+            if (newVelXIsNegative) {
+                let velX = -velX;
+            }
+            if (newVelYIsNegative) {
+                let velY = -velY;
+            }
+
+            let posX = posX + velX;
+            let posY = posY + velY;
 
             if (~((posX < 2) | (posY < 2) | (posX > 510) | (posY > 254))) {
-                if (~((Math.abs(posX - goal.getX()) > 3) | (Math.abs(posY - goal.getY()) > 3))) {
+                if (~((Math.abs(posX - goalX) > 3) | (Math.abs(posY - goalY) > 3))) {
                     let reachedGoal = true;
                     let dead = true;
                 }
@@ -86,9 +132,9 @@ class Dot {
         var int x;
         var int y;
         if (~reachedGoal) {
-            let x = Math.abs(posX - goal.getX()) / 2;
-            let y = Math.abs(posY - goal.getY()) / 2;
-            return 32767 / Math.max(10, ((x * x) + (y * y)) - 100);
+            let x = Math.abs(posX - goalX) / 4;
+            let y = Math.abs(posY - goalY) / 4;
+            return 32767 / ((x * x) + (y * y));
         }
         return Math.max(10000, 32767 - (stepWeight * brain.getStep()));
     }

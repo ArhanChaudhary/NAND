@@ -161,7 +161,6 @@ export default class Population {
         }
         i = 0;
         while (i < Population.#size) {
-            j = 0;
             directions = Population.#dots[i].getBrain().getDirections();
             Population.#dots[i].instantiate();
             Population.#dots[i].getBrain().instantiate();
@@ -170,6 +169,7 @@ export default class Population {
             } else {
                 newDirections = bestDot.getBrain().getDirections();
             }
+            j = 0;
             while (j < Population.#brainSize) {
                 directions[j] = newDirections[j];
                 j++;
