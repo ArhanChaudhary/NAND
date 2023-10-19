@@ -14,7 +14,7 @@ export default class Util {
     }
 
     static random() {
-        Util.#next = (Util.#next * 17565 + 2489) % 65536;
+        Util.#next = (Util.#next * 17565 + 2489) & 65535;
         if (Util.#next >= 32768) {
             Util.#next -= 65536;
         }
