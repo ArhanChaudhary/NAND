@@ -1,4 +1,7 @@
 # TODO
+
+* draw dot at goal
+
 * ml thing
 * compilererror stash
 * graphing calculator in jack

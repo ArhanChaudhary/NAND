@@ -8,7 +8,7 @@ class Main {
         var int goalY;
         var boolean onlyBest;
 
-        let brainSize = 135;
+        let brainSize = 150;
         let populationCount = 60;
         let seed = 4;
         let goalX = 500;
@@ -20,14 +20,13 @@ class Main {
         do Brain.init(brainSize);
         do Dot.init(goalX, goalY, brainSize);
         
-        do Screen.drawRectangle(goalX - 2, goalY - 2, goalX + 2, goalY + 2);
         let population = Population.new(populationCount, brainSize);
+        do Screen.drawRectangle(goalX - 2, goalY - 2, goalX + 2, goalY + 2);
         while (~false) {
             if (~population.allDotsDead()) {
                 do population.update();
                 do population.show(onlyBest);
             } else {
-                do Screen.clearScreen();
                 do population.naturalSelection();
                 do Screen.drawRectangle(goalX - 2, goalY - 2, goalX + 2, goalY + 2);
             }

@@ -8,7 +8,7 @@ export class Main {
     static main() {
         let population;
 
-        let brainSize = 135;
+        let brainSize = 150;
         let populationCount = 60;
         let seed = 4;
         let goalX = 500;
@@ -20,8 +20,8 @@ export class Main {
         Brain.init(brainSize);
         Dot.init(goalX, goalY, brainSize);
 
-        Util.drawRect(goalX - 2, goalY - 2, 4, 4);
         population = new Population(populationCount, brainSize);
+        Util.drawRect(goalX - 2, goalY - 2, 4, 4);
         window.interval = 25;
         function test() {
             if (!population.allDotsDead()) {
