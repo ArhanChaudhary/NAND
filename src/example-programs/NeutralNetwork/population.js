@@ -106,16 +106,19 @@ export default class Population {
 
         i = 0;
         while (i < Population.#size - 1) {
-            randFitness = Util.random();
-            if (randFitness >= 32768) {
-                randFitness -= 65536;
+            randFitness = Math.abs(Util.random());
+            randFitnessCoef = 32767;
+            while (randFitnessCoef > fitnessSumCoef) {
+                // fitnessSumCoef = 296, randFitnessCoef = 32698
+                // this results in randFitnessCoef = 297 which is out of bounds
+                randFitnessCoef = Math.floor(Math.abs(Util.random()) / Math.floor(32767 / fitnessSumCoef));
             }
-            randFitness = Math.floor(Math.abs(randFitness) / Math.floor(32767 / fitnessSum));
-            randFitnessCoef = Util.random();
-            if (randFitnessCoef >= 32768) {
-                randFitnessCoef -= 65536;
+            if (randFitnessCoef === fitnessSumCoef) {
+                while (randFitness >= fitnessSum) {
+                    // same with this it can also go out of bounds
+                    randFitness = Math.floor(Math.abs(Util.random()) / Math.floor(32767 / fitnessSum));
+                }
             }
-            randFitnessCoef = Math.floor(Math.abs(randFitnessCoef) / Math.floor(32767 / fitnessSumCoef));
             selectionSum = 0;
             selectionSumCoef = 0;
             j = 0;

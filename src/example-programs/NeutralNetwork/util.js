@@ -15,7 +15,11 @@ export default class Util {
 
     static random() {
         Util.#next = (Util.#next * 17565 + 2489) % 65536;
+        if (Util.#next >= 32768) {
+            Util.#next -= 65536;
+        }
         return Util.#next;
+        // return Math.floor(Math.random() * 65536);
     }
 
     static clearScreen() {
