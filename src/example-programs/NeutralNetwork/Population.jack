@@ -144,7 +144,7 @@ class Population {
             let newDirections = newBrainDirections[i];
             let j = 0;
             while (j < brainSize) {
-                if (~((Util.random() & 32512) = 0)) {
+                if (~((Util.random() & 32256) = 0)) {
                     let newDirections[j] = directions[j];
                 } else {
                     let newDirections[j] = AccelerationVector.random();

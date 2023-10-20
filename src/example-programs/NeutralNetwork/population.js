@@ -145,7 +145,7 @@ export default class Population {
             newDirections = Population.#newBrainDirections[i];
             j = 0;
             while (j < Population.#brainSize) {
-                if ((Util.random() & 32512) !== 0) {
+                if ((Util.random() & 32256) !== 0) {
                     newDirections[j] = directions[j];
                 } else {
                     newDirections[j] = AccelerationVector.random();
