@@ -4,6 +4,7 @@
 * display step count
 * allow user to choose goal and lcg and obstacles
 * more safe malloc
+* increase mutation rate
 
 * ml thing
 * compilererror stash

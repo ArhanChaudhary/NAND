@@ -2,7 +2,6 @@ class Population {
     static Array dots;
     static Array newBrainDirections;
     static int gen;
-    static int minStep;
     static int size;
     static Array fitnessCache;
     static int brainSize;
@@ -11,7 +10,6 @@ class Population {
         var int i;
         let brainSize = _brainSize;
         let gen = 1;
-        let minStep = 32767;
         let size = _size;
         let fitnessCache = Array.new(size);
         let dots = Array.new(size);
@@ -29,34 +27,27 @@ class Population {
         return this;
     }
 
-    method void show(boolean onlyBest) {
+    method void update(boolean onlyBest) {
         var int i;
         var Dot dot;
+        var Brain brain;
         if (~onlyBest) {
             while (i < size) {
                 let dot = dots[i];
+                let brain = dot.getBrain();
+                do dot.update();
                 do dot.show();
                 let i = i + 1;
             }
         } else {
+            while (i < size) {
+                let dot = dots[i];
+                let brain = dot.getBrain();
+                do dot.update();
+                let i = i + 1;
+            }
             let dot = dots[0];
             do dot.show();
-        }
-    }
-
-    method void update() {
-        var int i;
-        var Dot dot;
-        var Brain brain;
-        while (i < size) {
-            let dot = dots[i];
-            let brain = dot.getBrain();
-            if (~(brain.getStep() > minStep)) {
-                do dot.update();
-            } else {
-                do dot.setDead(true);
-            }
-            let i = i + 1;
         }
     }
 
@@ -109,7 +100,7 @@ class Population {
 
         if (bestDot.getReachedGoal()) {
             let brain = bestDot.getBrain();
-            let minStep = brain.getStep();
+            do Dot.setMinStep(brain.getStep());
         }
 
         let i = 0;

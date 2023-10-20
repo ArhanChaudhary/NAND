@@ -16,11 +16,13 @@ export default class Dot {
     #reachedGoal;
     static #stepWeight;
     static #brainSize;
+    static #minStep;
 
     static init(goalX, goalY, brainSize) {
         Dot.#goalX = goalX;
         Dot.#goalY = goalY;
         Dot.#brainSize = brainSize;
+        Dot.#minStep = 32767;
         Dot.#stepWeight = Math.floor((32767 - 10000) / Brain.getBrainSize());
     }
 
@@ -46,8 +48,8 @@ export default class Dot {
         return this.#dead;
     }
 
-    setDead(dead) {
-        this.#dead = dead;
+    static setMinStep(minStep) {
+        Dot.#minStep = minStep;
     }
 
     getBrain() {
@@ -76,61 +78,65 @@ export default class Dot {
     update() {
         let newVelXIsNegative;
         let newVelYIsNegative;
-        if (!this.#dead) {
-            if (!(Dot.#brainSize > this.#brain.getStep())) {
-                this.#dead = true;
-            } else {
-                this.#acc = this.#brain.getNextDirection();
-            }
-
-            this.#velX += this.#acc.getX();
-            this.#velY += this.#acc.getY();
-            newVelXIsNegative = this.#velX < 0;
-            newVelYIsNegative = this.#velY < 0;
+        if (!(this.#brain.getStep() > Dot.#minStep)) {
+            if (!this.#dead) {
+                if (!(Dot.#brainSize > this.#brain.getStep())) {
+                    this.#dead = true;
+                } else {
+                    this.#acc = this.#brain.getNextDirection();
+                }
     
-            if (newVelXIsNegative) {
-                this.#velX = -this.#velX;
-            }
-
-            if (newVelYIsNegative) {
-                this.#velY = -this.#velY;
-            }
-
-            if (this.#velX > 5) {
-                this.#velX = 5;
-                this.#velY = 0;
-            } else if (this.#velX === 4) {
-                if (this.#velY > 3) {
-                    this.#velY = 3;
+                this.#velX += this.#acc.getX();
+                this.#velY += this.#acc.getY();
+                newVelXIsNegative = this.#velX < 0;
+                newVelYIsNegative = this.#velY < 0;
+        
+                if (newVelXIsNegative) {
+                    this.#velX = -this.#velX;
                 }
-            } else if (this.#velX === 3 || this.#velX === 2 || this.#velX === 1) {
-                if (this.#velY > 4) {
-                    this.#velY = 4;
+    
+                if (newVelYIsNegative) {
+                    this.#velY = -this.#velY;
                 }
-            } else if (this.#velX === 0) {
-                if (this.#velY > 5) {
-                    this.#velY = 5;
+    
+                if (this.#velX > 5) {
+                    this.#velX = 5;
+                    this.#velY = 0;
+                } else if (this.#velX === 4) {
+                    if (this.#velY > 3) {
+                        this.#velY = 3;
+                    }
+                } else if (this.#velX === 3 || this.#velX === 2 || this.#velX === 1) {
+                    if (this.#velY > 4) {
+                        this.#velY = 4;
+                    }
+                } else if (this.#velX === 0) {
+                    if (this.#velY > 5) {
+                        this.#velY = 5;
+                    }
                 }
-            }
-
-            if (newVelXIsNegative) {
-                this.#velX = -this.#velX;
-            }
-            if (newVelYIsNegative) {
-                this.#velY = -this.#velY;
-            }
-
-            this.#posX += this.#velX;
-            this.#posY += this.#velY;
-
-            if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254)) {
-                if (!(Math.abs(this.#posX - Dot.#goalX) > 3 || Math.abs(this.#posY - Dot.#goalY) > 3)) {
-                    this.#reachedGoal = true;
+    
+                if (newVelXIsNegative) {
+                    this.#velX = -this.#velX;
+                }
+                if (newVelYIsNegative) {
+                    this.#velY = -this.#velY;
+                }
+    
+                this.#posX += this.#velX;
+                this.#posY += this.#velY;
+    
+                if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254)) {
+                    if (!(Math.abs(this.#posX - Dot.#goalX) > 3 || Math.abs(this.#posY - Dot.#goalY) > 3)) {
+                        this.#reachedGoal = true;
+                        this.#dead = true;
+                    }
+                } else {
                     this.#dead = true;
                 }
-            } else {
-                this.#dead = true;
             }
+        } else {
+            this.#dead = true;
         }
     }
 

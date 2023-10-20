@@ -7,7 +7,6 @@ export default class Population {
     static #dots;
     static #newBrainDirections;
     static #gen;
-    static #minStep;
     static #size;
     static #fitnessCache;
     static #brainSize;
@@ -16,7 +15,6 @@ export default class Population {
         let i = 0;
         Population.#brainSize = brainSize;
         Population.#gen = 1;
-        Population.#minStep = 32767;
         Population.#size = size;
         Population.#fitnessCache = new Array(Population.#size);
         Population.#dots = new Array(Population.#size);
@@ -32,29 +30,23 @@ export default class Population {
         }
     }
 
-    show(onlyBest) {
+    update(onlyBest) {
         let i = 0;
+        let dot;
         if (!onlyBest) {
             while (i < Population.#size) {
-                Population.#dots[i].show();
+                dot = Population.#dots[i];
+                dot.update();
+                dot.show();
                 i++;
             }
         } else {
-            Population.#dots[0].show();
-        }
-    }
-
-    update() {
-        let i = 0;
-        let dot;
-        while (i < Population.#size) {
-            dot = Population.#dots[i];
-            if (!(dot.getBrain().getStep() > Population.#minStep)) {
+            while (i < Population.#size) {
+                dot = Population.#dots[i];
                 dot.update();
-            } else {
-                dot.setDead(true);
+                i++;
             }
-            i++;
+            Population.#dots[0].show();
         }
     }
 
@@ -107,7 +99,7 @@ export default class Population {
         }
 
         if (bestDot.getReachedGoal()) {
-            Population.#minStep = bestDot.getBrain().getStep();
+            Dot.setMinStep(bestDot.getBrain().getStep());
         }
 
         i = 0;

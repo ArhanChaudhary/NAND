@@ -24,8 +24,7 @@ class Main {
         do Screen.drawRectangle(goalX - 2, goalY - 2, goalX + 2, goalY + 2);
         while (~false) {
             if (~population.allDotsDead()) {
-                do population.update();
-                do population.show(onlyBest);
+                do population.update(onlyBest);
             } else {
                 do population.naturalSelection();
                 do Screen.drawRectangle(goalX - 2, goalY - 2, goalX + 2, goalY + 2);

@@ -9,11 +9,13 @@ class Dot {
     field boolean reachedGoal;
     static int stepWeight;
     static int brainSize;
+    static int minStep;
 
     function void init(int _goalX, int _goalY, int _brainSize) {
         let goalX = _goalX;
         let goalY = _goalY;
         let brainSize = _brainSize;
+        let minStep = 32767;
         let stepWeight = (32767 - 10000) / _brainSize;
     }
 
@@ -40,8 +42,8 @@ class Dot {
         return dead;
     }
 
-    method void setDead(boolean _dead) {
-        let dead = _dead;
+    function void setMinStep(int _minStep) {
+        let minStep = _minStep;
     }
 
     method Brain getBrain() {
@@ -70,61 +72,65 @@ class Dot {
     method void update() {
         var boolean newVelXIsNegative;
         var boolean newVelYIsNegative;
-        if (~dead) {
-            if (~(brainSize > brain.getStep())) {
-                let dead = true;
-            } else {
-                let acc = brain.getNextDirection();
-            }
-
-            let velX = velX + acc.getX();
-            let velY = velY + acc.getY();
-            let newVelXIsNegative = velX < 0;
-            let newVelYIsNegative = velY < 0;
-
-            if (newVelXIsNegative) {
-                let velX = -velX;
-            }
-
-            if (newVelYIsNegative) {
-                let velY = -velY;
-            }
-
-            if (velX > 5) {
-                let velX = 5;
-                let velY = 0;
-            } else if (velX = 4) {
-                if (velY > 3) {
-                    let velY = 3;
+        if (~(brain.getStep() > minStep)) {
+            if (~dead) {
+                if (~(brainSize > brain.getStep())) {
+                    let dead = true;
+                } else {
+                    let acc = brain.getNextDirection();
                 }
-            } else if ((velX = 3) | (velX = 2) | (velX = 1)) {
-                if (velY > 4) {
-                    let velY = 4;
+    
+                let velX = velX + acc.getX();
+                let velY = velY + acc.getY();
+                let newVelXIsNegative = velX < 0;
+                let newVelYIsNegative = velY < 0;
+    
+                if (newVelXIsNegative) {
+                    let velX = -velX;
                 }
-            } else if (velX = 0) {
-                if (velY > 5) {
-                    let velY = 5;
+    
+                if (newVelYIsNegative) {
+                    let velY = -velY;
                 }
-            }
-
-            if (newVelXIsNegative) {
-                let velX = -velX;
-            }
-            if (newVelYIsNegative) {
-                let velY = -velY;
-            }
-
-            let posX = posX + velX;
-            let posY = posY + velY;
-
-            if (~((posX < 2) | (posY < 2) | (posX > 510) | (posY > 254))) {
-                if (~((Math.abs(posX - goalX) > 3) | (Math.abs(posY - goalY) > 3))) {
-                    let reachedGoal = true;
+    
+                if (velX > 5) {
+                    let velX = 5;
+                    let velY = 0;
+                } else if (velX = 4) {
+                    if (velY > 3) {
+                        let velY = 3;
+                    }
+                } else if ((velX = 3) | (velX = 2) | (velX = 1)) {
+                    if (velY > 4) {
+                        let velY = 4;
+                    }
+                } else if (velX = 0) {
+                    if (velY > 5) {
+                        let velY = 5;
+                    }
+                }
+    
+                if (newVelXIsNegative) {
+                    let velX = -velX;
+                }
+                if (newVelYIsNegative) {
+                    let velY = -velY;
+                }
+    
+                let posX = posX + velX;
+                let posY = posY + velY;
+    
+                if (~((posX < 2) | (posY < 2) | (posX > 510) | (posY > 254))) {
+                    if (~((Math.abs(posX - goalX) > 3) | (Math.abs(posY - goalY) > 3))) {
+                        let reachedGoal = true;
+                        let dead = true;
+                    }
+                } else {
                     let dead = true;
                 }
-            } else {
-                let dead = true;
             }
+        } else {
+            let dead = true;
         }
     }
 

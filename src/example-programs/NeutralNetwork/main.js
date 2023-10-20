@@ -25,8 +25,7 @@ export class Main {
         window.interval = 25;
         function test() {
             if (!population.allDotsDead()) {
-                population.update();
-                population.show(onlyBest);
+                population.update(onlyBest);
             } else {
                 Util.clearScreen();
                 population.naturalSelection();
