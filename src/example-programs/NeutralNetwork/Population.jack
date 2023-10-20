@@ -88,6 +88,7 @@ class Population {
         var int fitnessSumCoef;
         var Array directions;
         var Array newDirections;
+        var int scaleCache;
 
         let bestFitness = -1;
         while (i < size) {
@@ -116,18 +117,20 @@ class Population {
             let randFitness = Math.abs(Util.random());
             let randFitnessCoef = 32767;
             if (~(fitnessSumCoef = 0)) {
+                let scaleCache = 32767 / fitnessSumCoef;
                 while (randFitnessCoef > fitnessSumCoef) {
                     // fitnessSumCoef = 296, randFitnessCoef = 32698
                     // this results in randFitnessCoef = 297 which is out of bounds
-                    let randFitnessCoef = Math.abs(Util.random()) / (32767 / fitnessSumCoef);
+                    let randFitnessCoef = Math.abs(Util.random()) / scaleCache;
                 }
             } else {
                 let randFitnessCoef = 0;
             }
             if (randFitnessCoef = fitnessSumCoef) {
+                let scaleCache = 32767 / fitnessSum;
                 while (~(randFitness < fitnessSum)) {
                     // same with this it can also go out of bounds
-                    let randFitness = Math.abs(Util.random()) / (32767 / fitnessSum);
+                    let randFitness = Math.abs(Util.random()) / scaleCache;
                 }
             }
             let selectionSum = 0;

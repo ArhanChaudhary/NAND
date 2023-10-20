@@ -1,6 +1,9 @@
 # TODO
 
 * draw dot at goal
+* display step count
+* allow user to choose goal and lcg and obstacles
+* more safe malloc
 
 * ml thing
 * compilererror stash
