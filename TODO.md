@@ -6,7 +6,6 @@
 * more safe malloc
 * increase mutation rate
 
-* ml thing
 * compilererror stash
 * graphing calculator in jack
 * actually code the ui

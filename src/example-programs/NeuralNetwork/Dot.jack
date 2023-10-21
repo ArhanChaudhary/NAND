@@ -93,21 +93,21 @@ class Dot {
                     let velY = -velY;
                 }
     
-                if (velX > 5) {
-                    let velX = 5;
-                    let velY = 0;
-                } else if (velX = 4) {
-                    if (velY > 3) {
+                if (~(velX > 5)) {
+                    if (~(velX = 4)) {
+                        if (~(velX = 0)) {
+                            if (~(velY < 5)) {
+                                let velY = 4;
+                            }
+                        } else if (~(velY < 6)) {
+                            let velY = 5;
+                        }
+                    } else if (~(velY < 4)) {
                         let velY = 3;
                     }
-                } else if ((velX = 3) | (velX = 2) | (velX = 1)) {
-                    if (velY > 4) {
-                        let velY = 4;
-                    }
-                } else if (velX = 0) {
-                    if (velY > 5) {
-                        let velY = 5;
-                    }
+                } else {
+                    let velX = 5;
+                    let velY = 0;
                 }
     
                 if (newVelXIsNegative) {

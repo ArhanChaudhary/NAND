@@ -99,21 +99,21 @@ export default class Dot {
                     this.#velY = -this.#velY;
                 }
     
-                if (this.#velX > 5) {
-                    this.#velX = 5;
-                    this.#velY = 0;
-                } else if (this.#velX === 4) {
-                    if (this.#velY > 3) {
+                if (!(this.#velX > 5)) {
+                    if (!(this.#velX === 4)) {
+                        if (!(this.#velX === 0)) {
+                            if (!(this.#velY < 5)) {
+                                this.#velY = 4;
+                            }
+                        } else if (!(this.#velY < 6)) {
+                            this.#velY = 5;
+                        }
+                    } else if (!(this.#velY < 4)) {
                         this.#velY = 3;
                     }
-                } else if (this.#velX === 3 || this.#velX === 2 || this.#velX === 1) {
-                    if (this.#velY > 4) {
-                        this.#velY = 4;
-                    }
-                } else if (this.#velX === 0) {
-                    if (this.#velY > 5) {
-                        this.#velY = 5;
-                    }
+                } else {
+                    this.#velX = 5;
+                    this.#velY = 0;
                 }
     
                 if (newVelXIsNegative) {
