@@ -2,6 +2,8 @@ import Brain from "./brain.js";
 import Util, { ctx } from "./util.js";
 
 export default class Dot {
+    static #initialX;
+    static #initialY;
     #posX;
     #posY;
     #velX;
@@ -18,7 +20,9 @@ export default class Dot {
     static #brainSize;
     static #minStep;
 
-    static init(goalX, goalY, brainSize) {
+    static init(initialX, initialY, goalX, goalY, brainSize) {
+        Dot.#initialX = initialX;
+        Dot.#initialY = initialY;
         Dot.#goalX = goalX;
         Dot.#goalY = goalY;
         Dot.#brainSize = brainSize;
@@ -37,8 +41,8 @@ export default class Dot {
         this.#prevX = 0;
         this.#prevY = 0;
 
-        this.#posX = 10;
-        this.#posY = 128;
+        this.#posX = initialX;
+        this.#posY = initialY;
         this.#velX = 0;
         this.#velY = 0;
         this.#acc = null;
@@ -85,20 +89,20 @@ export default class Dot {
                 } else {
                     this.#acc = this.#brain.getNextDirection();
                 }
-    
+
                 this.#velX += this.#acc.getX();
                 this.#velY += this.#acc.getY();
                 newVelXIsNegative = this.#velX < 0;
                 newVelYIsNegative = this.#velY < 0;
-        
+
                 if (newVelXIsNegative) {
                     this.#velX = -this.#velX;
                 }
-    
+
                 if (newVelYIsNegative) {
                     this.#velY = -this.#velY;
                 }
-    
+
                 if (!(this.#velX > 5)) {
                     if (!(this.#velX === 4)) {
                         if (!(this.#velX === 0)) {
@@ -115,17 +119,17 @@ export default class Dot {
                     this.#velX = 5;
                     this.#velY = 0;
                 }
-    
+
                 if (newVelXIsNegative) {
                     this.#velX = -this.#velX;
                 }
                 if (newVelYIsNegative) {
                     this.#velY = -this.#velY;
                 }
-    
+
                 this.#posX += this.#velX;
                 this.#posY += this.#velY;
-    
+
                 if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254)) {
                     if (!(Math.abs(this.#posX - Dot.#goalX) > 3 || Math.abs(this.#posY - Dot.#goalY) > 3)) {
                         this.#reachedGoal = true;

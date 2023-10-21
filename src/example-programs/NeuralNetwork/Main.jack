@@ -4,6 +4,8 @@ class Main {
         var int brainSize;
         var int populationCount;
         var int seed;
+        var int initialX;
+        var int initialY;
         var int goalX;
         var int goalY;
         var boolean onlyBest;
@@ -11,6 +13,8 @@ class Main {
         let brainSize = 150;
         let populationCount = 60;
         let seed = 4;
+        let initialX = 10;
+        let initialY = 128;
         let goalX = 500;
         let goalY = 128;
         let onlyBest = false;
@@ -18,8 +22,8 @@ class Main {
         do Util.init(seed);
         do AccelerationVector.init();
         do Brain.init(brainSize);
-        do Dot.init(goalX, goalY, brainSize);
-        
+        do Dot.init(initialX, initialY, goalX, goalY, brainSize);
+
         let population = Population.new(populationCount, brainSize);
         do Screen.drawRectangle(goalX - 2, goalY - 2, goalX + 2, goalY + 2);
         while (~false) {

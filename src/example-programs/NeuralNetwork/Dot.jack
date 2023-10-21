@@ -1,4 +1,5 @@
 class Dot {
+    static int initialX, initialY;
     field int posX, posY;
     field int velX, velY;
     field AccelerationVector acc;
@@ -11,7 +12,9 @@ class Dot {
     static int brainSize;
     static int minStep;
 
-    function void init(int _goalX, int _goalY, int _brainSize) {
+    function void init(int _initialX, int _initialY, int _goalX, int _goalY, int _brainSize) {
+        let initialX = _initialX;
+        let initialY = _initialY;
         let goalX = _goalX;
         let goalY = _goalY;
         let brainSize = _brainSize;
@@ -31,8 +34,8 @@ class Dot {
         let prevX = 0;
         let prevY = 0;
 
-        let posX = 10;
-        let posY = 128;
+        let posX = initialX;
+        let posY = initialY;
         let velX = 0;
         let velY = 0;
         let acc = null;

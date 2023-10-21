@@ -5,7 +5,7 @@ class Population {
     static int size;
     static Array fitnessCache;
     static int brainSize;
-    
+
     constructor Population new(int _size, int _brainSize) {
         var int i;
         let brainSize = _brainSize;

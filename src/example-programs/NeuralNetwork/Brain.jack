@@ -2,7 +2,7 @@ class Brain {
     field Array directions;
     field int step;
     static int brainSize;
-    
+
     function void init(int _brainSize) {
         let brainSize = _brainSize;
     }
