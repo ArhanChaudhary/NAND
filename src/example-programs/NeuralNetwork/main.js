@@ -5,7 +5,6 @@ import Util from "./util.js";
 import Brain from "./brain.js";
 
 export class Main {
-    static #population;
     static #brainSize;
     static #populationCount;
     static #seed;
@@ -30,15 +29,14 @@ export class Main {
         Brain.init(Main.#brainSize);
         Dot.init(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, Main.#brainSize);
 
-        Main.#population = new Population(Main.#populationCount, Main.#brainSize);
+        Population.init(Main.#populationCount, Main.#brainSize);
         Main.#updateDisplay();
         window.interval = 25;
         function test() {
-            if (!Main.#population.allDotsDead()) {
-                Main.#population.update(Main.#onlyBest);
+            if (!Population.allDotsDead()) {
+                Population.update(Main.#onlyBest);
             } else {
-                Util.clearScreen();
-                Main.#population.naturalSelection();
+                Population.naturalSelection();
                 Main.#updateDisplay();
             }
             setTimeout(test, window.interval);

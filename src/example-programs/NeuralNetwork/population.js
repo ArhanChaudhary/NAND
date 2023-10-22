@@ -11,7 +11,7 @@ export default class Population {
     static #fitnessCache;
     static #brainSize;
 
-    constructor(size, brainSize) {
+    static init(size, brainSize) {
         let i = 0;
         Population.#brainSize = brainSize;
         Population.#gen = 1;
@@ -36,7 +36,7 @@ export default class Population {
         return Population.#gen;
     }
 
-    update(onlyBest) {
+    static update(onlyBest) {
         let i = 0;
         let dot;
         if (!onlyBest) {
@@ -56,7 +56,7 @@ export default class Population {
         }
     }
 
-    allDotsDead() {
+    static allDotsDead() {
         let i = 0;
         let dot;
         while (i < Population.#size) {
@@ -68,7 +68,7 @@ export default class Population {
         return true;
     }
 
-    naturalSelection() {
+    static naturalSelection() {
         let dot;
         let bestDot;
         let dotFitness;

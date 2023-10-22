@@ -6,7 +6,7 @@ class Population {
     static Array fitnessCache;
     static int brainSize;
 
-    constructor Population new(int _size, int _brainSize) {
+    function void init(int _size, int _brainSize) {
         var int i;
         let brainSize = _brainSize;
         let gen = 1;
@@ -26,14 +26,13 @@ class Population {
             let i = i + 1;
         }
         do Screen.clearScreen();
-        return this;
     }
 
     function int getGen() {
         return gen;
     }
 
-    method void update(boolean onlyBest) {
+    function void update(boolean onlyBest) {
         var int i;
         var Dot dot;
         var Brain brain;
@@ -57,7 +56,7 @@ class Population {
         }
     }
 
-    method boolean allDotsDead() {
+    function boolean allDotsDead() {
         var int i;
         var Dot dot;
         while (i < size) {
@@ -69,7 +68,7 @@ class Population {
         return true;
     }
 
-    method void naturalSelection() {
+    function void naturalSelection() {
         var Dot dot;
         var Dot bestDot;
         var Brain brain;

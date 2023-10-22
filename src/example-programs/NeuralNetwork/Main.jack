@@ -1,5 +1,4 @@
 class Main {
-    static Population population;
     static int brainSize;
     static int populationCount;
     static int seed;
@@ -24,13 +23,13 @@ class Main {
         do Brain.init(brainSize);
         do Dot.init(initialX, initialY, goalX, goalY, brainSize);
 
-        let population = Population.new(populationCount, brainSize);
+        do Population.init(populationCount, brainSize);
         do Main.updateDisplay();
         while (~false) {
-            if (~population.allDotsDead()) {
-                do population.update(onlyBest);
+            if (~Population.allDotsDead()) {
+                do Population.update(onlyBest);
             } else {
-                do population.naturalSelection();
+                do Population.naturalSelection();
                 do Main.updateDisplay();
             }
         }
