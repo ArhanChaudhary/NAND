@@ -5,37 +5,51 @@ import Util from "./util.js";
 import Brain from "./brain.js";
 
 export class Main {
+    static #population;
+    static #brainSize;
+    static #populationCount;
+    static #seed;
+    static #initialX;
+    static #initialY;
+    static #goalX;
+    static #goalY;
+    static #onlyBest;
+
     static main() {
-        let population;
+        Main.#brainSize = 150;
+        Main.#populationCount = 60;
+        Main.#seed = 5;
+        Main.#initialX = 10;
+        Main.#initialY = 128;
+        Main.#goalX = 500;
+        Main.#goalY = 128;
+        Main.#onlyBest = false;
 
-        let brainSize = 150;
-        let populationCount = 60;
-        let seed = 4;
-        let initialX = 10;
-        let initialY = 128;
-        let goalX = 500;
-        let goalY = 128;
-        let onlyBest = false;
-
-        Util.init(seed);
+        Util.init(Main.#seed);
         AccelerationVector.init();
-        Brain.init(brainSize);
-        Dot.init(initialX, initialY, goalX, goalY, brainSize);
+        Brain.init(Main.#brainSize);
+        Dot.init(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, Main.#brainSize);
 
-        population = new Population(populationCount, brainSize);
-        Util.drawRect(goalX - 2, goalY - 2, 4, 4);
+        Main.#population = new Population(Main.#populationCount, Main.#brainSize);
+        Main.#updateDisplay();
         window.interval = 25;
         function test() {
-            if (!population.allDotsDead()) {
-                population.update(onlyBest);
+            if (!Main.#population.allDotsDead()) {
+                Main.#population.update(Main.#onlyBest);
             } else {
                 Util.clearScreen();
-                population.naturalSelection();
-                Util.drawRect(goalX - 2, goalY - 2, 4, 4);
+                Main.#population.naturalSelection();
+                Main.#updateDisplay();
             }
             setTimeout(test, window.interval);
         }
         test();
+    }
+
+    static #updateDisplay() {
+        Util.drawRect(Main.#goalX - 2, Main.#goalY - 2, 4, 4);
+        console.log(Population.getGen());
+        console.log(Dot.getMinStep());
     }
 }
 Main.main();

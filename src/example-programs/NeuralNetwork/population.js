@@ -23,11 +23,17 @@ export default class Population {
             Population.#dots[i] = new Dot(new Brain());
             i++;
         }
+
+        // auxilliary memory
         i = 0;
         while (i < Population.#size - 1) {
             Population.#newBrainDirections[i] = new Array(Population.#brainSize);
             i++;
         }
+    }
+
+    static getGen() {
+        return Population.#gen;
     }
 
     update(onlyBest) {
@@ -98,6 +104,8 @@ export default class Population {
             i++;
         }
 
+        console.log(bestDot.calculateFitness());
+        console.log(bestDot.getBrain().getStep());
         if (bestDot.getReachedGoal()) {
             Dot.setMinStep(bestDot.getBrain().getStep());
         }

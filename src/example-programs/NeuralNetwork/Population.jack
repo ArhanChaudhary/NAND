@@ -18,6 +18,8 @@ class Population {
             let dots[i] = Dot.new(Brain.new());
             let i = i + 1;
         }
+
+        // auxilliary memory
         let i = 0;
         while (i < (size - 1)) {
             let newBrainDirections[i] = Array.new(brainSize);
@@ -25,6 +27,10 @@ class Population {
         }
         do Screen.clearScreen();
         return this;
+    }
+
+    function int getGen() {
+        return gen;
     }
 
     method void update(boolean onlyBest) {

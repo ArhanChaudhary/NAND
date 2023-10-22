@@ -1,18 +1,18 @@
 class Main {
-    function void main() {
-        var Population population;
-        var int brainSize;
-        var int populationCount;
-        var int seed;
-        var int initialX;
-        var int initialY;
-        var int goalX;
-        var int goalY;
-        var boolean onlyBest;
+    static Population population;
+    static int brainSize;
+    static int populationCount;
+    static int seed;
+    static int initialX;
+    static int initialY;
+    static int goalX;
+    static int goalY;
+    static boolean onlyBest;
 
+    function void main() {
         let brainSize = 150;
         let populationCount = 60;
-        let seed = 4;
+        let seed = 5;
         let initialX = 10;
         let initialY = 128;
         let goalX = 500;
@@ -25,14 +25,59 @@ class Main {
         do Dot.init(initialX, initialY, goalX, goalY, brainSize);
 
         let population = Population.new(populationCount, brainSize);
-        do Screen.drawRectangle(goalX - 2, goalY - 2, goalX + 2, goalY + 2);
+        do Main.updateDisplay();
         while (~false) {
             if (~population.allDotsDead()) {
                 do population.update(onlyBest);
             } else {
                 do population.naturalSelection();
-                do Screen.drawRectangle(goalX - 2, goalY - 2, goalX + 2, goalY + 2);
+                do Main.updateDisplay();
             }
+        }
+    }
+
+    function void updateDisplay() {
+        do Screen.drawRectangle(goalX - 2, goalY - 2, goalX + 2, goalY + 2);
+        do Output.moveCursor(21, 0);
+
+        do Output.printChar(71);
+        do Output.printChar(101);
+        do Output.printChar(110);
+        do Output.printChar(101);
+        do Output.printChar(114);
+        do Output.printChar(97);
+        do Output.printChar(116);
+        do Output.printChar(105);
+        do Output.printChar(111);
+        do Output.printChar(110);
+        do Output.printChar(58);
+        do Output.printChar(32);
+        do Output.printInt(Population.getGen());
+
+        do Output.moveCursor(22, 0);
+
+        do Output.printChar(71);
+        do Output.printChar(111);
+        do Output.printChar(97);
+        do Output.printChar(108);
+        do Output.printChar(32);
+        do Output.printChar(115);
+        do Output.printChar(116);
+        do Output.printChar(101);
+        do Output.printChar(112);
+        do Output.printChar(32);
+        do Output.printChar(99);
+        do Output.printChar(111);
+        do Output.printChar(117);
+        do Output.printChar(110);
+        do Output.printChar(116);
+        do Output.printChar(58);
+        do Output.printChar(32);
+        if (Dot.getMinStep() = 32767) {
+            do Output.printChar(78);
+            do Output.printChar(65);
+        } else {
+            do Output.printInt(Dot.getMinStep());
         }
     }
 }

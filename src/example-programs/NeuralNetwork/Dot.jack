@@ -45,6 +45,10 @@ class Dot {
         return dead;
     }
 
+    function int getMinStep() {
+        return minStep;
+    }
+
     function void setMinStep(int _minStep) {
         let minStep = _minStep;
     }
@@ -82,20 +86,20 @@ class Dot {
                 } else {
                     let acc = brain.getNextDirection();
                 }
-    
+
                 let velX = velX + acc.getX();
                 let velY = velY + acc.getY();
                 let newVelXIsNegative = velX < 0;
                 let newVelYIsNegative = velY < 0;
-    
+
                 if (newVelXIsNegative) {
                     let velX = -velX;
                 }
-    
+
                 if (newVelYIsNegative) {
                     let velY = -velY;
                 }
-    
+
                 if (~(velX > 5)) {
                     if (~(velX = 4)) {
                         if (~(velX = 0)) {
@@ -112,17 +116,17 @@ class Dot {
                     let velX = 5;
                     let velY = 0;
                 }
-    
+
                 if (newVelXIsNegative) {
                     let velX = -velX;
                 }
                 if (newVelYIsNegative) {
                     let velY = -velY;
                 }
-    
+
                 let posX = posX + velX;
                 let posY = posY + velY;
-    
+
                 if (~((posX < 2) | (posY < 2) | (posX > 510) | (posY > 254))) {
                     if (~((Math.abs(posX - goalX) > 3) | (Math.abs(posY - goalY) > 3))) {
                         let reachedGoal = true;

@@ -41,8 +41,8 @@ export default class Dot {
         this.#prevX = 0;
         this.#prevY = 0;
 
-        this.#posX = initialX;
-        this.#posY = initialY;
+        this.#posX = Dot.#initialX;
+        this.#posY = Dot.#initialY;
         this.#velX = 0;
         this.#velY = 0;
         this.#acc = null;
@@ -50,6 +50,10 @@ export default class Dot {
 
     getDead() {
         return this.#dead;
+    }
+
+    static getMinStep() {
+        return Dot.#minStep;
     }
 
     static setMinStep(minStep) {
