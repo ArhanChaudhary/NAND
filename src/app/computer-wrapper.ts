@@ -1,4 +1,3 @@
-// @ts-ignore
 import * as computer from "core";
 
 let screen: Worker;
@@ -33,7 +32,8 @@ function runner() {
   // object between the main thread and workers. Notice how I said same;
   // you may think that I can just import the wasm in the other worker
   // but that's instead an entiretly new wasm instance with its own empty
-  // screen memory bitmap this problem *may* be solved in the future with
+  // screen memory bitmap
+  // TODO: this problem *may* be solved in the future with
   // https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html
   // and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
   // but for now, this is the best I can do
@@ -109,7 +109,7 @@ async function initialize() {
           action: 'emitInfo',
           hz: 0,
           NANDCalls: 0,
-        });   
+        });
         break;
       case 'stop':
         stopRunner = true;
