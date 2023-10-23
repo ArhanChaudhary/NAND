@@ -22,8 +22,8 @@ class Dot {
         let stepWeight = (32767 - 10000) / _brainSize;
     }
 
-    constructor Dot new(Brain _brain) {
-        let brain = _brain;
+    constructor Dot new() {
+        let brain = Brain.new();
         do instantiate();
         return this;
     }
@@ -150,9 +150,5 @@ class Dot {
             return 32767 / Math.max(10, (x * x) + (y * y));
         }
         return Math.max(10000, 32767 - (stepWeight * brain.getStep()));
-    }
-
-    method Dot getBaby() {
-        return Dot.new(brain.clone());
     }
 }

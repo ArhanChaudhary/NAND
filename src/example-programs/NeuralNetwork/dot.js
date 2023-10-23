@@ -30,8 +30,8 @@ export default class Dot {
         Dot.#stepWeight = Math.floor((32767 - 10000) / Brain.getBrainSize());
     }
 
-    constructor(brain) {
-        this.#brain = brain;
+    constructor() {
+        this.#brain = new Brain();
         this.instantiate();
     }
 

@@ -20,7 +20,7 @@ export default class Population {
         Population.#dots = new Array(Population.#size);
         Population.#newBrainDirections = new Array(Population.#size - 1);
         while (i < Population.#size) {
-            Population.#dots[i] = new Dot(new Brain());
+            Population.#dots[i] = new Dot();
             i++;
         }
 
@@ -179,6 +179,7 @@ export default class Population {
             }
             i++;
         }
+        Util.clearScreen();
         Population.#gen++;
     }
 }

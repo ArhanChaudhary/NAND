@@ -15,7 +15,7 @@ class Population {
         let dots = Array.new(size);
         let newBrainDirections = Array.new(size - 1);
         while (i < size) {
-            let dots[i] = Dot.new(Brain.new());
+            let dots[i] = Dot.new();
             let i = i + 1;
         }
 
