@@ -7,7 +7,7 @@
  * This library provides two services: direct access to the computer's main
  * memory (RAM), and allocation and recycling of memory blocks. The Hack RAM
  * consists of 32,768 words, each holding a 16-bit binary number.
- */ 
+ */
  class Memory {
     static Array ptr;
 
@@ -35,7 +35,7 @@
         var int length;
         if (~(size > 0))
             do Sys.error(5);
-        let segment = 2048;  
+        let segment = 2048;
         while (~false) {
             if (segment = 24576)
                 do Sys.error(6);
@@ -68,5 +68,22 @@
         } else {
             let segment[0] = (nextSegment - segment) - 2;
         }
-    }    
+    }
+
+    function void deFrag() {
+        var Array segment;
+        var Array nextSegment;
+        let segment = 2048;
+        while (~(segment > 16382)) {
+            let nextSegment = segment[1];
+            if (~(nextSegment[0] = 0)) {
+                if (~(nextSegment < 16383))
+                    return;
+                let segment[0] = (nextSegment - segment) + nextSegment[0];
+                let segment[1] = nextSegment[1];
+            } else {
+                let segment = segment[1];
+            }
+        }
+    }
 }

@@ -4,7 +4,7 @@ export default class Brain {
     #directions;
     #step;
     static #brainSize;
-    
+
     static init(brainSize) {
         Brain.#brainSize = brainSize;
     }
