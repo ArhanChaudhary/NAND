@@ -1,26 +1,56 @@
 class Population {
     static Array dots;
+    static Array fitnessCache;
     static Array newBrainDirections;
     static int gen;
     static int size;
-    static Array fitnessCache;
     static int brainSize;
 
-    function void init(int _size, int _brainSize) {
+    function void init() {
+        let dots = null;
+    }
+
+    function void config(int _size, int _brainSize) {
         var int i;
-        let brainSize = _brainSize;
+        var Dot dot;
+        var Array tmp;
+
+        if (~(dots = null)) {
+            while (i < size) {
+                let dot = dots[i];
+                do dot.dispose();
+                let i = i + 1;
+            }
+            let i = 0;
+            do dots.dispose();
+
+            do fitnessCache.dispose();
+
+            while (i < (size - 1)) {
+                let tmp = newBrainDirections[i];
+                do tmp.dispose();
+                let i = i + 1;
+            }
+            let i = 0;
+            do newBrainDirections.dispose();
+            do Memory.deFrag();
+        }
+
         let gen = 1;
         let size = _size;
-        let fitnessCache = Array.new(size);
+        let brainSize = _brainSize;
+
         let dots = Array.new(size);
-        let newBrainDirections = Array.new(size - 1);
         while (i < size) {
             let dots[i] = Dot.new();
             let i = i + 1;
         }
+        let i = 0;
+
+        let fitnessCache = Array.new(size);
 
         // auxilliary memory
-        let i = 0;
+        let newBrainDirections = Array.new(size - 1);
         while (i < (size - 1)) {
             let newBrainDirections[i] = Array.new(brainSize);
             let i = i + 1;
@@ -97,7 +127,7 @@ class Population {
             }
             let fitnessSum = fitnessSum + dotFitness;
             if (fitnessSum < 0) {
-                let fitnessSum = fitnessSum + 32767 + 1;
+                let fitnessSum = fitnessSum + ~32767;
                 let fitnessSumCoef = fitnessSumCoef + 1;
             }
             let i = i + 1;
@@ -135,7 +165,7 @@ class Population {
             while (j < size) {
                 let selectionSum = selectionSum + fitnessCache[j];
                 if (selectionSum < 0) {
-                    let selectionSum = selectionSum + 32767 + 1;
+                    let selectionSum = selectionSum + ~32767;
                     let selectionSumCoef = selectionSumCoef + 1;
                 }
                 if ((selectionSumCoef > randFitnessCoef) | ((selectionSumCoef = randFitnessCoef) & (selectionSum > randFitness))) {

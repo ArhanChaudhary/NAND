@@ -9,6 +9,9 @@ class Main {
     static boolean onlyBest;
 
     function void main() {
+        do AccelerationVector.init();
+        do Population.init();
+
         let brainSize = 150;
         let populationCount = 60;
         let seed = 5;
@@ -16,14 +19,16 @@ class Main {
         let initialY = 128;
         let goalX = 500;
         let goalY = 128;
-        let onlyBest = false;
+        let onlyBest = true;
 
-        do Util.init(seed);
-        do AccelerationVector.init();
-        do Brain.init(brainSize);
-        do Dot.init(initialX, initialY, goalX, goalY, brainSize);
+        do Util.config(seed);
+        do Brain.config(brainSize);
+        do Dot.config(initialX, initialY, goalX, goalY, brainSize);
+        do Population.config(populationCount, brainSize);
+        do Population.config(populationCount, brainSize);
+        do Population.config(populationCount, brainSize);
+        do Population.config(populationCount, brainSize);
 
-        do Population.init(populationCount, brainSize);
         do Main.updateDisplay();
         while (~false) {
             if (~Population.allDotsDead()) {

@@ -12,7 +12,7 @@ class Dot {
     static int brainSize;
     static int minStep;
 
-    function void init(int _initialX, int _initialY, int _goalX, int _goalY, int _brainSize) {
+    function void config(int _initialX, int _initialY, int _goalX, int _goalY, int _brainSize) {
         let initialX = _initialX;
         let initialY = _initialY;
         let goalX = _goalX;
@@ -150,5 +150,10 @@ class Dot {
             return 32767 / Math.max(10, (x * x) + (y * y));
         }
         return Math.max(10000, 32767 - (stepWeight * brain.getStep()));
+    }
+
+    method void dispose() {
+        do brain.dispose();
+        do Memory.deAlloc(this);
     }
 }

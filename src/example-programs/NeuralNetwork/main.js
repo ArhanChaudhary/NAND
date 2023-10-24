@@ -15,6 +15,9 @@ export class Main {
     static #onlyBest;
 
     static main() {
+        AccelerationVector.init();
+        Population.init();
+
         Main.#brainSize = 150;
         Main.#populationCount = 60;
         Main.#seed = 5;
@@ -24,12 +27,11 @@ export class Main {
         Main.#goalY = 128;
         Main.#onlyBest = false;
 
-        Util.init(Main.#seed);
-        AccelerationVector.init();
-        Brain.init(Main.#brainSize);
-        Dot.init(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, Main.#brainSize);
+        Util.config(Main.#seed);
+        Brain.config(Main.#brainSize);
+        Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, Main.#brainSize);
+        Population.config(Main.#populationCount, Main.#brainSize);
 
-        Population.init(Main.#populationCount, Main.#brainSize);
         Main.#updateDisplay();
         window.interval = 25;
         function test() {

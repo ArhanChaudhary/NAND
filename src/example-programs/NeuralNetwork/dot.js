@@ -20,7 +20,7 @@ export default class Dot {
     static #brainSize;
     static #minStep;
 
-    static init(initialX, initialY, goalX, goalY, brainSize) {
+    static config(initialX, initialY, goalX, goalY, brainSize) {
         Dot.#initialX = initialX;
         Dot.#initialY = initialY;
         Dot.#goalX = goalX;

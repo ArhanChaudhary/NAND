@@ -3,7 +3,7 @@ ctx.fillStyle = 'black';
 export default class Util {
     static #next;
 
-    static init(seed) {
+    static config(seed) {
         Util.#next = seed;
     }
 

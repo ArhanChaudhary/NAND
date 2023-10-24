@@ -5,7 +5,7 @@ export default class Brain {
     #step;
     static #brainSize;
 
-    static init(brainSize) {
+    static config(brainSize) {
         Brain.#brainSize = brainSize;
     }
 

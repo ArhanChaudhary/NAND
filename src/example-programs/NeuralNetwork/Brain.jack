@@ -3,7 +3,7 @@ class Brain {
     field int step;
     static int brainSize;
 
-    function void init(int _brainSize) {
+    function void config(int _brainSize) {
         let brainSize = _brainSize;
     }
 
@@ -45,5 +45,10 @@ class Brain {
         let ret = directions[step];
         let step = step + 1;
         return ret;
+    }
+
+    method void dispose() {
+        do directions.dispose();
+        do Memory.deAlloc(this);
     }
 }

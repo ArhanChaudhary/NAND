@@ -1,31 +1,36 @@
-import Brain from './brain.js';
 import Dot from './dot.js';
 import Util from './util.js';
 import AccelerationVector from './accelerationvector.js';
 
 export default class Population {
     static #dots;
+    static #fitnessCache;
     static #newBrainDirections;
     static #gen;
     static #size;
-    static #fitnessCache;
     static #brainSize;
 
-    static init(size, brainSize) {
+    init() {
+        Population.#dots = null;
+    }
+
+    static config(size, brainSize) {
         let i = 0;
-        Population.#brainSize = brainSize;
         Population.#gen = 1;
         Population.#size = size;
-        Population.#fitnessCache = new Array(Population.#size);
+        Population.#brainSize = brainSize;
+
         Population.#dots = new Array(Population.#size);
-        Population.#newBrainDirections = new Array(Population.#size - 1);
         while (i < Population.#size) {
             Population.#dots[i] = new Dot();
             i++;
         }
+        i = 0;
+
+        Population.#fitnessCache = new Array(Population.#size);
 
         // auxilliary memory
-        i = 0;
+        Population.#newBrainDirections = new Array(Population.#size - 1);
         while (i < Population.#size - 1) {
             Population.#newBrainDirections[i] = new Array(Population.#brainSize);
             i++;
@@ -98,14 +103,12 @@ export default class Population {
                 fitnessSum -= 65536;
             }
             if (fitnessSum < 0) {
-                fitnessSum = fitnessSum + 32767 + 1;
+                fitnessSum = fitnessSum + ~32767;
                 fitnessSumCoef++;
             }
             i++;
         }
 
-        console.log(bestDot.calculateFitness());
-        console.log(bestDot.getBrain().getStep());
         if (bestDot.getReachedGoal()) {
             Dot.setMinStep(bestDot.getBrain().getStep());
         }
@@ -140,7 +143,7 @@ export default class Population {
                     selectionSum -= 65536;
                 }
                 if (selectionSum < 0) {
-                    selectionSum = selectionSum + 32767 + 1;
+                    selectionSum = selectionSum + ~32767;
                     selectionSumCoef++;
                 }
                 if (selectionSumCoef > randFitnessCoef || (selectionSumCoef === randFitnessCoef && selectionSum > randFitness)) {
