@@ -76,7 +76,7 @@
         let nextSegment = 2048;
         // screen memory
         while (~(nextSegment > 16382)) {
-            if (~(nextSegment[0] = 0)) {
+            if (~((nextSegment[0] = 0) | (segment[0] = 0))) {
                 let segment[0] = (nextSegment - segment) + nextSegment[0];
                 let segment[1] = nextSegment[1];
             } else {
@@ -86,8 +86,10 @@
         }
         // assumes the next memory list (aka the screen) is completely free and goes until the very end
         // ie segment[0] is the screen length and segment[1] is 24576
-        // this assumtpion is necessary because theres no linked list information present on the screen memory
-        let segment[0] = 24576 - (segment + 2);
-        let segment[1] = 24576;
+        // this assumption is necessary because theres no linked list information present on the screen memory
+        if (~(segment[0] = 0)) {
+            let segment[0] = 24576 - (segment + 2);
+            let segment[1] = 24576;
+        }
     }
 }

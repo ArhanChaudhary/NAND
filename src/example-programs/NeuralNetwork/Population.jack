@@ -28,8 +28,12 @@ class Population {
 
             while (i < (size - 1)) {
                 let tmp = newBrainDirections[i];
-                do tmp.dispose();
-                let i = i + 1;
+                if (~(tmp > 16384)) {
+                    do tmp.dispose();
+                    let i = i + 1;
+                } else {
+                    let i = size;
+                }
             }
             let i = 0;
             do newBrainDirections.dispose();

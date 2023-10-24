@@ -1,12 +1,8 @@
 # TODO
 
-* init and config functions
-
-* draw dot at goal
-* display step count
-* allow user to choose goal and lcg and obstacles
 * more safe malloc
-* increase mutation rate
+* allow user to choose goal and lcg and obstacles
+* gui
 
 * compilererror stash, too many static error
 * graphing calculator in jack
