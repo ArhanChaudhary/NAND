@@ -47,7 +47,7 @@ export class Main {
     }
 
     static #updateDisplay() {
-        Util.drawRect(Main.#goalX - 2, Main.#goalY - 2, 4, 4);
+        Util.drawRect(Main.#goalX - 2, Main.#goalY - 2, Main.#goalX + 2, Main.#goalY + 2);
         console.log(Population.getGen());
         console.log(Dot.getMinStep());
     }

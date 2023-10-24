@@ -75,11 +75,11 @@ export default class Dot {
     show() {
         if (!this.#dead) {
             ctx.fillStyle = 'white';
-            Util.drawRect(this.#prevX, this.#prevY, 2, 2);
+            Util.drawRect(this.#prevX, this.#prevY, this.#prevX, + 2, this.#prevY + 2);
             ctx.fillStyle = 'black';
             this.#prevX = this.#posX - 1;
             this.#prevY = this.#posY - 1;
-            Util.drawRect(this.#prevX, this.#prevY, 2, 2);
+            Util.drawRect(this.#prevX, this.#prevY, this.#prevX, + 2, this.#prevY + 2);
         }
     }
 
