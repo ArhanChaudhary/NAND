@@ -25,9 +25,6 @@ class Main {
         do Brain.config(brainSize);
         do Dot.config(initialX, initialY, goalX, goalY, brainSize);
         do Population.config(populationCount, brainSize);
-        do Population.config(populationCount, brainSize);
-        do Population.config(populationCount, brainSize);
-        do Population.config(populationCount, brainSize);
 
         do Main.updateDisplay();
         while (~false) {
