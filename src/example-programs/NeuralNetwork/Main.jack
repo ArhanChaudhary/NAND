@@ -7,12 +7,13 @@ class Main {
     static int goalX;
     static int goalY;
     static boolean onlyBest;
+    static Array obstacles;
 
     function void main() {
         do AccelerationVector.init();
         do Population.init();
 
-        let brainSize = 150;
+        let brainSize = 145;
         let populationCount = 60;
         let seed = 5;
         let initialX = 10;
@@ -20,25 +21,47 @@ class Main {
         let goalX = 500;
         let goalY = 128;
         let onlyBest = true;
+        let obstacles = Array.new(512);
+
+        let obstacles[40] = true;
+        let obstacles[72] = true;
+        let obstacles[104] = true;
+        // (Y / 256) * 10 + (X / 16)
 
         do Util.config(seed);
         do Brain.config(brainSize);
         do Dot.config(initialX, initialY, goalX, goalY, brainSize);
         do Population.config(populationCount, brainSize);
 
-        do Main.updateDisplay();
+        do Main.refreshDisplay();
         while (~false) {
             if (~Population.allDotsDead()) {
                 do Population.update(onlyBest);
             } else {
                 do Population.naturalSelection();
-                do Main.updateDisplay();
+                do Main.refreshDisplay();
             }
         }
     }
 
-    function void updateDisplay() {
+    function void refreshDisplay() {
+        var int i;
+        var int tmp;
+        var int tmp2;
         do Screen.drawRectangle(goalX - 2, goalY - 2, goalX + 2, goalY + 2);
+        // draw obstacles
+        // divide the 512x256 grid into 16x16 blocks, with 32 on one row and 16 on one column
+        // drawRect(16 * 8, )
+        while (i < 512) {
+            if (obstacles[i]) {
+                let tmp = i / 32;
+                let tmp2 = i - (tmp * 32);
+                let tmp = tmp * 16;
+                let tmp2 = tmp2 * 16;
+                do Screen.drawRectangle(tmp2, tmp, tmp2 + 16, tmp + 16);
+            }
+            let i = i + 1;
+        }
         do Output.moveCursor(21, 0);
 
         do Output.printChar(71);
