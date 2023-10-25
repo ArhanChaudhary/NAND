@@ -55,6 +55,9 @@ class Population {
 
         // auxilliary memory
         let newBrainDirections = Array.new(size - 1);
+        if (~(newBrainDirections < 16387)) {
+            do Sys.error(3);
+        }
         while (i < (size - 1)) {
             let newBrainDirections[i] = Array.new(brainSize);
             let i = i + 1;
