@@ -45,7 +45,7 @@ export class Main {
         Population.config(Main.#populationCount, Main.#brainSize, Main.#onlyBest);
 
         Main.#refreshDisplay();
-        window.interval = 0;
+        window.interval = 25;
         function test() {
             if (!Population.allDotsDead()) {
                 Population.update();

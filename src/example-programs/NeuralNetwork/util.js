@@ -9,7 +9,7 @@ export default class Util {
 
     static drawRect(x1, y1, x2, y2) {
         ctx.beginPath();
-        ctx.rect(x1, y1, x2 - x1, y2 - y1);
+        ctx.rect(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
         ctx.fill();
     }
 
