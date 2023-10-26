@@ -1,7 +1,7 @@
 # TODO
 
-* goal
 * allow user to choose obstacles
+* choose step count: 250 225 200 175 150 125
 * gui
 
 * compilererror stash, too many static error

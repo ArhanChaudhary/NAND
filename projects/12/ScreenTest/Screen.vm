@@ -36,7 +36,6 @@ push constant 0
 return
 function Screen.updateLocation 0
 push static 1
-not
 if-goto FALSE_CASE2
 push static 0
 push argument 0
@@ -47,7 +46,8 @@ add
 pop pointer 1
 push that 0
 push argument 1
-or
+not
+and
 pop temp 0
 pop pointer 1
 push temp 0
@@ -63,8 +63,7 @@ add
 pop pointer 1
 push that 0
 push argument 1
-not
-and
+or
 pop temp 0
 pop pointer 1
 push temp 0
@@ -288,7 +287,7 @@ goto WHILE_ITER11
 label WHILE_BREAKER12
 push constant 0
 return
-function Screen.drawRectangle 7
+function Screen.drawRectangle 8
 push argument 0
 push argument 2
 gt
@@ -318,20 +317,23 @@ push constant 9
 call Sys.error 1
 pop temp 0
 label FALSE_CASE17
+label WHILE_ITER18
 push argument 0
 push constant 16
-call Math.divide 2
-pop local 3
-push argument 2
+lt
+if-goto WHILE_BREAKER19
+push argument 0
 push constant 16
-call Math.divide 2
-pop local 4
+sub
+pop argument 0
+push local 3
+push constant 1
+add
+pop local 3
+goto WHILE_ITER18
+label WHILE_BREAKER19
 push static 2
 push argument 0
-push local 3
-push constant 16
-call Math.multiply 2
-sub
 add
 pop pointer 1
 push that 0
@@ -339,12 +341,23 @@ push constant 1
 sub
 not
 pop local 5
+label WHILE_ITER20
+push argument 2
+push constant 16
+lt
+if-goto WHILE_BREAKER21
+push argument 2
+push constant 16
+sub
+pop argument 2
+push local 4
+push constant 1
+add
+pop local 4
+goto WHILE_ITER20
+label WHILE_BREAKER21
 push static 2
 push argument 2
-push local 4
-push constant 16
-call Math.multiply 2
-sub
 push constant 1
 add
 add
@@ -354,8 +367,26 @@ push constant 1
 sub
 pop local 6
 push argument 1
-push constant 32
-call Math.multiply 2
+push argument 1
+add
+pop local 7
+push local 7
+push local 7
+add
+pop local 7
+push local 7
+push local 7
+add
+pop local 7
+push local 7
+push local 7
+add
+pop local 7
+push local 7
+push local 7
+add
+pop local 7
+push local 7
 push local 3
 add
 pop local 0
@@ -363,11 +394,11 @@ push local 4
 push local 3
 sub
 pop local 2
-label WHILE_ITER18
+label WHILE_ITER22
 push argument 1
 push argument 3
 gt
-if-goto WHILE_BREAKER19
+if-goto WHILE_BREAKER23
 push local 0
 push local 2
 add
@@ -375,7 +406,7 @@ pop local 1
 push local 2
 push constant 0
 eq
-if-goto FALSE_CASE20
+if-goto FALSE_CASE24
 push local 0
 push local 5
 call Screen.updateLocation 2
@@ -384,12 +415,12 @@ push local 0
 push constant 1
 add
 pop local 0
-label WHILE_ITER21
+label WHILE_ITER25
 push local 0
 push local 1
 lt
 not
-if-goto WHILE_BREAKER22
+if-goto WHILE_BREAKER26
 push local 0
 push constant -1
 call Screen.updateLocation 2
@@ -398,21 +429,21 @@ push local 0
 push constant 1
 add
 pop local 0
-goto WHILE_ITER21
-label WHILE_BREAKER22
+goto WHILE_ITER25
+label WHILE_BREAKER26
 push local 1
 push local 6
 call Screen.updateLocation 2
 pop temp 0
-goto TRUE_CASE23
-label FALSE_CASE20
+goto TRUE_CASE27
+label FALSE_CASE24
 push local 0
 push local 6
 push local 5
 and
 call Screen.updateLocation 2
 pop temp 0
-label TRUE_CASE23
+label TRUE_CASE27
 push argument 1
 push constant 1
 add
@@ -423,8 +454,8 @@ push local 2
 sub
 add
 pop local 0
-goto WHILE_ITER18
-label WHILE_BREAKER19
+goto WHILE_ITER22
+label WHILE_BREAKER23
 push constant 0
 return
 function Screen.drawCircle 3
@@ -443,11 +474,11 @@ lt
 and
 and
 and
-if-goto FALSE_CASE24
+if-goto FALSE_CASE28
 push constant 12
 call Sys.error 1
 pop temp 0
-label FALSE_CASE24
+label FALSE_CASE28
 push argument 0
 push argument 2
 lt
@@ -468,11 +499,11 @@ or
 or
 or
 not
-if-goto FALSE_CASE25
+if-goto FALSE_CASE29
 push constant 13
 call Sys.error 1
 pop temp 0
-label FALSE_CASE25
+label FALSE_CASE29
 push argument 2
 neg
 pop local 0
@@ -480,11 +511,11 @@ push argument 2
 push argument 2
 call Math.multiply 2
 pop local 2
-label WHILE_ITER26
+label WHILE_ITER30
 push local 0
 push argument 2
 gt
-if-goto WHILE_BREAKER27
+if-goto WHILE_BREAKER31
 push local 2
 push local 0
 push local 0
@@ -510,7 +541,7 @@ push local 0
 push constant 1
 add
 pop local 0
-goto WHILE_ITER26
-label WHILE_BREAKER27
+goto WHILE_ITER30
+label WHILE_BREAKER31
 push constant 0
 return

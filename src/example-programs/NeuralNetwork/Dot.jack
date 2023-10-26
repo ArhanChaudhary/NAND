@@ -121,6 +121,7 @@ class Dot {
                 if (tmp) {
                     let velX = -velX;
                 }
+
                 if (tmp2) {
                     let velY = -velY;
                 }
@@ -134,12 +135,14 @@ class Dot {
                     let tmp2 = tmp2 - 16;
                     let tmp = tmp + 32;
                 }
+                // tmp should be (tmp2 / 16) * 32
 
                 let tmp2 = posX;
                 while (~(tmp2 < 16)) {
                     let tmp2 = tmp2 - 16;
                     let tmp = tmp + 1;
                 }
+                // tmp should be (tmp2 / 16) * 32 + (tmp2 / 16)
 
                 if (~((posX < 2) | (posY < 2) | (posX > 510) | (posY > 254) | obstacles[tmp])) {
                     if (~((Math.abs(posX - goalX) > 3) | (Math.abs(posY - goalY) > 3))) {
