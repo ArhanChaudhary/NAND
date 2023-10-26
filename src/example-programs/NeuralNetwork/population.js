@@ -9,12 +9,13 @@ export default class Population {
     static #gen;
     static #size;
     static #brainSize;
+    static #onlyBest;
 
-    init() {
+    static init() {
         Population.#dots = null;
     }
 
-    static config(size, brainSize) {
+    static config(size, brainSize, onlyBest) {
         let i = 0;
         Population.#gen = 1;
         Population.#size = size;
@@ -41,10 +42,10 @@ export default class Population {
         return Population.#gen;
     }
 
-    static update(onlyBest) {
+    static update() {
         let i = 0;
         let dot;
-        if (!onlyBest) {
+        if (!Population.#onlyBest) {
             while (i < Population.#size) {
                 dot = Population.#dots[i];
                 dot.update();

@@ -19,8 +19,9 @@ export default class Dot {
     static #stepWeight;
     static #brainSize;
     static #minStep;
+    static #obstacles;
 
-    static config(initialX, initialY, goalX, goalY, brainSize) {
+    static config(initialX, initialY, goalX, goalY, brainSize, obstacles) {
         Dot.#initialX = initialX;
         Dot.#initialY = initialY;
         Dot.#goalX = goalX;
@@ -28,6 +29,7 @@ export default class Dot {
         Dot.#brainSize = brainSize;
         Dot.#minStep = 32767;
         Dot.#stepWeight = Math.floor((32767 - 10000) / Brain.getBrainSize());
+        Dot.#obstacles = obstacles;
     }
 
     constructor() {
@@ -38,8 +40,8 @@ export default class Dot {
     instantiate() {
         this.#dead = false;
         this.#reachedGoal = false;
-        this.#prevX = 0;
-        this.#prevY = 0;
+        this.#prevX = Dot.#initialX;
+        this.#prevY = Dot.#initialY;
 
         this.#posX = Dot.#initialX;
         this.#posY = Dot.#initialY;
@@ -75,17 +77,17 @@ export default class Dot {
     show() {
         if (!this.#dead) {
             ctx.fillStyle = 'white';
-            Util.drawRect(this.#prevX, this.#prevY, this.#prevX, + 2, this.#prevY + 2);
+            Util.drawRect(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
             ctx.fillStyle = 'black';
             this.#prevX = this.#posX - 1;
             this.#prevY = this.#posY - 1;
-            Util.drawRect(this.#prevX, this.#prevY, this.#prevX, + 2, this.#prevY + 2);
+            Util.drawRect(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
         }
     }
 
     update() {
-        let newVelXIsNegative;
-        let newVelYIsNegative;
+        let tmp;
+        let tmp2;
         if (!(this.#brain.getStep() > Dot.#minStep)) {
             if (!this.#dead) {
                 if (!(Dot.#brainSize > this.#brain.getStep())) {
@@ -96,14 +98,14 @@ export default class Dot {
 
                 this.#velX += this.#acc.getX();
                 this.#velY += this.#acc.getY();
-                newVelXIsNegative = this.#velX < 0;
-                newVelYIsNegative = this.#velY < 0;
+                tmp = this.#velX < 0;
+                tmp2 = this.#velY < 0;
 
-                if (newVelXIsNegative) {
+                if (tmp) {
                     this.#velX = -this.#velX;
                 }
 
-                if (newVelYIsNegative) {
+                if (tmp2) {
                     this.#velY = -this.#velY;
                 }
 
@@ -124,17 +126,33 @@ export default class Dot {
                     this.#velY = 0;
                 }
 
-                if (newVelXIsNegative) {
+                if (tmp) {
                     this.#velX = -this.#velX;
                 }
-                if (newVelYIsNegative) {
+
+                if (tmp2) {
                     this.#velY = -this.#velY;
                 }
 
                 this.#posX += this.#velX;
                 this.#posY += this.#velY;
 
-                if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254)) {
+                tmp = 0;
+                tmp2 = this.#posY;
+                while (!(tmp2 < 16)) {
+                    tmp2 -= 16;
+                    tmp += 32;
+                }
+                // tmp should be (tmp2 / 16) * 32
+
+                tmp2 = this.#posX;
+                while (!(tmp2 < 16)) {
+                    tmp2 -= 16;
+                    tmp++;
+                }
+                // tmp should be (tmp2 / 16) * 32 + (tmp / 16)
+
+                if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254 || Dot.#obstacles[tmp])) {
                     if (!(Math.abs(this.#posX - Dot.#goalX) > 3 || Math.abs(this.#posY - Dot.#goalY) > 3)) {
                         this.#reachedGoal = true;
                         this.#dead = true;
