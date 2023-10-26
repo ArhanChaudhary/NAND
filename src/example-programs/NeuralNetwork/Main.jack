@@ -36,12 +36,12 @@ class Main {
         do Util.config(seed);
         do Brain.config(brainSize);
         do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
-        do Population.config(populationCount, brainSize);
+        do Population.config(populationCount, brainSize, onlyBest);
 
         do Main.refreshDisplay();
         while (~false) {
             if (~Population.allDotsDead()) {
-                do Population.update(onlyBest);
+                do Population.update();
             } else {
                 do Population.naturalSelection();
                 do Main.refreshDisplay();
@@ -54,7 +54,7 @@ class Main {
         var int obstacleY;
         var int obstacleX;
         do Screen.drawRectangle(goalX - 2, goalY - 2, goalX + 2, goalY + 2);
-        while (i < 512) {
+        while (~(i > 511)) {
             if (obstacles[i]) {
                 let obstacleY = 0;
                 let obstacleX = i;
@@ -67,7 +67,7 @@ class Main {
                 let obstacleX = obstacleX + obstacleX;
                 let obstacleX = obstacleX + obstacleX;
                 let obstacleX = obstacleX + obstacleX;
-                do Screen.drawRectangle(obstacleX, obstacleY, obstacleX + 16, obstacleY + 16);
+                do Screen.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
             }
             let i = i + 1;
         }

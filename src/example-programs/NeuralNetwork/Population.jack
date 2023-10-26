@@ -5,12 +5,13 @@ class Population {
     static int gen;
     static int size;
     static int brainSize;
+    static int onlyBest;
 
     function void init() {
         let dots = null;
     }
 
-    function void config(int _size, int _brainSize) {
+    function void config(int _size, int _brainSize, boolean _onlyBest) {
         var int i;
         var Dot dot;
         var Array tmp;
@@ -43,6 +44,7 @@ class Population {
         let gen = 1;
         let size = _size;
         let brainSize = _brainSize;
+        let onlyBest = _onlyBest;
 
         let dots = Array.new(size);
         while (i < size) {
@@ -69,7 +71,7 @@ class Population {
         return gen;
     }
 
-    function void update(boolean onlyBest) {
+    function void update() {
         var int i;
         var Dot dot;
         var Brain brain;
