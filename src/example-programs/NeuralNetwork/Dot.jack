@@ -11,8 +11,9 @@ class Dot {
     static int stepWeight;
     static int brainSize;
     static int minStep;
+    static Array obstacles;
 
-    function void config(int _initialX, int _initialY, int _goalX, int _goalY, int _brainSize) {
+    function void config(int _initialX, int _initialY, int _goalX, int _goalY, int _brainSize, Array _obstacles) {
         let initialX = _initialX;
         let initialY = _initialY;
         let goalX = _goalX;
@@ -20,6 +21,7 @@ class Dot {
         let brainSize = _brainSize;
         let minStep = 32767;
         let stepWeight = (32767 - 10000) / _brainSize;
+        let obstacles = _obstacles;
     }
 
     constructor Dot new() {
@@ -77,8 +79,7 @@ class Dot {
     }
 
     method void update() {
-        var boolean newVelXIsNegative;
-        var boolean newVelYIsNegative;
+        var boolean tmp, tmp2;
         if (~(brain.getStep() > minStep)) {
             if (~dead) {
                 if (~(brainSize > brain.getStep())) {
@@ -89,14 +90,14 @@ class Dot {
 
                 let velX = velX + acc.getX();
                 let velY = velY + acc.getY();
-                let newVelXIsNegative = velX < 0;
-                let newVelYIsNegative = velY < 0;
+                let tmp = velX < 0;
+                let tmp2 = velY < 0;
 
-                if (newVelXIsNegative) {
+                if (tmp) {
                     let velX = -velX;
                 }
 
-                if (newVelYIsNegative) {
+                if (tmp2) {
                     let velY = -velY;
                 }
 
@@ -117,17 +118,30 @@ class Dot {
                     let velY = 0;
                 }
 
-                if (newVelXIsNegative) {
+                if (tmp) {
                     let velX = -velX;
                 }
-                if (newVelYIsNegative) {
+                if (tmp2) {
                     let velY = -velY;
                 }
 
                 let posX = posX + velX;
                 let posY = posY + velY;
 
-                if (~((posX < 2) | (posY < 2) | (posX > 510) | (posY > 254))) {
+                let tmp = 0;
+                let tmp2 = posY;
+                while (~(tmp2 < 16)) {
+                    let tmp2 = tmp2 - 16;
+                    let tmp = tmp + 32;
+                }
+
+                let tmp2 = posX;
+                while (~(tmp2 < 16)) {
+                    let tmp2 = tmp2 - 16;
+                    let tmp = tmp + 1;
+                }
+
+                if (~((posX < 2) | (posY < 2) | (posX > 510) | (posY > 254) | obstacles[tmp])) {
                     if (~((Math.abs(posX - goalX) > 3) | (Math.abs(posY - goalY) > 3))) {
                         let reachedGoal = true;
                         let dead = true;

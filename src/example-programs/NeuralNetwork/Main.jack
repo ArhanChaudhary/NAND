@@ -23,14 +23,19 @@ class Main {
         let onlyBest = true;
         let obstacles = Array.new(512);
 
-        let obstacles[40] = true;
-        let obstacles[72] = true;
         let obstacles[104] = true;
-        // (Y / 256) * 10 + (X / 16)
+        let obstacles[136] = true;
+        let obstacles[168] = true;
+        let obstacles[200] = true;
+        let obstacles[232] = true;
+        let obstacles[264] = true;
+        let obstacles[296] = true;
+        let obstacles[328] = true;
+        let obstacles[360] = true;
 
         do Util.config(seed);
         do Brain.config(brainSize);
-        do Dot.config(initialX, initialY, goalX, goalY, brainSize);
+        do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
         do Population.config(populationCount, brainSize);
 
         do Main.refreshDisplay();
@@ -46,19 +51,17 @@ class Main {
 
     function void refreshDisplay() {
         var int i;
-        var int tmp;
-        var int tmp2;
+        var int obstacleY;
+        var int obstacleX;
         do Screen.drawRectangle(goalX - 2, goalY - 2, goalX + 2, goalY + 2);
         // draw obstacles
         // divide the 512x256 grid into 16x16 blocks, with 32 on one row and 16 on one column
         // drawRect(16 * 8, )
         while (i < 512) {
             if (obstacles[i]) {
-                let tmp = i / 32;
-                let tmp2 = i - (tmp * 32);
-                let tmp = tmp * 16;
-                let tmp2 = tmp2 * 16;
-                do Screen.drawRectangle(tmp2, tmp, tmp2 + 16, tmp + 16);
+                let obstacleY = (i / 32) * 16;
+                let obstacleX = (i - (obstacleY + obstacleY)) * 16;
+                do Screen.drawRectangle(obstacleX, obstacleY, obstacleX + 16, obstacleY + 16);
             }
             let i = i + 1;
         }

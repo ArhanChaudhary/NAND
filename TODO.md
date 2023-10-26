@@ -1,7 +1,7 @@
 # TODO
 
-* more safe malloc
-* allow user to choose goal and lcg and obstacles
+* goal
+* allow user to choose obstacles
 * gui
 
 * compilererror stash, too many static error
