@@ -104,7 +104,7 @@ export default class Population {
                 fitnessSum -= 65536;
             }
             if (fitnessSum < 0) {
-                fitnessSum = fitnessSum + ~32767;
+                fitnessSum = fitnessSum + 32768;
                 fitnessSumCoef++;
             }
             i++;
@@ -144,7 +144,7 @@ export default class Population {
                     selectionSum -= 65536;
                 }
                 if (selectionSum < 0) {
-                    selectionSum = selectionSum + ~32767;
+                    selectionSum = selectionSum + 32768;
                     selectionSumCoef++;
                 }
                 if (selectionSumCoef > randFitnessCoef || (selectionSumCoef === randFitnessCoef && selectionSum > randFitness)) {
