@@ -6,11 +6,11 @@
 /**
  * A library of functions for writing text on the screen.
  * The Hack physical screen consists of 512 rows of 256 pixels each.
- * The library uses a fixed font, in which each character is displayed 
- * within a frame which is 11 pixels high (including 1 pixel for inter-line 
+ * The library uses a fixed font, in which each character is displayed
+ * within a frame which is 11 pixels high (including 1 pixel for inter-line
  * spacing) and 8 pixels wide (including 2 pixels for inter-character spacing).
  * The resulting grid accommodates 23 rows (indexed 0..22, top to bottom)
- * of 64 characters each (indexed 0..63, left to right). The top left 
+ * of 64 characters each (indexed 0..63, left to right). The top left
  * character position on the screen is indexed (0,0). A cursor, implemented
  * as a small filled square, indicates where the next character will be displayed.
  */
@@ -24,7 +24,7 @@ class Output {
     static boolean cursorIsOdd;
     static String printIntCache;
 
-    /** Initializes the screen, the character map array, and locates the cursor 
+    /** Initializes the screen, the character map array, and locates the cursor
         at the screen's top-left. */
     function void init() {
         var int i;
@@ -35,7 +35,7 @@ class Output {
         let charMaps = Array.new(127);
         let shiftedCharMaps = Array.new(127);
         let printIntCache = String.new(6);
-        
+
         let createIndex = 0;
         // Black square, used for displaying non-printable characters.
         // do Output.create(63,63,63,63,63,63,63,63,63,0);
@@ -74,11 +74,11 @@ class Output {
         do Output.create(0,0,1,17158);
         // do Output.create(0,0,0,0,0,63,0,0,0,0);         // -
         do Output.create(0,0,32256,0);
-        // do Output.create(0,0,0,0,0,0,0,12,12,0);        // .    
+        // do Output.create(0,0,0,0,0,0,0,12,12,0);        // .
         do Output.create(0,0,1,17152);
         // do Output.create(0,0,32,48,24,12,6,3,1,0);      // /
         do Output.create(4,3096,6192,12352);
-        
+
         // do Output.create(12,30,51,51,51,51,51,30,12,0); // 0
         do Output.create(6390,15603,26523,25344);
         // do Output.create(12,14,15,12,12,12,12,12,63,0); // 1
@@ -99,7 +99,7 @@ class Output {
         do Output.create(15774,15582,26526,14208);
         // do Output.create(30,51,51,51,62,48,48,24,14,0); // 9
         do Output.create(15774,15614,24963,896);
-        
+
         // do Output.create(0,0,12,12,0,0,12,12,0,0);      // :
         do Output.create(1,17152,97,16384);
         // do Output.create(0,0,12,12,0,0,12,12,6,0);      // ;
@@ -233,7 +233,7 @@ class Output {
         do Output.create(0,3315,26614,1551);
         // do Output.create(0,0,0,63,27,12,6,51,63,0);      // z
         do Output.create(0,4059,6198,16320);
-        
+
         // do Output.create(56,12,12,12,7,12,12,12,56,0);   // {
         do Output.create(28769,17159,6241,19968);
         // do Output.create(12,12,12,12,12,12,12,12,12,0);  // |
@@ -250,33 +250,29 @@ class Output {
         var int i;
         var int unpacked;
 
-        let map = Array.new(11);
-        let shiftedMap = Array.new(11);
+        let map = Array.new(10);
+        let shiftedMap = Array.new(10);
         let charMaps[createIndex] = map;
         let shiftedCharMaps[createIndex] = shiftedMap;
-        while (~(i > 10)) {
+        while (~(i > 9)) {
             if (~((i = 0) | (i = 5))) {
                 if (~((i = 1) | (i = 6))) {
                     if (~((i = 2) | (i = 7))) {
                         if (~((i = 3) | (i = 8))) {
-                            if (~((i = 4) | (i = 9))) {
-                                let unpacked = 0;
-                            } else {
-                                let unpacked = cde & 63;
-                                let abc = fgh;
-                                let cde = hij;
-                            }
+                            let unpacked = (cde & 63) * 2;
+                            let abc = fgh;
+                            let cde = hij;
                         } else {
-                            let unpacked = (cde & 4032) / 64;
+                            let unpacked = ((cde & 4032) / 64) * 2;
                         }
                     } else {
-                        let unpacked = ((abc & 7) * 8) | (cde / 4096);
+                        let unpacked = ((abc & 7) * 16) | ((cde / 4096) * 2);
                     }
                 } else {
-                    let unpacked = (abc & 504) / 8;
+                    let unpacked = ((abc & 504) / 8) * 2;
                 }
             } else {
-                let unpacked = abc / 512;
+                let unpacked = (abc / 512) * 2;
             }
             let map[i] = unpacked;
             let shiftedMap[i] = unpacked * 256;
@@ -285,7 +281,7 @@ class Output {
 
         let createIndex = createIndex + 1;
     }
-    
+
     // Returns the character map (array of size 11) of the given character.
     // If the given character is invalid or non-printable, returns the
     // character map of a black square.
@@ -298,13 +294,13 @@ class Output {
     /** Moves the cursor to the j-th column of the i-th row,
      *  and erases the character displayed there. */
     function void moveCursor(int i, int j) {
-        if (~((i > -1) & (i < 23) & (j > -1) & (j < 64))) 
+        if (~((i > -1) & (i < 23) & (j > -1) & (j < 64)))
             do Sys.error(20);
         let cursorIsOdd = (j & 1) = 1;
         let cursor = (j / 2) + (352 * i) + 32;
         do Output.drawChar(32);
     }
-    
+
     function void drawChar(char c) {
         var Array map;
         var int mask;
@@ -316,7 +312,10 @@ class Output {
             let map = shiftedCharMaps[c];
             let mask = 255;
         }
-        while (~(i > 10)) {
+
+        let screenPtr[cursor] = 0;
+        let cursor = cursor + 32;
+        while (~(i > 9)) {
             let screenPtr[cursor] = (screenPtr[cursor] & mask) | map[i];
             let cursor = cursor + 32;
             let i = i + 1;

@@ -597,10 +597,10 @@ pop temp 0
 push constant 0
 return
 function Output.create 4
-push constant 11
+push constant 10
 call Array.new 1
 pop local 0
-push constant 11
+push constant 10
 call Array.new 1
 pop local 1
 push static 0
@@ -621,7 +621,7 @@ push temp 0
 pop that 0
 label WHILE_ITER0
 push local 2
-push constant 10
+push constant 9
 gt
 if-goto WHILE_BREAKER1
 push local 2
@@ -656,65 +656,62 @@ push constant 8
 eq
 or
 if-goto FALSE_CASE5
-push local 2
-push constant 4
-eq
-push local 2
-push constant 9
-eq
-or
-if-goto FALSE_CASE6
-push constant 0
-pop local 3
-goto TRUE_CASE7
-label FALSE_CASE6
 push argument 1
 push constant 63
 and
+push constant 2
+call Math.multiply 2
 pop local 3
 push argument 2
 pop argument 0
 push argument 3
 pop argument 1
-label TRUE_CASE7
-goto TRUE_CASE8
+goto TRUE_CASE6
 label FALSE_CASE5
 push argument 1
 push constant 4032
 and
 push constant 64
 call Math.divide 2
+push constant 2
+call Math.multiply 2
 pop local 3
-label TRUE_CASE8
-goto TRUE_CASE9
+label TRUE_CASE6
+goto TRUE_CASE7
 label FALSE_CASE4
 push argument 0
 push constant 7
 and
-push constant 8
+push constant 16
 call Math.multiply 2
 push argument 1
 push constant 4096
 call Math.divide 2
+push constant 2
+call Math.multiply 2
 or
 pop local 3
-label TRUE_CASE9
-goto TRUE_CASE10
+label TRUE_CASE7
+goto TRUE_CASE8
 label FALSE_CASE3
 push argument 0
 push constant 504
 and
 push constant 8
 call Math.divide 2
+push constant 2
+call Math.multiply 2
 pop local 3
-label TRUE_CASE10
-goto TRUE_CASE11
+label TRUE_CASE8
+goto TRUE_CASE9
 label FALSE_CASE2
 push argument 0
 push constant 512
 call Math.divide 2
+push constant 2
+call Math.multiply 2
 pop local 3
-label TRUE_CASE11
+label TRUE_CASE9
 push local 0
 push local 2
 add
@@ -753,10 +750,10 @@ push argument 0
 push constant 127
 lt
 and
-if-goto FALSE_CASE12
+if-goto FALSE_CASE10
 push constant 0
 pop argument 0
-label FALSE_CASE12
+label FALSE_CASE10
 push static 0
 push argument 0
 add
@@ -779,11 +776,11 @@ lt
 and
 and
 and
-if-goto FALSE_CASE13
+if-goto FALSE_CASE11
 push constant 20
 call Sys.error 1
 pop temp 0
-label FALSE_CASE13
+label FALSE_CASE11
 push argument 1
 push constant 1
 and
@@ -807,7 +804,7 @@ push constant 0
 return
 function Output.drawChar 3
 push static 5
-if-goto FALSE_CASE14
+if-goto FALSE_CASE12
 push static 0
 push argument 0
 add
@@ -817,8 +814,8 @@ pop local 0
 push constant 256
 neg
 pop local 1
-goto TRUE_CASE15
-label FALSE_CASE14
+goto TRUE_CASE13
+label FALSE_CASE12
 push static 1
 push argument 0
 add
@@ -827,12 +824,24 @@ push that 0
 pop local 0
 push constant 255
 pop local 1
-label TRUE_CASE15
-label WHILE_ITER16
+label TRUE_CASE13
+push static 3
+push static 4
+add
+push constant 0
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push static 4
+push constant 32
+add
+pop static 4
+label WHILE_ITER14
 push local 2
-push constant 10
+push constant 9
 gt
-if-goto WHILE_BREAKER17
+if-goto WHILE_BREAKER15
 push static 3
 push static 4
 add
@@ -861,8 +870,8 @@ push local 2
 push constant 1
 add
 pop local 2
-goto WHILE_ITER16
-label WHILE_BREAKER17
+goto WHILE_ITER14
+label WHILE_BREAKER15
 push static 4
 push constant 352
 sub
@@ -878,12 +887,12 @@ push constant 7807
 eq
 push static 5
 and
-if-goto FALSE_CASE18
+if-goto FALSE_CASE16
 push static 5
 not
 pop static 5
 push static 5
-if-goto FALSE_CASE19
+if-goto FALSE_CASE17
 push static 4
 push constant 1
 add
@@ -894,32 +903,32 @@ and
 push constant 0
 eq
 not
-if-goto FALSE_CASE20
+if-goto FALSE_CASE18
 push static 4
 push constant 320
 add
 pop static 4
-label FALSE_CASE20
-label FALSE_CASE19
-goto TRUE_CASE21
 label FALSE_CASE18
+label FALSE_CASE17
+goto TRUE_CASE19
+label FALSE_CASE16
 push constant 32
 pop static 4
 push constant 0
 pop static 5
-label TRUE_CASE21
+label TRUE_CASE19
 push constant 0
 return
 function Output.printString 2
 push argument 0
 call String.length 1
 pop local 0
-label WHILE_ITER22
+label WHILE_ITER20
 push local 1
 push local 0
 lt
 not
-if-goto WHILE_BREAKER23
+if-goto WHILE_BREAKER21
 push argument 0
 push local 1
 call String.charAt 2
@@ -929,8 +938,8 @@ push local 1
 push constant 1
 add
 pop local 1
-goto WHILE_ITER22
-label WHILE_BREAKER23
+goto WHILE_ITER20
+label WHILE_BREAKER21
 push constant 0
 return
 function Output.printInt 0
@@ -946,26 +955,26 @@ return
 function Output.println 1
 push constant 32
 pop local 0
-label WHILE_ITER24
+label WHILE_ITER22
 push local 0
 push static 4
 lt
 not
-if-goto WHILE_BREAKER25
+if-goto WHILE_BREAKER23
 push local 0
 push constant 352
 add
 pop local 0
-goto WHILE_ITER24
-label WHILE_BREAKER25
+goto WHILE_ITER22
+label WHILE_BREAKER23
 push local 0
 push constant 8128
 eq
 not
-if-goto FALSE_CASE26
+if-goto FALSE_CASE24
 push constant 32
 pop local 0
-label FALSE_CASE26
+label FALSE_CASE24
 push local 0
 pop static 4
 push constant 0
@@ -979,36 +988,36 @@ eq
 not
 push static 5
 or
-if-goto FALSE_CASE27
+if-goto FALSE_CASE25
 push constant 7807
 pop static 4
 push constant -1
 pop static 5
-goto TRUE_CASE28
-label FALSE_CASE27
+goto TRUE_CASE26
+label FALSE_CASE25
 push static 5
-if-goto FALSE_CASE29
+if-goto FALSE_CASE27
 push static 4
 push constant 31
 and
 push constant 0
 eq
 not
-if-goto FALSE_CASE30
+if-goto FALSE_CASE28
 push static 4
 push constant 320
 sub
 pop static 4
-label FALSE_CASE30
+label FALSE_CASE28
 push static 4
 push constant 1
 sub
 pop static 4
-label FALSE_CASE29
+label FALSE_CASE27
 push static 5
 not
 pop static 5
-label TRUE_CASE28
+label TRUE_CASE26
 push constant 32
 call Output.drawChar 1
 pop temp 0
