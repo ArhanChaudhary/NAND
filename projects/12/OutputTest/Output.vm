@@ -828,7 +828,13 @@ label TRUE_CASE13
 push static 3
 push static 4
 add
-push constant 0
+push static 3
+push static 4
+add
+pop pointer 1
+push that 0
+push local 1
+and
 pop temp 0
 pop pointer 1
 push temp 0

@@ -313,7 +313,7 @@ class Output {
             let mask = 255;
         }
 
-        let screenPtr[cursor] = 0;
+        let screenPtr[cursor] = screenPtr[cursor] & mask;
         let cursor = cursor + 32;
         while (~(i > 9)) {
             let screenPtr[cursor] = (screenPtr[cursor] & mask) | map[i];
