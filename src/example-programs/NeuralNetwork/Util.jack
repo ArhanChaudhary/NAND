@@ -2,7 +2,7 @@ class Util {
     static int next;
 
     function void config(int seed) {
-        let next = seed;
+        let next = 42;
     }
 
     function int random() {

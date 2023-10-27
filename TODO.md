@@ -1,8 +1,6 @@
 # TODO
 
-* allow user to choose obstacles
-* choose step count: 250 225 200 175 150 125
-* randomize seed based on time it takes to press
+* choose step count: 250 225 200 175 150
 * gui
 
 * compilererror stash, too many static error

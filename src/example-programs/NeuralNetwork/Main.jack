@@ -1,7 +1,6 @@
 class Main {
     static int brainSize;
     static int populationCount;
-    static int seed;
     static int initialX;
     static int initialY;
     static int goalX;
@@ -10,30 +9,26 @@ class Main {
     static Array obstacles;
 
     function void main() {
+        var int i;
+        do Util.init();
         do AccelerationVector.init();
         do Population.init();
 
         let brainSize = 145;
         let populationCount = 60;
-        let seed = 5;
         let initialX = 10;
         let initialY = 128;
         let goalX = 500;
         let goalY = 128;
         let onlyBest = true;
         let obstacles = Array.new(512);
+        while (~(i > 511)) {
+            let obstacles[i] = false;
+            let i = i + 1;
+        }
 
-        let obstacles[104] = true;
-        let obstacles[136] = true;
-        let obstacles[168] = true;
-        let obstacles[200] = true;
-        let obstacles[232] = true;
-        let obstacles[264] = true;
-        let obstacles[296] = true;
-        let obstacles[328] = true;
-        let obstacles[360] = true;
+        do Main.selectObstacles();
 
-        do Util.config(seed);
         do Brain.config(brainSize);
         do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
         do Population.config(populationCount, brainSize, onlyBest);
@@ -46,6 +41,58 @@ class Main {
                 do Population.naturalSelection();
                 do Main.refreshDisplay();
             }
+        }
+    }
+
+    function void selectObstacles() {
+        var int selectorX;
+        var int selectorY;
+        var int selectorIndex;
+        var int key;
+        var boolean drag;
+        var boolean draggingEnter;
+
+        do Screen.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
+        while (~(key = 140)) {
+            let key = 0;
+            while (key = 0) {
+                do Util.random();
+                let key = Keyboard.keyPressed();
+            }
+            if (~obstacles[selectorIndex]) {
+                do Screen.setColor(false);
+                do Screen.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
+                do Screen.setColor(true);
+            }
+
+            if (key = 130) {
+                let selectorX = Math.max(0, selectorX - 16);
+                let selectorIndex = selectorIndex - 1;
+            } else if (key = 131) {
+                let selectorY = Math.max(0, selectorY - 16);
+                let selectorIndex = selectorIndex - 32;
+            } else if (key = 132) {
+                let selectorX = Math.min(496, selectorX + 16);
+                let selectorIndex = selectorIndex + 1;
+            } else if (key = 133) {
+                let selectorY = Math.min(240, selectorY + 16);
+                let selectorIndex = selectorIndex + 32;
+            }
+
+            do Screen.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
+            if ((key = 128) | (key = 129)) {
+                let drag = ~(drag & (draggingEnter = (key = 128)));
+                let draggingEnter = key = 128;
+                while (~(key = 0)) {
+                    let key = Keyboard.keyPressed();
+                }
+            }
+
+            if (drag) {
+                let obstacles[selectorIndex] = draggingEnter;
+            }
+
+            do Sys.wait(175);
         }
     }
 
