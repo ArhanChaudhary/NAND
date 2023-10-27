@@ -1,7 +1,7 @@
 class Util {
     static int next;
 
-    function void config(int seed) {
+    function void init() {
         let next = 42;
     }
 
