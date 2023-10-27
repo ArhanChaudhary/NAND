@@ -105,6 +105,8 @@ class Main {
 
             do Sys.wait(175);
         }
+        // ensure obstacles dont mess with memory allocation
+        do Screen.clearScreen();
     }
 
     function void refreshDisplay() {

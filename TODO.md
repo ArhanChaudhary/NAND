@@ -3,7 +3,6 @@
 * choose step count: 250 225 200 175 150
 * gui
 
-* shift over screen map by one pixel left and one down to center tham
 * compilererror stash, too many static error
 * graphing calculator in jack
 * actually code the ui
