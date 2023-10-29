@@ -66,19 +66,19 @@ class Main {
             if (~(key = 130)) {
                 if (~(key = 131)) {
                     if (~(key = 132)) {
-                        if (key = 133) {
-                            let selectorY = Math.min(240, selectorY + 16);
+                        if ((key = 133) & ~(selectorY = 240)) {
+                            let selectorY = selectorY + 16;
                             let selectorIndex = selectorIndex + 32;
                         }
-                    } else {
+                    } else if (~(selectorX = 496)) {
                         let selectorX = Math.min(496, selectorX + 16);
                         let selectorIndex = selectorIndex + 1;
                     }
-                } else {
+                } else if (~(selectorY = 0)) {
                     let selectorY = Math.max(0, selectorY - 16);
                     let selectorIndex = selectorIndex - 32;
                 }
-            } else {
+            } else if (~(selectorX = 0)) {
                 let selectorX = Math.max(0, selectorX - 16);
                 let selectorIndex = selectorIndex - 1;
             }
