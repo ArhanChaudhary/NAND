@@ -364,6 +364,9 @@ class Output {
     function void println() {
         var int currentRow;
         let currentRow = 32;
+        if (cursorIsOdd) {
+            let cursor = cursor + 1;
+        }
         while (currentRow < cursor) {
             let currentRow = currentRow + 352;
         }
