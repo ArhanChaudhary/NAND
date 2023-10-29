@@ -23,7 +23,26 @@ class Main {
         do Util.init();
         do AccelerationVector.init();
         do Population.init();
+        do Main.init();
 
+        // do Screen.drawRectangle(80, 66, 432, 143);
+        do Screen.drawRectangle(70, 56, 442, 153);
+        do Screen.setColor(false);
+        // do Screen.drawRectangle(82, 68, 430, 141);
+        do Screen.drawRectangle(72, 58, 440, 151);
+
+        do Output.moveCursor(6, 11);
+        do Output.printString("Welcome to my genetic algorithm simulation!");
+        do Output.moveCursor(8, 10);
+        do Output.printString("The objective is for dots to reach a goal in");
+        do Output.moveCursor(9, 17);
+        do Output.printString("as little steps as possible.");
+        do Output.moveCursor(12, 20);
+        do Output.printString("Press any key to start.");
+        while (~(i > 0)) {
+            do Util.random();
+            let i = Keyboard.keyPressed();
+        }
         let brainSize = 145;
         let populationCount = 60;
         let initialX = 10;
@@ -65,7 +84,6 @@ class Main {
         let key = 1;
         while (~(key = 140)) {
             while (~(key > 0)) {
-                do Util.random();
                 let key = Keyboard.keyPressed();
             }
 
@@ -119,11 +137,15 @@ class Main {
         do Screen.clearScreen();
     }
 
+    function void drawGoal() {
+        do Screen.drawRectangle(goalX - 2, goalY - 2, goalX + 2, goalY + 2);
+    }
+
     function void refreshDisplay() {
         var int i;
         var int obstacleY;
         var int obstacleX;
-        do Screen.drawRectangle(goalX - 2, goalY - 2, goalX + 2, goalY + 2);
+        do Main.drawGoal();
         while (~(i > 511)) {
             if (obstacles[i]) {
                 let obstacleY = 0;
