@@ -161,10 +161,14 @@ class Dot {
     method int calculateFitness() {
         var int x;
         var int y;
+        var int distSquared;
+        var int dynamicStepWeight;
         if (~reachedGoal) {
             let x = Math.abs(posX - goalX) / 4;
             let y = Math.abs(posY - goalY) / 4;
-            return 32767 / Math.max(10, (x * x) + (y * y));
+            let distSquared = Math.max(10, (x * x) + (y * y));
+            let dynamicStepWeight = Math.max(1, 25 - (distSquared / 500));
+            return (32767 / distSquared) + (dynamicStepWeight - (brain.getStep() / (brainSize / dynamicStepWeight)));
         }
         return Math.max(10000, 32767 - (stepWeight * brain.getStep()));
     }
