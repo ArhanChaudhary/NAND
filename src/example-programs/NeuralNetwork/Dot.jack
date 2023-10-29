@@ -168,7 +168,11 @@ class Dot {
             let y = Math.abs(posY - goalY) / 4;
             let distSquared = Math.max(10, (x * x) + (y * y));
             let dynamicStepWeight = Math.max(1, 25 - (distSquared / 500));
-            return (32767 / distSquared) + (dynamicStepWeight - (brain.getStep() / (brainSize / dynamicStepWeight)));
+            // more emphasis is put step count as the dot gets closer to the goal
+            // reference: https://www.desmos.com/calculator/51hfylinf3
+            return (32767 / distSquared) +
+                // basically just how much % of brainStep is brainSize scaled by dynamicStepWeight
+                (dynamicStepWeight - (brain.getStep() / (brainSize / dynamicStepWeight)));
         }
         return Math.max(10000, 32767 - (stepWeight * brain.getStep()));
     }
