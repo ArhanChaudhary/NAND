@@ -8,6 +8,16 @@ class Main {
     static boolean onlyBest;
     static Array obstacles;
 
+    static String generationString;
+    static String goalStepCountString;
+    static String NAString;
+
+    function void init() {
+        let generationString = "Generation: ";
+        let goalStepCountString = "Goal step count: ";
+        let NAString = "NA";
+    }
+
     function void main() {
         var int i;
         do Util.init();
@@ -71,15 +81,15 @@ class Main {
                             let selectorIndex = selectorIndex + 32;
                         }
                     } else if (~(selectorX = 496)) {
-                        let selectorX = Math.min(496, selectorX + 16);
+                        let selectorX = selectorX + 16;
                         let selectorIndex = selectorIndex + 1;
                     }
                 } else if (~(selectorY = 0)) {
-                    let selectorY = Math.max(0, selectorY - 16);
+                    let selectorY = selectorY - 16;
                     let selectorIndex = selectorIndex - 32;
                 }
             } else if (~(selectorX = 0)) {
-                let selectorX = Math.max(0, selectorX - 16);
+                let selectorX = selectorX - 16;
                 let selectorIndex = selectorIndex - 1;
             }
 
@@ -132,45 +142,14 @@ class Main {
             let i = i + 1;
         }
         do Output.moveCursor(21, 0);
-
-        do Output.printChar(71);
-        do Output.printChar(101);
-        do Output.printChar(110);
-        do Output.printChar(101);
-        do Output.printChar(114);
-        do Output.printChar(97);
-        do Output.printChar(116);
-        do Output.printChar(105);
-        do Output.printChar(111);
-        do Output.printChar(110);
-        do Output.printChar(58);
-        do Output.printChar(32);
+        do Output.printString(generationString);
         do Output.printInt(Population.getGen());
-
-        do Output.moveCursor(22, 0);
-
-        do Output.printChar(71);
-        do Output.printChar(111);
-        do Output.printChar(97);
-        do Output.printChar(108);
-        do Output.printChar(32);
-        do Output.printChar(115);
-        do Output.printChar(116);
-        do Output.printChar(101);
-        do Output.printChar(112);
-        do Output.printChar(32);
-        do Output.printChar(99);
-        do Output.printChar(111);
-        do Output.printChar(117);
-        do Output.printChar(110);
-        do Output.printChar(116);
-        do Output.printChar(58);
-        do Output.printChar(32);
-        if (Dot.getMinStep() = 32767) {
-            do Output.printChar(78);
-            do Output.printChar(65);
-        } else {
+        do Output.println();
+        do Output.printString(goalStepCountString);
+        if (~(Dot.getMinStep() = 32767)) {
             do Output.printInt(Dot.getMinStep());
+        } else {
+            do Output.printString(NAString);
         }
     }
 }
