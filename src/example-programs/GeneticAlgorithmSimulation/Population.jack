@@ -62,6 +62,7 @@ class Population {
         }
         do Screen.setColor(false);
         do Screen.drawRectangle(224, 122, 304, 133);
+        do Screen.setColor(true);
         while (i < (size - 1)) {
             let newBrainDirections[i] = Array.new(brainSize);
             let i = i + 1;

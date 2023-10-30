@@ -13,6 +13,7 @@ class Main {
     static String NAString;
     static String placeString;
     static String loadingString;
+    static String escString;
 
     function void init() {
         var int i;
@@ -20,6 +21,7 @@ class Main {
         let goalStepCountString = "Goal step count: ";
         let NAString = "NA";
         let placeString = "Place obstacles with the arrow, enter, and delete keys.";
+        let escString = "Press esc to finish.";
         let loadingString = "Loading...";
         let obstacles = Array.new(512);
         while (~(i > 511)) {
@@ -89,6 +91,11 @@ class Main {
 
         do Output.moveCursor(3, 5);
         do Output.printString(placeString);
+        do Output.moveCursor(4, 22);
+        do Output.printString(escString);
+        let selectorX = 256;
+        let selectorY = 112;
+        let selectorIndex = 240;
         let key = 1;
         while (~(key = 140)) {
             while (~(key > 0)) {
@@ -142,7 +149,7 @@ class Main {
                 if (key = 1) {
                     while (~(Keyboard.keyPressed() > 0)) {}
                     do Screen.setColor(false);
-                    do Screen.drawRectangle(40, 34, 480, 45);
+                    do Screen.drawRectangle(40, 34, 480, 56);
                 }
                 let key = 0;
             }
