@@ -114,7 +114,7 @@ export default class Engine {
         while ([KeywordToken.FIELD, KeywordToken.STATIC].includes(this.tokenizer.token() as KeywordToken)) {
             this.compileClassVarDec();
         }
-        
+
         this.OShasInitSubroutine = !JackOS.includes(this.className);
         while ([KeywordToken.CONSTRUCTOR, KeywordToken.METHOD, KeywordToken.FUNCTION].includes(this.tokenizer.token() as KeywordToken)) {
             this.compileSubroutine();
@@ -124,14 +124,14 @@ export default class Engine {
             this.vmwriter.writePush('constant', 0);
             this.vmwriter.writeReturn();
         }
-        
+
         this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
         for (const call of this.subroutineCalls) {
             if (!this.subroutineNames.includes(call.name)) {}
                 // throw new SyntaxError();
         }
     }
-    
+
     private compileClassVarDec(): void {
         let kind!: string;
         switch (this.tokenizer.token()) {
@@ -158,7 +158,7 @@ export default class Engine {
 
         this.assertToken(SymbolToken.SEMICOLON);
     }
-    
+
     private compileSubroutine(): void {
         this.subroutineType = this.tokenizer.token();
         this.symbolTable.startSubroutine(this.subroutineType);
@@ -191,7 +191,7 @@ export default class Engine {
         }
         this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
     }
-    
+
     private compileParameterList(): void {
         if (varType.includes(this.tokenizer.token()) || varType.includes(this.tokenizer.tokenType())) {
             const type = this.tokenizer.token();
@@ -229,7 +229,7 @@ export default class Engine {
 
         this.compileStatements();
     }
-    
+
     private compileVarDec(): void {
         this.assertToken(KeywordToken.VAR);
         const type = this.tokenizer.token();
@@ -246,7 +246,7 @@ export default class Engine {
 
         this.assertToken(SymbolToken.SEMICOLON);
     }
-    
+
     private compileStatements(): void {
         while (this.compileStatement()) {}
     }
@@ -326,7 +326,7 @@ export default class Engine {
                 this.syntaxError([SymbolToken.OPENING_PARENTHESIS, SymbolToken.PERIOD]);
         }
     }
-    
+
     private compileDo(): void {
         this.assertToken(KeywordToken.DO);
         const prevToken = this.tokenizer.token();
@@ -338,7 +338,7 @@ export default class Engine {
         this.assertToken(SymbolToken.SEMICOLON);
         this.vmwriter.writePop('temp', 0);
     }
-    
+
     private compileLet(): void {
         this.assertToken(KeywordToken.LET);
         this.validateVar(this.tokenizer.token());
@@ -377,7 +377,7 @@ export default class Engine {
         }
         this.assertToken(SymbolToken.SEMICOLON);
     }
-    
+
     private compileWhile(): void {
         const l1 = this.labelCounter++;
         const l2 = this.labelCounter++;
@@ -388,13 +388,19 @@ export default class Engine {
         this.vmwriter.writeArithmetic(SymbolToken.NOT);
         this.vmwriter.writeIf('WHILE_BREAKER' + l2);
         this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
-        this.assertToken(SymbolToken.OPENING_CURLY_BRACKET);
-        this.compileStatements();
-        this.vmwriter.writeGoto('WHILE_ITER' + l1);
-        this.vmwriter.writeLabel('WHILE_BREAKER' + l2);
-        this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
+        if (this.tokenizer.token() === SymbolToken.OPENING_CURLY_BRACKET) {
+            this.tokenizer.advance();
+            this.compileStatements();
+            this.vmwriter.writeGoto('WHILE_ITER' + l1);
+            this.vmwriter.writeLabel('WHILE_BREAKER' + l2);
+            this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
+        } else {
+            this.compileStatement();
+            this.vmwriter.writeGoto('WHILE_ITER' + l1);
+            this.vmwriter.writeLabel('WHILE_BREAKER' + l2);
+        }
     }
-    
+
     private compileReturn(): void {
         this.assertToken(KeywordToken.RETURN);
         if (this.tokenizer.token() === SymbolToken.SEMICOLON) {
@@ -412,11 +418,11 @@ export default class Engine {
             } else {
                 this.compileExpression();
             }
-            this.assertToken(SymbolToken.SEMICOLON); 
+            this.assertToken(SymbolToken.SEMICOLON);
         }
         this.vmwriter.writeReturn();
     }
-    
+
     private compileIf(): void {
         const l1 = this.labelCounter++;
         this.assertToken(KeywordToken.IF);
@@ -465,7 +471,7 @@ export default class Engine {
             this.vmwriter.writeArithmetic(op);
         }
     }
-    
+
     private compileTerm(): void {
         switch (this.tokenizer.tokenType()) {
             case TokenType.INT_CONST:
