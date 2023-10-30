@@ -53,7 +53,12 @@ class Main {
             do Util.random();
         do Screen.drawRectangle(70, 57, 442, 154);
 
-        while (~(Keyboard.keyPressed() = 0)) {}
+        // menu:
+        // initialXY
+        // goalXY
+        // selectObstacles
+        // onlyBest
+        // continue
         let initialX = 10;
         let initialY = 128;
         let goalX = 500;
@@ -76,6 +81,9 @@ class Main {
                 do Population.update();
             } else {
                 do Population.naturalSelection();
+                if (Keyboard.keyPressed() = 140) {
+                    do Main.selectObstacles();
+                }
                 do Main.refreshDisplay();
             }
         }
@@ -93,6 +101,7 @@ class Main {
         do Output.printString(placeString);
         do Output.moveCursor(4, 22);
         do Output.printString(escString);
+        do Main.drawObstacles();
         let selectorX = 256;
         let selectorY = 112;
         let selectorIndex = 240;
@@ -106,55 +115,57 @@ class Main {
             do Screen.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
             do Screen.setColor(true);
 
-            do Main.drawGoal();
-            do Screen.drawRectangle(initialX - 1, initialY - 1, initialX + 1, initialY + 1);
-            if (~(key = 130)) {
-                if (~(key = 131)) {
-                    if (~(key = 132)) {
-                        if (~((~(key = 133)) | (selectorY = 240))) {
-                            let selectorY = selectorY + 16;
-                            let selectorIndex = selectorIndex + 32;
-                        }
-                    } else if (~(selectorX = 496)) {
-                        let selectorX = selectorX + 16;
-                        let selectorIndex = selectorIndex + 1;
-                    }
-                } else if (~(selectorY = 0)) {
-                    let selectorY = selectorY - 16;
-                    let selectorIndex = selectorIndex - 32;
-                }
-            } else if (~(selectorX = 0)) {
-                let selectorX = selectorX - 16;
-                let selectorIndex = selectorIndex - 1;
-            }
-
-            do Screen.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
-            do Screen.setColor(false);
-            do Screen.drawRectangle(selectorX + 1, selectorY + 1, selectorX + 14, selectorY + 14);
-            do Screen.setColor(true);
-            do Screen.drawRectangle(selectorX + 2, selectorY + 2, selectorX + 13, selectorY + 13);
-            if ((key = 128) | (key = 129)) {
-                let drag = ~(drag & (draggingEnter = (key = 128)));
-                let draggingEnter = key = 128;
-                while (~(key = 0)) {
-                    let key = Keyboard.keyPressed();
-                }
-            }
-
-            if (drag) {
-                let obstacles[selectorIndex] = draggingEnter;
-            }
-
             if (~(key = 140)) {
+                do Main.drawGoal();
+                do Screen.drawRectangle(initialX - 1, initialY - 1, initialX + 1, initialY + 1);
+                if (~(key = 130)) {
+                    if (~(key = 131)) {
+                        if (~(key = 132)) {
+                            if (~((~(key = 133)) | (selectorY = 240))) {
+                                let selectorY = selectorY + 16;
+                                let selectorIndex = selectorIndex + 32;
+                            }
+                        } else if (~(selectorX = 496)) {
+                            let selectorX = selectorX + 16;
+                            let selectorIndex = selectorIndex + 1;
+                        }
+                    } else if (~(selectorY = 0)) {
+                        let selectorY = selectorY - 16;
+                        let selectorIndex = selectorIndex - 32;
+                    }
+                } else if (~(selectorX = 0)) {
+                    let selectorX = selectorX - 16;
+                    let selectorIndex = selectorIndex - 1;
+                }
+
+                do Screen.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
+                do Screen.setColor(false);
+                do Screen.drawRectangle(selectorX + 1, selectorY + 1, selectorX + 14, selectorY + 14);
+                do Screen.setColor(true);
+                do Screen.drawRectangle(selectorX + 2, selectorY + 2, selectorX + 13, selectorY + 13);
+                if ((key = 128) | (key = 129)) {
+                    let drag = ~(drag & (draggingEnter = (key = 128)));
+                    let draggingEnter = key = 128;
+                    while (~(key = 0)) {
+                        let key = Keyboard.keyPressed();
+                    }
+                }
+
+                if (drag) {
+                    let obstacles[selectorIndex] = draggingEnter;
+                }
+
                 if (key = 1) {
+                    // wait for key release
+                    while (~(Keyboard.keyPressed() = 0)) {}
+                    // wait for key press then hide
                     while (~(Keyboard.keyPressed() > 0)) {}
                     do Screen.setColor(false);
                     do Screen.drawRectangle(40, 34, 480, 56);
                 }
                 let key = 0;
+                do Sys.wait(150);
             }
-
-            do Sys.wait(150);
         }
     }
 
@@ -162,11 +173,10 @@ class Main {
         do Screen.drawRectangle(goalX - 2, goalY - 2, goalX + 2, goalY + 2);
     }
 
-    function void refreshDisplay() {
+    function void drawObstacles() {
         var int i;
         var int obstacleY;
         var int obstacleX;
-        do Main.drawGoal();
         while (~(i > 511)) {
             if (obstacles[i]) {
                 let obstacleY = 0;
@@ -184,6 +194,11 @@ class Main {
             }
             let i = i + 1;
         }
+    }
+
+    function void refreshDisplay() {
+        do Main.drawGoal();
+        do Main.drawObstacles();
         do Output.moveCursor(21, 0);
         do Output.printString(generationString);
         do Output.printInt(Population.getGen());
