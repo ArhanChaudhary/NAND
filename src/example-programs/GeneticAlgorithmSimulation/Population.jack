@@ -60,6 +60,8 @@ class Population {
         if (~(newBrainDirections < 16387)) {
             do Sys.error(3);
         }
+        do Screen.setColor(false);
+        do Screen.drawRectangle(224, 122, 304, 133);
         while (i < (size - 1)) {
             let newBrainDirections[i] = Array.new(brainSize);
             let i = i + 1;

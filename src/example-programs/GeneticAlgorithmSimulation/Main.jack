@@ -11,26 +11,34 @@ class Main {
     static String generationString;
     static String goalStepCountString;
     static String NAString;
+    static String placeString;
+    static String loadingString;
 
     function void init() {
+        var int i;
         let generationString = "Generation: ";
         let goalStepCountString = "Goal step count: ";
         let NAString = "NA";
+        let placeString = "Place obstacles with the arrow, enter, and delete keys.";
+        let loadingString = "Loading...";
+        let obstacles = Array.new(512);
+        while (~(i > 511)) {
+            let obstacles[i] = false;
+            let i = i + 1;
+        }
     }
 
     function void main() {
-        var int i;
         do Util.init();
         do AccelerationVector.init();
         do Population.init();
         do Main.init();
 
-        // do Screen.drawRectangle(80, 66, 432, 143);
-        do Screen.drawRectangle(70, 56, 442, 153);
+        // do Screen.drawRectangle(80, 67, 432, 144);
+        do Screen.drawRectangle(70, 57, 442, 154);
         do Screen.setColor(false);
-        // do Screen.drawRectangle(82, 68, 430, 141);
-        do Screen.drawRectangle(72, 58, 440, 151);
-
+        // do Screen.drawRectangle(82, 69, 430, 142);
+        do Screen.drawRectangle(72, 59, 440, 152);
         do Output.moveCursor(6, 11);
         do Output.printString("Welcome to my genetic algorithm simulation!");
         do Output.moveCursor(8, 10);
@@ -39,25 +47,23 @@ class Main {
         do Output.printString("as little steps as possible.");
         do Output.moveCursor(12, 20);
         do Output.printString("Press any key to start.");
-        while (~(i > 0)) {
+        while (~(Keyboard.keyPressed() > 0))
             do Util.random();
-            let i = Keyboard.keyPressed();
-        }
-        let brainSize = 145;
-        let populationCount = 60;
+        do Screen.drawRectangle(70, 57, 442, 154);
+
+        while (~(Keyboard.keyPressed() = 0)) {}
         let initialX = 10;
         let initialY = 128;
         let goalX = 500;
         let goalY = 128;
         let onlyBest = true;
-        let obstacles = Array.new(512);
-        while (~(i > 511)) {
-            let obstacles[i] = false;
-            let i = i + 1;
-        }
-
         do Main.selectObstacles();
+        do Screen.clearScreen(); // ensure obstacles dont mess with memory allocation
+        do Output.moveCursor(11, 28);
+        do Output.printString(loadingString);
 
+        let brainSize = 145;
+        let populationCount = 60;
         do Brain.config(brainSize);
         do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
         do Population.config(populationCount, brainSize, onlyBest);
@@ -81,6 +87,8 @@ class Main {
         var boolean drag;
         var boolean draggingEnter;
 
+        do Output.moveCursor(3, 5);
+        do Output.printString(placeString);
         let key = 1;
         while (~(key = 140)) {
             while (~(key > 0)) {
@@ -91,10 +99,12 @@ class Main {
             do Screen.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
             do Screen.setColor(true);
 
+            do Main.drawGoal();
+            do Screen.drawRectangle(initialX - 1, initialY - 1, initialX + 1, initialY + 1);
             if (~(key = 130)) {
                 if (~(key = 131)) {
                     if (~(key = 132)) {
-                        if ((key = 133) & ~(selectorY = 240)) {
+                        if (~((~(key = 133)) | (selectorY = 240))) {
                             let selectorY = selectorY + 16;
                             let selectorIndex = selectorIndex + 32;
                         }
@@ -128,13 +138,17 @@ class Main {
                 let obstacles[selectorIndex] = draggingEnter;
             }
 
-            if (~(key = 140))
+            if (~(key = 140)) {
+                if (key = 1) {
+                    while (~(Keyboard.keyPressed() > 0)) {}
+                    do Screen.setColor(false);
+                    do Screen.drawRectangle(40, 34, 480, 45);
+                }
                 let key = 0;
+            }
 
-            do Sys.wait(175);
+            do Sys.wait(150);
         }
-        // ensure obstacles dont mess with memory allocation
-        do Screen.clearScreen();
     }
 
     function void drawGoal() {
