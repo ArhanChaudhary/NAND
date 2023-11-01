@@ -28,7 +28,7 @@ export default class Dot {
         Dot.#goalY = goalY;
         Dot.#brainSize = brainSize;
         Dot.#minStep = 32767;
-        Dot.#stepWeight = Math.floor((32767 - 10000) / Brain.getBrainSize());
+        Dot.#stepWeight = Math.trunc((32767 - 10000) / Brain.getBrainSize());
         Dot.#obstacles = obstacles;
     }
 
@@ -170,11 +170,11 @@ export default class Dot {
         let x;
         let y;
         if (!this.#reachedGoal) {
-            x = Math.floor(Math.abs(this.#posX - Dot.#goalX) / 4);
-            y = Math.floor(Math.abs(this.#posY - Dot.#goalY) / 4);
-            return Math.floor(32767 / Math.max(10, x * x + y * y));
-            // x = Math.floor(Math.abs(this.#posX - Dot.#goalX) / 2);
-            // y = Math.floor(Math.abs(this.#posY - Dot.#goalY) / 2);
+            x = Math.trunc(Math.abs(this.#posX - Dot.#goalX) / 4);
+            y = Math.trunc(Math.abs(this.#posY - Dot.#goalY) / 4);
+            return Math.trunc(32767 / Math.max(10, x * x + y * y));
+            // x = Math.trunc(Math.abs(this.#posX - Dot.#goalX) / 2);
+            // y = Math.trunc(Math.abs(this.#posY - Dot.#goalY) / 2);
             // dist = x * x;
             // if (dist < 0) {
             //     switchToNewton = true;

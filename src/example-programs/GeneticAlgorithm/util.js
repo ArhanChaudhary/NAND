@@ -19,7 +19,7 @@ export default class Util {
             Util.#next -= 65536;
         }
         return Util.#next;
-        // return Math.floor(Math.random() * 65536);
+        // return Math.trunc(Math.random() * 65536);
     }
 
     static clearScreen() {
