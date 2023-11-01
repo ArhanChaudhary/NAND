@@ -101,7 +101,6 @@ class Main {
         do Output.printString(placeString);
         do Output.moveCursor(4, 22);
         do Output.printString(escString);
-        do Main.drawObstacles();
         let selectorX = 256;
         let selectorY = 112;
         let selectorIndex = 240;
@@ -155,15 +154,19 @@ class Main {
                     let obstacles[selectorIndex] = draggingEnter;
                 }
 
-                if (key = 1) {
+                if (~(key = 1)) {
+                    let key = 0;
+                } else {
                     // wait for key release
                     while (~(Keyboard.keyPressed() = 0)) {}
                     // wait for key press then hide
                     while (~(Keyboard.keyPressed() > 0)) {}
                     do Screen.setColor(false);
                     do Screen.drawRectangle(40, 34, 480, 56);
+                    do Screen.setColor(true);
+                    do Main.drawObstacles();
+                    let key = 2;
                 }
-                let key = 0;
                 do Sys.wait(150);
             }
         }

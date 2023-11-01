@@ -103,7 +103,6 @@ export class Main {
         let draggingEnter = 0;
         console.log(Main.#placeString);
         console.log(Main.#escString);
-        Main.drawObstacles();
         selectorX = 256;
         selectorY = 112;
         selectorIndex = 240;
@@ -172,7 +171,9 @@ export class Main {
                 if (drag) {
                     Main.#obstacles[selectorIndex] = draggingEnter;
                 }
-                if (key === 1) {
+                if (!(key === 1)) {
+                    key = 0;
+                } else {
                     // wait for key release
                     await new Promise(resolve => {
                         function tmp() {
@@ -197,8 +198,10 @@ export class Main {
                     });
                     ctx.fillStyle = 'white';
                     Util.drawRect(40, 34, 480, 56);
+                    ctx.fillStyle = 'black';
+                    Main.drawObstacles();
+                    key = 2;
                 }
-                key = 0;
                 await new Promise(resolve => setTimeout(resolve, 150));
             }
         }
