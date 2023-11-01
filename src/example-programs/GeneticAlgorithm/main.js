@@ -1,7 +1,7 @@
 import Population from "./population.js";
 import AccelerationVector from "./accelerationvector.js";
 import Dot from "./dot.js";
-import Util, { ctx } from "./util.js";
+import Util from "./util.js";
 import Brain from "./brain.js";
 
 export class Main {
@@ -42,9 +42,9 @@ export class Main {
         Population.init();
         Main.init();
 
-        Util.drawRect(70, 57, 442, 154);
-        ctx.fillStyle = 'white';
-        Util.drawRect(72, 59, 440, 152);
+        Util.drawRectangle(70, 57, 442, 154);
+        Util.setColor(false);
+        Util.drawRectangle(72, 59, 440, 152);
         console.log("Welcome to my genetic algorithm simulation!");
         console.log("The objective is for dots to reach a goal in");
         console.log("as little steps as possible.");
@@ -60,7 +60,7 @@ export class Main {
             }
             tmp();
         });
-        Util.drawRect(70, 57, 442, 154);
+        Util.drawRectangle(70, 57, 442, 154);
 
         Main.#initialX = 10;
         Main.#initialY = 128;
@@ -120,15 +120,15 @@ export class Main {
                 tmp();
             });
             if (Main.#obstacles[selectorIndex]) {
-                ctx.fillStyle = 'black';
+                Util.setColor(true);
             } else {
-                ctx.fillStyle = 'white';
+                Util.setColor(false);
             }
-            Util.drawRect(selectorX, selectorY, selectorX + 15, selectorY + 15);
-            ctx.fillStyle = 'black';
+            Util.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
+            Util.setColor(true);
             if (!(key === 140)) {
                 Main.drawGoal();
-                Util.drawRect(Main.#initialX - 1, Main.#initialY - 1, Main.#initialX + 1, Main.#initialY + 1);
+                Util.drawRectangle(Main.#initialX - 1, Main.#initialY - 1, Main.#initialX + 1, Main.#initialY + 1);
                 if (!(key === 130)) {
                     if (!(key === 131)) {
                         if (!(key === 132)) {
@@ -148,11 +148,11 @@ export class Main {
                     selectorX = selectorX - 16;
                     selectorIndex = selectorIndex - 1;
                 }
-                Util.drawRect(selectorX, selectorY, selectorX + 15, selectorY + 15);
-                ctx.fillStyle = 'white';
-                Util.drawRect(selectorX + 1, selectorY + 1, selectorX + 14, selectorY + 14);
-                ctx.fillStyle = 'black';
-                Util.drawRect(selectorX + 2, selectorY + 2, selectorX + 13, selectorY + 13);
+                Util.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
+                Util.setColor(false);
+                Util.drawRectangle(selectorX + 1, selectorY + 1, selectorX + 14, selectorY + 14);
+                Util.setColor(true);
+                Util.drawRectangle(selectorX + 2, selectorY + 2, selectorX + 13, selectorY + 13);
                 if ((key === 128) || (key === 129)) {
                     drag = !(drag && (draggingEnter === (key === 128)));
                     draggingEnter = key === 128;
@@ -196,9 +196,9 @@ export class Main {
                         }
                         tmp();
                     });
-                    ctx.fillStyle = 'white';
-                    Util.drawRect(40, 34, 480, 56);
-                    ctx.fillStyle = 'black';
+                    Util.setColor(false);
+                    Util.drawRectangle(40, 34, 480, 56);
+                    Util.setColor(true);
                     Main.drawObstacles();
                     key = 2;
                 }
@@ -208,7 +208,7 @@ export class Main {
     }
 
     static drawGoal() {
-        Util.drawRect(Main.#goalX - 2, Main.#goalY - 2, Main.#goalX + 2, Main.#goalY + 2);
+        Util.drawRectangle(Main.#goalX - 2, Main.#goalY - 2, Main.#goalX + 2, Main.#goalY + 2);
     }
 
     static drawObstacles() {
@@ -230,7 +230,7 @@ export class Main {
                 obstacleX = obstacleX + obstacleX;
                 obstacleX = obstacleX + obstacleX;
                 obstacleX = obstacleX + obstacleX;
-                Util.drawRect(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
+                Util.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
             }
             i++;
         }

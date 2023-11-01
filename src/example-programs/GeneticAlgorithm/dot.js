@@ -1,5 +1,5 @@
 import Brain from "./brain.js";
-import Util, { ctx } from "./util.js";
+import Util from "./util.js";
 
 export default class Dot {
     static #initialX;
@@ -76,12 +76,12 @@ export default class Dot {
 
     show() {
         if (!this.#dead) {
-            ctx.fillStyle = 'white';
-            Util.drawRect(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
-            ctx.fillStyle = 'black';
+            Util.setColor(false);
+            Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
+            Util.setColor(true);
             this.#prevX = this.#posX - 1;
             this.#prevY = this.#posY - 1;
-            Util.drawRect(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
+            Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
         }
     }
 

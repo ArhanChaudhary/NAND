@@ -1,10 +1,10 @@
-export let ctx = document.getElementById("canvas").getContext("2d");
-ctx.fillStyle = 'black';
+let ctx = document.getElementById("canvas").getContext("2d");
 export default class Util {
     static #next;
     static #keyPressed;
 
     static init() {
+        Util.setColor(true);
         Util.#next = 42;
 
         let prev;
@@ -53,10 +53,18 @@ export default class Util {
         });
     }
 
-    static drawRect(x1, y1, x2, y2) {
+    static drawRectangle(x1, y1, x2, y2) {
         ctx.beginPath();
         ctx.rect(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
         ctx.fill();
+    }
+
+    static setColor(b) {
+        if (b) {
+            ctx.fillStyle = 'black';
+        } else {
+            ctx.fillStyle = 'white';
+        }
     }
 
     static random() {
