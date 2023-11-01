@@ -40,8 +40,8 @@ export default class Dot {
     instantiate() {
         this.#dead = false;
         this.#reachedGoal = false;
-        this.#prevX = Dot.#initialX;
-        this.#prevY = Dot.#initialY;
+        this.#prevX = Dot.#initialX - 1;
+        this.#prevY = Dot.#initialY - 1;
 
         this.#posX = Dot.#initialX;
         this.#posY = Dot.#initialY;
