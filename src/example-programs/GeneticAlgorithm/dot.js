@@ -75,18 +75,7 @@ export default class Dot {
         return this.#reachedGoal;
     }
 
-    show() {
-        if (!this.#dead) {
-            Util.setColor(false);
-            Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
-            Util.setColor(true);
-            this.#prevX = this.#posX - 1;
-            this.#prevY = this.#posY - 1;
-            Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
-        }
-    }
-
-    update() {
+    update(andShow) {
         let newVelXIsNegative;
         let newVelYIsNegative;
         if (!(this.#brain.getStep() > Dot.#minStep)) {
@@ -138,7 +127,7 @@ export default class Dot {
                 this.#posX += this.#velX;
                 this.#posY += this.#velY;
 
-                if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254 ||  Dot.#obstacles[Main.getGridIndex(this.#posX, this.#posY)] === true)) {
+                if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254 || Dot.#obstacles[Main.getGridIndex(this.#posX, this.#posY)] === true)) {
                     if (!(Math.abs(this.#posX - Dot.#goalX) > 3 || Math.abs(this.#posY - Dot.#goalY) > 3)) {
                         this.#reachedGoal = true;
                         this.#dead = true;
@@ -150,37 +139,26 @@ export default class Dot {
         } else {
             this.#dead = true;
         }
+
+        if (andShow) {
+            if (!this.#dead) {
+                Util.setColor(false);
+                Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
+                Util.setColor(true);
+                this.#prevX = this.#posX - 1;
+                this.#prevY = this.#posY - 1;
+                Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
+            }
+        } else {
+            // needs to be here since calculateFitness uses prevX and prevY
+            this.#prevX = this.#posX - 1;
+            this.#prevY = this.#posY - 1;
+        }
     }
 
     calculateFitness() {
-        let x;
-        let y;
-        let distSquared;
-        let dynamicStepWeight;
         if (!this.#reachedGoal) {
-            x = Math.trunc(Math.abs(this.#posX - Dot.#goalX) / 4);
-            y = Math.trunc(Math.abs(this.#posY - Dot.#goalY) / 4);
-            distSquared = Math.max(10, x * x + y * y);
-            dynamicStepWeight = Math.max(1, 25 - Math.trunc(distSquared / 300));
-            return Math.trunc(32767 / distSquared) + (dynamicStepWeight - Math.trunc(this.#brain.getStep() / Math.trunc(Dot.#brainSize / dynamicStepWeight)));
-            // x = Math.trunc(Math.abs(this.#posX - Dot.#goalX) / 2);
-            // y = Math.trunc(Math.abs(this.#posY - Dot.#goalY) / 2);
-            // dist = x * x;
-            // if (dist < 0) {
-            //     switchToNewton = true;
-            // } else {
-            //     tmp = y * y;
-            //     if (tmp < 0) {
-            //         switchToNewton = true;
-            //     } else {
-            //         switchToNewton = (dist > 16384) || (tmp > 16384);
-            //     }
-            // }
-            // if (switchToNewton) {
-            //     dist = x + y - x * y / (x + y);
-            //     return (32767 / dist) / dist;
-            // }
-            // return 32767 / (dist + tmp);
+            return Dot.#obstacles[Main.getGridIndex(this.#prevX + 1, this.#prevY + 1)];
         }
         return Math.max(10000, 32767 - Dot.#stepWeight * this.#brain.getStep());
     }

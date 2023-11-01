@@ -46,20 +46,10 @@ export default class Population {
     static update() {
         let i = 0;
         let dot;
-        if (!Population.#onlyBest) {
-            while (i < Population.#size) {
-                dot = Population.#dots[i];
-                dot.update();
-                dot.show();
-                i++;
-            }
-        } else {
-            while (i < Population.#size) {
-                dot = Population.#dots[i];
-                dot.update();
-                i++;
-            }
-            Population.#dots[0].show();
+        while (i < Population.#size) {
+            dot = Population.#dots[i];
+            dot.update(!Population.#onlyBest || i === 0);
+            i++;
         }
     }
 

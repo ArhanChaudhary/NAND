@@ -198,7 +198,7 @@ export default class Main {
                     Main.drawObstacles();
                     key = 2;
                 }
-                await new Promise(resolve => setTimeout(resolve, 150));
+                await new Promise(resolve => setTimeout(resolve, 50));
             }
         }
         Main.flood();
@@ -212,6 +212,7 @@ export default class Main {
         let allowDown;
         let allowRight;
         let allowLeft;
+        let initialFitness;
         index = Main.getGridIndex(Main.#goalX, Main.#goalY);
         let queue = [index];
         Main.#obstacles[index] = 0;
@@ -226,28 +227,28 @@ export default class Main {
             if (allowUp) {
                 newIndex = index - 32;
                 if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 16;
+                    Main.#obstacles[newIndex] = dist + 5;
                     queue.push(newIndex);
                 }
             }
             if (allowRight) {
                 newIndex = index + 1;
                 if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 16;
+                    Main.#obstacles[newIndex] = dist + 5;
                     queue.push(newIndex);
                 }
             }
             if (allowDown) {
                 newIndex = index + 32;
                 if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 16;
+                    Main.#obstacles[newIndex] = dist + 5;
                     queue.push(newIndex);
                 }
             }
             if (allowLeft) {
                 newIndex = index - 1;
                 if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 16;
+                    Main.#obstacles[newIndex] = dist + 5;
                     queue.push(newIndex);
                 }
             }
@@ -255,7 +256,7 @@ export default class Main {
             if (allowUp && allowRight) {
                 newIndex = index - 31;
                 if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 23;
+                    Main.#obstacles[newIndex] = dist + 7;
                     queue.push(newIndex);
                 }
             }
@@ -263,7 +264,7 @@ export default class Main {
             if (allowUp && allowLeft) {
                 newIndex = index - 33;
                 if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 23;
+                    Main.#obstacles[newIndex] = dist + 7;
                     queue.push(newIndex);
                 }
             }
@@ -271,7 +272,7 @@ export default class Main {
             if (allowDown && allowRight) {
                 newIndex = index + 33;
                 if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 23;
+                    Main.#obstacles[newIndex] = dist + 7;
                     queue.push(newIndex);
                 }
             }
@@ -279,10 +280,18 @@ export default class Main {
             if (allowDown && allowLeft) {
                 newIndex = index + 31;
                 if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 23;
+                    Main.#obstacles[newIndex] = dist + 7;
                     queue.push(newIndex);
                 }
             }
+        }
+        initialFitness = Math.trunc(32767 / Main.#obstacles[Main.getGridIndex(Main.#initialX, Main.#initialY)]) - 1;
+        index = 0;
+        while (!(index > 511)) {
+            if (Main.#obstacles[index] !== true) {
+                Main.#obstacles[index] = Math.min(3276, Math.max(1, Math.trunc(32767 / Main.#obstacles[index]) - initialFitness));
+            }
+            index++;
         }
     }
 
