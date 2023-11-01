@@ -86,6 +86,7 @@ export default class Util {
 
     static abs(n) {
         if (n >= 32768) {
+            if (n === 32768) debugger;
             return 65536 - n;
         }
         return n;
