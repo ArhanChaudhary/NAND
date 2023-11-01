@@ -20,6 +20,7 @@ export default class Population {
         Population.#gen = 1;
         Population.#size = size;
         Population.#brainSize = brainSize;
+        Population.#onlyBest = onlyBest;
 
         Population.#dots = new Array(Population.#size);
         while (i < Population.#size) {

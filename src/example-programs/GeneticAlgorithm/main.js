@@ -4,7 +4,7 @@ import Dot from "./dot.js";
 import Util from "./util.js";
 import Brain from "./brain.js";
 
-export class Main {
+export default class Main {
     static #brainSize;
     static #populationCount;
     static #initialX;
@@ -119,11 +119,7 @@ export class Main {
                 }
                 tmp();
             });
-            if (Main.#obstacles[selectorIndex]) {
-                Util.setColor(true);
-            } else {
-                Util.setColor(false);
-            }
+            Util.setColor(Main.#obstacles[selectorIndex] === true);
             Util.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
             Util.setColor(true);
             if (!(key === 140)) {
@@ -205,6 +201,50 @@ export class Main {
                 await new Promise(resolve => setTimeout(resolve, 150));
             }
         }
+        Main.flood();
+    }
+
+    static flood() {
+        debugger;
+        let index = 0;
+        let newIndex = 0;
+        let dist = 0;
+        index = Main.getGridIndex(Main.#goalX, Main.#goalY);
+        let queue = [index];
+        Main.#obstacles[index] = 0;
+        while (queue.length > 0) {
+            index = queue.shift();
+            dist = Main.#obstacles[index];
+
+            if ((index & 31) !== 0) {
+                newIndex = index - 1;
+                if (Main.#obstacles[newIndex] === false) {
+                    Main.#obstacles[newIndex] = dist + 16;
+                    queue.push(newIndex);
+                }
+            }
+            if ((index & 31) !== 31) {
+                newIndex = index + 1;
+                if (Main.#obstacles[newIndex] === false) {
+                    Main.#obstacles[newIndex] = dist + 16;
+                    queue.push(newIndex);
+                }
+            }
+            if (index > 31) {
+                newIndex = index - 32;
+                if (Main.#obstacles[newIndex] === false) {
+                    Main.#obstacles[newIndex] = dist + 16;
+                    queue.push(newIndex);
+                }
+            }
+            if (index < 480) {
+                newIndex = index + 32;
+                if (Main.#obstacles[newIndex] === false) {
+                    Main.#obstacles[newIndex] = dist + 16;
+                    queue.push(newIndex);
+                }
+            }
+        }
     }
 
     static drawGoal() {
@@ -212,25 +252,26 @@ export class Main {
     }
 
     static drawObstacles() {
-        let i;
+        let i = 0;
         let obstacleX;
         let obstacleY;
 
-        i = 0;
         while (!(i > 511)) {
-            if (Main.#obstacles[i]) {
-                obstacleY = 0;
-                obstacleX = i;
-                while (!(obstacleX < 32)) {
-                    obstacleX -= 32;
-                    obstacleY += 16;
-                }
-                obstacleX = i - (obstacleY + obstacleY);
-                obstacleX = obstacleX + obstacleX;
-                obstacleX = obstacleX + obstacleX;
-                obstacleX = obstacleX + obstacleX;
-                obstacleX = obstacleX + obstacleX;
+            obstacleY = 0;
+            obstacleX = i;
+            while (!(obstacleX < 32)) {
+                obstacleX -= 32;
+                obstacleY += 16;
+            }
+            obstacleX = i - (obstacleY + obstacleY);
+            obstacleX = obstacleX + obstacleX;
+            obstacleX = obstacleX + obstacleX;
+            obstacleX = obstacleX + obstacleX;
+            obstacleX = obstacleX + obstacleX;
+            if (Main.#obstacles[i] === true) {
                 Util.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
+            } else if (Main.#obstacles[i] !== false) {
+                Util.drawText(Main.#obstacles[i], obstacleX + 8, obstacleY + 8);
             }
             i++;
         }
@@ -245,6 +286,22 @@ export class Main {
         } else {
             console.log(Main.#goalStepCountString + Main.#NAString);
         }
+    }
+
+    static getGridIndex(posX, posY) {
+        let ret = 0;
+        while (!(posY < 16)) {
+            posY -= 16;
+            ret += 32;
+        }
+        // ret should be (tmp2 / 16) * 32
+
+        while (!(posX < 16)) {
+            posX -= 16;
+            ret++;
+        }
+        // ret should be (tmp2 / 16) * 32 + (tmp / 16)
+        return ret;
     }
 }
 Main.main();

@@ -1,8 +1,9 @@
 # TODO
 
-* arguments keyword that compiles to push arg n
+* bfs distance
 * choose step count: 250 225 200 175 150
-* gui
+* arguments keyword that compiles to push arg n
+* scale fitness for dots that havent reached goal to 32767
 
 * compilererror stash, too many static error
 * graphing calculator in jack

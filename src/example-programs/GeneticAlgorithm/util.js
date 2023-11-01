@@ -1,4 +1,7 @@
 let ctx = document.getElementById("canvas").getContext("2d");
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+ctx.font = "7px monospace";
 export default class Util {
     static #next;
     static #keyPressed;
@@ -65,6 +68,10 @@ export default class Util {
         } else {
             ctx.fillStyle = 'white';
         }
+    }
+
+    static drawText(text, posX, posY) {
+        ctx.fillText(text, posX, posY);
     }
 
     static random() {

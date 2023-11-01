@@ -1,5 +1,6 @@
 import Brain from "./brain.js";
 import Util from "./util.js";
+import Main from "./main.js";
 
 export default class Dot {
     static #initialX;
@@ -86,8 +87,8 @@ export default class Dot {
     }
 
     update() {
-        let tmp;
-        let tmp2;
+        let newVelXIsNegative;
+        let newVelYIsNegative;
         if (!(this.#brain.getStep() > Dot.#minStep)) {
             if (!this.#dead) {
                 if (!(Dot.#brainSize > this.#brain.getStep())) {
@@ -98,14 +99,14 @@ export default class Dot {
 
                 this.#velX += this.#acc.getX();
                 this.#velY += this.#acc.getY();
-                tmp = this.#velX < 0;
-                tmp2 = this.#velY < 0;
+                newVelXIsNegative = this.#velX < 0;
+                newVelYIsNegative = this.#velY < 0;
 
-                if (tmp) {
+                if (newVelXIsNegative) {
                     this.#velX = -this.#velX;
                 }
 
-                if (tmp2) {
+                if (newVelYIsNegative) {
                     this.#velY = -this.#velY;
                 }
 
@@ -126,33 +127,18 @@ export default class Dot {
                     this.#velY = 0;
                 }
 
-                if (tmp) {
+                if (newVelXIsNegative) {
                     this.#velX = -this.#velX;
                 }
 
-                if (tmp2) {
+                if (newVelYIsNegative) {
                     this.#velY = -this.#velY;
                 }
 
                 this.#posX += this.#velX;
                 this.#posY += this.#velY;
 
-                tmp = 0;
-                tmp2 = this.#posY;
-                while (!(tmp2 < 16)) {
-                    tmp2 -= 16;
-                    tmp += 32;
-                }
-                // tmp should be (tmp2 / 16) * 32
-
-                tmp2 = this.#posX;
-                while (!(tmp2 < 16)) {
-                    tmp2 -= 16;
-                    tmp++;
-                }
-                // tmp should be (tmp2 / 16) * 32 + (tmp / 16)
-
-                if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254 || Dot.#obstacles[tmp])) {
+                if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254 ||  Dot.#obstacles[Main.getGridIndex(this.#posX, this.#posY)] === true)) {
                     if (!(Math.abs(this.#posX - Dot.#goalX) > 3 || Math.abs(this.#posY - Dot.#goalY) > 3)) {
                         this.#reachedGoal = true;
                         this.#dead = true;
