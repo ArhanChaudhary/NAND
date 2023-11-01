@@ -318,9 +318,9 @@ export default class Main {
             obstacleX = obstacleX + obstacleX;
             if (Main.#obstacles[i] === true) {
                 Util.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
-            } else if (Main.#obstacles[i] !== false) {
+            }/* else if (Main.#obstacles[i] !== false) {
                 Util.drawText(Main.#obstacles[i], obstacleX + 8, obstacleY + 8);
-            }
+            }*/
             i++;
         }
     }

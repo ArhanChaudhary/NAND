@@ -6,7 +6,7 @@ class Util {
     }
 
     function int random() {
-        let next = (next * 17565) + 2489;
+        let next = (next * 25173) + 13849;
         return next;
     }
 }

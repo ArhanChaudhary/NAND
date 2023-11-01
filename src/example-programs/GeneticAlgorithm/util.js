@@ -75,12 +75,16 @@ export default class Util {
     }
 
     static random() {
-        Util.#next = (Util.#next * 17565 + 2489) & 65535;
+        Util.#next = (Util.#next * 25173 + 13849) & 65535;
         if (Util.#next >= 32768) {
             Util.#next -= 65536;
         }
         return Util.#next;
-        // return Math.trunc(Math.random() * 65536);
+        // let ret = Math.trunc(Math.random() * 65536);
+        // if (ret >= 32768) {
+        //     ret -= 65536;
+        // }
+        // return ret;
     }
 
     static clearScreen() {

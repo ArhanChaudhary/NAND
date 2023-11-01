@@ -1,10 +1,12 @@
 # TODO
 
 * bfs distance
-* choose step count: 250 225 200 175 150
+* display best dot fitness
+* mathematically choose step count: 250 225 200 175 150
+* dynamically choose mutation rate
+* menu: initialXY goalXY selectObstacles onlyBest continue
 * arguments keyword that compiles to push arg n
 * 16 bit fitness instead of 15
-* scale fitness for dots that havent reached goal to 32767
 
 * compilererror stash, too many static error
 * graphing calculator in jack

@@ -140,19 +140,17 @@ export default class Dot {
             this.#dead = true;
         }
 
-        if (andShow) {
-            if (!this.#dead) {
-                Util.setColor(false);
-                Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
-                Util.setColor(true);
-                this.#prevX = this.#posX - 1;
-                this.#prevY = this.#posY - 1;
-                Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
-            }
-        } else {
+        if (!andShow) {
             // needs to be here since calculateFitness uses prevX and prevY
             this.#prevX = this.#posX - 1;
             this.#prevY = this.#posY - 1;
+        } else if (!this.#dead) {
+            Util.setColor(false);
+            Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
+            Util.setColor(true);
+            this.#prevX = this.#posX - 1;
+            this.#prevY = this.#posY - 1;
+            Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
         }
     }
 
