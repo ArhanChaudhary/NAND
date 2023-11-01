@@ -92,10 +92,7 @@ export default class Population {
             }
             fitnessSum += dotFitness;
             if (fitnessSum >= 32768) {
-                fitnessSum -= 65536;
-            }
-            if (fitnessSum < 0) {
-                fitnessSum = fitnessSum + 32768;
+                fitnessSum = fitnessSum - 32768;
                 fitnessSumCoef++;
             }
             i++;
@@ -107,14 +104,14 @@ export default class Population {
 
         i = 0;
         while (i < Population.#size - 1) {
-            randFitness = Math.abs(Util.random());
+            randFitness = Util.abs(Util.random());
             randFitnessCoef = 32767;
             if (!(fitnessSumCoef === 0)) {
                 scaleCache = Math.trunc(32767 / fitnessSumCoef);
                 while (randFitnessCoef > fitnessSumCoef) {
                     // fitnessSumCoef = 296, randFitnessCoef = 32698
                     // this results in randFitnessCoef = 297 which is out of bounds
-                    randFitnessCoef = Math.trunc(Math.abs(Util.random()) / scaleCache);
+                    randFitnessCoef = Math.trunc(Util.abs(Util.random()) / scaleCache);
                 }
             } else {
                 randFitnessCoef = 0;
@@ -123,7 +120,7 @@ export default class Population {
                 scaleCache = Math.trunc(32767 / fitnessSum);
                 while (randFitness >= fitnessSum) {
                     // same with this it can also go out of bounds
-                    randFitness = Math.trunc(Math.abs(Util.random()) / scaleCache);
+                    randFitness = Math.trunc(Util.abs(Util.random()) / scaleCache);
                 }
             }
             selectionSum = 0;
@@ -132,10 +129,7 @@ export default class Population {
             while (j < Population.#size) {
                 selectionSum += Population.#fitnessCache[j];
                 if (selectionSum >= 32768) {
-                    selectionSum -= 65536;
-                }
-                if (selectionSum < 0) {
-                    selectionSum = selectionSum + 32768;
+                    selectionSum = selectionSum - 32768;
                     selectionSumCoef++;
                 }
                 if (selectionSumCoef > randFitnessCoef || (selectionSumCoef === randFitnessCoef && selectionSum > randFitness)) {
