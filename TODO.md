@@ -3,6 +3,7 @@
 * bfs distance
 * choose step count: 250 225 200 175 150
 * arguments keyword that compiles to push arg n
+* 16 bit fitness instead of 15
 * scale fitness for dots that havent reached goal to 32767
 
 * compilererror stash, too many static error

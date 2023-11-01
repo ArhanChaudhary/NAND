@@ -205,42 +205,81 @@ export default class Main {
     }
 
     static flood() {
-        debugger;
         let index = 0;
         let newIndex = 0;
         let dist = 0;
+        let allowUp;
+        let allowDown;
+        let allowRight;
+        let allowLeft;
         index = Main.getGridIndex(Main.#goalX, Main.#goalY);
         let queue = [index];
         Main.#obstacles[index] = 0;
         while (queue.length > 0) {
             index = queue.shift();
             dist = Main.#obstacles[index];
+            allowUp = index > 31;
+            allowDown = index < 480;
+            allowRight = (index & 31) !== 31;
+            allowLeft = (index & 31) !== 0;
 
-            if ((index & 31) !== 0) {
-                newIndex = index - 1;
-                if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 16;
-                    queue.push(newIndex);
-                }
-            }
-            if ((index & 31) !== 31) {
-                newIndex = index + 1;
-                if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 16;
-                    queue.push(newIndex);
-                }
-            }
-            if (index > 31) {
+            if (allowUp) {
                 newIndex = index - 32;
                 if (Main.#obstacles[newIndex] === false) {
                     Main.#obstacles[newIndex] = dist + 16;
                     queue.push(newIndex);
                 }
             }
-            if (index < 480) {
+            if (allowRight) {
+                newIndex = index + 1;
+                if (Main.#obstacles[newIndex] === false) {
+                    Main.#obstacles[newIndex] = dist + 16;
+                    queue.push(newIndex);
+                }
+            }
+            if (allowDown) {
                 newIndex = index + 32;
                 if (Main.#obstacles[newIndex] === false) {
                     Main.#obstacles[newIndex] = dist + 16;
+                    queue.push(newIndex);
+                }
+            }
+            if (allowLeft) {
+                newIndex = index - 1;
+                if (Main.#obstacles[newIndex] === false) {
+                    Main.#obstacles[newIndex] = dist + 16;
+                    queue.push(newIndex);
+                }
+            }
+
+            if (allowUp && allowRight) {
+                newIndex = index - 31;
+                if (Main.#obstacles[newIndex] === false) {
+                    Main.#obstacles[newIndex] = dist + 23;
+                    queue.push(newIndex);
+                }
+            }
+
+            if (allowUp && allowLeft) {
+                newIndex = index - 33;
+                if (Main.#obstacles[newIndex] === false) {
+                    Main.#obstacles[newIndex] = dist + 23;
+                    queue.push(newIndex);
+                }
+            }
+
+            if (allowDown && allowRight) {
+                newIndex = index + 33;
+                if (Main.#obstacles[newIndex] === false) {
+                    Main.#obstacles[newIndex] = dist + 23;
+                    queue.push(newIndex);
+                }
+            }
+
+            if (allowDown && allowLeft) {
+                newIndex = index + 31;
+                if (Main.#obstacles[newIndex] === false) {
+                    Main.#obstacles[newIndex] = dist + 23;
                     queue.push(newIndex);
                 }
             }
