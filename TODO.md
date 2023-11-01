@@ -1,6 +1,6 @@
 # TODO
 
-* arg0, arg1... argn key word
+* arguments keyword that compiles to push arg n
 * choose step count: 250 225 200 175 150
 * gui
 

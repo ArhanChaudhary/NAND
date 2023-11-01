@@ -169,10 +169,14 @@ export default class Dot {
     calculateFitness() {
         let x;
         let y;
+        let distSquared;
+        let dynamicStepWeight;
         if (!this.#reachedGoal) {
             x = Math.trunc(Math.abs(this.#posX - Dot.#goalX) / 4);
             y = Math.trunc(Math.abs(this.#posY - Dot.#goalY) / 4);
-            return Math.trunc(32767 / Math.max(10, x * x + y * y));
+            distSquared = Math.max(10, x * x + y * y);
+            dynamicStepWeight = Math.max(1, 25 - Math.trunc(distSquared / 300));
+            return Math.trunc(32767 / distSquared) + (dynamicStepWeight - Math.trunc(this.#brain.getStep() / Math.trunc(Dot.#brainSize / dynamicStepWeight)));
             // x = Math.trunc(Math.abs(this.#posX - Dot.#goalX) / 2);
             // y = Math.trunc(Math.abs(this.#posY - Dot.#goalY) / 2);
             // dist = x * x;
