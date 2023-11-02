@@ -13,6 +13,10 @@ export default class Main {
     static #goalY;
     static #onlyBest;
     static #obstacles;
+    static #floodQueue;
+    static #floodQueueLength;
+    static #floodQueueIndex;
+    static #floodDist;
 
     static #generationString;
     static #goalStepCountString;
@@ -29,11 +33,8 @@ export default class Main {
         Main.#placeString = "Place obstacles with the arrow, enter, and delete keys.";
         Main.#escString = "Press esc to finish.";
         Main.#loadingString = "Loading...";
+        Main.#floodQueue = new Array(512);
         Main.#obstacles = new Array(512);
-        while (!(i > 511)) {
-            Main.#obstacles[i] = false;
-            i++;
-        }
     }
 
     static async main() {
@@ -101,6 +102,13 @@ export default class Main {
         let key = 0;
         let drag = 0;
         let draggingEnter = 0;
+        let i = 0;
+        while (!(i > 511)) {
+            if (Main.#obstacles[i] !== true) {
+                Main.#obstacles[i] = false;
+            }
+            i++;
+        }
         console.log(Main.#placeString);
         console.log(Main.#escString);
         selectorX = 256;
@@ -205,93 +213,90 @@ export default class Main {
     }
 
     static flood() {
-        let index = 0;
-        let newIndex = 0;
-        let dist = 0;
+        let i = 0;
         let allowUp;
         let allowDown;
         let allowRight;
         let allowLeft;
         let initialFitness;
-        index = Main.getGridIndex(Main.#goalX, Main.#goalY);
-        let queue = [index];
-        Main.#obstacles[index] = 0;
-        while (queue.length > 0) {
-            index = queue.shift();
-            dist = Main.#obstacles[index];
-            allowUp = index > 31;
-            allowDown = index < 480;
-            allowRight = (index & 31) !== 31;
-            allowLeft = (index & 31) !== 0;
+        i = Main.getGridIndex(Main.#goalX, Main.#goalY);
+        Main.#floodQueue[0] = i;
+        Main.#floodQueueLength = 1;
+        Main.#floodQueueIndex = 0;
+        Main.#obstacles[i] = 0;
+        while (Main.#floodQueueLength > 0) {
+            i = Main.#floodQueue.shift();
+            Main.#floodQueueLength--;
+            Main.#floodDist = Main.#obstacles[i];
+            allowUp = i > 31;
+            allowDown = i < 480;
+            allowRight = (i & 31) !== 31;
+            allowLeft = (i & 31) !== 0;
 
             if (allowUp) {
-                newIndex = index - 32;
-                if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 5;
-                    queue.push(newIndex);
-                }
+                Main.floodIndex(i - 32, true);
             }
+
             if (allowRight) {
-                newIndex = index + 1;
-                if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 5;
-                    queue.push(newIndex);
-                }
+                Main.floodIndex(i + 1, true);
             }
+
             if (allowDown) {
-                newIndex = index + 32;
-                if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 5;
-                    queue.push(newIndex);
-                }
+                Main.floodIndex(i + 32, true);
             }
+
             if (allowLeft) {
-                newIndex = index - 1;
-                if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 5;
-                    queue.push(newIndex);
+                Main.floodIndex(i - 1, true);
+            }
+
+            if (allowUp) {
+                if (allowRight) {
+                    Main.floodIndex(i - 31, false);
+                }
+
+                if (allowLeft) {
+                    Main.floodIndex(i - 33, false);
                 }
             }
 
-            if (allowUp && allowRight) {
-                newIndex = index - 31;
-                if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 7;
-                    queue.push(newIndex);
+            if (allowDown) {
+                if (allowRight) {
+                    Main.floodIndex(i + 33, false);
                 }
-            }
 
-            if (allowUp && allowLeft) {
-                newIndex = index - 33;
-                if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 7;
-                    queue.push(newIndex);
-                }
-            }
-
-            if (allowDown && allowRight) {
-                newIndex = index + 33;
-                if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 7;
-                    queue.push(newIndex);
-                }
-            }
-
-            if (allowDown && allowLeft) {
-                newIndex = index + 31;
-                if (Main.#obstacles[newIndex] === false) {
-                    Main.#obstacles[newIndex] = dist + 7;
-                    queue.push(newIndex);
+                if (allowLeft) {
+                    Main.floodIndex(i + 31, false);
                 }
             }
         }
-        initialFitness = Math.trunc(32767 / Main.#obstacles[Main.getGridIndex(Main.#initialX, Main.#initialY)]) - 1;
-        index = 0;
-        while (!(index > 511)) {
-            if (Main.#obstacles[index] !== true) {
-                Main.#obstacles[index] = Math.min(3276, Math.max(1, Math.trunc(32767 / Main.#obstacles[index]) - initialFitness));
+        Main.#floodQueue = new Array(512);
+        i = Main.getGridIndex(Main.#initialX, Main.#initialY);
+        initialFitness = Main.#obstacles[i];
+        if (initialFitness === true) {
+            Main.#obstacles[i] = false;
+        } else if (initialFitness !== false) {
+            initialFitness = Math.trunc(32767 / initialFitness);
+            i = 0;
+            while (!(i > 511)) {
+                if (Main.#obstacles[i] !== true) {
+                    Main.#obstacles[i] = Math.min(3276, Math.max(0, Math.trunc(32767 / Main.#obstacles[i]) - initialFitness));
+                }
+                i++;
             }
-            index++;
+        }
+    }
+
+    static floodIndex(i, adj) {
+        if (Main.#obstacles[i] === false) {
+            // 7 - adj - adj
+            if (adj) {
+                Main.#obstacles[i] = Main.#floodDist + 5;
+            } else {
+                Main.#obstacles[i] = Main.#floodDist + 7;
+            }
+            Main.#floodQueueIndex++;
+            Main.#floodQueueLength++;
+            Main.#floodQueue[Main.#floodQueueIndex - 512 + Main.#floodQueue.length] = i;
         }
     }
 
@@ -318,9 +323,9 @@ export default class Main {
             obstacleX = obstacleX + obstacleX;
             if (Main.#obstacles[i] === true) {
                 Util.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
-            }/* else if (Main.#obstacles[i] !== false) {
+            } else if (Main.#obstacles[i] !== false) {
                 Util.drawText(Main.#obstacles[i], obstacleX + 8, obstacleY + 8);
-            }*/
+            }
             i++;
         }
     }
@@ -342,13 +347,13 @@ export default class Main {
             posY -= 16;
             ret += 32;
         }
-        // ret should be (tmp2 / 16) * 32
+        // ret should be (posY / 16) * 32
 
         while (!(posX < 16)) {
             posX -= 16;
             ret++;
         }
-        // ret should be (tmp2 / 16) * 32 + (tmp / 16)
+        // ret should be (posY / 16) * 32 + (posX / 16)
         return ret;
     }
 }

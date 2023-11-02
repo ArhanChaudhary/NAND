@@ -6,6 +6,7 @@
 * dynamically choose mutation rate
 * menu: initialXY goalXY selectObstacles onlyBest continue
 * arguments keyword that compiles to push arg n
+* random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
 * 16 bit fitness instead of 15
 
 * compilererror stash, too many static error

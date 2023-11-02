@@ -156,7 +156,8 @@ export default class Dot {
 
     calculateFitness() {
         if (!this.#reachedGoal) {
-            return Dot.#obstacles[Main.getGridIndex(this.#prevX + 1, this.#prevY + 1)];
+            // needed if goal is blocked off completely and the current grid index hasnt been flooded (is false)
+            return Math.max(1, Dot.#obstacles[Main.getGridIndex(this.#prevX + 1, this.#prevY + 1)]);
         }
         return Math.max(10000, 32767 - Dot.#stepWeight * this.#brain.getStep());
     }
