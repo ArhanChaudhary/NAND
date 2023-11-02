@@ -44,7 +44,7 @@ export default class Main {
         Main.init();
 
         Util.drawRectangle(70, 57, 442, 154);
-        Util.setColor(false);
+        Util.setColor(0);
         Util.drawRectangle(72, 59, 440, 152);
         console.log("Welcome to my genetic algorithm simulation!");
         console.log("The objective is for dots to reach a goal in");
@@ -67,7 +67,7 @@ export default class Main {
         Main.#initialY = 128;
         Main.#goalX = 500;
         Main.#goalY = 128;
-        Main.#onlyBest = false;
+        Main.#onlyBest = 0;
         await Main.selectObstacles();
         Util.clearScreen();
         console.log(Main.#loadingString);
@@ -85,7 +85,7 @@ export default class Main {
                 Population.update();
             } else {
                 Population.naturalSelection();
-                if (Util.keyPressed() === 140) {
+                if (Util.keyPressed() == 140) {
                     await Main.selectObstacles();
                 }
                 Main.refreshDisplay();
@@ -104,8 +104,8 @@ export default class Main {
         let draggingEnter = 0;
         let i = 0;
         while (!(i > 511)) {
-            if (Main.#obstacles[i] !== true) {
-                Main.#obstacles[i] = false;
+            if (!(Main.#obstacles[i] == -1)) {
+                Main.#obstacles[i] = 0;
             }
             i++;
         }
@@ -115,7 +115,7 @@ export default class Main {
         selectorY = 112;
         selectorIndex = 240;
         key = 1;
-        while (!(key === 140)) {
+        while (!(key == 140)) {
             await new Promise(resolve => {
                 function tmp() {
                     if (!(key > 0)) {
@@ -127,42 +127,42 @@ export default class Main {
                 }
                 tmp();
             });
-            Util.setColor(Main.#obstacles[selectorIndex] === true);
+            Util.setColor(Main.#obstacles[selectorIndex] == -1);
             Util.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
-            Util.setColor(true);
-            if (!(key === 140)) {
+            Util.setColor(-1);
+            if (!(key == 140)) {
                 Main.drawGoal();
                 Util.drawRectangle(Main.#initialX - 1, Main.#initialY - 1, Main.#initialX + 1, Main.#initialY + 1);
-                if (!(key === 130)) {
-                    if (!(key === 131)) {
-                        if (!(key === 132)) {
-                            if (!((!(key === 133)) || (selectorY === 240))) {
+                if (!(key == 130)) {
+                    if (!(key == 131)) {
+                        if (!(key == 132)) {
+                            if (!((!(key == 133)) || (selectorY == 240))) {
                                 selectorY = selectorY + 16;
                                 selectorIndex = selectorIndex + 32;
                             }
-                        } else if (!(selectorX === 496)) {
+                        } else if (!(selectorX == 496)) {
                             selectorX = selectorX + 16;
                             selectorIndex = selectorIndex + 1;
                         }
-                    } else if (!(selectorY === 0)) {
+                    } else if (!(selectorY == 0)) {
                         selectorY = selectorY - 16;
                         selectorIndex = selectorIndex - 32;
                     }
-                } else if (!(selectorX === 0)) {
+                } else if (!(selectorX == 0)) {
                     selectorX = selectorX - 16;
                     selectorIndex = selectorIndex - 1;
                 }
                 Util.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
-                Util.setColor(false);
+                Util.setColor(0);
                 Util.drawRectangle(selectorX + 1, selectorY + 1, selectorX + 14, selectorY + 14);
-                Util.setColor(true);
+                Util.setColor(-1);
                 Util.drawRectangle(selectorX + 2, selectorY + 2, selectorX + 13, selectorY + 13);
-                if ((key === 128) || (key === 129)) {
-                    drag = !(drag && (draggingEnter === (key === 128)));
-                    draggingEnter = key === 128;
+                if ((key == 128) || (key == 129)) {
+                    drag = !(drag && (draggingEnter == ((key == 128) ? -1 : 0))) ? -1 : 0;
+                    draggingEnter = key == 128 ? -1 : 0;
                     await new Promise(resolve => {
                         function tmp() {
-                            if (!(key === 0)) {
+                            if (!(key == 0)) {
                                 key = Util.keyPressed();
                                 setTimeout(tmp, 0);
                             } else {
@@ -175,13 +175,13 @@ export default class Main {
                 if (drag) {
                     Main.#obstacles[selectorIndex] = draggingEnter;
                 }
-                if (!(key === 1)) {
+                if (!(key == 1)) {
                     key = 0;
                 } else {
                     // wait for key release
                     await new Promise(resolve => {
                         function tmp() {
-                            if (!(Util.keyPressed() === 0)) {
+                            if (!(Util.keyPressed() == 0)) {
                                 setTimeout(tmp, 0);
                             } else {
                                 resolve();
@@ -200,9 +200,9 @@ export default class Main {
                         }
                         tmp();
                     });
-                    Util.setColor(false);
+                    Util.setColor(0);
                     Util.drawRectangle(40, 34, 480, 56);
-                    Util.setColor(true);
+                    Util.setColor(-1);
                     Main.drawObstacles();
                     key = 2;
                 }
@@ -230,55 +230,55 @@ export default class Main {
             Main.#floodDist = Main.#obstacles[i];
             allowUp = i > 31;
             allowDown = i < 480;
-            allowRight = (i & 31) !== 31;
-            allowLeft = (i & 31) !== 0;
+            allowRight = !((i & 31) == 31);
+            allowLeft = !((i & 31) == 0);
 
             if (allowUp) {
-                Main.floodIndex(i - 32, true);
+                Main.floodIndex(i - 32, -1);
             }
 
             if (allowRight) {
-                Main.floodIndex(i + 1, true);
+                Main.floodIndex(i + 1, -1);
             }
 
             if (allowDown) {
-                Main.floodIndex(i + 32, true);
+                Main.floodIndex(i + 32, -1);
             }
 
             if (allowLeft) {
-                Main.floodIndex(i - 1, true);
+                Main.floodIndex(i - 1, -1);
             }
 
             if (allowUp) {
                 if (allowRight) {
-                    Main.floodIndex(i - 31, false);
+                    Main.floodIndex(i - 31, 0);
                 }
 
                 if (allowLeft) {
-                    Main.floodIndex(i - 33, false);
+                    Main.floodIndex(i - 33, 0);
                 }
             }
 
             if (allowDown) {
                 if (allowRight) {
-                    Main.floodIndex(i + 33, false);
+                    Main.floodIndex(i + 33, 0);
                 }
 
                 if (allowLeft) {
-                    Main.floodIndex(i + 31, false);
+                    Main.floodIndex(i + 31, 0);
                 }
             }
         }
         Main.#floodQueue = new Array(512);
         i = Main.getGridIndex(Main.#initialX, Main.#initialY);
         initialFitness = Main.#obstacles[i];
-        if (initialFitness === true) {
-            Main.#obstacles[i] = false;
-        } else if (initialFitness !== false) {
+        if (initialFitness == -1) {
+            Main.#obstacles[i] = 0;
+        } else if (!(initialFitness == 0)) {
             initialFitness = Math.trunc(32767 / initialFitness);
             i = 0;
             while (!(i > 511)) {
-                if (Main.#obstacles[i] !== true) {
+                if (!(Main.#obstacles[i] == -1)) {
                     Main.#obstacles[i] = Math.min(3276, Math.max(0, Math.trunc(32767 / Main.#obstacles[i]) - initialFitness));
                 }
                 i++;
@@ -287,7 +287,7 @@ export default class Main {
     }
 
     static floodIndex(i, adj) {
-        if (Main.#obstacles[i] === false) {
+        if (Main.#obstacles[i] == 0) {
             // 7 - adj - adj
             if (adj) {
                 Main.#obstacles[i] = Main.#floodDist + 5;
@@ -321,9 +321,9 @@ export default class Main {
             obstacleX = obstacleX + obstacleX;
             obstacleX = obstacleX + obstacleX;
             obstacleX = obstacleX + obstacleX;
-            if (Main.#obstacles[i] === true) {
+            if (Main.#obstacles[i] == -1) {
                 Util.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
-            } else if (Main.#obstacles[i] !== false) {
+            } else if (!(Main.#obstacles[i] == 0)) {
                 Util.drawText(Main.#obstacles[i], obstacleX + 8, obstacleY + 8);
             }
             i++;
@@ -334,7 +334,7 @@ export default class Main {
         Main.drawGoal();
         Main.drawObstacles();
         console.log(Main.#generationString + Population.getGen());
-        if (!(Dot.getMinStep() === 32767)) {
+        if (!(Dot.getMinStep() == 32767)) {
             console.log(Main.#goalStepCountString + Dot.getMinStep());
         } else {
             console.log(Main.#goalStepCountString + Main.#NAString);

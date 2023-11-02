@@ -39,8 +39,8 @@ export default class Dot {
     }
 
     instantiate() {
-        this.#dead = false;
-        this.#reachedGoal = false;
+        this.#dead = 0;
+        this.#reachedGoal = 0;
         this.#prevX = Dot.#initialX - 1;
         this.#prevY = Dot.#initialY - 1;
 
@@ -81,7 +81,7 @@ export default class Dot {
         if (!(this.#brain.getStep() > Dot.#minStep)) {
             if (!this.#dead) {
                 if (!(Dot.#brainSize > this.#brain.getStep())) {
-                    this.#dead = true;
+                    this.#dead = -1;
                 } else {
                     this.#acc = this.#brain.getNextDirection();
                 }
@@ -100,8 +100,8 @@ export default class Dot {
                 }
 
                 if (!(this.#velX > 5)) {
-                    if (!(this.#velX === 4)) {
-                        if (!(this.#velX === 0)) {
+                    if (!(this.#velX == 4)) {
+                        if (!(this.#velX == 0)) {
                             if (!(this.#velY < 5)) {
                                 this.#velY = 4;
                             }
@@ -127,17 +127,17 @@ export default class Dot {
                 this.#posX += this.#velX;
                 this.#posY += this.#velY;
 
-                if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254 || Dot.#obstacles[Main.getGridIndex(this.#posX, this.#posY)] === true)) {
+                if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254 || Dot.#obstacles[Main.getGridIndex(this.#posX, this.#posY)] == -1)) {
                     if (!(Math.abs(this.#posX - Dot.#goalX) > 3 || Math.abs(this.#posY - Dot.#goalY) > 3)) {
-                        this.#reachedGoal = true;
-                        this.#dead = true;
+                        this.#reachedGoal = -1;
+                        this.#dead = -1;
                     }
                 } else {
-                    this.#dead = true;
+                    this.#dead = -1;
                 }
             }
         } else {
-            this.#dead = true;
+            this.#dead = -1;
         }
 
         if (!andShow) {
@@ -145,9 +145,9 @@ export default class Dot {
             this.#prevX = this.#posX - 1;
             this.#prevY = this.#posY - 1;
         } else if (!this.#dead) {
-            Util.setColor(false);
+            Util.setColor(0);
             Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
-            Util.setColor(true);
+            Util.setColor(-1);
             this.#prevX = this.#posX - 1;
             this.#prevY = this.#posY - 1;
             Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
@@ -156,7 +156,7 @@ export default class Dot {
 
     calculateFitness() {
         if (!this.#reachedGoal) {
-            // needed if goal is blocked off completely and the current grid index hasnt been flooded (is false)
+            // needed if goal is blocked off completely and the current grid index hasnt been flooded (is 0)
             return Math.max(1, Dot.#obstacles[Main.getGridIndex(this.#prevX + 1, this.#prevY + 1)]);
         }
         return Math.max(10000, 32767 - Dot.#stepWeight * this.#brain.getStep());

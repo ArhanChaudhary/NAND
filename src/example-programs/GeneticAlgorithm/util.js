@@ -7,7 +7,7 @@ export default class Util {
     static #keyPressed;
 
     static init() {
-        Util.setColor(true);
+        Util.setColor(-1);
         Util.#next = 42;
 
         let prev;
@@ -39,7 +39,7 @@ export default class Util {
                 F11: 151,
                 F12: 152,
             }[e.key];
-            if (keyValue === undefined) {
+            if (keyValue == undefined) {
                 if (e.key.length !== 1) return;
                 keyValue = e.key.charCodeAt(0);
             }
@@ -63,9 +63,9 @@ export default class Util {
     }
 
     static setColor(b) {
-        if (b) {
+        if (b == -1) {
             ctx.fillStyle = 'black';
-        } else {
+        } else if (b == 0) {
             ctx.fillStyle = 'white';
         }
     }
@@ -86,7 +86,7 @@ export default class Util {
 
     static abs(n) {
         if (n >= 32768) {
-            if (n === 32768) debugger;
+            if (n == 32768) debugger;
             return 65536 - n;
         }
         return n;

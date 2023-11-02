@@ -48,7 +48,7 @@ export default class Population {
         let dot;
         while (i < Population.#size) {
             dot = Population.#dots[i];
-            dot.update(!Population.#onlyBest || i === 0);
+            dot.update(!Population.#onlyBest || i == 0);
             i++;
         }
     }
@@ -59,10 +59,10 @@ export default class Population {
         while (i < Population.#size) {
             dot = Population.#dots[i];
             if (!dot.getDead())
-                return false;
+                return 0;
             i++;
         }
-        return true;
+        return -1;
     }
 
     static naturalSelection() {
@@ -106,7 +106,7 @@ export default class Population {
         while (i < Population.#size - 1) {
             randFitness = Util.abs(Util.random());
             randFitnessCoef = 32767;
-            if (!(fitnessSumCoef === 0)) {
+            if (!(fitnessSumCoef == 0)) {
                 scaleCache = Math.trunc(32767 / fitnessSumCoef);
                 while (randFitnessCoef > fitnessSumCoef) {
                     // fitnessSumCoef = 296, randFitnessCoef = 32698
@@ -116,7 +116,7 @@ export default class Population {
             } else {
                 randFitnessCoef = 0;
             }
-            if (randFitnessCoef === fitnessSumCoef) {
+            if (randFitnessCoef == fitnessSumCoef) {
                 scaleCache = Math.trunc(32767 / fitnessSum);
                 while (randFitness >= fitnessSum) {
                     // same with this it can also go out of bounds
@@ -132,7 +132,7 @@ export default class Population {
                     selectionSum = selectionSum - 32768;
                     selectionSumCoef++;
                 }
-                if (selectionSumCoef > randFitnessCoef || (selectionSumCoef === randFitnessCoef && selectionSum > randFitness)) {
+                if (selectionSumCoef > randFitnessCoef || (selectionSumCoef == randFitnessCoef && selectionSum > randFitness)) {
                     dot = Population.#dots[j];
                     j = Population.#size;
                 }
@@ -142,7 +142,7 @@ export default class Population {
             newDirections = Population.#newBrainDirections[i];
             j = 0;
             while (j < Population.#brainSize) {
-                if ((Util.random() & 32256) !== 0) {
+                if (!((Util.random() & 32256) == 0)) {
                     newDirections[j] = directions[j];
                 } else {
                     newDirections[j] = AccelerationVector.random();
@@ -156,7 +156,7 @@ export default class Population {
             directions = Population.#dots[i].getBrain().getDirections();
             Population.#dots[i].instantiate();
             Population.#dots[i].getBrain().instantiate();
-            if (i !== 0) {
+            if (!(i == 0)) {
                 newDirections = Population.#newBrainDirections[i - 1];
             } else {
                 newDirections = bestDot.getBrain().getDirections();

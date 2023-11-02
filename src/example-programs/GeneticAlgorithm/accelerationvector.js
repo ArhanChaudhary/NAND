@@ -32,29 +32,29 @@ export default class AccelerationVector {
         while (!(rand < 24577)) {
             rand = Util.random() & 30720;
         }
-        if (rand === 2048) {
+        if (rand == 2048) {
             rand = 1;
-        } else if (rand === 4096) {
+        } else if (rand == 4096) {
             rand = 2;
-        } else if (rand === 6144) {
+        } else if (rand == 6144) {
             rand = 3;
-        } else if (rand === 8192) {
+        } else if (rand == 8192) {
             rand = 4;
-        } else if (rand === 10240) {
+        } else if (rand == 10240) {
             rand = 5;
-        } else if (rand === 12288) {
+        } else if (rand == 12288) {
             rand = 6;
-        } else if (rand === 14336) {
+        } else if (rand == 14336) {
             rand = 7;
-        } else if (rand === 16384) {
+        } else if (rand == 16384) {
             rand = 8;
-        } else if (rand === 18432) {
+        } else if (rand == 18432) {
             rand = 9;
-        } else if (rand === 20480) {
+        } else if (rand == 20480) {
             rand = 10;
-        } else if (rand === 22528) {
+        } else if (rand == 22528) {
             rand = 11;
-        } else if (rand === 24576) {
+        } else if (rand == 24576) {
             rand = 12;
         }
         return AccelerationVector.#cache[rand];

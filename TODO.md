@@ -1,5 +1,7 @@
 # TODO
 
+* remove ===
+* replace true and false with -1 and 0
 * bfs distance
 * display best dot fitness
 * mathematically choose step count: 250 225 200 175 150
