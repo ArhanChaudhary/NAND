@@ -8,3 +8,4 @@ projects/12/** linguist-vendored
 projects/**/*.tst linguist-vendored
 projects/**/*.hdl linguist-language=VHDL
 projects/**/*.vm linguist-language=LLVM
+*.jack linguist-language=Java
