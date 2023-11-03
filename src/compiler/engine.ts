@@ -511,6 +511,10 @@ export default class Engine {
                         break;
                     case KeywordToken.ARGUMENTS:
                         this.vmwriter.writePush('pointer', -1);
+                        if (this.subroutineType === KeywordToken.METHOD) {
+                            this.vmwriter.writePush('constant', 1);
+                            this.vmwriter.writeArithmetic(SymbolToken.ADD);
+                        }
                         this.tokenizer.advance();
                         if (this.tokenizer.token() === SymbolToken.OPENING_BRACKET) {
                             this.compileArrayAccess();
