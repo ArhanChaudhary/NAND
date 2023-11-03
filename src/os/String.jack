@@ -24,6 +24,17 @@ class String {
         return this;
     }
 
+    constructor String newWithStr(int argumentsLength_) {
+        let maxLength = argumentsLength_;
+        let stringArray = Array.new(maxLength);
+        let currentLength = argumentsLength_;
+        while (~(argumentsLength_ < 1)) {
+            let argumentsLength_ = argumentsLength_ - 1;
+            let stringArray[argumentsLength_] = arguments[argumentsLength_ + 1];
+        }
+        return this;
+    }
+
     /** Disposes this string. */
     method void dispose() {
         do stringArray.dispose();
@@ -64,7 +75,7 @@ class String {
             let currentLength = currentLength - 1;
     }
 
-    /** Returns the integer value of this string, 
+    /** Returns the integer value of this string,
      *  until a non-digit character is detected. */
     method int intValue() {
         var int v, i, isNegative;
@@ -125,7 +136,6 @@ class String {
     function char backSpace() {
         return 129;
     }
-    
 
     /** Returns the double quote (") character. */
     function char doubleQuote() {

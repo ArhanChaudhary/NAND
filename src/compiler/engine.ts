@@ -484,11 +484,10 @@ export default class Engine {
                 break;
             case TokenType.STRING_CONST:
                 this.vmwriter.writePush('constant', this.tokenizer.token().length);
-                this.vmwriter.writeCall('String.new', 1);
                 for (const char of this.tokenizer.token()) {
                     this.vmwriter.writePush('constant', char.charCodeAt(0));
-                    this.vmwriter.writeCall('String.appendChar', 2);
                 }
+                this.vmwriter.writeCall('String.newWithStr', this.tokenizer.token().length + 1);
                 this.assertToken(TokenType.STRING_CONST);
                 break;
             case TokenType.KEYWORD:

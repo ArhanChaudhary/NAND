@@ -11,6 +11,44 @@ push constant 0
 pop this 2
 push pointer 0
 return
+function String.newWithStr 0
+push constant 3
+call Memory.alloc 1
+pop pointer 0
+push argument 0
+pop this 0
+push this 0
+call Array.new 1
+pop this 1
+push argument 0
+pop this 2
+label WHILE_ITER0
+push argument 0
+push constant 1
+lt
+if-goto WHILE_BREAKER1
+push argument 0
+push constant 1
+sub
+pop argument 0
+push this 1
+push argument 0
+add
+push pointer -1
+push argument 0
+push constant 1
+add
+add
+pop pointer 1
+push that 0
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+goto WHILE_ITER0
+label WHILE_BREAKER1
+push pointer 0
+return
 function String.dispose 0
 push argument 0
 pop pointer 0
@@ -33,11 +71,11 @@ pop pointer 0
 push argument 1
 push this 2
 lt
-if-goto FALSE_CASE0
+if-goto FALSE_CASE2
 push constant 15
 call Sys.error 1
 pop temp 0
-label FALSE_CASE0
+label FALSE_CASE2
 push this 1
 push argument 1
 add
@@ -50,11 +88,11 @@ pop pointer 0
 push argument 1
 push this 2
 lt
-if-goto FALSE_CASE1
+if-goto FALSE_CASE3
 push constant 16
 call Sys.error 1
 pop temp 0
-label FALSE_CASE1
+label FALSE_CASE3
 push this 1
 push argument 1
 add
@@ -72,11 +110,11 @@ push this 2
 push this 0
 eq
 not
-if-goto FALSE_CASE2
+if-goto FALSE_CASE4
 push constant 17
 call Sys.error 1
 pop temp 0
-label FALSE_CASE2
+label FALSE_CASE4
 push this 1
 push this 2
 add
@@ -97,12 +135,12 @@ pop pointer 0
 push this 2
 push constant 0
 eq
-if-goto FALSE_CASE3
+if-goto FALSE_CASE5
 push this 2
 push constant 1
 sub
 pop this 2
-label FALSE_CASE3
+label FALSE_CASE5
 push constant 0
 return
 function String.intValue 3
@@ -116,16 +154,16 @@ eq
 pop local 2
 push local 2
 not
-if-goto FALSE_CASE4
+if-goto FALSE_CASE6
 push constant 1
 pop local 1
-label FALSE_CASE4
-label WHILE_ITER5
+label FALSE_CASE6
+label WHILE_ITER7
 push local 1
 push this 2
 lt
 not
-if-goto WHILE_BREAKER6
+if-goto WHILE_BREAKER8
 push local 0
 push constant 10
 call Math.multiply 2
@@ -142,13 +180,13 @@ push local 1
 push constant 1
 add
 pop local 1
-goto WHILE_ITER5
-label WHILE_BREAKER6
+goto WHILE_ITER7
+label WHILE_BREAKER8
 push local 2
-if-goto FALSE_CASE7
+if-goto FALSE_CASE9
 push local 0
 return
-label FALSE_CASE7
+label FALSE_CASE9
 push local 0
 neg
 return
@@ -158,11 +196,11 @@ pop pointer 0
 push argument 1
 push constant 0
 lt
-if-goto FALSE_CASE8
+if-goto FALSE_CASE10
 push constant 0
 pop this 2
-goto TRUE_CASE9
-label FALSE_CASE8
+goto TRUE_CASE11
+label FALSE_CASE10
 push this 1
 push constant 45
 pop temp 0
@@ -174,45 +212,45 @@ pop this 2
 push argument 1
 neg
 pop argument 1
-label TRUE_CASE9
+label TRUE_CASE11
 push argument 1
 push constant 10000
 lt
-if-goto FALSE_CASE10
-push constant 5
-pop local 1
-goto TRUE_CASE11
-label FALSE_CASE10
-push argument 1
-push constant 1000
-lt
 if-goto FALSE_CASE12
-push constant 4
+push constant 5
 pop local 1
 goto TRUE_CASE13
 label FALSE_CASE12
 push argument 1
-push constant 100
+push constant 1000
 lt
 if-goto FALSE_CASE14
-push constant 3
+push constant 4
 pop local 1
 goto TRUE_CASE15
 label FALSE_CASE14
 push argument 1
-push constant 10
+push constant 100
 lt
 if-goto FALSE_CASE16
-push constant 2
+push constant 3
 pop local 1
 goto TRUE_CASE17
 label FALSE_CASE16
+push argument 1
+push constant 10
+lt
+if-goto FALSE_CASE18
+push constant 2
+pop local 1
+goto TRUE_CASE19
+label FALSE_CASE18
 push constant 1
 pop local 1
+label TRUE_CASE19
 label TRUE_CASE17
 label TRUE_CASE15
 label TRUE_CASE13
-label TRUE_CASE11
 push this 2
 push local 1
 add
@@ -221,20 +259,20 @@ push this 2
 push this 0
 gt
 not
-if-goto FALSE_CASE18
+if-goto FALSE_CASE20
 push constant 19
 call Sys.error 1
 pop temp 0
-label FALSE_CASE18
+label FALSE_CASE20
 push this 2
 pop local 1
 push constant 1
 pop local 0
-label WHILE_ITER19
+label WHILE_ITER21
 push local 0
 push constant 0
 eq
-if-goto WHILE_BREAKER20
+if-goto WHILE_BREAKER22
 push argument 1
 push constant 10
 call Math.divide 2
@@ -259,8 +297,8 @@ push temp 0
 pop that 0
 push local 0
 pop argument 1
-goto WHILE_ITER19
-label WHILE_BREAKER20
+goto WHILE_ITER21
+label WHILE_BREAKER22
 push constant 0
 return
 function String.newLine 0
@@ -271,4 +309,7 @@ push constant 129
 return
 function String.doubleQuote 0
 push constant 34
+return
+function String.init 0
+push constant 0
 return
