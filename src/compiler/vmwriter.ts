@@ -14,11 +14,11 @@ export default class VMWriter {
     public writePush(segment: string, index: number | string): void {
         this.write(`push ${segment} ${index}`);
     }
-    
+
     public writePop(segment: string, index: number): void {
         this.write(`pop ${segment} ${index}`);
     }
-    
+
     public writeArithmetic(command: SymbolToken, sub: boolean = true): void {
         switch (command) {
             case SymbolToken.ADD:
@@ -96,27 +96,27 @@ export default class VMWriter {
                 throw new Error("Invalid command arithmetic: " + command);
         };
     }
-    
+
     public writeLabel(label: string): void {
         this.write(`label ${label}`);
     }
-    
+
     public writeGoto(label: string): void {
         this.write(`goto ${label}`);
     }
-    
+
     public writeIf(label: string): void {
         this.write(`if-goto ${label}`);
     }
-    
+
     public writeCall(name: string, nArgs: number): void {
         this.write(`call ${name} ${nArgs}`);
     }
-    
+
     public writeFunction(name: string, nLocals: number): void {
         this.write(`function ${name} ${nLocals}`);
     }
-    
+
     public writeReturn(): void {
         this.write('return');
     }

@@ -50,6 +50,7 @@ export enum KeywordToken {
     FALSE='false',
     NULL='null',
     THIS='this',
+    ARGUMENTS='arguments',
 }
 
 export default class Tokenizer {
@@ -211,7 +212,7 @@ export default class Tokenizer {
     public lineNumber(): number {
         return this.inputStreamIndex;
     }
-    
+
     public lineIndex(): number {
         return this.prevLineIndex + 1;
     }

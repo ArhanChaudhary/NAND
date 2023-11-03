@@ -495,20 +495,43 @@ export default class Engine {
                     case KeywordToken.TRUE:
                         this.vmwriter.writePush('constant', 1);
                         this.vmwriter.writeArithmetic(SymbolToken.SUBTRACT, false);
+                        this.tokenizer.advance();
                         break;
                     case KeywordToken.FALSE:
                     case KeywordToken.NULL:
                         this.vmwriter.writePush('constant', 0);
+                        this.tokenizer.advance();
                         break;
                     case KeywordToken.THIS:
                         if (this.subroutineType === KeywordToken.FUNCTION)
                             this.referenceError('functions cannot reference \'this\'');
                         this.vmwriter.writePush('pointer', 0);
+                        this.tokenizer.advance();
+                        break;
+                    case KeywordToken.ARGUMENTS:
+                        this.vmwriter.writePush('pointer', -1);
+                        this.tokenizer.advance();
+                        if (this.tokenizer.token() === SymbolToken.OPENING_BRACKET) {
+                            this.tokenizer.advance();
+                            this.compileExpression();
+                            this.vmwriter.writeArithmetic(SymbolToken.ADD);
+                            this.assertToken(SymbolToken.CLOSING_BRACKET);
+                            while (this.tokenizer.token() === SymbolToken.OPENING_BRACKET) {
+                                this.vmwriter.writePop('pointer', 1);
+                                this.vmwriter.writePush('that', 0);
+
+                                this.tokenizer.advance();
+                                this.compileExpression();
+                                this.vmwriter.writeArithmetic(SymbolToken.ADD);
+                                this.assertToken(SymbolToken.CLOSING_BRACKET);
+                            }
+                            this.vmwriter.writePop('pointer', 1);
+                            this.vmwriter.writePush('that', 0);
+                        }
                         break;
                     default:
                         this.syntaxError([KeywordToken.TRUE, KeywordToken.FALSE, KeywordToken.NULL, KeywordToken.THIS]);
                 }
-                this.tokenizer.advance();
                 break;
             case TokenType.IDENTIFIER:
                 const prevToken = this.tokenizer.token();
