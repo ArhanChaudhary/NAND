@@ -56,6 +56,14 @@ export default class Util {
         });
     }
 
+    static divide(a, b) {
+        if (b == 0) {
+            alert(`Division by zero: ${a}, ${b}`);
+            throw new Error(`Division by zero: ${a}, ${b}`);
+        }
+        return Math.trunc(a / b);
+    }
+
     static drawRectangle(x1, y1, x2, y2) {
         ctx.beginPath();
         ctx.rect(x1, y1, x2 - x1 + 1, y2 - y1 + 1);

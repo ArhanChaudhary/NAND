@@ -107,21 +107,21 @@ export default class Population {
             randFitness = Util.abs(Util.random());
             randFitnessCoef = 32767;
             if (!(fitnessSumCoef == 0)) {
-                scaleCache = Math.trunc(32767 / fitnessSumCoef);
+                scaleCache = Util.divide(32767, fitnessSumCoef);
                 while (randFitnessCoef > fitnessSumCoef) {
                     // fitnessSumCoef = 296, randFitnessCoef = 32698
                     // this results in randFitnessCoef = 297 which is out of bounds
-                    randFitnessCoef = Math.trunc(Util.abs(Util.random()) / scaleCache);
+                    randFitnessCoef = Util.divide(Util.abs(Util.random()), scaleCache);
                 }
             } else {
                 randFitnessCoef = 0;
             }
             if (randFitnessCoef == fitnessSumCoef) {
                 if (!(fitnessSum == 0)) {
-                    scaleCache = Math.trunc(32767 / fitnessSum);
+                    scaleCache = Util.divide(32767, fitnessSum);
                     while (randFitness > fitnessSum) {
                         // same with this it can also go out of bounds
-                        randFitness = Math.trunc(Util.abs(Util.random()) / scaleCache);
+                        randFitness = Util.divide(Util.abs(Util.random()), scaleCache);
                     }
                 } else {
                     randFitness = 0;

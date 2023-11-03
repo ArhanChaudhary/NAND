@@ -275,11 +275,11 @@ export default class Main {
         if (initialFitness == -1) {
             Main.#obstacles[i] = 0;
         } else if (!(initialFitness == 0)) {
-            initialFitness = Math.trunc(32767 / initialFitness);
+            initialFitness = Util.divide(32767, initialFitness);
             i = 0;
             while (!(i > 511)) {
                 if (!(Main.#obstacles[i] == -1)) {
-                    Main.#obstacles[i] = Math.min(3276, Math.max(0, Math.trunc(32767 / Main.#obstacles[i]) - initialFitness));
+                    Main.#obstacles[i] = Math.min(3276, Math.max(0, Util.divide(32767, Main.#obstacles[i]) - initialFitness));
                 }
                 i++;
             }
