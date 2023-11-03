@@ -157,6 +157,9 @@ export default class Dot {
     calculateFitness() {
         if (!this.#reachedGoal) {
             // needed if goal is blocked off completely and the current grid index hasnt been flooded (is 0)
+            // for example if this was 0 then during the natural selection process no dot would be selected
+            // because everything is 0 and it would all just evolve off of one random dot which makes no sense
+            // it's also not easily possible to set it to 1 in flood itself because of ROM concerns
             return Math.max(1, Dot.#obstacles[Main.getGridIndex(this.#prevX + 1, this.#prevY + 1)]);
         }
         return Math.max(10000, 32767 - Dot.#stepWeight * this.#brain.getStep());
