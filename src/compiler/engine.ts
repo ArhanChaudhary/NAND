@@ -327,6 +327,20 @@ export default class Engine {
         }
     }
 
+    private compileExpressionList(): number {
+        let nArgs = 0;
+        if (this.tokenizer.token() !== SymbolToken.CLOSING_PARENTHESIS) {
+            this.compileExpression();
+            nArgs++;
+            while (this.tokenizer.token() === SymbolToken.COMMA) {
+                this.tokenizer.advance();
+                this.compileExpression();
+                nArgs++;
+            }
+        }
+        return nArgs;
+    }
+
     private compileDo(): void {
         this.assertToken(KeywordToken.DO);
         const prevToken = this.tokenizer.token();
@@ -348,20 +362,7 @@ export default class Engine {
         switch (this.tokenizer.token()) {
             case SymbolToken.OPENING_BRACKET:
                 this.vmwriter.writePush(kind, index);
-
-                this.tokenizer.advance();
-                this.compileExpression();
-                this.vmwriter.writeArithmetic(SymbolToken.ADD);
-                this.assertToken(SymbolToken.CLOSING_BRACKET);
-                while (this.tokenizer.token() === SymbolToken.OPENING_BRACKET) {
-                    this.vmwriter.writePop('pointer', 1);
-                    this.vmwriter.writePush('that', 0);
-
-                    this.tokenizer.advance();
-                    this.compileExpression();
-                    this.vmwriter.writeArithmetic(SymbolToken.ADD);
-                    this.assertToken(SymbolToken.CLOSING_BRACKET);
-                }
+                this.compileArrayAccess();
                 this.assertToken(SymbolToken.EQUAL);
                 this.compileExpression();
                 this.vmwriter.writePop('temp', 0);
@@ -512,19 +513,7 @@ export default class Engine {
                         this.vmwriter.writePush('pointer', -1);
                         this.tokenizer.advance();
                         if (this.tokenizer.token() === SymbolToken.OPENING_BRACKET) {
-                            this.tokenizer.advance();
-                            this.compileExpression();
-                            this.vmwriter.writeArithmetic(SymbolToken.ADD);
-                            this.assertToken(SymbolToken.CLOSING_BRACKET);
-                            while (this.tokenizer.token() === SymbolToken.OPENING_BRACKET) {
-                                this.vmwriter.writePop('pointer', 1);
-                                this.vmwriter.writePush('that', 0);
-
-                                this.tokenizer.advance();
-                                this.compileExpression();
-                                this.vmwriter.writeArithmetic(SymbolToken.ADD);
-                                this.assertToken(SymbolToken.CLOSING_BRACKET);
-                            }
+                            this.compileArrayAccess();
                             this.vmwriter.writePop('pointer', 1);
                             this.vmwriter.writePush('that', 0);
                         }
@@ -552,20 +541,7 @@ export default class Engine {
                     case SymbolToken.OPENING_BRACKET:
                         this.validateVar(prevToken, prevLine, prevLineNumber, prevLineIndex);
                         this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
-
-                        this.tokenizer.advance();
-                        this.compileExpression();
-                        this.vmwriter.writeArithmetic(SymbolToken.ADD);
-                        this.assertToken(SymbolToken.CLOSING_BRACKET);
-                        while (this.tokenizer.token() === SymbolToken.OPENING_BRACKET) {
-                            this.vmwriter.writePop('pointer', 1);
-                            this.vmwriter.writePush('that', 0);
-
-                            this.tokenizer.advance();
-                            this.compileExpression();
-                            this.vmwriter.writeArithmetic(SymbolToken.ADD);
-                            this.assertToken(SymbolToken.CLOSING_BRACKET);
-                        }
+                        this.compileArrayAccess();
                         this.vmwriter.writePop('pointer', 1);
                         this.vmwriter.writePush('that', 0);
                         break;
@@ -602,17 +578,19 @@ export default class Engine {
         }
     }
 
-    private compileExpressionList(): number {
-        let nArgs = 0;
-        if (this.tokenizer.token() !== SymbolToken.CLOSING_PARENTHESIS) {
+    private compileArrayAccess(): void {
+        this.tokenizer.advance();
+        this.compileExpression();
+        this.vmwriter.writeArithmetic(SymbolToken.ADD);
+        this.assertToken(SymbolToken.CLOSING_BRACKET);
+        while (this.tokenizer.token() === SymbolToken.OPENING_BRACKET) {
+            this.vmwriter.writePop('pointer', 1);
+            this.vmwriter.writePush('that', 0);
+
+            this.tokenizer.advance();
             this.compileExpression();
-            nArgs++;
-            while (this.tokenizer.token() === SymbolToken.COMMA) {
-                this.tokenizer.advance();
-                this.compileExpression();
-                nArgs++;
-            }
+            this.vmwriter.writeArithmetic(SymbolToken.ADD);
+            this.assertToken(SymbolToken.CLOSING_BRACKET);
         }
-        return nArgs;
     }
 }
