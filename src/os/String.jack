@@ -27,13 +27,16 @@ class String {
     constructor String newWithStr(int stringLength) {
         var int i;
         var int argi;
+        var int cache;
         let maxLength = stringLength;
         let stringArray = Array.new(stringLength);
         let currentLength = stringLength;
-        while ((i - 2) < stringLength) {
+        while (i < stringLength) {
             let argi = (i / 2) + 1;
             let stringArray[i] = arguments[argi] & 127;
-            let stringArray[i + 1] = arguments[argi] / 128;
+            let cache = arguments[argi] / 128;
+            if (~(cache = 0))
+                let stringArray[i + 1] = cache;
             let i = i + 2;
         }
         return this;
