@@ -1,0 +1,98 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * A library of functions for displaying graphics on the screen.
+ * The Hack physical screen consists of 256 rows (indexed 0..255, top to bottom)
+ * of 512 pixels each (indexed 0..511, left to right). The top left pixel on
+ * the screen is indexed (0,0).
+ */
+class Screen {
+    static int screenPtr;
+    static boolean black;
+    static Array masks;
+
+    /** Initializes the Screen. */
+    function void init() {
+        let screenPtr = 16384;
+        let black = true;
+        let masks = Math.getMasks();
+    }
+
+    /** Erases the entire screen. */
+    function void clearScreen() {
+        var int i;
+        while (~(i > 8191)) {
+            let screenPtr[i] = 0;
+            let i = i + 1;
+        }
+    }
+
+    /** Sets the current color, to be used for all subsequent drawXXX commands.
+     *  Black is represented by true, white by false. */
+    function void setColor(boolean b) {
+        let black = b;
+    }
+
+    function void updateLocation(int pixelMap, int mask) {
+        if (~black)
+            let screenPtr[pixelMap] = screenPtr[pixelMap] & ~mask;
+        else
+            let screenPtr[pixelMap] = screenPtr[pixelMap] | mask;
+    }
+
+    /** Draws a filled rectangle whose top left corner is (x1, y1)
+     * and bottom right corner is (x2,y2), using the current color. */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+        var int rectangleLeft;
+        var int rectangleRight;
+        var int rectangleWidth;
+        var int x1PixelCol;
+        var int x2PixelCol;
+        var int leftMask;
+        var int rightMask;
+        var int y1Times32;
+
+        if ((x1 > x2) | (y1 > y2) | (x1 < 0) | (x2 > 511) | (y1 < 0) | (y2 > 255))
+            do Sys.error(9);
+
+        while (~(x1 < 16)) {
+            let x1 = x1 - 16;
+            let x1PixelCol = x1PixelCol + 1;
+        }
+        let leftMask = ~(masks[x1] - 1);
+        while (~(x2 < 16)) {
+            let x2 = x2 - 16;
+            let x2PixelCol = x2PixelCol + 1;
+        }
+        let rightMask = masks[x2 + 1] - 1;
+        let y1Times32 = y1 + y1;
+        let y1Times32 = y1Times32 + y1Times32;
+        let y1Times32 = y1Times32 + y1Times32;
+        let y1Times32 = y1Times32 + y1Times32;
+        let y1Times32 = y1Times32 + y1Times32;
+        let rectangleLeft = y1Times32 + x1PixelCol;
+        let rectangleWidth = x2PixelCol - x1PixelCol;
+
+        while (~(y1 > y2)) {
+            let rectangleRight = rectangleLeft + rectangleWidth;
+            if (~(rectangleWidth = 0)) {
+                do Screen.updateLocation(rectangleLeft, leftMask);
+                let rectangleLeft = rectangleLeft + 1;
+
+                while (rectangleLeft < rectangleRight) {
+                    do Screen.updateLocation(rectangleLeft, -1);
+                    let rectangleLeft = rectangleLeft + 1;
+                }
+
+                do Screen.updateLocation(rectangleRight, rightMask);
+            } else {
+                do Screen.updateLocation(rectangleLeft, rightMask & leftMask);
+            }
+            let y1 = y1 + 1;
+            let rectangleLeft = rectangleRight + 32 - rectangleWidth;
+        }
+    }
+}
