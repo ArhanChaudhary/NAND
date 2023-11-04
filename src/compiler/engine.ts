@@ -22,17 +22,6 @@ const ops = [
     SymbolToken.EQUAL,
 ];
 
-const JackOS = [
-    'Array',
-    'Keyboard',
-    'Math',
-    'Memory',
-    'Output',
-    'Screen',
-    'String',
-    'Sys',
-]
-
 export default class Engine {
     private vmwriter: VMWriter;
     private tokenizer: Tokenizer;
@@ -40,7 +29,6 @@ export default class Engine {
 
     private fileName: string;
     private className = '';
-    private OShasInitSubroutine: boolean;
     private subroutineName = '';
     private subroutineNames: string[] = [];
     private subroutineCalls: { name: string }[] = [];
@@ -115,14 +103,8 @@ export default class Engine {
             this.compileClassVarDec();
         }
 
-        this.OShasInitSubroutine = !JackOS.includes(this.className);
         while ([KeywordToken.CONSTRUCTOR, KeywordToken.METHOD, KeywordToken.FUNCTION].includes(this.tokenizer.token() as KeywordToken)) {
             this.compileSubroutine();
-        }
-        if (!this.OShasInitSubroutine) {
-            this.vmwriter.writeFunction(`${this.className}.init`, 0);
-            this.vmwriter.writePush('constant', 0);
-            this.vmwriter.writeReturn();
         }
 
         this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
@@ -172,7 +154,6 @@ export default class Engine {
         if (this.subroutineNames.includes(this.subroutineName))
             this.referenceError(`subroutine '${this.subroutineName}' can only be declared once`);
         this.subroutineNames.push(this.subroutineName);
-        this.OShasInitSubroutine ||= this.subroutineName === 'init' && this.subroutineType === KeywordToken.FUNCTION;
         this.assertToken(SymbolToken.OPENING_PARENTHESIS);
         this.compileParameterList();
         this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
