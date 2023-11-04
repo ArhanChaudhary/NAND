@@ -15,7 +15,6 @@ class Sys {
         do Screen.init();
         do Screen.clearScreen();
         do Output.init();
-        do Keyboard.init();
         do Main.main();
         do Sys.halt();
     }

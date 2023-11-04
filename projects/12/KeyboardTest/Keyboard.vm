@@ -1,6 +1,3 @@
-function Keyboard.init 0
-push constant 0
-return
 function Keyboard.keyPressed 0
 push constant 24576
 call Memory.peek 1
