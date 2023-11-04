@@ -1,8 +1,5 @@
 # TODO
 
-* make compile array index a function
-* cannot set variable names to keywords in compiler
-* arguments keyword that compiles to push arg n
 * bfs distance
 * display best dot fitness
 * mathematically choose step count: 250 225 200 175 150
@@ -11,6 +8,7 @@
 * random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
 * 16 bit fitness instead of 15
 
+* cannot set variable names to keywords in compiler
 * compilererror stash, too many static error
 * graphing calculator in jack
 * actually code the ui

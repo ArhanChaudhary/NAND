@@ -11,40 +11,65 @@ push constant 0
 pop this 2
 push pointer 0
 return
-function String.newWithStr 0
+function String.newWithStr 2
 push constant 3
 call Memory.alloc 1
 pop pointer 0
 push argument 0
 pop this 0
-push this 0
+push argument 0
 call Array.new 1
 pop this 1
 push argument 0
 pop this 2
 label WHILE_ITER0
-push argument 0
-push constant 1
-lt
-if-goto WHILE_BREAKER1
-push argument 0
-push constant 1
+push local 0
+push constant 2
 sub
-pop argument 0
-push this 1
 push argument 0
+lt
+not
+if-goto WHILE_BREAKER1
+push local 0
+push constant 2
+call Math.divide 2
+push constant 1
+add
+pop local 1
+push this 1
+push local 0
 add
 push pointer -1
-push argument 0
-push constant 1
-add
+push local 1
 add
 pop pointer 1
 push that 0
+push constant 127
+and
 pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
+push this 1
+push local 0
+push constant 1
+add
+add
+push pointer -1
+push local 1
+add
+pop pointer 1
+push that 0
+push constant 128
+call Math.divide 2
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+push local 0
+push constant 2
+add
+pop local 0
 goto WHILE_ITER0
 label WHILE_BREAKER1
 push pointer 0

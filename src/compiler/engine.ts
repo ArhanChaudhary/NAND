@@ -484,10 +484,10 @@ export default class Engine {
                 break;
             case TokenType.STRING_CONST:
                 this.vmwriter.writePush('constant', this.tokenizer.token().length);
-                for (const char of this.tokenizer.token()) {
-                    this.vmwriter.writePush('constant', char.charCodeAt(0));
+                for (let i = 0; i < this.tokenizer.token().length; i += 2) {
+                    this.vmwriter.writePush('constant', this.tokenizer.token().charCodeAt(i) | (this.tokenizer.token().charCodeAt(i + 1) << 7));
                 }
-                this.vmwriter.writeCall('String.newWithStr', this.tokenizer.token().length + 1);
+                this.vmwriter.writeCall('String.newWithStr', Math.ceil(this.tokenizer.token().length / 2) + 1);
                 this.assertToken(TokenType.STRING_CONST);
                 break;
             case TokenType.KEYWORD:
