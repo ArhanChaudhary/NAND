@@ -67,8 +67,6 @@ class Main {
         do Output.moveCursor(11, 28);
         do Output.printString(loadingString);
 
-        let brainSize = 150;
-        let populationCount = 59;
         do Brain.config(brainSize);
         do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
         do Population.config(populationCount, brainSize, onlyBest);
@@ -243,6 +241,9 @@ class Main {
                 let i = i + 1;
             }
         }
+        let brainSize = 150;
+        let populationCount = 59;
+        do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
     }
 
     function void floodIndex(int i, boolean adj) {

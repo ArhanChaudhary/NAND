@@ -31,7 +31,7 @@ export default class Main {
         Main.#placeString = "Place obstacles with the arrow, enter, and delete keys.";
         Main.#escString = "Press esc to finish.";
         Main.#loadingString = "Loading...";
-        Main.#floodQueue = new Array(1024);
+        Main.#floodQueue = new Array(100);
         Main.#obstacles = new Array(512);
     }
 
@@ -69,8 +69,6 @@ export default class Main {
         await Main.selectObstacles();
         Util.clearScreen();
         console.log(Main.#loadingString);
-        Main.#brainSize = 145;
-        Main.#populationCount = 60;
 
         Brain.config(Main.#brainSize);
         Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, Main.#brainSize, Main.#obstacles);
@@ -268,7 +266,7 @@ export default class Main {
                 }
             }
         }
-        Main.#floodQueue = new Array(1024);
+        Main.#floodQueue = new Array(100);
         if (!(Main.#obstacles[Main.getGridIndex(Main.#initialX, Main.#initialY)] == 0)) {
             i = 0;
             while (!(i > 511)) {
@@ -278,6 +276,9 @@ export default class Main {
                 i++;
             }
         }
+        Main.#brainSize = 145;
+        Main.#populationCount = 60;
+        Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, Main.#brainSize, Main.#obstacles);
     }
 
     static floodIndex(i, adj) {

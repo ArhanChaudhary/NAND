@@ -5,7 +5,7 @@ class Population {
     static int gen;
     static int size;
     static int brainSize;
-    static int onlyBest;
+    static boolean onlyBest;
 
     function void init() {
         let dots = null;
