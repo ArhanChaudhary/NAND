@@ -41,8 +41,8 @@ export default class Dot {
     instantiate() {
         this.#dead = 0;
         this.#reachedGoal = 0;
-        this.#prevX = Dot.#initialX - 1;
-        this.#prevY = Dot.#initialY - 1;
+        this.#prevX = Dot.#initialX;
+        this.#prevY = Dot.#initialY;
 
         this.#posX = Dot.#initialX;
         this.#posY = Dot.#initialY;
@@ -135,15 +135,15 @@ export default class Dot {
                     // show function
                     if (!andShow) {
                         // needs to be here since calculateFitness uses prevX and prevY
-                        this.#prevX = this.#posX - 1;
-                        this.#prevY = this.#posY - 1;
+                        this.#prevX = this.#posX;
+                        this.#prevY = this.#posY;
                     } else {
                         Util.setColor(0);
-                        Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
+                        Util.drawRectangle(this.#prevX - 1, this.#prevY - 1, this.#prevX + 1, this.#prevY + 1);
                         Util.setColor(-1);
-                        this.#prevX = this.#posX - 1;
-                        this.#prevY = this.#posY - 1;
-                        Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
+                        this.#prevX = this.#posX;
+                        this.#prevY = this.#posY;
+                        Util.drawRectangle(this.#prevX - 1, this.#prevY - 1, this.#prevX + 1, this.#prevY + 1);
                     }
                 } else {
                     this.#dead = -1;
@@ -160,7 +160,7 @@ export default class Dot {
             // for example if this was 0 then during the natural selection process no dot would be selected
             // because everything is 0 and it would all just evolve off of one random dot which makes no sense
             // it's also not easily possible to set it to 1 in flood itself because of ROM concerns
-            return Math.max(1, Dot.#obstacles[Main.getGridIndex(this.#prevX + 1, this.#prevY + 1)]);
+            return Math.max(1, Dot.#obstacles[Main.getGridIndex(this.#prevX, this.#prevY)]);
         }
         return Math.max(10000, 32767 - Dot.#stepWeight * this.#brain.getStep());
     }

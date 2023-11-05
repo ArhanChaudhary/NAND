@@ -33,8 +33,8 @@ class Dot {
     method void instantiate() {
         let dead = false;
         let reachedGoal = false;
-        let prevX = initialX - 1;
-        let prevY = initialY - 1;
+        let prevX = initialX;
+        let prevY = initialY;
 
         let posX = initialX;
         let posY = initialY;
@@ -125,15 +125,15 @@ class Dot {
                     } else
                     // show function
                     if (~andShow) {
-                        let prevX = posX - 1;
-                        let prevY = posY - 1;
+                        let prevX = posX;
+                        let prevY = posY;
                     } else {
                         do Screen.setColor(false);
-                        do Screen.drawRectangle(prevX, prevY, prevX + 2, prevY + 2);
+                        do Screen.drawRectangle(prevX - 1, prevY - 1, prevX + 1, prevY + 1);
                         do Screen.setColor(true);
-                        let prevX = posX - 1;
-                        let prevY = posY - 1;
-                        do Screen.drawRectangle(prevX, prevY, prevX + 2, prevY + 2);
+                        let prevX = posX;
+                        let prevY = posY;
+                        do Screen.drawRectangle(prevX - 1, prevY - 1, prevX + 1, prevY + 1);
                     }
                 } else {
                     let dead = true;
@@ -150,7 +150,7 @@ class Dot {
             // for example if this was 0 then during the natural selection process no dot would be selected
             // because everything is 0 and it would all just evolve off of one random dot which makes no sense
             // it's also not easily possible to set it to 1 in flood itself because of ROM concerns
-            return Math.max(1, obstacles[Main.getGridIndex(prevX + 1, prevY + 1)]);
+            return Math.max(1, obstacles[Main.getGridIndex(prevX, prevY)]);
         }
         return Math.max(10000, 32767 - (stepWeight * brain.getStep()));
     }
