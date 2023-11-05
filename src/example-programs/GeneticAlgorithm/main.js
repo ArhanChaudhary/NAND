@@ -32,7 +32,7 @@ export default class Main {
         Main.#placeString = "Place obstacles with the arrow, enter, and delete keys.";
         Main.#escString = "Press esc to finish.";
         Main.#loadingString = "Loading...";
-        Main.#floodQueue = new Array(512);
+        Main.#floodQueue = new Array(1024);
         Main.#obstacles = new Array(512);
     }
 
@@ -263,7 +263,7 @@ export default class Main {
                 }
             }
         }
-        Main.#floodQueue = new Array(512);
+        Main.#floodQueue = new Array(1024);
         if (!(Main.#obstacles[Main.getGridIndex(Main.#initialX, Main.#initialY)] == 0)) {
             i = 0;
             while (!(i > 511)) {
@@ -276,11 +276,12 @@ export default class Main {
     }
 
     static floodIndex(i, adj) {
-        if (Main.#obstacles[i] == 0) {
-            Main.#obstacles[i] = Main.#floodDist + 7 + adj + adj;
+        let floodVal = Main.#floodDist + 7 + adj + adj;
+        if (Main.#obstacles[i] == 0 || Main.#obstacles[i] > floodVal) {
+            Main.#obstacles[i] = floodVal;
             Main.#floodQueueIndex++;
             Main.#floodQueueLength++;
-            Main.#floodQueue[Main.#floodQueueIndex - 512 + Main.#floodQueue.length] = i;
+            Main.#floodQueue[Main.#floodQueueIndex - 1024 + Main.#floodQueue.length] = i;
         }
     }
 
@@ -307,7 +308,9 @@ export default class Main {
             obstacleX = obstacleX + obstacleX;
             if (Main.#obstacles[i] == -1) {
                 Util.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
-            }
+            }/* else if (!(Main.#obstacles[i] == 0)) {
+                Util.drawText(Main.#obstacles[i], obstacleX + 8, obstacleY + 8);
+            }*/
             i++;
         }
     }

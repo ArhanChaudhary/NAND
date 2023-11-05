@@ -27,7 +27,7 @@ class Main {
         let placeString = "Place obstacles with the arrow, enter, and delete keys.";
         let escString = "Press esc to finish.";
         let loadingString = "Loading...";
-        let floodQueue = Array.new(512);
+        let floodQueue = Array.new(1024);
         let floodQueueStart = floodQueue;
         let obstacles = Array.new(512);
         while (~(i > 511)) {
@@ -244,8 +244,10 @@ class Main {
     }
 
     function void floodIndex(int i, boolean adj) {
-        if (obstacles[i] = false) {
-            let obstacles[i] = floodDist + 7 + adj + adj;
+        var int floodVal;
+        let floodVal = floodDist + 7 + adj + adj;
+        if ((obstacles[i] = false) | (obstacles[i] > floodVal)) {
+            let obstacles[i] = floodVal;
             let floodQueue[floodQueueLength] = i;
             let floodQueueLength = floodQueueLength + 1;
         }

@@ -1,6 +1,7 @@
 # TODO
 
-* bfs distance
+* how quickly do you want to reach the goal?
+* quick: more steps so it will do whatever, optimal: less steps so it will be forced to optimize for best
 * display best dot fitness
 * mathematically choose step count: 250 225 200 175 150
 * dynamically choose mutation rate
