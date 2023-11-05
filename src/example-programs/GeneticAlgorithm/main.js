@@ -26,7 +26,6 @@ export default class Main {
     static #escString;
 
     static init() {
-        let i = 0;
         Main.#generationString = "Generation: ";
         Main.#goalStepCountString = "Goal step count: ";
         Main.#NAString = "NA";
@@ -103,6 +102,10 @@ export default class Main {
         let drag = 0;
         let draggingEnter = 0;
         let i = 0;
+        let allowUp;
+        let allowDown;
+        let allowRight;
+        let allowLeft;
         while (!(i > 511)) {
             if (!(Main.#obstacles[i] == -1)) {
                 Main.#obstacles[i] = 0;
@@ -209,22 +212,13 @@ export default class Main {
                 await new Promise(resolve => setTimeout(resolve, 50));
             }
         }
-        Main.flood();
-    }
 
-    static flood() {
-        let i = 0;
-        let allowUp;
-        let allowDown;
-        let allowRight;
-        let allowLeft;
-        let initialFitness;
         i = Main.getGridIndex(Main.#goalX, Main.#goalY);
         Main.#floodQueue[0] = i;
         Main.#floodQueueLength = 1;
         Main.#floodQueueIndex = 0;
-        Main.#obstacles[i] = 0;
-        while (Main.#floodQueueLength > 0) {
+        Main.#obstacles[i] = 1;
+        while (!(Main.#floodQueueLength < 1)) {
             i = Main.#floodQueue.shift();
             Main.#floodQueueLength--;
             Main.#floodDist = Main.#obstacles[i];
@@ -270,16 +264,11 @@ export default class Main {
             }
         }
         Main.#floodQueue = new Array(512);
-        i = Main.getGridIndex(Main.#initialX, Main.#initialY);
-        initialFitness = Main.#obstacles[i];
-        if (initialFitness == -1) {
-            Main.#obstacles[i] = 0;
-        } else if (!(initialFitness == 0)) {
-            initialFitness = Util.divide(32767, initialFitness);
+        if (!(Main.#obstacles[Main.getGridIndex(Main.#initialX, Main.#initialY)] == 0)) {
             i = 0;
             while (!(i > 511)) {
                 if (!(Main.#obstacles[i] == -1)) {
-                    Main.#obstacles[i] = Math.min(3276, Math.max(0, Util.divide(32767, Main.#obstacles[i]) - initialFitness));
+                    Main.#obstacles[i] = Math.min(3276, Util.divide(32767, Main.#obstacles[i]));
                 }
                 i++;
             }
@@ -288,12 +277,7 @@ export default class Main {
 
     static floodIndex(i, adj) {
         if (Main.#obstacles[i] == 0) {
-            // 7 - adj - adj
-            if (adj) {
-                Main.#obstacles[i] = Main.#floodDist + 5;
-            } else {
-                Main.#obstacles[i] = Main.#floodDist + 7;
-            }
+            Main.#obstacles[i] = Main.#floodDist + 7 + adj + adj;
             Main.#floodQueueIndex++;
             Main.#floodQueueLength++;
             Main.#floodQueue[Main.#floodQueueIndex - 512 + Main.#floodQueue.length] = i;
@@ -323,8 +307,6 @@ export default class Main {
             obstacleX = obstacleX + obstacleX;
             if (Main.#obstacles[i] == -1) {
                 Util.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
-            } else if (!(Main.#obstacles[i] == 0)) {
-                Util.drawText(Main.#obstacles[i], obstacleX + 8, obstacleY + 8);
             }
             i++;
         }

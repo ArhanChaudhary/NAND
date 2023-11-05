@@ -97,6 +97,10 @@ class Main {
         var boolean drag;
         var boolean draggingEnter;
         var int i;
+        var boolean allowUp;
+        var boolean allowDown;
+        var boolean allowRight;
+        var boolean allowLeft;
 
         while (~(i > 511)) {
             if (~(obstacles[i] = true))
@@ -177,16 +181,7 @@ class Main {
                 do Sys.wait(150);
             }
         }
-        do Main.flood();
-    }
 
-    function void flood() {
-        var int i;
-        var boolean allowUp;
-        var boolean allowDown;
-        var boolean allowRight;
-        var boolean allowLeft;
-        var int initialFitness;
         let i = Main.getGridIndex(goalX, goalY);
         let floodQueue[0] = i;
         let floodQueueLength = 1;
@@ -238,16 +233,11 @@ class Main {
             }
         }
         let floodQueue = floodQueueStart;
-        let i = Main.getGridIndex(initialX, initialY);
-        let initialFitness = obstacles[i];
-        if (initialFitness = true) {
-            let obstacles[i] = false;
-        } else if (~(initialFitness = false)) {
-            let initialFitness = 32767 / initialFitness;
+        if (~(obstacles[Main.getGridIndex(initialX, initialY)] = false)) {
             let i = 0;
             while (~(i > 511)) {
                 if (~(obstacles[i] = true))
-                    let obstacles[i] = Math.min(3276, Math.max(0, (32767 / obstacles[i]) - initialFitness));
+                    let obstacles[i] = Math.min(3276, 32767 / obstacles[i]);
                 let i = i + 1;
             }
         }
@@ -270,17 +260,17 @@ class Main {
         var int obstacleY;
         var int obstacleX;
         while (~(i > 511)) {
-                let obstacleY = 0;
-                let obstacleX = i;
-                while (~(obstacleX < 32)) {
-                    let obstacleX = obstacleX - 32;
-                    let obstacleY = obstacleY + 16;
-                }
-                let obstacleX = i - (obstacleY + obstacleY);
-                let obstacleX = obstacleX + obstacleX;
-                let obstacleX = obstacleX + obstacleX;
-                let obstacleX = obstacleX + obstacleX;
-                let obstacleX = obstacleX + obstacleX;
+            let obstacleY = 0;
+            let obstacleX = i;
+            while (~(obstacleX < 32)) {
+                let obstacleX = obstacleX - 32;
+                let obstacleY = obstacleY + 16;
+            }
+            let obstacleX = i - (obstacleY + obstacleY);
+            let obstacleX = obstacleX + obstacleX;
+            let obstacleX = obstacleX + obstacleX;
+            let obstacleX = obstacleX + obstacleX;
+            let obstacleX = obstacleX + obstacleX;
             if (obstacles[i] = true)
                 do Screen.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
             let i = i + 1;
