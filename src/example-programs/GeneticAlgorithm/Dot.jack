@@ -122,6 +122,18 @@ class Dot {
                     if (~((Math.abs(posX - goalX) > 3) | (Math.abs(posY - goalY) > 3))) {
                         let reachedGoal = true;
                         let dead = true;
+                    } else
+                    // show function
+                    if (~andShow) {
+                        let prevX = posX - 1;
+                        let prevY = posY - 1;
+                    } else {
+                        do Screen.setColor(false);
+                        do Screen.drawRectangle(prevX, prevY, prevX + 2, prevY + 2);
+                        do Screen.setColor(true);
+                        let prevX = posX - 1;
+                        let prevY = posY - 1;
+                        do Screen.drawRectangle(prevX, prevY, prevX + 2, prevY + 2);
                     }
                 } else {
                     let dead = true;
@@ -129,18 +141,6 @@ class Dot {
             }
         } else {
             let dead = true;
-        }
-
-        if (~andShow) {
-            let prevX = posX - 1;
-            let prevY = posY - 1;
-        } else if (~dead) {
-            do Screen.setColor(false);
-            do Screen.drawRectangle(prevX, prevY, prevX + 2, prevY + 2);
-            do Screen.setColor(true);
-            let prevX = posX - 1;
-            let prevY = posY - 1;
-            do Screen.drawRectangle(prevX, prevY, prevX + 2, prevY + 2);
         }
     }
 

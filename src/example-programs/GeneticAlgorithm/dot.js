@@ -131,6 +131,19 @@ export default class Dot {
                     if (!(Math.abs(this.#posX - Dot.#goalX) > 3 || Math.abs(this.#posY - Dot.#goalY) > 3)) {
                         this.#reachedGoal = -1;
                         this.#dead = -1;
+                    } else
+                    // show function
+                    if (!andShow) {
+                        // needs to be here since calculateFitness uses prevX and prevY
+                        this.#prevX = this.#posX - 1;
+                        this.#prevY = this.#posY - 1;
+                    } else {
+                        Util.setColor(0);
+                        Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
+                        Util.setColor(-1);
+                        this.#prevX = this.#posX - 1;
+                        this.#prevY = this.#posY - 1;
+                        Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
                     }
                 } else {
                     this.#dead = -1;
@@ -138,19 +151,6 @@ export default class Dot {
             }
         } else {
             this.#dead = -1;
-        }
-
-        if (!andShow) {
-            // needs to be here since calculateFitness uses prevX and prevY
-            this.#prevX = this.#posX - 1;
-            this.#prevY = this.#posY - 1;
-        } else if (!this.#dead) {
-            Util.setColor(0);
-            Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
-            Util.setColor(-1);
-            this.#prevX = this.#posX - 1;
-            this.#prevY = this.#posY - 1;
-            Util.drawRectangle(this.#prevX, this.#prevY, this.#prevX + 2, this.#prevY + 2);
         }
     }
 
