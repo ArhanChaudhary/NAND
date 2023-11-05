@@ -7,6 +7,10 @@ class Main {
     static int goalY;
     static boolean onlyBest;
     static Array obstacles;
+    static Array floodQueue;
+    static Array floodQueueStart;
+    static int floodQueueLength;
+    static int floodDist;
 
     static String generationString;
     static String goalStepCountString;
@@ -23,6 +27,8 @@ class Main {
         let placeString = "Place obstacles with the arrow, enter, and delete keys.";
         let escString = "Press esc to finish.";
         let loadingString = "Loading...";
+        let floodQueue = Array.new(512);
+        let floodQueueStart = floodQueue;
         let obstacles = Array.new(512);
         while (~(i > 511)) {
             let obstacles[i] = false;
@@ -53,24 +59,18 @@ class Main {
             do Util.random();
         do Screen.drawRectangle(70, 57, 442, 154);
 
-        // menu:
-        // initialXY
-        // goalXY
-        // selectObstacles
-        // onlyBest
-        // continue
         let initialX = 10;
         let initialY = 128;
         let goalX = 500;
         let goalY = 128;
         let onlyBest = true;
         do Main.selectObstacles();
-        do Screen.clearScreen(); // ensure obstacles dont mess with memory allocation
+        do Screen.clearScreen();
         do Output.moveCursor(11, 28);
         do Output.printString(loadingString);
 
-        let brainSize = 145;
-        let populationCount = 60;
+        let brainSize = 150;
+        let populationCount = 56;
         do Brain.config(brainSize);
         do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
         do Population.config(populationCount, brainSize, onlyBest);
@@ -96,6 +96,13 @@ class Main {
         var int key;
         var boolean drag;
         var boolean draggingEnter;
+        var int i;
+
+        while (~(i > 511)) {
+            if (~(obstacles[i] = true))
+                let obstacles[i] = false;
+            let i = i + 1;
+        }
 
         do Output.moveCursor(3, 5);
         do Output.printString(placeString);
@@ -110,7 +117,7 @@ class Main {
                 let key = Keyboard.keyPressed();
             }
 
-            do Screen.setColor(obstacles[selectorIndex]);
+            do Screen.setColor(obstacles[selectorIndex] = true);
             do Screen.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
             do Screen.setColor(true);
 
@@ -170,6 +177,88 @@ class Main {
                 do Sys.wait(150);
             }
         }
+        do Main.flood();
+    }
+
+    function void flood() {
+        var int i;
+        var boolean allowUp;
+        var boolean allowDown;
+        var boolean allowRight;
+        var boolean allowLeft;
+        var int initialFitness;
+        let i = Main.getGridIndex(goalX, goalY);
+        let floodQueue[0] = i;
+        let floodQueueLength = 1;
+        let obstacles[i] = 1;
+        while (~(floodQueueLength < 1)) {
+            let i = floodQueue[0];
+            let floodQueue = floodQueue + 1;
+            let floodQueueLength = floodQueueLength - 1;
+            let floodDist = obstacles[i];
+            let allowUp = i > 31;
+            let allowDown = i < 480;
+            let allowRight = ~((i & 31) = 31);
+            let allowLeft = ~((i & 31) = 0);
+
+            if (allowUp) {
+                do Main.floodIndex(i - 32, true);
+            }
+
+            if (allowRight) {
+                do Main.floodIndex(i + 1, true);
+            }
+
+            if (allowDown) {
+                do Main.floodIndex(i + 32, true);
+            }
+
+            if (allowLeft) {
+                do Main.floodIndex(i - 1, true);
+            }
+
+            if (allowUp) {
+                if (allowRight) {
+                    do Main.floodIndex(i - 31, false);
+                }
+
+                if (allowLeft) {
+                    do Main.floodIndex(i - 33, false);
+                }
+            }
+
+            if (allowDown) {
+                if (allowRight) {
+                    do Main.floodIndex(i + 33, false);
+                }
+
+                if (allowLeft) {
+                    do Main.floodIndex(i + 31, false);
+                }
+            }
+        }
+        let floodQueue = floodQueueStart;
+        let i = Main.getGridIndex(initialX, initialY);
+        let initialFitness = obstacles[i];
+        if (initialFitness = true) {
+            let obstacles[i] = false;
+        } else if (~(initialFitness = false)) {
+            let initialFitness = 32767 / initialFitness;
+            let i = 0;
+            while (~(i > 511)) {
+                if (~(obstacles[i] = true))
+                    let obstacles[i] = Math.min(3276, Math.max(0, (32767 / obstacles[i]) - initialFitness));
+                let i = i + 1;
+            }
+        }
+    }
+
+    function void floodIndex(int i, boolean adj) {
+        if (obstacles[i] = false) {
+            let obstacles[i] = floodDist + 7 + adj + adj;
+            let floodQueue[floodQueueLength] = i;
+            let floodQueueLength = floodQueueLength + 1;
+        }
     }
 
     function void drawGoal() {
@@ -181,7 +270,6 @@ class Main {
         var int obstacleY;
         var int obstacleX;
         while (~(i > 511)) {
-            if (obstacles[i]) {
                 let obstacleY = 0;
                 let obstacleX = i;
                 while (~(obstacleX < 32)) {
@@ -193,8 +281,8 @@ class Main {
                 let obstacleX = obstacleX + obstacleX;
                 let obstacleX = obstacleX + obstacleX;
                 let obstacleX = obstacleX + obstacleX;
+            if (obstacles[i] = true)
                 do Screen.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
-            }
             let i = i + 1;
         }
     }
@@ -212,5 +300,21 @@ class Main {
         } else {
             do Output.printString(NAString);
         }
+    }
+
+    function int getGridIndex(int posX, int posY) {
+        var int ret;
+        while (~(posY < 16)) {
+            let posY = posY - 16;
+            let ret = ret + 32;
+        }
+        // ret should be (posY / 16) * 32
+
+        while (~(posX < 16)) {
+            let posX = posX - 16;
+            let ret = ret + 1;
+        }
+        // ret should be (posY / 16) * 32 + (posX / 16)
+        return ret;
     }
 }

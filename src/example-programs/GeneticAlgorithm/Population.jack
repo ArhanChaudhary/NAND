@@ -77,24 +77,10 @@ class Population {
     function void update() {
         var int i;
         var Dot dot;
-        var Brain brain;
-        if (~onlyBest) {
-            while (i < size) {
-                let dot = dots[i];
-                let brain = dot.getBrain();
-                do dot.update();
-                do dot.show();
-                let i = i + 1;
-            }
-        } else {
-            while (i < size) {
-                let dot = dots[i];
-                let brain = dot.getBrain();
-                do dot.update();
-                let i = i + 1;
-            }
-            let dot = dots[0];
-            do dot.show();
+        while (i < size) {
+            let dot = dots[i];
+            do dot.update((~onlyBest) | (i = 0));
+            let i = i + 1;
         }
     }
 
@@ -165,10 +151,14 @@ class Population {
                 let randFitnessCoef = 0;
             }
             if (randFitnessCoef = fitnessSumCoef) {
-                let scaleCache = 32767 / fitnessSum;
-                while (~(randFitness < fitnessSum)) {
-                    // same with this it can also go out of bounds
-                    let randFitness = Math.abs(Util.random()) / scaleCache;
+                if (~(fitnessSum = 0)) {
+                    let scaleCache = 32767 / fitnessSum;
+                    while (randFitness > fitnessSum) {
+                        // same with this it can also go out of bounds
+                        let randFitness = Math.abs(Util.random()) / scaleCache;
+                    }
+                } else {
+                    let randFitness = 0;
                 }
             }
             let selectionSum = 0;
