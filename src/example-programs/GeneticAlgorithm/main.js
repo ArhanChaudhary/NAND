@@ -15,7 +15,6 @@ export default class Main {
     static #obstacles;
     static #floodQueue;
     static #floodQueueLength;
-    static #floodQueueIndex;
     static #floodDist;
 
     static #generationString;
@@ -102,6 +101,7 @@ export default class Main {
         let drag = 0;
         let draggingEnter = 0;
         let i = 0;
+        let i2 = 0;
         let allowUp;
         let allowDown;
         let allowRight;
@@ -216,10 +216,15 @@ export default class Main {
         i = Main.getGridIndex(Main.#goalX, Main.#goalY);
         Main.#floodQueue[0] = i;
         Main.#floodQueueLength = 1;
-        Main.#floodQueueIndex = 0;
         Main.#obstacles[i] = 1;
         while (!(Main.#floodQueueLength < 1)) {
-            i = Main.#floodQueue.shift();
+            i = Main.#floodQueue[0];
+            i2 = 1;
+            while (!(i2 == Main.#floodQueueLength)) {
+                Main.#floodQueue[i2 - 1] = Main.#floodQueue[i2];
+                i2++;
+            }
+
             Main.#floodQueueLength--;
             Main.#floodDist = Main.#obstacles[i];
             allowUp = i > 31;
@@ -279,9 +284,8 @@ export default class Main {
         let floodVal = Main.#floodDist + 7 + adj + adj;
         if (Main.#obstacles[i] == 0 || Main.#obstacles[i] > floodVal) {
             Main.#obstacles[i] = floodVal;
-            Main.#floodQueueIndex++;
+            Main.#floodQueue[Main.#floodQueueLength] = i;
             Main.#floodQueueLength++;
-            Main.#floodQueue[Main.#floodQueueIndex - 1024 + Main.#floodQueue.length] = i;
         }
     }
 

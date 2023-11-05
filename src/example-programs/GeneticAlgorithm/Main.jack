@@ -8,7 +8,6 @@ class Main {
     static boolean onlyBest;
     static Array obstacles;
     static Array floodQueue;
-    static Array floodQueueStart;
     static int floodQueueLength;
     static int floodDist;
 
@@ -27,8 +26,7 @@ class Main {
         let placeString = "Place obstacles with the arrow, enter, and delete keys.";
         let escString = "Press esc to finish.";
         let loadingString = "Loading...";
-        let floodQueue = Array.new(1024);
-        let floodQueueStart = floodQueue;
+        let floodQueue = Array.new(100);
         let obstacles = Array.new(512);
         while (~(i > 511)) {
             let obstacles[i] = false;
@@ -70,7 +68,7 @@ class Main {
         do Output.printString(loadingString);
 
         let brainSize = 150;
-        let populationCount = 56;
+        let populationCount = 59;
         do Brain.config(brainSize);
         do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
         do Population.config(populationCount, brainSize, onlyBest);
@@ -96,7 +94,7 @@ class Main {
         var int key;
         var boolean drag;
         var boolean draggingEnter;
-        var int i;
+        var int i, i2;
         var boolean allowUp;
         var boolean allowDown;
         var boolean allowRight;
@@ -188,7 +186,12 @@ class Main {
         let obstacles[i] = 1;
         while (~(floodQueueLength < 1)) {
             let i = floodQueue[0];
-            let floodQueue = floodQueue + 1;
+            let i2 = 1;
+            while (~(i2 = floodQueueLength)) {
+                let floodQueue[i2 - 1] = floodQueue[i2];
+                let i2 = i2 + 1;
+            }
+
             let floodQueueLength = floodQueueLength - 1;
             let floodDist = obstacles[i];
             let allowUp = i > 31;
@@ -232,7 +235,6 @@ class Main {
                 }
             }
         }
-        let floodQueue = floodQueueStart;
         if (~(obstacles[Main.getGridIndex(initialX, initialY)] = false)) {
             let i = 0;
             while (~(i > 511)) {
