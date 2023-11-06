@@ -88,7 +88,7 @@
         // ie segment[0] is the screen length and segment[1] is 24576
         // this assumption is necessary because theres no linked list information present on the screen memory
         if (~(segment[0] = 0)) {
-            let segment[0] = 24576 - (segment + 2);
+            let segment[0] = 24574 - segment;
             let segment[1] = 24576;
         }
     }

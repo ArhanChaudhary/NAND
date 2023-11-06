@@ -6,9 +6,11 @@ class Population {
     static int size;
     static int brainSize;
     static boolean onlyBest;
+    static String allocatingString;
 
     function void init() {
         let dots = null;
+        let allocatingString = "Allocating dot memory...";
     }
 
     function void config(int _size, int _brainSize, boolean _onlyBest) {
@@ -16,6 +18,8 @@ class Population {
         var Dot dot;
         var Array tmp;
 
+        do Output.moveCursor(11, 22);
+        do Output.printString(allocatingString);
         if (~(dots = null)) {
             while (i < size) {
                 let dot = dots[i];
@@ -61,7 +65,7 @@ class Population {
             do Sys.error(3);
         }
         do Screen.setColor(false);
-        do Screen.drawRectangle(224, 122, 304, 133);
+        do Screen.drawRectangle(176, 122, 368, 133);
         do Screen.setColor(true);
         while (i < (size - 1)) {
             let newBrainDirections[i] = Array.new(brainSize);

@@ -1,6 +1,5 @@
 # TODO
 
-* display different loading messages
 * display best dot fitness
 * mathematically choose step count: 250 225 200 175 150
 * dynamically choose mutation rate
