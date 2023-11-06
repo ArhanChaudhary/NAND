@@ -70,26 +70,26 @@
         }
     }
 
-    function void deFrag() {
-        var Array segment;
-        var Array nextSegment;
-        let nextSegment = 2048;
-        // screen memory
-        while (~(nextSegment > 16382)) {
-            if (~((nextSegment[0] = 0) | (segment[0] = 0))) {
-                let segment[0] = (nextSegment - segment) + nextSegment[0];
-                let segment[1] = nextSegment[1];
-            } else {
-                let segment = nextSegment;
-            }
-            let nextSegment = segment[1];
-        }
-        // assumes the next memory list (aka the screen) is completely free and goes until the very end
-        // ie segment[0] is the screen length and segment[1] is 24576
-        // this assumption is necessary because theres no linked list information present on the screen memory
-        if (~(segment[0] = 0)) {
-            let segment[0] = 24574 - segment;
-            let segment[1] = 24576;
-        }
-    }
+    // function void deFrag() {
+    //     var Array segment;
+    //     var Array nextSegment;
+    //     let nextSegment = 2048;
+    //     // screen memory
+    //     while (~(nextSegment > 16382)) {
+    //         if (~((nextSegment[0] = 0) | (segment[0] = 0))) {
+    //             let segment[0] = (nextSegment - segment) + nextSegment[0];
+    //             let segment[1] = nextSegment[1];
+    //         } else {
+    //             let segment = nextSegment;
+    //         }
+    //         let nextSegment = segment[1];
+    //     }
+    //     // assumes the next memory list (aka the screen) is completely free and goes until the very end
+    //     // ie segment[0] is the screen length and segment[1] is 24576
+    //     // this assumption is necessary because theres no linked list information present on the screen memory
+    //     if (~(segment[0] = 0)) {
+    //         let segment[0] = 24574 - segment;
+    //         let segment[1] = 24576;
+    //     }
+    // }
 }

@@ -64,6 +64,9 @@ class Main {
         let goalY = 128;
         let onlyBest = true;
         do Main.selectObstacles();
+        do Population.config(populationCount, brainSize, onlyBest);
+        do Memory.poke(Population.getFitnessCache(), initialFitness);
+
         do Main.refreshDisplay();
         while (~false) {
             if (~Population.allDotsDead()) {
@@ -229,13 +232,13 @@ class Main {
                 }
             }
         }
-        let i = obstacles[Main.getGridIndex(initialX, initialY)];
-        if (~(i = false)) {
-            let i2 = 0;
-            while (~(i2 > 511)) {
-                if (~(obstacles[i2] = true))
-                    let obstacles[i2] = Math.min(3276, 32767 / obstacles[i2]);
-                let i2 = i2 + 1;
+        let initialFitness = obstacles[Main.getGridIndex(initialX, initialY)];
+        if (~(initialFitness = false)) {
+            let i = 0;
+            while (~(i > 511)) {
+                if (~(obstacles[i] = true))
+                    let obstacles[i] = Math.min(3276, 32767 / obstacles[i]);
+                let i = i + 1;
             }
         }
         do Screen.setColor(false);
@@ -245,9 +248,6 @@ class Main {
         let populationCount = 56;
         do Brain.config(brainSize);
         do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
-        do Population.config(populationCount, brainSize, onlyBest);
-        let i2 = Population.getFitnessCache();
-        let i2[0] = i;
     }
 
     function void floodIndex(int i, boolean adj) {

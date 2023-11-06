@@ -9,7 +9,7 @@ class Population {
     static String allocatingString;
 
     function void init() {
-        let dots = null;
+        // let dots = null;
         let allocatingString = "Allocating dot memory...";
     }
 
@@ -20,30 +20,30 @@ class Population {
 
         do Output.moveCursor(11, 22);
         do Output.printString(allocatingString);
-        if (~(dots = null)) {
-            while (i < size) {
-                let dot = dots[i];
-                do dot.dispose();
-                let i = i + 1;
-            }
-            let i = 0;
-            do dots.dispose();
+        // if (~(dots = null)) {
+        //     while (i < size) {
+        //         let dot = dots[i];
+        //         do dot.dispose();
+        //         let i = i + 1;
+        //     }
+        //     let i = 0;
+        //     do dots.dispose();
 
-            do fitnessCache.dispose();
+        //     do fitnessCache.dispose();
 
-            while (i < (size - 1)) {
-                let tmp = newBrainDirections[i];
-                if (~(tmp > 16384)) {
-                    do tmp.dispose();
-                    let i = i + 1;
-                } else {
-                    let i = size;
-                }
-            }
-            let i = 0;
-            do newBrainDirections.dispose();
-            do Memory.deFrag();
-        }
+        //     while (i < (size - 1)) {
+        //         let tmp = newBrainDirections[i];
+        //         if (~(tmp > 16384)) {
+        //             do tmp.dispose();
+        //             let i = i + 1;
+        //         } else {
+        //             let i = size;
+        //         }
+        //     }
+        //     let i = 0;
+        //     do newBrainDirections.dispose();
+        //     do Memory.deFrag();
+        // }
 
         let gen = 1;
         let size = _size;

@@ -1,7 +1,6 @@
 # TODO
 
-* display best dot fitness
-* mathematically choose step count: 250 225 200 175 150
+* mathematically choose step count ONLY on initial obstacles: 250 225 200 175 150
 * dynamically choose mutation rate
 * how quickly do you want to reach the goal? input, quick: more steps so it will do whatever, optimal: less steps so it will be forced to optimize for best
 * menu: initialXY goalXY selectObstacles onlyBest continue
