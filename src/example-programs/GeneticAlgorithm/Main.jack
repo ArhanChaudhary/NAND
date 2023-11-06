@@ -6,11 +6,12 @@ class Main {
     static int goalX;
     static int goalY;
     static boolean onlyBest;
-    static int initialFitness;
+    static int initialGoalDist;
     static Array obstacles;
     static Array floodQueue;
     static int floodQueueLength;
     static int floodDist;
+    static boolean firstSelectObstacles;
 
     static String generationString;
     static String goalStepCountString;
@@ -27,6 +28,7 @@ class Main {
         let placeString = "Place obstacles with the arrow, enter, and delete keys.";
         let escString = "Press esc to finish.";
         let precomputingString = "Precomputing fitnesses...";
+        let firstSelectObstacles = true;
         let floodQueue = Array.new(100);
         let obstacles = Array.new(512);
         while (~(i > 511)) {
@@ -64,9 +66,6 @@ class Main {
         let goalY = 128;
         let onlyBest = true;
         do Main.selectObstacles();
-        do Population.config(populationCount, brainSize, onlyBest);
-        do Memory.poke(Population.getFitnessCache(), initialFitness);
-
         do Main.refreshDisplay();
         while (~false) {
             if (~Population.allDotsDead()) {
@@ -232,8 +231,8 @@ class Main {
                 }
             }
         }
-        let initialFitness = obstacles[Main.getGridIndex(initialX, initialY)];
-        if (~(initialFitness = false)) {
+        let initialGoalDist = obstacles[Main.getGridIndex(initialX, initialY)];
+        if (~(initialGoalDist = false)) {
             let i = 0;
             while (~(i > 511)) {
                 if (~(obstacles[i] = true))
@@ -244,10 +243,19 @@ class Main {
         do Screen.setColor(false);
         do Screen.drawRectangle(168, 122, 368, 133);
         do Screen.setColor(true);
-        let brainSize = 150;
-        let populationCount = 56;
-        do Brain.config(brainSize);
-        do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
+
+        if (firstSelectObstacles) {
+            let brainSize = initialGoalDist - 2;
+            let populationCount = (9400 / initialGoalDist) - 2;
+            do Brain.config(brainSize);
+            do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
+            do Population.config(populationCount, brainSize, onlyBest);
+            let firstSelectObstacles = false;
+        }
+
+        let initialGoalDist = 32767 / initialGoalDist;
+        let i = Population.getFitnessCache();
+        let i[0] = initialGoalDist;
     }
 
     function void floodIndex(int i, boolean adj) {

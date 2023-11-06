@@ -1,11 +1,15 @@
 # TODO
 
-* mathematically choose step count ONLY on initial obstacles: 250 225 200 175 150
+* add +5 to dist if on adjacent
+* add +12 to dist if on adjacent with blocks
+* add +35 to dist if on adjacent with two blocks
+* add +7 to dist if on diagonal
+* add do nothing if on diagonal with block or two blocks
+* narrower paths also get + dist
 * dynamically choose mutation rate
 * how quickly do you want to reach the goal? input, quick: more steps so it will do whatever, optimal: less steps so it will be forced to optimize for best
 * menu: initialXY goalXY selectObstacles onlyBest continue
 * random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
-* 16 bit fitness instead of 15
 
 * actual crossover?
 * cannot set variable names to keywords in compiler
