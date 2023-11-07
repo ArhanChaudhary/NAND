@@ -232,13 +232,11 @@ class Main {
             }
         }
         let initialGoalDist = obstacles[Main.getGridIndex(initialX, initialY)];
-        if (~(initialGoalDist = false)) {
-            let i = 0;
-            while (~(i > 511)) {
-                if (~(obstacles[i] = true))
-                    let obstacles[i] = Math.min(3276, 32767 / obstacles[i]);
-                let i = i + 1;
-            }
+        let i = 0;
+        while (~(i > 511)) {
+            if ((~(obstacles[i] = true)) & (~(obstacles[i] = 0)))
+                let obstacles[i] = Math.min(3276, 32767 / obstacles[i]);
+            let i = i + 1;
         }
         do Screen.setColor(false);
         do Screen.drawRectangle(168, 122, 368, 133);
