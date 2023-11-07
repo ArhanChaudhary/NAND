@@ -196,38 +196,38 @@ class Main {
             let allowLeft = ~((i & 31) = 0);
 
             if (allowUp) {
-                do Main.floodIndex(i - 32, i - 33, i - 31, true);
+                do Main.floodIndex(i - 32, -1, false);
             }
 
             if (allowRight) {
-                do Main.floodIndex(i + 1, i - 31, i + 33, true);
+                do Main.floodIndex(i + 1, -32, false);
             }
 
             if (allowDown) {
-                do Main.floodIndex(i + 32, i + 33, i + 31, true);
+                do Main.floodIndex(i + 32, 1, false);
             }
 
             if (allowLeft) {
-                do Main.floodIndex(i - 1, i + 31, i - 33, true);
+                do Main.floodIndex(i - 1, 32, false);
             }
 
             if (allowUp) {
                 if (allowRight) {
-                    do Main.floodIndex(i - 31, i - 32, i + 1, false);
+                    do Main.floodIndex(i - 31, -1, 32);
                 }
 
                 if (allowLeft) {
-                    do Main.floodIndex(i - 33, i - 1, i - 32, false);
+                    do Main.floodIndex(i - 33, 32, 1);
                 }
             }
 
             if (allowDown) {
                 if (allowRight) {
-                    do Main.floodIndex(i + 33, i + 1, i + 32, false);
+                    do Main.floodIndex(i + 33, -32, -1);
                 }
 
                 if (allowLeft) {
-                    do Main.floodIndex(i + 31, i + 32, i - 1, false);
+                    do Main.floodIndex(i + 31, 1, -32);
                 }
             }
         }
@@ -258,21 +258,27 @@ class Main {
         let i[0] = initialGoalDist;
     }
 
-    function void floodIndex(int i, int left, int right, boolean isAdjacent) {
+    function void floodIndex(int i, int leftIndex, int rightIndex) {
         var int floodVal;
-        var boolean leftIsObstacle;
-        var boolean rightIsObstacle;
-        let leftIsObstacle = obstacles[left] = true;
-        let rightIsObstacle = obstacles[right] = true;
-        if (leftIsObstacle & rightIsObstacle) {
+        var boolean isAdjacent;
+        let isAdjacent = rightIndex = false;
+        if (~isAdjacent) {
+            let rightIndex = obstacles[i + rightIndex] = true;
+        } else {
+            let rightIndex = obstacles[i - leftIndex] = true;
+        }
+        let leftIndex = obstacles[i + leftIndex] = true;
+
+        if (leftIndex & rightIndex) {
             if (~isAdjacent) {
                 let floodVal = floodDist + 65;
             } else {
                 let floodVal = floodDist + 25;
             }
-        } else if (leftIsObstacle | rightIsObstacle) {
+        } else if (leftIndex | rightIndex) {
             if (~isAdjacent) {
-                let floodVal = floodDist + 15;
+                // cant be let floodVal = floodDist + 11; because this will override the + 25 case
+                return;
             } else {
                 let floodVal = floodDist + 11;
             }
