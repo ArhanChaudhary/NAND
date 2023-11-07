@@ -1,11 +1,5 @@
 # TODO
 
-* add +5 to dist if on adjacent
-* add +12 to dist if on adjacent with blocks
-* add +35 to dist if on adjacent with two blocks
-* add +7 to dist if on diagonal
-* add do nothing if on diagonal with block or two blocks
-* narrower paths also get + dist
 * dynamically choose mutation rate
 * how quickly do you want to reach the goal? input, quick: more steps so it will do whatever, optimal: less steps so it will be forced to optimize for best
 * menu: initialXY goalXY selectObstacles onlyBest continue
@@ -27,7 +21,7 @@ if and else doesn't require bracket
 [][] works
 you cant malloc 0 even if the original OS could
 theres no Sys.error(18) String.eraseLastChar String is empty
-
+arguments keyword
 
 # TODO (for later)
 * draw screen using prev diff
