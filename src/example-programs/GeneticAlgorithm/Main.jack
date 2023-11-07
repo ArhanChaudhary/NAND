@@ -262,12 +262,12 @@ class Main {
         var int floodVal;
         var boolean isAdjacent;
         let isAdjacent = rightIndex = false;
-        if (~isAdjacent) {
-            let rightIndex = obstacles[i + rightIndex] = true;
-        } else {
-            let rightIndex = obstacles[i - leftIndex] = true;
+        if (isAdjacent) {
+            let rightIndex = -leftIndex;
         }
-        let leftIndex = obstacles[i + leftIndex] = true;
+
+        let rightIndex = Main.floodIndexOutOfBounds(i, i + rightIndex) | (obstacles[i + rightIndex] = true);
+        let leftIndex = Main.floodIndexOutOfBounds(i, i + leftIndex) | (obstacles[i + leftIndex] = true);
 
         if (leftIndex & rightIndex) {
             if (~isAdjacent) {
@@ -277,7 +277,7 @@ class Main {
             }
         } else if (leftIndex | rightIndex) {
             if (~isAdjacent) {
-                // cant be let floodVal = floodDist + 11; because this will override the + 25 case
+                // cant be ran because this will override the + 25 case
                 return;
             } else {
                 let floodVal = floodDist + 11;
@@ -295,6 +295,12 @@ class Main {
             let floodQueue[floodQueueLength] = i;
             let floodQueueLength = floodQueueLength + 1;
         }
+    }
+
+    function boolean floodIndexOutOfBounds(int originIndex, int newIndex) {
+        return (newIndex < 0) | (newIndex > 511) |
+                (((originIndex & 31) = 31) & ((newIndex & 31) = 0)) |
+                (((originIndex & 31) = 0) & ((newIndex & 31) = 31));
     }
 
     function void drawGoal() {
