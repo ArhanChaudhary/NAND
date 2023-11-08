@@ -5,15 +5,12 @@ import Util from "./util.js";
 import Brain from "./brain.js";
 
 export default class Main {
-    static #brainSize;
-    static #populationCount;
     static #initialX;
     static #initialY;
     static #goalX;
     static #goalY;
     static #onlyBest;
     static #isAdjacent;
-    static #initialGoalDist;
     static #obstacles;
     static #floodQueue;
     static #floodQueueLength;
@@ -23,6 +20,7 @@ export default class Main {
     static #generationString;
     static #goalStepCountString;
     static #goalDistanceString;
+    static #NAString;
     static #placeString;
     static #escString;
     static #precomputingString;
@@ -31,6 +29,7 @@ export default class Main {
         Main.#generationString = "Generation: ";
         Main.#goalStepCountString = "Goal step count: ";
         Main.#goalDistanceString = "Goal distance: ";
+        Main.#NAString = "NA";
         Main.#placeString = "Place obstacles with the arrow, enter, and delete keys.";
         Main.#escString = "Press esc to finish.";
         Main.#precomputingString = "Precomputing fitnesses...";
@@ -71,11 +70,6 @@ export default class Main {
         Main.#goalY = 128;
         Main.#onlyBest = 0;
         await Main.selectObstacles();
-
-        // Brain.config(Main.#brainSize);
-        // Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, Main.#brainSize, Main.#obstacles);
-        // Population.config(Main.#populationCount, Main.#brainSize, Main.#onlyBest);
-
         Main.refreshDisplay();
         window.interval = 25;
         async function tmp() {
@@ -106,6 +100,10 @@ export default class Main {
         let allowDown;
         let allowRight;
         let allowLeft;
+        let initialGoalFitness;
+        let initialBestFitness;
+        let populationCount;
+        let brainSize;
         while (!(i > 511)) {
             if (!(Main.#obstacles[i] == -1)) {
                 Main.#obstacles[i] = 0;
@@ -272,26 +270,32 @@ export default class Main {
             }
         }
 
-        Main.#initialGoalDist = Main.#obstacles[Main.getGridIndex(Main.#initialX, Main.#initialY)];
+        i2 = Main.getGridIndex(Main.#initialX, Main.#initialY);
+        initialGoalFitness = Main.#obstacles[i2];
+        initialBestFitness = initialGoalFitness;
         i = 0;
         while (!(i > 511)) {
-            if ((!(Main.#obstacles[i] == -1)) && (!(Main.#obstacles[i] == 0)))
+            if (!(Main.#obstacles[i] == -1 || Main.#obstacles[i] == 0)) {
                 Main.#obstacles[i] = Math.min(3276, Util.divide(32767, Main.#obstacles[i]));
-            i = i + 1;
+            } else if (i == i2) {
+                initialGoalFitness = 200;
+                initialBestFitness = 1;
+            }
+            i++;
         }
 
         if (Main.#firstSelectObstacles) {
-            Main.#brainSize = Main.#initialGoalDist - 2;
-            Main.#populationCount = Util.divide(9400, Main.#initialGoalDist) - 2;
-            Brain.config(Main.#brainSize);
-            Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, Main.#brainSize, Main.#obstacles);
-            Population.config(Main.#populationCount, Main.#brainSize, Main.#onlyBest);
+            // put this after the above while loop so appropriate loading screen can be displayed
+            brainSize = initialGoalFitness - 2;
+            populationCount = Util.divide(9400, initialGoalFitness) - 2;
+            Brain.config(brainSize);
+            Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, brainSize, Main.#obstacles);
+            Population.config(populationCount, brainSize, Main.#onlyBest);
             Main.#firstSelectObstacles = false;
         }
 
-        Main.#initialGoalDist = Util.divide(32767, Main.#initialGoalDist);
         i = Population.getFitnessCache();
-        i[0] = Main.#initialGoalDist;
+        i[0] = initialBestFitness;
     }
 
     static floodIndex(i, leftIndex, rightIndex) {
@@ -379,21 +383,28 @@ export default class Main {
             obstacleX = obstacleX + obstacleX;
             if (Main.#obstacles[i] == -1) {
                 Util.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
-            } else if (!(Main.#obstacles[i] == 0)) {
+            }/* else if (!(Main.#obstacles[i] == 0)) {
                 Util.drawText(Util.divide(32767, Main.#obstacles[i]), obstacleX + 8, obstacleY + 8);
-            }
+            }*/
             i++;
         }
     }
 
     static refreshDisplay() {
+        let tmp;
         Main.drawGoal();
         Main.drawObstacles();
         console.log(Main.#generationString + Population.getGen());
         if (!(Dot.getMinStep() == 32767)) {
             console.log(Main.#goalStepCountString + Dot.getMinStep());
         } else {
-            console.log(Main.#goalDistanceString + Util.divide(32767, Population.getFitnessCache()[0]));
+            tmp = Population.getFitnessCache();
+            if (!(tmp[0] == -1 || tmp[0] == 1)) {
+                tmp = Util.divide(32767, tmp[0]);
+            } else {
+                tmp = Main.#NAString;
+            }
+            console.log(Main.#goalDistanceString + tmp);
         }
     }
 
