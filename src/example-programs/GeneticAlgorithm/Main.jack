@@ -238,7 +238,7 @@ class Main {
         }
         let i2 = Main.getGridIndex(initialX, initialY);
         let initialGoalFitness = obstacles[i2];
-        let initialBestFitness = initialGoalFitness
+        let initialBestFitness = initialGoalFitness;
         let i = 0;
         while (~(i > 511)) {
             if (~((obstacles[i] = true) | (obstacles[i] = false))) {
