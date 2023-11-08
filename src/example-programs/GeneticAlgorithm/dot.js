@@ -29,7 +29,7 @@ export default class Dot {
         Dot.#goalY = goalY;
         Dot.#brainSize = brainSize;
         Dot.#minStep = 32767;
-        Dot.#stepWeight = Util.divide(32767 - 10000, Brain.getBrainSize());
+        Dot.#stepWeight = Util.divide(22767, Brain.getBrainSize());
         Dot.#obstacles = obstacles;
     }
 
