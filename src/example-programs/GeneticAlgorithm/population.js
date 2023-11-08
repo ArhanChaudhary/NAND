@@ -10,13 +10,16 @@ export default class Population {
     static #size;
     static #brainSize;
     static #onlyBest;
+    static #allocatingString;
 
     static init() {
-        Population.#dots = null;
+        // Population.#dots = null;
+        Population.#allocatingString = "Allocating dot memory...";
     }
 
     static config(size, brainSize, onlyBest) {
         let i = 0;
+        console.log(Population.#allocatingString);
         Population.#gen = 1;
         Population.#size = size;
         Population.#brainSize = brainSize;
@@ -41,6 +44,10 @@ export default class Population {
 
     static getGen() {
         return Population.#gen;
+    }
+
+    static getFitnessCache() {
+        return Population.#fitnessCache;
     }
 
     static update() {

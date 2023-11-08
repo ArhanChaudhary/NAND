@@ -12,25 +12,29 @@ export default class Main {
     static #goalX;
     static #goalY;
     static #onlyBest;
+    static #isAdjacent;
+    static #initialGoalDist;
     static #obstacles;
     static #floodQueue;
     static #floodQueueLength;
     static #floodDist;
+    static #firstSelectObstacles;
 
     static #generationString;
     static #goalStepCountString;
-    static #NAString;
+    static #goalDistanceString;
     static #placeString;
-    static #loadingString;
     static #escString;
+    static #precomputingString;
 
     static init() {
         Main.#generationString = "Generation: ";
         Main.#goalStepCountString = "Goal step count: ";
-        Main.#NAString = "NA";
+        Main.#goalDistanceString = "Goal distance: ";
         Main.#placeString = "Place obstacles with the arrow, enter, and delete keys.";
         Main.#escString = "Press esc to finish.";
-        Main.#loadingString = "Loading...";
+        Main.#precomputingString = "Precomputing fitnesses...";
+        Main.#firstSelectObstacles = true;
         Main.#floodQueue = new Array(100);
         Main.#obstacles = new Array(512);
     }
@@ -67,12 +71,10 @@ export default class Main {
         Main.#goalY = 128;
         Main.#onlyBest = 0;
         await Main.selectObstacles();
-        Util.clearScreen();
-        console.log(Main.#loadingString);
 
-        Brain.config(Main.#brainSize);
-        Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, Main.#brainSize, Main.#obstacles);
-        Population.config(Main.#populationCount, Main.#brainSize, Main.#onlyBest);
+        // Brain.config(Main.#brainSize);
+        // Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, Main.#brainSize, Main.#obstacles);
+        // Population.config(Main.#populationCount, Main.#brainSize, Main.#onlyBest);
 
         Main.refreshDisplay();
         window.interval = 25;
@@ -210,6 +212,7 @@ export default class Main {
                 await new Promise(resolve => setTimeout(resolve, 50));
             }
         }
+        console.log(Main.#precomputingString);
 
         i = Main.getGridIndex(Main.#goalX, Main.#goalY);
         Main.#floodQueue[0] = i;
@@ -230,64 +233,127 @@ export default class Main {
             allowRight = !((i & 31) == 31);
             allowLeft = !((i & 31) == 0);
 
+            Main.#isAdjacent = -1;
             if (allowUp) {
-                Main.floodIndex(i - 32, -1);
+                Main.floodIndex(i, 1, 32);
             }
 
             if (allowRight) {
-                Main.floodIndex(i + 1, -1);
+                Main.floodIndex(i, 32, -1);
             }
 
             if (allowDown) {
-                Main.floodIndex(i + 32, -1);
+                Main.floodIndex(i, -1, -32);
             }
 
             if (allowLeft) {
-                Main.floodIndex(i - 1, -1);
+                Main.floodIndex(i, -32, 1);
             }
 
+            Main.#isAdjacent = false;
             if (allowUp) {
                 if (allowRight) {
-                    Main.floodIndex(i - 31, 0);
+                    Main.floodIndex(i - 31, -1, 32);
                 }
 
                 if (allowLeft) {
-                    Main.floodIndex(i - 33, 0);
+                    Main.floodIndex(i - 33, 32, 1);
                 }
             }
 
             if (allowDown) {
                 if (allowRight) {
-                    Main.floodIndex(i + 33, 0);
+                    Main.floodIndex(i + 33, -32, -1);
                 }
 
                 if (allowLeft) {
-                    Main.floodIndex(i + 31, 0);
+                    Main.floodIndex(i + 31, 1, -32);
                 }
             }
         }
-        Main.#floodQueue = new Array(100);
-        if (!(Main.#obstacles[Main.getGridIndex(Main.#initialX, Main.#initialY)] == 0)) {
-            i = 0;
-            while (!(i > 511)) {
-                if (!(Main.#obstacles[i] == -1)) {
-                    Main.#obstacles[i] = Math.min(3276, Util.divide(32767, Main.#obstacles[i]));
-                }
-                i++;
-            }
+
+        Main.#initialGoalDist = Main.#obstacles[Main.getGridIndex(Main.#initialX, Main.#initialY)];
+        i = 0;
+        while (!(i > 511)) {
+            if ((!(Main.#obstacles[i] == -1)) && (!(Main.#obstacles[i] == 0)))
+                Main.#obstacles[i] = Math.min(3276, Util.divide(32767, Main.#obstacles[i]));
+            i = i + 1;
         }
-        Main.#brainSize = 145;
-        Main.#populationCount = 60;
-        Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, Main.#brainSize, Main.#obstacles);
+
+        if (Main.#firstSelectObstacles) {
+            Main.#brainSize = Main.#initialGoalDist - 2;
+            Main.#populationCount = Util.divide(9400, Main.#initialGoalDist) - 2;
+            Brain.config(Main.#brainSize);
+            Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, Main.#brainSize, Main.#obstacles);
+            Population.config(Main.#populationCount, Main.#brainSize, Main.#onlyBest);
+            Main.#firstSelectObstacles = false;
+        }
+
+        Main.#initialGoalDist = Util.divide(32767, Main.#initialGoalDist);
+        i = Population.getFitnessCache();
+        i[0] = Main.#initialGoalDist;
     }
 
-    static floodIndex(i, adj) {
-        let floodVal = Main.#floodDist + 7 + adj + adj;
+    static floodIndex(i, leftIndex, rightIndex) {
+        let floodVal = 0;
+        let penalty = 0;
+        let topLeft = 0;
+        let topRight = 0;
+        let bottomLeft = 0;
+        let bottomRight = 0;
+
+        if (!Main.#isAdjacent) {
+            rightIndex = Main.floodIndexOutOfBounds(i, i + rightIndex) || (Main.#obstacles[i + rightIndex] == -1) ? -1 : 0;
+            leftIndex = Main.floodIndexOutOfBounds(i, i + leftIndex) || (Main.#obstacles[i + leftIndex] == -1) ? -1 : 0;
+            penalty = leftIndex + rightIndex;
+        } else {
+            bottomLeft = i - leftIndex;
+            bottomRight = i + leftIndex;
+            topLeft = bottomLeft - rightIndex;
+            topRight = bottomRight - rightIndex;
+
+            penalty = Math.min(
+                (Main.floodIndexOutOfBounds(i, bottomLeft) || Main.#obstacles[bottomLeft] == -1 ? -1 : 0) +
+                (Main.floodIndexOutOfBounds(i, bottomRight) || Main.#obstacles[bottomRight] == -1 ? -1 : 0),
+                (Main.floodIndexOutOfBounds(i, topLeft) || Main.#obstacles[topLeft] == -1 ? -1 : 0) +
+                (Main.floodIndexOutOfBounds(i, topRight) || Main.#obstacles[topRight] == -1 ? -1 : 0)
+            );
+            i -= rightIndex;
+        }
+
+        if (penalty == -2) {
+            if (!Main.#isAdjacent) {
+                floodVal = Main.#floodDist + 65;
+            } else {
+                floodVal = Main.#floodDist + 11;
+            }
+        } else if (penalty == -1) {
+            if (!Main.#isAdjacent) {
+                // cant be ran because this will override the + 13 case
+                // it also isnt natural for dots to get past such an obstacle in a single diagonal step
+                return;
+            } else {
+                floodVal = Main.#floodDist + 9;
+            }
+        } else {
+            if (!Main.#isAdjacent) {
+                floodVal = Main.#floodDist + 7;
+            } else {
+                floodVal = Main.#floodDist + 5;
+            }
+        }
+
         if (Main.#obstacles[i] == 0 || Main.#obstacles[i] > floodVal) {
             Main.#obstacles[i] = floodVal;
             Main.#floodQueue[Main.#floodQueueLength] = i;
             Main.#floodQueueLength++;
         }
+    }
+
+    static floodIndexOutOfBounds(originIndex, newIndex) {
+        return (newIndex < 0) || (newIndex > 511) ||
+                (((originIndex & 31) == 31) && ((newIndex & 31) == 0)) ||
+                (((originIndex & 31) == 0) && ((newIndex & 31) == 31));
     }
 
     static drawGoal() {
@@ -313,9 +379,9 @@ export default class Main {
             obstacleX = obstacleX + obstacleX;
             if (Main.#obstacles[i] == -1) {
                 Util.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
-            }/* else if (!(Main.#obstacles[i] == 0)) {
-                Util.drawText(Main.#obstacles[i], obstacleX + 8, obstacleY + 8);
-            }*/
+            } else if (!(Main.#obstacles[i] == 0)) {
+                Util.drawText(Util.divide(32767, Main.#obstacles[i]), obstacleX + 8, obstacleY + 8);
+            }
             i++;
         }
     }
@@ -327,7 +393,7 @@ export default class Main {
         if (!(Dot.getMinStep() == 32767)) {
             console.log(Main.#goalStepCountString + Dot.getMinStep());
         } else {
-            console.log(Main.#goalStepCountString + Main.#NAString);
+            console.log(Main.#goalDistanceString + Util.divide(32767, Population.getFitnessCache()[0]));
         }
     }
 
