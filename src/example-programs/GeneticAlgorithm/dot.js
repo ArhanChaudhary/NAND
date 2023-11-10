@@ -78,90 +78,84 @@ export default class Dot {
     update(andShow) {
         let newVelXIsNegative;
         let newVelYIsNegative;
-        if (!(this.#brain.getStep() > Dot.#minStep)) {
-            if (!this.#dead) {
-                if (!(Dot.#brainSize > this.#brain.getStep())) {
-                    this.#dead = -1;
-                } else {
-                    this.#acc = this.#brain.getNextDirection();
-                }
-
-                this.#velX += this.#acc.getX();
-                this.#velY += this.#acc.getY();
-                newVelXIsNegative = this.#velX < 0;
-                newVelYIsNegative = this.#velY < 0;
-
-                if (newVelXIsNegative) {
-                    this.#velX = -this.#velX;
-                }
-
-                if (newVelYIsNegative) {
-                    this.#velY = -this.#velY;
-                }
-
-                if (!(this.#velX > 5)) {
-                    if (!(this.#velX == 4)) {
-                        if (!(this.#velX == 0)) {
-                            if (!(this.#velY < 5)) {
-                                this.#velY = 4;
-                            }
-                        } else if (!(this.#velY < 6)) {
-                            this.#velY = 5;
-                        }
-                    } else if (!(this.#velY < 4)) {
-                        this.#velY = 3;
-                    }
-                } else {
-                    this.#velX = 5;
-                    this.#velY = 0;
-                }
-
-                if (newVelXIsNegative) {
-                    this.#velX = -this.#velX;
-                }
-
-                if (newVelYIsNegative) {
-                    this.#velY = -this.#velY;
-                }
-
-                this.#posX += this.#velX;
-                this.#posY += this.#velY;
-
-                if (!(this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254 || Dot.#obstacles[Main.getGridIndex(this.#posX, this.#posY)] == -1)) {
-                    if (!(Math.abs(this.#posX - Dot.#goalX) > 3 || Math.abs(this.#posY - Dot.#goalY) > 3)) {
-                        this.#reachedGoal = -1;
-                        this.#dead = -1;
-                    } else
-                    // show function
-                    if (!andShow) {
-                        // needs to be here since calculateFitness uses prevX and prevY
-                        this.#prevX = this.#posX;
-                        this.#prevY = this.#posY;
-                    } else {
-                        Util.setColor(0);
-                        Util.drawRectangle(this.#prevX - 1, this.#prevY - 1, this.#prevX + 1, this.#prevY + 1);
-                        Util.setColor(-1);
-                        this.#prevX = this.#posX;
-                        this.#prevY = this.#posY;
-                        Util.drawRectangle(this.#prevX - 1, this.#prevY - 1, this.#prevX + 1, this.#prevY + 1);
-                    }
-                } else {
-                    this.#dead = -1;
-                }
-            }
-        } else {
+        if (this.#brain.getStep() > Dot.#minStep) {
             this.#dead = -1;
+        } else if (!this.#dead) {
+            if (Dot.#brainSize > this.#brain.getStep()) {
+                this.#acc = this.#brain.getNextDirection();
+            } else {
+                this.#dead = -1;
+            }
+
+            this.#velX += this.#acc.getX();
+            this.#velY += this.#acc.getY();
+            newVelXIsNegative = this.#velX < 0;
+            newVelYIsNegative = this.#velY < 0;
+
+            if (newVelXIsNegative) {
+                this.#velX = -this.#velX;
+            }
+
+            if (newVelYIsNegative) {
+                this.#velY = -this.#velY;
+            }
+
+            if (this.#velX > 5) {
+                this.#velX = 5;
+                this.#velY = 0;
+            } else if (this.#velX == 4) {
+                if (this.#velY > 3) {
+                    this.#velY = 3;
+                }
+            } else if (this.#velX == 0) {
+                if (this.#velY > 5) {
+                    this.#velY = 5;
+                }
+            } else if (this.#velY > 4) {
+                this.#velY = 4;
+            }
+
+            if (newVelXIsNegative) {
+                this.#velX = -this.#velX;
+            }
+
+            if (newVelYIsNegative) {
+                this.#velY = -this.#velY;
+            }
+
+            this.#posX += this.#velX;
+            this.#posY += this.#velY;
+
+            if (this.#posX < 2 || this.#posY < 2 || this.#posX > 510 || this.#posY > 254 || Dot.#obstacles[Main.getGridIndex(this.#posX, this.#posY)] == -1) {
+                this.#dead = -1;
+            } else if (!(Math.abs(this.#posX - Dot.#goalX) > 3 || Math.abs(this.#posY - Dot.#goalY) > 3)) {
+                this.#reachedGoal = -1;
+                this.#dead = -1;
+            } else
+            // show function
+            if (andShow) {
+                Util.setColor(0);
+                Util.drawRectangle(this.#prevX - 1, this.#prevY - 1, this.#prevX + 1, this.#prevY + 1);
+                Util.setColor(-1);
+                this.#prevX = this.#posX;
+                this.#prevY = this.#posY;
+                Util.drawRectangle(this.#prevX - 1, this.#prevY - 1, this.#prevX + 1, this.#prevY + 1);
+            } else {
+                // needs to be here since calculateFitness uses prevX and prevY
+                this.#prevX = this.#posX;
+                this.#prevY = this.#posY;
+            }
         }
     }
 
     calculateFitness() {
-        if (!this.#reachedGoal) {
-            // needed if goal is blocked off completely and the current grid index hasnt been flooded (is 0)
-            // for example if this was 0 then during the natural selection process no dot would be selected
-            // because everything is 0 and it would all just evolve off of one random dot which makes no sense
-            // it's also not easily possible to set it to 1 in flood itself because of ROM concerns
-            return Math.max(1, Dot.#obstacles[Main.getGridIndex(this.#prevX, this.#prevY)]);
+        if (this.#reachedGoal) {
+            return Math.max(10000, 32767 - Dot.#stepWeight * this.#brain.getStep());
         }
-        return Math.max(10000, 32767 - Dot.#stepWeight * this.#brain.getStep());
+        // needed if goal is blocked off completely and the current grid index hasnt been flooded (is 0)
+        // for example if this was 0 then during the natural selection process no dot would be selected
+        // because everything is 0 and it would all just evolve off of one random dot which makes no sense
+        // it's also not easily possible to set it to 1 in flood itself because of ROM concerns
+        return Math.max(1, Dot.#obstacles[Main.getGridIndex(this.#prevX, this.#prevY)]);
     }
 }

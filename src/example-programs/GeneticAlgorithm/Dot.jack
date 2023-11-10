@@ -69,90 +69,101 @@ class Dot {
 
     method void update(boolean andShow) {
         var boolean newVelXIsNegative, newVelYIsNegative;
-        if (~(brain.getStep() > minStep)) {
-            if (~dead) {
-                if (~(brainSize > brain.getStep())) {
-                    let dead = true;
-                } else {
-                    let acc = brain.getNextDirection();
-                }
-
-                let velX = velX + acc.getX();
-                let velY = velY + acc.getY();
-                let newVelXIsNegative = velX < 0;
-                let newVelYIsNegative = velY < 0;
-
-                if (newVelXIsNegative) {
-                    let velX = -velX;
-                }
-
-                if (newVelYIsNegative) {
-                    let velY = -velY;
-                }
-
-                if (~(velX > 5)) {
-                    if (~(velX = 4)) {
-                        if (~(velX = 0)) {
-                            if (~(velY < 5)) {
-                                let velY = 4;
-                            }
-                        } else if (~(velY < 6)) {
-                            let velY = 5;
-                        }
-                    } else if (~(velY < 4)) {
-                        let velY = 3;
-                    }
-                } else {
-                    let velX = 5;
-                    let velY = 0;
-                }
-
-                if (newVelXIsNegative) {
-                    let velX = -velX;
-                }
-
-                if (newVelYIsNegative) {
-                    let velY = -velY;
-                }
-
-                let posX = posX + velX;
-                let posY = posY + velY;
-
-                if (~((posX < 2) | (posY < 2) | (posX > 510) | (posY > 254) | (obstacles[Main.getGridIndex(posX, posY)] = true))) {
-                    if (~((Math.abs(posX - goalX) > 3) | (Math.abs(posY - goalY) > 3))) {
-                        let reachedGoal = true;
-                        let dead = true;
-                    } else
-                    // show function
-                    if (~andShow) {
-                        let prevX = posX;
-                        let prevY = posY;
-                    } else {
-                        do Screen.setColor(false);
-                        do Screen.drawRectangle(prevX - 1, prevY - 1, prevX + 1, prevY + 1);
-                        do Screen.setColor(true);
-                        let prevX = posX;
-                        let prevY = posY;
-                        do Screen.drawRectangle(prevX - 1, prevY - 1, prevX + 1, prevY + 1);
-                    }
-                } else {
-                    let dead = true;
-                }
-            }
-        } else {
+        if (brain.getStep() > minStep) {
             let dead = true;
+        } else if (~dead) {
+            if (brainSize > brain.getStep()) {
+                let acc = brain.getNextDirection();
+            } else {
+                let dead = true;
+            }
+
+            let velX = velX + acc.getX();
+            let velY = velY + acc.getY();
+            let newVelXIsNegative = velX < 0;
+            let newVelYIsNegative = velY < 0;
+
+            if (newVelXIsNegative) {
+                let velX = -velX;
+            }
+
+            if (newVelYIsNegative) {
+                let velY = -velY;
+            }
+
+            // if (~(velX > 5)) {
+            //     if (~(velX = 4)) {
+            //         if (~(velX = 0)) {
+            //             if (~(velY < 5)) {
+            //                 let velY = 4;
+            //             }
+            //         } else if (~(velY < 6)) {
+            //             let velY = 5;
+            //         }
+            //     } else if (~(velY < 4)) {
+            //         let velY = 3;
+            //     }
+            // } else {
+            //     let velX = 5;
+            //     let velY = 0;
+            // }
+            if (velX > 5) {
+                let velX = 5;
+                let velY = 0;
+            } else if (velX = 4) {
+                if (velY > 3) {
+                    let velY = 3;
+                }
+            } else if (velX = 0) {
+                if (velY > 5) {
+                    let velY = 5;
+                }
+            } else if (velY > 4) {
+                let velY = 4;
+            }
+
+            if (newVelXIsNegative) {
+                let velX = -velX;
+            }
+
+            if (newVelYIsNegative) {
+                let velY = -velY;
+            }
+
+            let posX = posX + velX;
+            let posY = posY + velY;
+
+            if ((posX < 2) | (posY < 2) | (posX > 510) | (posY > 254) | (obstacles[Main.getGridIndex(posX, posY)] = true)) {
+                let dead = true;
+            } else if (~((Math.abs(posX - goalX) > 3) | (Math.abs(posY - goalY) > 3))) {
+                let reachedGoal = true;
+                let dead = true;
+            } else
+            // show function
+            if (andShow) {
+                // needs to be here since calculateFitness uses prevX and prevY
+                do Screen.setColor(false);
+                do Screen.drawRectangle(prevX - 1, prevY - 1, prevX + 1, prevY + 1);
+                do Screen.setColor(true);
+                let prevX = posX;
+                let prevY = posY;
+                do Screen.drawRectangle(prevX - 1, prevY - 1, prevX + 1, prevY + 1);
+            } else {
+                let prevX = posX;
+                let prevY = posY;
+            }
         }
     }
 
     method int calculateFitness() {
-        if (~reachedGoal) {
-            // needed if goal is blocked off completely and the current grid index hasnt been flooded (is 0)
-            // for example if this was 0 then during the natural selection process no dot would be selected
-            // because everything is 0 and it would all just evolve off of one random dot which makes no sense
-            // it's also not easily possible to set it to 1 in flood itself because of ROM concerns
-            return Math.max(1, obstacles[Main.getGridIndex(prevX, prevY)]);
+        if (reachedGoal) {
+            return Math.max(10000, 32767 - (stepWeight * brain.getStep()));
         }
-        return Math.max(10000, 32767 - (stepWeight * brain.getStep()));
+        // needed if goal is blocked off completely and the current grid index hasnt been flooded (is 0)
+        // for example if this was 0 then during the natural selection process no dot would be selected
+        // because everything is 0 and it would all just evolve off of one random dot which makes no sense
+        // it's also not easily possible to set it to 1 in flood itself because of ROM concerns
+        return Math.max(1, obstacles[Main.getGridIndex(prevX, prevY)]);
     }
 
     method void dispose() {

@@ -31,7 +31,7 @@ class Main {
         let firstSelectObstacles = true;
         let floodQueue = Array.new(100);
         let obstacles = Array.new(512);
-        while (~(i > 511)) {
+        while (i < 512) {
             let obstacles[i] = false;
             let i = i + 1;
         }
@@ -56,7 +56,7 @@ class Main {
         do Output.printString("as little steps as possible.");
         do Output.moveCursor(12, 20);
         do Output.printString("Press any key to start.");
-        while (~(Keyboard.keyPressed() > 0))
+        while (Keyboard.keyPressed() = 0)
             do Util.random();
         do Screen.drawRectangle(70, 57, 442, 154);
 
@@ -67,15 +67,15 @@ class Main {
         let onlyBest = true;
         do Main.selectObstacles();
         do Main.refreshDisplay();
-        while (~false) {
-            if (~Population.allDotsDead()) {
-                do Population.update();
-            } else {
+        while (true) {
+            if (Population.allDotsDead()) {
                 do Population.naturalSelection();
                 if (Keyboard.keyPressed() = 140) {
                     do Main.selectObstacles();
                 }
                 do Main.refreshDisplay();
+            } else {
+                do Population.update();
             }
         }
     }
@@ -122,26 +122,27 @@ class Main {
             if (~(key = 140)) {
                 do Main.drawGoal();
                 do Screen.drawRectangle(initialX - 1, initialY - 1, initialX + 1, initialY + 1);
-                if (~(key = 130)) {
-                    if (~(key = 131)) {
-                        if (~(key = 132)) {
-                            if (~((~(key = 133)) | (selectorY = 240))) {
-                                let selectorY = selectorY + 16;
-                                let selectorIndex = selectorIndex + 32;
-                            }
-                        } else if (~(selectorX = 496)) {
-                            let selectorX = selectorX + 16;
-                            let selectorIndex = selectorIndex + 1;
-                        }
-                    } else if (~(selectorY = 0)) {
+                if (key = 130) {
+                    if (~(selectorX = 0)) {
+                        let selectorX = selectorX - 16;
+                        let selectorIndex = selectorIndex - 1;
+                    }
+                } else if (key = 131) {
+                    if (~(selectorY = 0)) {
                         let selectorY = selectorY - 16;
                         let selectorIndex = selectorIndex - 32;
                     }
-                } else if (~(selectorX = 0)) {
-                    let selectorX = selectorX - 16;
-                    let selectorIndex = selectorIndex - 1;
+                } else if (key = 132) {
+                    if (~(selectorX = 496)) {
+                        let selectorX = selectorX + 16;
+                        let selectorIndex = selectorIndex + 1;
+                    }
+                } else if (key = 133) {
+                    if (~(selectorY = 240)) {
+                        let selectorY = selectorY + 16;
+                        let selectorIndex = selectorIndex + 32;
+                    }
                 }
-
                 do Screen.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
                 do Screen.setColor(false);
                 do Screen.drawRectangle(selectorX + 1, selectorY + 1, selectorX + 14, selectorY + 14);
@@ -159,18 +160,18 @@ class Main {
                     let obstacles[selectorIndex] = draggingEnter;
                 }
 
-                if (~(key = 1)) {
-                    let key = 0;
-                } else {
+                if (key = 1) {
                     // wait for key release
                     while (~(Keyboard.keyPressed() = 0)) {}
                     // wait for key press then hide
-                    while (~(Keyboard.keyPressed() > 0)) {}
+                    while (Keyboard.keyPressed() = 0) {}
                     do Screen.setColor(false);
                     do Screen.drawRectangle(40, 34, 480, 56);
                     do Screen.setColor(true);
                     do Main.drawObstacles();
                     let key = 2;
+                } else {
+                    let key = 0;
                 }
                 do Sys.wait(150);
             }
@@ -183,7 +184,7 @@ class Main {
         let floodQueue[0] = i;
         let floodQueueLength = 1;
         let obstacles[i] = 1;
-        while (~(floodQueueLength < 1)) {
+        while (floodQueueLength > 0) {
             let i = floodQueue[0];
             let i2 = 1;
             while (~(i2 = floodQueueLength)) {
@@ -240,7 +241,7 @@ class Main {
         let initialGoalFitness = obstacles[i2];
         let initialBestFitness = initialGoalFitness;
         let i = 0;
-        while (~(i > 511)) {
+        while (i < 512) {
             if (~((obstacles[i] = true) | (obstacles[i] = false))) {
                 let obstacles[i] = Math.min(3276, 32767 / obstacles[i]);
             } else if (i = i2) {
@@ -274,11 +275,7 @@ class Main {
         var int bottomLeft;
         var int bottomRight;
 
-        if (~isAdjacent) {
-            let rightIndex = Main.floodIndexOutOfBounds(i, i + rightIndex) | (obstacles[i + rightIndex] = true);
-            let leftIndex = Main.floodIndexOutOfBounds(i, i + leftIndex) | (obstacles[i + leftIndex] = true);
-            let penalty = leftIndex + rightIndex;
-        } else {
+        if (isAdjacent) {
             let bottomLeft = i - leftIndex;
             let bottomRight = i + leftIndex;
             let topLeft = bottomLeft - rightIndex;
@@ -291,26 +288,30 @@ class Main {
                 (Main.floodIndexOutOfBounds(i, topRight) | (obstacles[topRight] = true))
             );
             let i = i - rightIndex;
+        } else {
+            let rightIndex = Main.floodIndexOutOfBounds(i, i + rightIndex) | (obstacles[i + rightIndex] = true);
+            let leftIndex = Main.floodIndexOutOfBounds(i, i + leftIndex) | (obstacles[i + leftIndex] = true);
+            let penalty = leftIndex + rightIndex;
         }
 
         if (penalty = -2) {
-            if (~isAdjacent) {
-                let floodVal = floodDist + 65;
+            if (isAdjacent) {
+                let floodVal = floodDist + 12;
             } else {
-                let floodVal = floodDist + 13;
+                let floodVal = floodDist + 65;
             }
         } else if (penalty = -1) {
-            if (~isAdjacent) {
+            if (isAdjacent) {
                 // cant be ran because this will override the + 13 case
-                return;
-            } else {
                 let floodVal = floodDist + 9;
+            } else {
+                return;
             }
         } else {
-            if (~isAdjacent) {
-                let floodVal = floodDist + 7;
-            } else {
+            if (isAdjacent) {
                 let floodVal = floodDist + 5;
+            } else {
+                let floodVal = floodDist + 7;
             }
         }
 
@@ -335,7 +336,7 @@ class Main {
         var int i;
         var int obstacleY;
         var int obstacleX;
-        while (~(i > 511)) {
+        while (i < 512) {
             let obstacleY = 0;
             let obstacleX = i;
             while (~(obstacleX < 32)) {
@@ -361,17 +362,17 @@ class Main {
         do Output.printString(generationString);
         do Output.printInt(Population.getGen());
         do Output.println();
-        if (~(Dot.getMinStep() = 32767)) {
-            do Output.printString(goalStepCountString);
-            do Output.printInt(Dot.getMinStep());
-        } else {
+        if (Dot.getMinStep() = 32767) {
             do Output.printString(goalDistanceString);
             let tmp = Population.getFitnessCache();
-            if (~((tmp[0] = true) | (tmp[0] = 1))) {
-                do Output.printInt(32767 / tmp[0]);
-            } else {
+            if ((tmp[0] = true) | (tmp[0] = 1)) {
                 do Output.printInt(NAString);
+            } else {
+                do Output.printInt(32767 / tmp[0]);
             }
+        } else {
+            do Output.printString(goalStepCountString);
+            do Output.printInt(Dot.getMinStep());
         }
     }
 

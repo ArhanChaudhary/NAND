@@ -29,7 +29,7 @@ export default class AccelerationVector {
 
     static random() {
         let rand = Util.random() & 30720;
-        while (!(rand < 24577)) {
+        while (rand > 24576) {
             rand = Util.random() & 30720;
         }
         if (rand == 2048) {

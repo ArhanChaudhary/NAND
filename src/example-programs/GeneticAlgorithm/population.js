@@ -113,25 +113,25 @@ export default class Population {
         while (i < Population.#size - 1) {
             randFitness = Util.abs(Util.random());
             randFitnessCoef = 32767;
-            if (!(fitnessSumCoef == 0)) {
+            if (fitnessSumCoef == 0) {
+                randFitnessCoef = 0;
+            } else {
                 scaleCache = Util.divide(32767, fitnessSumCoef);
                 while (randFitnessCoef > fitnessSumCoef) {
                     // fitnessSumCoef = 296, randFitnessCoef = 32698
                     // this results in randFitnessCoef = 297 which is out of bounds
                     randFitnessCoef = Util.divide(Util.abs(Util.random()), scaleCache);
                 }
-            } else {
-                randFitnessCoef = 0;
             }
             if (randFitnessCoef == fitnessSumCoef) {
-                if (!(fitnessSum == 0)) {
+                if (fitnessSum == 0) {
+                    randFitness = 0;
+                } else {
                     scaleCache = Util.divide(32767, fitnessSum);
                     while (randFitness > fitnessSum) {
                         // same with this it can also go out of bounds
                         randFitness = Util.divide(Util.abs(Util.random()), scaleCache);
                     }
-                } else {
-                    randFitness = 0;
                 }
             }
             selectionSum = 0;
@@ -153,10 +153,10 @@ export default class Population {
             newDirections = Population.#newBrainDirections[i];
             j = 0;
             while (j < Population.#brainSize) {
-                if (!((Util.random() & 32256) == 0)) {
-                    newDirections[j] = directions[j];
-                } else {
+                if ((Util.random() & 32256) == 0) {
                     newDirections[j] = AccelerationVector.random();
+                } else {
+                    newDirections[j] = directions[j];
                 }
                 j++;
             }
@@ -167,10 +167,10 @@ export default class Population {
             directions = Population.#dots[i].getBrain().getDirections();
             Population.#dots[i].instantiate();
             Population.#dots[i].getBrain().instantiate();
-            if (!(i == 0)) {
-                newDirections = Population.#newBrainDirections[i - 1];
-            } else {
+            if (i == 0) {
                 newDirections = bestDot.getBrain().getDirections();
+            } else {
+                newDirections = Population.#newBrainDirections[i - 1];
             }
             j = 0;
             while (j < Population.#brainSize) {

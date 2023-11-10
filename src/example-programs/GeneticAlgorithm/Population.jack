@@ -148,25 +148,25 @@ class Population {
         while (i < (size - 1)) {
             let randFitness = Math.abs(Util.random());
             let randFitnessCoef = 32767;
-            if (~(fitnessSumCoef = 0)) {
+            if (fitnessSumCoef = 0) {
+                let randFitnessCoef = 0;
+            } else {
                 let scaleCache = 32767 / fitnessSumCoef;
                 while (randFitnessCoef > fitnessSumCoef) {
                     // fitnessSumCoef = 296, randFitnessCoef = 32698
                     // this results in randFitnessCoef = 297 which is out of bounds
                     let randFitnessCoef = Math.abs(Util.random()) / scaleCache;
                 }
-            } else {
-                let randFitnessCoef = 0;
             }
             if (randFitnessCoef = fitnessSumCoef) {
-                if (~(fitnessSum = 0)) {
+                if (fitnessSum = 0) {
+                    let randFitness = 0;
+                } else {
                     let scaleCache = 32767 / fitnessSum;
                     while (randFitness > fitnessSum) {
                         // same with this it can also go out of bounds
                         let randFitness = Math.abs(Util.random()) / scaleCache;
                     }
-                } else {
-                    let randFitness = 0;
                 }
             }
             let selectionSum = 0;
@@ -189,10 +189,10 @@ class Population {
             let newDirections = newBrainDirections[i];
             let j = 0;
             while (j < brainSize) {
-                if (~((Util.random() & 32256) = 0)) {
-                    let newDirections[j] = directions[j];
-                } else {
+                if ((Util.random() & 32256) = 0) {
                     let newDirections[j] = AccelerationVector.random();
+                } else {
+                    let newDirections[j] = directions[j];
                 }
                 let j = j + 1;
             }
@@ -205,11 +205,11 @@ class Population {
             let directions = brain.getDirections();
             do dot.instantiate();
             do brain.instantiate();
-            if (~(i = 0)) {
-                let newDirections = newBrainDirections[i - 1];
-            } else {
+            if (i = 0) {
                 let brain = bestDot.getBrain();
                 let newDirections = brain.getDirections();
+            } else {
+                let newDirections = newBrainDirections[i - 1];
             }
             let j = 0;
             while (j < brainSize) {

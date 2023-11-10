@@ -53,7 +53,7 @@ export default class Main {
         console.log("Press any key to start.");
         await new Promise(resolve => {
             function tmp() {
-                if (!(Util.keyPressed() > 0)) {
+                if (Util.keyPressed() == 0) {
                     Util.random();
                     setTimeout(tmp, 0);
                 } else {
@@ -73,14 +73,14 @@ export default class Main {
         Main.refreshDisplay();
         window.interval = 25;
         async function tmp() {
-            if (!Population.allDotsDead()) {
-                Population.update();
-            } else {
+            if (Population.allDotsDead()) {
                 Population.naturalSelection();
                 if (Util.keyPressed() == 140) {
                     await Main.selectObstacles();
                 }
                 Main.refreshDisplay();
+            } else {
+                Population.update();
             }
             setTimeout(tmp, window.interval);
         }
@@ -134,24 +134,26 @@ export default class Main {
             if (!(key == 140)) {
                 Main.drawGoal();
                 Util.drawRectangle(Main.#initialX - 1, Main.#initialY - 1, Main.#initialX + 1, Main.#initialY + 1);
-                if (!(key == 130)) {
-                    if (!(key == 131)) {
-                        if (!(key == 132)) {
-                            if (!((!(key == 133)) || (selectorY == 240))) {
-                                selectorY = selectorY + 16;
-                                selectorIndex = selectorIndex + 32;
-                            }
-                        } else if (!(selectorX == 496)) {
-                            selectorX = selectorX + 16;
-                            selectorIndex = selectorIndex + 1;
-                        }
-                    } else if (!(selectorY == 0)) {
+                if (key == 130) {
+                    if (!(selectorX == 0)) {
+                        selectorX = selectorX - 16;
+                        selectorIndex = selectorIndex - 1;
+                    }
+                } else if (key == 131) {
+                    if (!(selectorY == 0)) {
                         selectorY = selectorY - 16;
                         selectorIndex = selectorIndex - 32;
                     }
-                } else if (!(selectorX == 0)) {
-                    selectorX = selectorX - 16;
-                    selectorIndex = selectorIndex - 1;
+                } else if (key == 132) {
+                    if (!(selectorX == 496)) {
+                        selectorX = selectorX + 16;
+                        selectorIndex = selectorIndex + 1;
+                    }
+                } else if (key == 133) {
+                    if (!(selectorY == 240)) {
+                        selectorY = selectorY + 16;
+                        selectorIndex = selectorIndex + 32;
+                    }
                 }
                 Util.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
                 Util.setColor(0);
@@ -163,11 +165,11 @@ export default class Main {
                     draggingEnter = key == 128 ? -1 : 0;
                     await new Promise(resolve => {
                         function tmp() {
-                            if (!(key == 0)) {
+                            if (key == 0) {
+                                resolve();
+                            } else {
                                 key = Util.keyPressed();
                                 setTimeout(tmp, 0);
-                            } else {
-                                resolve();
                             }
                         }
                         tmp();
@@ -176,9 +178,7 @@ export default class Main {
                 if (drag) {
                     Main.#obstacles[selectorIndex] = draggingEnter;
                 }
-                if (!(key == 1)) {
-                    key = 0;
-                } else {
+                if (key == 1) {
                     // wait for key release
                     await new Promise(resolve => {
                         function tmp() {
@@ -206,6 +206,8 @@ export default class Main {
                     Util.setColor(-1);
                     Main.drawObstacles();
                     key = 2;
+                } else {
+                    key = 0;
                 }
                 await new Promise(resolve => setTimeout(resolve, 50));
             }
@@ -216,7 +218,7 @@ export default class Main {
         Main.#floodQueue[0] = i;
         Main.#floodQueueLength = 1;
         Main.#obstacles[i] = 1;
-        while (!(Main.#floodQueueLength < 1)) {
+        while (Main.#floodQueueLength > 0) {
             i = Main.#floodQueue[0];
             i2 = 1;
             while (!(i2 == Main.#floodQueueLength)) {
@@ -274,7 +276,7 @@ export default class Main {
         initialGoalFitness = Main.#obstacles[i2];
         initialBestFitness = initialGoalFitness;
         i = 0;
-        while (!(i > 511)) {
+        while (i < 512) {
             if (!(Main.#obstacles[i] == -1 || Main.#obstacles[i] == 0)) {
                 Main.#obstacles[i] = Math.min(3276, Util.divide(32767, Main.#obstacles[i]));
             } else if (i == i2) {
@@ -306,11 +308,7 @@ export default class Main {
         let bottomLeft = 0;
         let bottomRight = 0;
 
-        if (!Main.#isAdjacent) {
-            rightIndex = Main.floodIndexOutOfBounds(i, i + rightIndex) || (Main.#obstacles[i + rightIndex] == -1) ? -1 : 0;
-            leftIndex = Main.floodIndexOutOfBounds(i, i + leftIndex) || (Main.#obstacles[i + leftIndex] == -1) ? -1 : 0;
-            penalty = leftIndex + rightIndex;
-        } else {
+        if (Main.#isAdjacent) {
             bottomLeft = i - leftIndex;
             bottomRight = i + leftIndex;
             topLeft = bottomLeft - rightIndex;
@@ -323,27 +321,31 @@ export default class Main {
                 (Main.floodIndexOutOfBounds(i, topRight) || Main.#obstacles[topRight] == -1 ? -1 : 0)
             );
             i -= rightIndex;
+        } else {
+            rightIndex = Main.floodIndexOutOfBounds(i, i + rightIndex) || (Main.#obstacles[i + rightIndex] == -1) ? -1 : 0;
+            leftIndex = Main.floodIndexOutOfBounds(i, i + leftIndex) || (Main.#obstacles[i + leftIndex] == -1) ? -1 : 0;
+            penalty = leftIndex + rightIndex;
         }
 
         if (penalty == -2) {
-            if (!Main.#isAdjacent) {
-                floodVal = Main.#floodDist + 65;
+            if (Main.#isAdjacent) {
+                floodVal = Main.#floodDist + 12;
             } else {
-                floodVal = Main.#floodDist + 11;
+                floodVal = Main.#floodDist + 65;
             }
         } else if (penalty == -1) {
-            if (!Main.#isAdjacent) {
+            if (Main.#isAdjacent) {
+                floodVal = Main.#floodDist + 9;
+            } else {
                 // cant be ran because this will override the + 13 case
                 // it also isnt natural for dots to get past such an obstacle in a single diagonal step
                 return;
-            } else {
-                floodVal = Main.#floodDist + 9;
             }
         } else {
-            if (!Main.#isAdjacent) {
-                floodVal = Main.#floodDist + 7;
-            } else {
+            if (Main.#isAdjacent) {
                 floodVal = Main.#floodDist + 5;
+            } else {
+                floodVal = Main.#floodDist + 7;
             }
         }
 
@@ -369,7 +371,7 @@ export default class Main {
         let obstacleX;
         let obstacleY;
 
-        while (!(i > 511)) {
+        while (i < 512) {
             obstacleY = 0;
             obstacleX = i;
             while (!(obstacleX < 32)) {
@@ -395,16 +397,16 @@ export default class Main {
         Main.drawGoal();
         Main.drawObstacles();
         console.log(Main.#generationString + Population.getGen());
-        if (!(Dot.getMinStep() == 32767)) {
-            console.log(Main.#goalStepCountString + Dot.getMinStep());
-        } else {
+        if (Dot.getMinStep() == 32767) {
             tmp = Population.getFitnessCache();
-            if (!(tmp[0] == -1 || tmp[0] == 1)) {
-                tmp = Util.divide(32767, tmp[0]);
-            } else {
+            if (tmp[0] == -1 || tmp[0] == 1) {
                 tmp = Main.#NAString;
+            } else {
+                tmp = Util.divide(32767, tmp[0]);
             }
             console.log(Main.#goalDistanceString + tmp);
+        } else {
+            console.log(Main.#goalStepCountString + Dot.getMinStep());
         }
     }
 
