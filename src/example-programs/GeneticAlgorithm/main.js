@@ -1,5 +1,5 @@
 import Population from "./population.js";
-import AccelerationVector from "./accelerationvector.js";
+import AccelerationVectorPair from "./accelerationvectorpair.js";
 import Dot from "./dot.js";
 import Util from "./util.js";
 import Brain from "./brain.js";
@@ -41,8 +41,9 @@ export default class Main {
     static async main() {
         let brainSize;
         let populationCount;
+        let firstPairComponent;
         Util.init();
-        AccelerationVector.init();
+        AccelerationVectorPair.init();
         Population.init();
         Main.init();
 
@@ -72,8 +73,8 @@ export default class Main {
         Main.#goalY = 128;
         Main.#onlyBest = 0;
         await Main.selectObstacles();
-        brainSize = Main.#initialGoalDist - 2;
-        populationCount = Util.divide(9400, Main.#initialGoalDist) - 2;
+        brainSize = Util.divide(Main.#initialGoalDist, 2) - 2;
+        populationCount = Util.divide(8000, brainSize + 2) - 2;
         Brain.config(brainSize);
         Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, brainSize, Main.#obstacles);
         Population.config(populationCount, brainSize, Main.#onlyBest, Main.#initialBestDotFitness);
@@ -86,8 +87,10 @@ export default class Main {
                     await Main.selectObstacles();
                 }
                 Main.refreshDisplay();
+                firstPairComponent = false;
             } else {
-                Population.update();
+                firstPairComponent = !firstPairComponent;
+                Population.update(firstPairComponent);
             }
             setTimeout(tmp, window.interval);
         }
@@ -377,9 +380,9 @@ export default class Main {
             obstacleX = obstacleX + obstacleX;
             if (Main.#obstacles[i] == -1) {
                 Util.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
-            }/* else if (!(Main.#obstacles[i] == 0)) {
+            } else if (!(Main.#obstacles[i] == 0)) {
                 Util.drawText(Util.divide(32767, Main.#obstacles[i]), obstacleX + 8, obstacleY + 8);
-            }*/
+            }
             i++;
         }
     }

@@ -2,7 +2,7 @@ class Dot {
     static int initialX, initialY;
     field int posX, posY;
     field int velX, velY;
-    field AccelerationVector acc;
+    field AccelerationVectorPair acc;
     static int goalX, goalY;
     field int prevX, prevY;
     field Brain brain;
@@ -67,19 +67,25 @@ class Dot {
         return reachedGoal;
     }
 
-    method void update(boolean andShow) {
+    method void update(boolean andShow, boolean firstPairComponent) {
         var boolean newVelXIsNegative, newVelYIsNegative;
         if (brain.getStep() > minStep) {
             let dead = true;
         } else if (~dead) {
-            if (brainSize > brain.getStep()) {
-                let acc = brain.getNextDirection();
-            } else {
+            if (~(brainSize > brain.getStep())) {
                 let dead = true;
+            } else if (firstPairComponent) {
+                let acc = brain.getNextDirection();
             }
 
-            let velX = velX + acc.getX();
-            let velY = velY + acc.getY();
+            if (firstPairComponent) {
+                let velX = velX + acc.getX();
+                let velY = velY + acc.getY();
+            } else {
+                let velX = velX + acc.getX2();
+                let velY = velY + acc.getY2();
+            }
+
             let newVelXIsNegative = velX < 0;
             let newVelYIsNegative = velY < 0;
 

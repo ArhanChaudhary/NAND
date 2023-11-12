@@ -75,20 +75,26 @@ export default class Dot {
         return this.#reachedGoal;
     }
 
-    update(andShow) {
+    update(andShow, firstPairComponent) {
         let newVelXIsNegative;
         let newVelYIsNegative;
         if (this.#brain.getStep() > Dot.#minStep) {
             this.#dead = -1;
         } else if (!this.#dead) {
-            if (Dot.#brainSize > this.#brain.getStep()) {
-                this.#acc = this.#brain.getNextDirection();
-            } else {
+            if (!(Dot.#brainSize > this.#brain.getStep())) {
                 this.#dead = -1;
+            } else if (firstPairComponent) {
+                this.#acc = this.#brain.getNextDirection();
             }
 
-            this.#velX += this.#acc.getX();
-            this.#velY += this.#acc.getY();
+            if (firstPairComponent) {
+                this.#velX += this.#acc.getX();
+                this.#velY += this.#acc.getY();
+            } else {
+                this.#velX += this.#acc.getY2();
+                this.#velY += this.#acc.getX2();
+            }
+
             newVelXIsNegative = this.#velX < 0;
             newVelYIsNegative = this.#velY < 0;
 

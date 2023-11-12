@@ -16,7 +16,7 @@ class Brain {
         let step = 0;
         let directions = Array.new(brainSize);
         while (i < brainSize) {
-            let directions[i] = AccelerationVector.random();
+            let directions[i] = AccelerationVectorPair.random();
             let i = i + 1;
         }
         return this;

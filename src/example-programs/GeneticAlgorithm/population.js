@@ -1,6 +1,6 @@
 import Dot from './dot.js';
 import Util from './util.js';
-import AccelerationVector from './accelerationvector.js';
+import AccelerationVectorPair from './accelerationvectorpair.js';
 
 export default class Population {
     static #dots;
@@ -52,12 +52,12 @@ export default class Population {
         return Population.#bestDotFitness;
     }
 
-    static update() {
+    static update(firstPairComponent) {
         let i = 0;
         let dot;
         while (i < Population.#size) {
             dot = Population.#dots[i];
-            dot.update(!Population.#onlyBest || i == 0);
+            dot.update(!Population.#onlyBest || i == 0, firstPairComponent);
             i++;
         }
     }
@@ -156,7 +156,7 @@ export default class Population {
             j = 0;
             while (j < Population.#brainSize) {
                 if ((Util.random() & 32256) == 0) {
-                    newDirections[j] = AccelerationVector.random();
+                    newDirections[j] = AccelerationVectorPair.random();
                 } else {
                     newDirections[j] = directions[j];
                 }

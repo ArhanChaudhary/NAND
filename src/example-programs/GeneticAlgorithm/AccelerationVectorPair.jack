@@ -1,0 +1,71 @@
+class AccelerationVectorPair {
+    field int x;
+    field int y;
+    field int x2;
+    field int y2;
+    static Array cache;
+
+    function void init() {
+        var int i;
+        var int j;
+        var int k;
+        var int l;
+        var int c;
+        let cache = Array.new(169);
+        let i = -2;
+        while (i < 3) {
+            let j = -2;
+            while (j < 3) {
+                if ((Math.abs(i) + Math.abs(j)) < 3) {
+                    let k = -2;
+                    while (k < 3) {
+                        let l = -2;
+                        while (l < 3) {
+                            if ((Math.abs(k) + Math.abs(l)) < 3) {
+                                let cache[c] = AccelerationVectorPair.new(i, j, k, l);
+                                let c = c + 1;
+                            }
+                            let l = l + 1;
+                        }
+                        let k = k + 1;
+                    }
+                }
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
+    }
+
+    constructor AccelerationVectorPair new(int _x, int _y, int _x2, int _y2) {
+        let x = _x;
+        let y = _y;
+        let x2 = _x2;
+        let y2 = _y2;
+        return this;
+    }
+
+    function AccelerationVectorPair random() {
+        var int rand;
+        let rand = 32767;
+        while (~(rand < 169)) {
+            let rand = (Util.random() & 32640) / 128;
+        }
+        return cache[rand];
+    }
+
+    method int getX() {
+        return x;
+    }
+
+    method int getY() {
+        return y;
+    }
+
+    method int getX2() {
+        return x2;
+    }
+
+    method int getY2() {
+        return y2;
+    }
+}

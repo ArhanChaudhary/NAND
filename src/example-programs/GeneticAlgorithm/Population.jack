@@ -84,12 +84,12 @@ class Population {
         return bestDotFitness;
     }
 
-    function void update() {
+    function void update(boolean firstPairComponent) {
         var int i;
         var Dot dot;
         while (i < size) {
             let dot = dots[i];
-            do dot.update((~onlyBest) | (i = 0));
+            do dot.update((~onlyBest) | (i = 0), firstPairComponent);
             let i = i + 1;
         }
     }
@@ -191,7 +191,7 @@ class Population {
             let j = 0;
             while (j < brainSize) {
                 if ((Util.random() & 32256) = 0) {
-                    let newDirections[j] = AccelerationVector.random();
+                    let newDirections[j] = AccelerationVectorPair.random();
                 } else {
                     let newDirections[j] = directions[j];
                 }

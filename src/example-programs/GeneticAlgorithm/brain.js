@@ -1,4 +1,4 @@
-import AccelerationVector from "./accelerationvector.js";
+import AccelerationVectorPair from "./accelerationvectorpair.js";
 
 export default class Brain {
     #directions;
@@ -22,7 +22,7 @@ export default class Brain {
             this.#step = 0;
             this.#directions = new Array(Brain.#brainSize);
             while (i < Brain.#brainSize) {
-                this.#directions[i] = AccelerationVector.random();
+                this.#directions[i] = AccelerationVectorPair.random();
                 i++;
             }
         }
