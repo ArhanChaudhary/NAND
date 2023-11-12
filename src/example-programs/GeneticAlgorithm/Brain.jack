@@ -13,7 +13,7 @@ class Brain {
 
     constructor Brain new() {
         var int i;
-        let step = 0;
+        let step = -1;
         let directions = Array.new(brainSize);
         while (i < brainSize) {
             let directions[i] = AccelerationVectorPair.random();
@@ -23,13 +23,13 @@ class Brain {
     }
 
     constructor Brain newWithDirections(Array _directions) {
-        let step = 0;
+        let step = -1;
         let directions = _directions;
         return this;
     }
 
     method void instantiate() {
-        let step = 0;
+        let step = -1;
     }
 
     method Array getDirections() {
@@ -37,14 +37,12 @@ class Brain {
     }
 
     method int getStep() {
-        return step;
+        return step + 1;
     }
 
     method int getNextDirection() {
-        var int ret;
-        let ret = directions[step];
         let step = step + 1;
-        return ret;
+        return directions[step];
     }
 
     method void dispose() {

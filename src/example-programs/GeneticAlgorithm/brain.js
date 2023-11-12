@@ -15,11 +15,11 @@ export default class Brain {
 
     constructor(directions) {
         if (directions) {
-            this.#step = 0;
+            this.#step = -1;
             this.#directions = directions;
         } else {
             let i = 0;
-            this.#step = 0;
+            this.#step = -1;
             this.#directions = new Array(Brain.#brainSize);
             while (i < Brain.#brainSize) {
                 this.#directions[i] = AccelerationVectorPair.random();
@@ -29,7 +29,7 @@ export default class Brain {
     }
 
     instantiate() {
-        this.#step = 0;
+        this.#step = -1;
     }
 
     getDirections() {
@@ -37,12 +37,11 @@ export default class Brain {
     }
 
     getStep() {
-        return this.#step;
+        return this.#step + 1;
     }
 
     getNextDirection() {
-        let ret = this.#directions[this.#step];
         this.#step++;
-        return ret;
+        return this.#directions[this.#step];;
     }
 }

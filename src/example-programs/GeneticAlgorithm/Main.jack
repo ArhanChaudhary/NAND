@@ -355,13 +355,15 @@ class Main {
 
     function void refreshDisplay() {
         var int bestDotFitness;
+        var int minStep;
         do Main.drawGoal();
         do Main.drawObstacles();
         do Output.moveCursor(21, 0);
         do Output.printString(generationString);
         do Output.printInt(Population.getGen());
         do Output.println();
-        if (Dot.getMinStep() = 32767) {
+        let minStep = Dot.getMinStep();
+        if (minStep = 32767) {
             do Output.printString(goalDistanceString);
             let bestDotFitness = Population.getBestDotFitness();
             if ((bestDotFitness = true) | (bestDotFitness = 1)) {
@@ -371,7 +373,7 @@ class Main {
             }
         } else {
             do Output.printString(goalStepCountString);
-            do Output.printInt(Dot.getMinStep());
+            do Output.printInt(minStep);
         }
     }
 

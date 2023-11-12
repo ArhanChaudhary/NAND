@@ -390,10 +390,11 @@ export default class Main {
     static refreshDisplay() {
         let tmp;
         let bestDotFitness;
+        let minStep = Dot.getMinStep();
         Main.drawGoal();
         Main.drawObstacles();
         console.log(Main.#generationString + Population.getGen());
-        if (Dot.getMinStep() == 32767) {
+        if (minStep == 32767) {
             bestDotFitness = Population.getBestDotFitness();
             if (bestDotFitness == -1 || bestDotFitness == 1) {
                 tmp = Main.#NAString;
@@ -402,7 +403,7 @@ export default class Main {
             }
             console.log(Main.#goalDistanceString + tmp);
         } else {
-            console.log(Main.#goalStepCountString + Dot.getMinStep());
+            console.log(Main.#goalStepCountString + minStep);
         }
     }
 
