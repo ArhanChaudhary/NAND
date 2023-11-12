@@ -4,7 +4,7 @@ ctx.textBaseline = "middle";
 ctx.font = "7px monospace";
 export default class Util {
     static #next;
-    static #keyPressed;
+    static #keyPressed = 0;
 
     static init() {
         Util.setColor(-1);

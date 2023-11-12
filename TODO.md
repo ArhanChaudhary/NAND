@@ -2,12 +2,9 @@
 
 * accelerationvector optimization
 * dynamically choose mutation rate
-* different config functions
-* how quickly do you want to reach the goal? input, quick: more steps so it will do whatever, optimal: less steps so it will be forced to optimize for best
-* menu: initialXY goalXY selectObstacles onlyBest continue
+* menu: initialXY goalXY selectObstacles onlyBest continue (different config functions)
 * random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
 
-* actual crossover?
 * cannot set variable names to keywords in compiler
 * compilererror stash, too many static error
 * graphing calculator in jack

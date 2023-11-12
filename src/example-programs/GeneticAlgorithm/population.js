@@ -5,6 +5,7 @@ import AccelerationVector from './accelerationvector.js';
 export default class Population {
     static #dots;
     static #fitnessCache;
+    static #bestDotFitness;
     static #newBrainDirections;
     static #gen;
     static #size;
@@ -17,13 +18,14 @@ export default class Population {
         Population.#allocatingString = "Allocating dot memory...";
     }
 
-    static config(size, brainSize, onlyBest) {
+    static config(size, brainSize, onlyBest, initialBestDotFitness) {
         let i = 0;
         console.log(Population.#allocatingString);
         Population.#gen = 1;
         Population.#size = size;
         Population.#brainSize = brainSize;
         Population.#onlyBest = onlyBest;
+        Population.#bestDotFitness = initialBestDotFitness;
 
         Population.#dots = new Array(Population.#size);
         while (i < Population.#size) {
@@ -46,8 +48,8 @@ export default class Population {
         return Population.#gen;
     }
 
-    static getFitnessCache() {
-        return Population.#fitnessCache;
+    static getBestDotFitness() {
+        return Population.#bestDotFitness;
     }
 
     static update() {
@@ -76,7 +78,6 @@ export default class Population {
         let dot;
         let bestDot;
         let dotFitness;
-        let bestFitness = -1;
         let i = 0;
         let j;
         let selectionSum;
@@ -89,12 +90,13 @@ export default class Population {
         let newDirections;
         let scaleCache;
 
+        Population.#bestDotFitness = -1;
         while (i < Population.#size) {
             dot = Population.#dots[i];
             dotFitness = dot.calculateFitness();
             Population.#fitnessCache[i] = dotFitness;
-            if (dotFitness > bestFitness) {
-                bestFitness = dotFitness;
+            if (dotFitness > Population.#bestDotFitness) {
+                Population.#bestDotFitness = dotFitness;
                 bestDot = dot;
             }
             fitnessSum += dotFitness;

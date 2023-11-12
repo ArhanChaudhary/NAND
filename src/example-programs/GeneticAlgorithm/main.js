@@ -15,7 +15,8 @@ export default class Main {
     static #floodQueue;
     static #floodQueueLength;
     static #floodDist;
-    static #firstSelectObstacles;
+    static #initialGoalDist;
+    static #initialBestDotFitness;
 
     static #generationString;
     static #goalStepCountString;
@@ -33,12 +34,13 @@ export default class Main {
         Main.#placeString = "Place obstacles with the arrow, enter, and delete keys.";
         Main.#escString = "Press esc to finish.";
         Main.#precomputingString = "Precomputing fitnesses...";
-        Main.#firstSelectObstacles = true;
         Main.#floodQueue = new Array(100);
         Main.#obstacles = new Array(512);
     }
 
     static async main() {
+        let brainSize;
+        let populationCount;
         Util.init();
         AccelerationVector.init();
         Population.init();
@@ -70,6 +72,11 @@ export default class Main {
         Main.#goalY = 128;
         Main.#onlyBest = 0;
         await Main.selectObstacles();
+        brainSize = Main.#initialGoalDist - 2;
+        populationCount = Util.divide(9400, Main.#initialGoalDist) - 2;
+        Brain.config(brainSize);
+        Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, brainSize, Main.#obstacles);
+        Population.config(populationCount, brainSize, Main.#onlyBest, Main.#initialBestDotFitness);
         Main.refreshDisplay();
         window.interval = 25;
         async function tmp() {
@@ -100,10 +107,6 @@ export default class Main {
         let allowDown;
         let allowRight;
         let allowLeft;
-        let initialGoalFitness;
-        let initialBestFitness;
-        let populationCount;
-        let brainSize;
         while (!(i > 511)) {
             if (!(Main.#obstacles[i] == -1)) {
                 Main.#obstacles[i] = 0;
@@ -250,7 +253,7 @@ export default class Main {
                 Main.floodIndex(i, -32, 1);
             }
 
-            Main.#isAdjacent = false;
+            Main.#isAdjacent = 0;
             if (allowUp) {
                 if (allowRight) {
                     Main.floodIndex(i - 31, -1, 32);
@@ -273,31 +276,20 @@ export default class Main {
         }
 
         i2 = Main.getGridIndex(Main.#initialX, Main.#initialY);
-        initialGoalFitness = Main.#obstacles[i2];
-        initialBestFitness = initialGoalFitness;
+        Main.#initialGoalDist = Main.#obstacles[i2];
         i = 0;
         while (i < 512) {
             if (!(Main.#obstacles[i] == -1 || Main.#obstacles[i] == 0)) {
                 Main.#obstacles[i] = Math.min(3276, Util.divide(32767, Main.#obstacles[i]));
+                if (i == i2) {
+                    Main.#initialBestDotFitness = Main.#obstacles[i2];
+                }
             } else if (i == i2) {
-                initialGoalFitness = 200;
-                initialBestFitness = 1;
+                Main.#initialGoalDist = 200;
+                Main.#initialBestDotFitness = 1;
             }
             i++;
         }
-
-        if (Main.#firstSelectObstacles) {
-            // put this after the above while loop so appropriate loading screen can be displayed
-            brainSize = initialGoalFitness - 2;
-            populationCount = Util.divide(9400, initialGoalFitness) - 2;
-            Brain.config(brainSize);
-            Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, brainSize, Main.#obstacles);
-            Population.config(populationCount, brainSize, Main.#onlyBest);
-            Main.#firstSelectObstacles = false;
-        }
-
-        i = Population.getFitnessCache();
-        i[0] = initialBestFitness;
     }
 
     static floodIndex(i, leftIndex, rightIndex) {
@@ -394,15 +386,16 @@ export default class Main {
 
     static refreshDisplay() {
         let tmp;
+        let bestDotFitness;
         Main.drawGoal();
         Main.drawObstacles();
         console.log(Main.#generationString + Population.getGen());
         if (Dot.getMinStep() == 32767) {
-            tmp = Population.getFitnessCache();
-            if (tmp[0] == -1 || tmp[0] == 1) {
+            bestDotFitness = Population.getBestDotFitness();
+            if (bestDotFitness == -1 || bestDotFitness == 1) {
                 tmp = Main.#NAString;
             } else {
-                tmp = Util.divide(32767, tmp[0]);
+                tmp = Util.divide(32767, bestDotFitness);
             }
             console.log(Main.#goalDistanceString + tmp);
         } else {

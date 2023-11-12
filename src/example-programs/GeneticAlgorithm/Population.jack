@@ -1,6 +1,7 @@
 class Population {
     static Array dots;
     static Array fitnessCache;
+    static int bestDotFitness;
     static Array newBrainDirections;
     static int gen;
     static int size;
@@ -13,7 +14,7 @@ class Population {
         let allocatingString = "Allocating dot memory...";
     }
 
-    function void config(int _size, int _brainSize, boolean _onlyBest) {
+    function void config(int _size, int _brainSize, boolean _onlyBest, int initialBestDotFitness) {
         var int i;
         var Dot dot;
         var Array tmp;
@@ -49,6 +50,7 @@ class Population {
         let size = _size;
         let brainSize = _brainSize;
         let onlyBest = _onlyBest;
+        let bestDotFitness = initialBestDotFitness;
 
         let dots = Array.new(size);
         while (i < size) {
@@ -78,8 +80,8 @@ class Population {
         return gen;
     }
 
-    function Array getFitnessCache() {
-        return fitnessCache;
+    function int getBestDotFitness() {
+        return bestDotFitness;
     }
 
     function void update() {
@@ -109,7 +111,6 @@ class Population {
         var Dot bestDot;
         var Brain brain;
         var int dotFitness;
-        var int bestFitness;
         var int i;
         var int j;
         var int selectionSum;
@@ -122,13 +123,13 @@ class Population {
         var Array newDirections;
         var int scaleCache;
 
-        let bestFitness = -1;
+        let bestDotFitness = -1;
         while (i < size) {
             let dot = dots[i];
             let dotFitness = dot.calculateFitness();
             let fitnessCache[i] = dotFitness;
-            if (dotFitness > bestFitness) {
-                let bestFitness = dotFitness;
+            if (dotFitness > bestDotFitness) {
+                let bestDotFitness = dotFitness;
                 let bestDot = dot;
             }
             let fitnessSum = fitnessSum + dotFitness;
