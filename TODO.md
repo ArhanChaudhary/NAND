@@ -1,28 +1,31 @@
-# TODO
+# TODO (genetic algorithm)
 
-* accelerationvector optimization
-* dynamically choose mutation rate
+* goal step count is wrong
+* dynamically choose mutation rate (use binomial dist calculator)
 * menu: initialXY goalXY selectObstacles onlyBest continue (different config functions)
-* random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
 
+# TODO (NAND)
 * cannot set variable names to keywords in compiler
+* ensure all subroutines are defined at compile time
 * compilererror stash, too many static error
-* graphing calculator in jack
+* better readme
+    * if and else doesn't require bracket
+    * [][] works
+    * you cant malloc 0 even if the original OS could
+    * theres no Sys.error(18) String.eraseLastChar String is empty
+    * arguments keyword
 * actually code the ui
+
+# TODO (stats testing)
+* random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
+* should acceleration vectors mutate in consecutive pairs as it is or individually?
+
+# TODO (for later)
+* graphing calculator in jack
 * nand in nand
 * lisp interpreter
 * barrel shifter
 * mouse input and click input
-* ensure all subroutines are defined at compile time, automatic dealloc in compiler
-
-changed:
-if and else doesn't require bracket
-[][] works
-you cant malloc 0 even if the original OS could
-theres no Sys.error(18) String.eraseLastChar String is empty
-arguments keyword
-
-# TODO (for later)
 * draw screen using prev diff
 * move rustwasm.render to worker
 * 32 bit architecture
