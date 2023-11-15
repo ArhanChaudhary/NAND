@@ -6,6 +6,7 @@ export default class Population {
     static #dots;
     static #fitnessCache;
     static #bestDotFitness;
+    static #dynamicMutationRate;
     static #newBrainDirections;
     static #gen;
     static #size;
@@ -26,6 +27,7 @@ export default class Population {
         Population.#brainSize = brainSize;
         Population.#onlyBest = onlyBest;
         Population.#bestDotFitness = initialBestDotFitness;
+        Population.#dynamicMutationRate = Util.divide(1530, brainSize);
 
         Population.#dots = new Array(Population.#size);
         while (i < Population.#size) {
@@ -86,9 +88,12 @@ export default class Population {
         let randFitnessCoef;
         let fitnessSum = 0;
         let fitnessSumCoef = 0;
+        let randTo1000;
+        let randToBrainSize;
         let directions;
         let newDirections;
         let scaleCache;
+        let mutated;
 
         Population.#bestDotFitness = -1;
         while (i < Population.#size) {
@@ -113,18 +118,18 @@ export default class Population {
 
         i = 0;
         while (i < Population.#size - 1) {
-            randFitness = Util.abs(Util.random());
-            randFitnessCoef = 32767;
             if (fitnessSumCoef == 0) {
                 randFitnessCoef = 0;
             } else {
                 scaleCache = Util.divide(32767, fitnessSumCoef);
+                randFitnessCoef = 32767;
                 while (randFitnessCoef > fitnessSumCoef) {
                     // fitnessSumCoef = 296, randFitnessCoef = 32698
                     // this results in randFitnessCoef = 297 which is out of bounds
                     randFitnessCoef = Util.divide(Util.abs(Util.random()), scaleCache);
                 }
             }
+            randFitness = Util.abs(Util.random());
             if (randFitnessCoef == fitnessSumCoef) {
                 if (fitnessSum == 0) {
                     randFitness = 0;
@@ -153,14 +158,30 @@ export default class Population {
             }
             directions = dot.getBrain().getDirections();
             newDirections = Population.#newBrainDirections[i];
+            mutated = false;
             j = 0;
             while (j < Population.#brainSize) {
-                if ((Util.random() & 32256) == 0) {
+                // scaleCache = Util.divide(32767, 1000); = 32
+                randTo1000 = 1000;
+                while (!(randTo1000 < 1000)) {
+                    randTo1000 = Util.divide(Util.abs(Util.random()), 32);
+                }
+                if (randTo1000 < Population.#dynamicMutationRate) {
                     newDirections[j] = AccelerationVectorPair.random();
+                    mutated = true;
                 } else {
                     newDirections[j] = directions[j];
                 }
                 j++;
+            }
+            if (!mutated) {
+                scaleCache = Util.divide(32767, Population.#brainSize);
+                randToBrainSize = Population.#brainSize;
+                // randToBrainSize can be negative Math.abs does not guarantee positive (-32768)
+                while (!((randToBrainSize > -1) && (randToBrainSize < Population.#brainSize))) {
+                    randToBrainSize = Util.divide(Util.abs(Util.random()), scaleCache);
+                }
+                newDirections[randToBrainSize] = AccelerationVectorPair.random();
             }
             i++;
         }

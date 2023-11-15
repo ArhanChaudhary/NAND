@@ -2,6 +2,7 @@ class Population {
     static Array dots;
     static Array fitnessCache;
     static int bestDotFitness;
+    static int dynamicMutationRate;
     static Array newBrainDirections;
     static int gen;
     static int size;
@@ -51,6 +52,7 @@ class Population {
         let brainSize = _brainSize;
         let onlyBest = _onlyBest;
         let bestDotFitness = initialBestDotFitness;
+        let dynamicMutationRate = 1530 / brainSize;
 
         let dots = Array.new(size);
         while (i < size) {
@@ -64,7 +66,7 @@ class Population {
         // auxilliary memory
         let newBrainDirections = Array.new(size - 1);
         if (~(newBrainDirections < 16387)) {
-            do Sys.error(3);
+            do Sys.error(6);
         }
         do Screen.setColor(false);
         do Screen.drawRectangle(176, 122, 368, 133);
@@ -119,9 +121,12 @@ class Population {
         var int randFitnessCoef;
         var int fitnessSum;
         var int fitnessSumCoef;
+        var int randTo1000;
+        var int randToBrainSize;
         var Array directions;
         var Array newDirections;
         var int scaleCache;
+        var boolean mutated;
 
         let bestDotFitness = -1;
         while (i < size) {
@@ -147,18 +152,18 @@ class Population {
 
         let i = 0;
         while (i < (size - 1)) {
-            let randFitness = Math.abs(Util.random());
-            let randFitnessCoef = 32767;
             if (fitnessSumCoef = 0) {
                 let randFitnessCoef = 0;
             } else {
                 let scaleCache = 32767 / fitnessSumCoef;
+                let randFitnessCoef = 32767;
                 while (randFitnessCoef > fitnessSumCoef) {
                     // fitnessSumCoef = 296, randFitnessCoef = 32698
                     // this results in randFitnessCoef = 297 which is out of bounds
                     let randFitnessCoef = Math.abs(Util.random()) / scaleCache;
                 }
             }
+            let randFitness = Math.abs(Util.random());
             if (randFitnessCoef = fitnessSumCoef) {
                 if (fitnessSum = 0) {
                     let randFitness = 0;
@@ -188,14 +193,30 @@ class Population {
             let brain = dot.getBrain();
             let directions = brain.getDirections();
             let newDirections = newBrainDirections[i];
+            let mutated = false;
             let j = 0;
             while (j < brainSize) {
-                if ((Util.random() & 32256) = 0) {
+                // scaleCache = 32767 / 1000 = 32
+                let randTo1000 = 1000;
+                while (~(randTo1000 < 1000)) {
+                    let newDirections[j] = Math.abs(Util.random()) / 32;
+                }
+                if (randTo1000 < dynamicMutationRate) {
                     let newDirections[j] = AccelerationVectorPair.random();
+                    let mutated = true;
                 } else {
                     let newDirections[j] = directions[j];
                 }
                 let j = j + 1;
+            }
+            if (~mutated) {
+                let scaleCache = 32767 / brainSize;
+                let randToBrainSize = brainSize;
+                // randToBrainSize can be negative Math.abs does not guarantee positive (-32768)
+                while (~((randToBrainSize > -1) & (randToBrainSize < brainSize))) {
+                    let randToBrainSize = Math.abs(Util.random()) / scaleCache;
+                }
+                let newDirections[randToBrainSize] = AccelerationVectorPair.random();
             }
             let i = i + 1;
         }
