@@ -71,9 +71,6 @@ class Main {
         do Main.selectObstacles();
         let brainSize = (initialGoalDist / 2) - 2;
         let populationCount = (8000 / (brainSize + 2)) - 2;
-        do Output.printInt(brainSize);
-        do Output.printInt(populationCount);
-        do Sys.halt();
         do Brain.config(brainSize);
         do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
         do Population.config(populationCount, brainSize, onlyBest, initialBestDotFitness);

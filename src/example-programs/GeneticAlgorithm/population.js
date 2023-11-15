@@ -9,7 +9,7 @@ export default class Population {
     static #dynamicMutationRate;
     static #newBrainDirections;
     static #gen;
-    static #size;
+    static #populationCount;
     static #brainSize;
     static #onlyBest;
     static #allocatingString;
@@ -23,24 +23,24 @@ export default class Population {
         let i = 0;
         console.log(Population.#allocatingString);
         Population.#gen = 1;
-        Population.#size = size;
+        Population.#populationCount = size;
         Population.#brainSize = brainSize;
         Population.#onlyBest = onlyBest;
         Population.#bestDotFitness = initialBestDotFitness;
         Population.#dynamicMutationRate = Util.divide(1530, brainSize);
 
-        Population.#dots = new Array(Population.#size);
-        while (i < Population.#size) {
+        Population.#dots = new Array(Population.#populationCount);
+        while (i < Population.#populationCount) {
             Population.#dots[i] = new Dot();
             i++;
         }
         i = 0;
 
-        Population.#fitnessCache = new Array(Population.#size);
+        Population.#fitnessCache = new Array(Population.#populationCount);
 
         // auxilliary memory
-        Population.#newBrainDirections = new Array(Population.#size - 1);
-        while (i < Population.#size - 1) {
+        Population.#newBrainDirections = new Array(Population.#populationCount - 1);
+        while (i < Population.#populationCount - 1) {
             Population.#newBrainDirections[i] = new Array(Population.#brainSize);
             i++;
         }
@@ -57,7 +57,7 @@ export default class Population {
     static update(firstPairComponent) {
         let i = 0;
         let dot;
-        while (i < Population.#size) {
+        while (i < Population.#populationCount) {
             dot = Population.#dots[i];
             dot.update(!Population.#onlyBest || i == 0, firstPairComponent);
             i++;
@@ -67,7 +67,7 @@ export default class Population {
     static allDotsDead() {
         let i = 0;
         let dot;
-        while (i < Population.#size) {
+        while (i < Population.#populationCount) {
             dot = Population.#dots[i];
             if (!dot.getDead())
                 return 0;
@@ -96,7 +96,7 @@ export default class Population {
         let mutated;
 
         Population.#bestDotFitness = -1;
-        while (i < Population.#size) {
+        while (i < Population.#populationCount) {
             dot = Population.#dots[i];
             dotFitness = dot.calculateFitness();
             Population.#fitnessCache[i] = dotFitness;
@@ -117,7 +117,7 @@ export default class Population {
         }
 
         i = 0;
-        while (i < Population.#size - 1) {
+        while (i < Population.#populationCount - 1) {
             if (fitnessSumCoef == 0) {
                 randFitnessCoef = 0;
             } else {
@@ -144,7 +144,7 @@ export default class Population {
             selectionSum = 0;
             selectionSumCoef = 0;
             j = 0;
-            while (j < Population.#size) {
+            while (j < Population.#populationCount) {
                 selectionSum += Population.#fitnessCache[j];
                 if (selectionSum >= 32768) {
                     selectionSum = selectionSum - 32768;
@@ -152,7 +152,7 @@ export default class Population {
                 }
                 if (selectionSumCoef > randFitnessCoef || (selectionSumCoef == randFitnessCoef && selectionSum > randFitness)) {
                     dot = Population.#dots[j];
-                    j = Population.#size;
+                    j = Population.#populationCount;
                 }
                 j++;
             }
@@ -186,7 +186,7 @@ export default class Population {
             i++;
         }
         i = 0;
-        while (i < Population.#size) {
+        while (i < Population.#populationCount) {
             directions = Population.#dots[i].getBrain().getDirections();
             Population.#dots[i].instantiate();
             Population.#dots[i].getBrain().instantiate();

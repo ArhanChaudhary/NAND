@@ -5,7 +5,7 @@ class Population {
     static int dynamicMutationRate;
     static Array newBrainDirections;
     static int gen;
-    static int size;
+    static int populationCount;
     static int brainSize;
     static boolean onlyBest;
     static String allocatingString;
@@ -15,7 +15,7 @@ class Population {
         let allocatingString = "Allocating dot memory...";
     }
 
-    function void config(int _size, int _brainSize, boolean _onlyBest, int initialBestDotFitness) {
+    function void config(int _populationCount, int _brainSize, boolean _onlyBest, int initialBestDotFitness) {
         var int i;
         var Dot dot;
         var Array tmp;
@@ -23,7 +23,7 @@ class Population {
         do Output.moveCursor(11, 22);
         do Output.printString(allocatingString);
         // if (~(dots = null)) {
-        //     while (i < size) {
+        //     while (i < populationCount) {
         //         let dot = dots[i];
         //         do dot.dispose();
         //         let i = i + 1;
@@ -33,13 +33,13 @@ class Population {
 
         //     do fitnessCache.dispose();
 
-        //     while (i < (size - 1)) {
+        //     while (i < (populationCount - 1)) {
         //         let tmp = newBrainDirections[i];
         //         if (~(tmp > 16384)) {
         //             do tmp.dispose();
         //             let i = i + 1;
         //         } else {
-        //             let i = size;
+        //             let i = populationCount;
         //         }
         //     }
         //     let i = 0;
@@ -48,30 +48,30 @@ class Population {
         // }
 
         let gen = 1;
-        let size = _size;
+        let populationCount = _populationCount;
         let brainSize = _brainSize;
         let onlyBest = _onlyBest;
         let bestDotFitness = initialBestDotFitness;
         let dynamicMutationRate = 1530 / brainSize;
 
-        let dots = Array.new(size);
-        while (i < size) {
+        let dots = Array.new(populationCount);
+        while (i < populationCount) {
             let dots[i] = Dot.new();
             let i = i + 1;
         }
         let i = 0;
 
-        let fitnessCache = Array.new(size);
+        let fitnessCache = Array.new(populationCount);
 
         // auxilliary memory
-        let newBrainDirections = Array.new(size - 1);
+        let newBrainDirections = Array.new(populationCount - 1);
         if (~(newBrainDirections < 16387)) {
             do Sys.error(6);
         }
         do Screen.setColor(false);
         do Screen.drawRectangle(176, 122, 368, 133);
         do Screen.setColor(true);
-        while (i < (size - 1)) {
+        while (i < (populationCount - 1)) {
             let newBrainDirections[i] = Array.new(brainSize);
             let i = i + 1;
         }
@@ -89,7 +89,7 @@ class Population {
     function void update(boolean firstPairComponent) {
         var int i;
         var Dot dot;
-        while (i < size) {
+        while (i < populationCount) {
             let dot = dots[i];
             do dot.update((~onlyBest) | (i = 0), firstPairComponent);
             let i = i + 1;
@@ -99,7 +99,7 @@ class Population {
     function boolean allDotsDead() {
         var int i;
         var Dot dot;
-        while (i < size) {
+        while (i < populationCount) {
             let dot = dots[i];
             if (~dot.getDead())
                 return false;
@@ -129,7 +129,7 @@ class Population {
         var boolean mutated;
 
         let bestDotFitness = -1;
-        while (i < size) {
+        while (i < populationCount) {
             let dot = dots[i];
             let dotFitness = dot.calculateFitness();
             let fitnessCache[i] = dotFitness;
@@ -151,7 +151,7 @@ class Population {
         }
 
         let i = 0;
-        while (i < (size - 1)) {
+        while (i < (populationCount - 1)) {
             if (fitnessSumCoef = 0) {
                 let randFitnessCoef = 0;
             } else {
@@ -178,7 +178,7 @@ class Population {
             let selectionSum = 0;
             let selectionSumCoef = 0;
             let j = 0;
-            while (j < size) {
+            while (j < populationCount) {
                 let selectionSum = selectionSum + fitnessCache[j];
                 if (selectionSum < 0) {
                     let selectionSum = selectionSum + ~32767;
@@ -186,7 +186,7 @@ class Population {
                 }
                 if ((selectionSumCoef > randFitnessCoef) | ((selectionSumCoef = randFitnessCoef) & (selectionSum > randFitness))) {
                     let dot = dots[j];
-                    let j = size;
+                    let j = populationCount;
                 }
                 let j = j + 1;
             }
@@ -221,7 +221,7 @@ class Population {
             let i = i + 1;
         }
         let i = 0;
-        while (i < size) {
+        while (i < populationCount) {
             let dot = dots[i];
             let brain = dot.getBrain();
             let directions = brain.getDirections();
