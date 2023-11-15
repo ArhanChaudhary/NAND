@@ -2,7 +2,7 @@ class Population {
     static Array dots;
     static Array fitnessCache;
     static int bestDotFitness;
-    static int dynamicMutationRate;
+    static int dynamicMutationRateTimes32;
     static Array newBrainDirections;
     static int gen;
     static int populationCount;
@@ -52,7 +52,7 @@ class Population {
         let brainSize = _brainSize;
         let onlyBest = _onlyBest;
         let bestDotFitness = initialBestDotFitness;
-        let dynamicMutationRate = 1530 / brainSize;
+        let dynamicMutationRateTimes32 = Math.min(1000, 1530 / brainSize) * 32;
 
         let dots = Array.new(populationCount);
         while (i < populationCount) {
@@ -121,7 +121,7 @@ class Population {
         var int randFitnessCoef;
         var int fitnessSum;
         var int fitnessSumCoef;
-        var int randTo1000;
+        var int randTo32000;
         var int randToBrainSize;
         var Array directions;
         var Array newDirections;
@@ -197,11 +197,11 @@ class Population {
             let j = 0;
             while (j < brainSize) {
                 // scaleCache = 32767 / 1000 = 32
-                let randTo1000 = 1000;
-                while (~(randTo1000 < 1000)) {
-                    let newDirections[j] = Math.abs(Util.random()) / 32;
+                let randTo32000 = 32000;
+                while (~(randTo32000 < 32000)) {
+                    let randTo32000 = Math.abs(Util.random());
                 }
-                if (randTo1000 < dynamicMutationRate) {
+                if (randTo32000 < dynamicMutationRateTimes32) {
                     let newDirections[j] = AccelerationVectorPair.random();
                     let mutated = true;
                 } else {

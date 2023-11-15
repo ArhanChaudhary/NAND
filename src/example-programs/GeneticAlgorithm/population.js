@@ -6,7 +6,7 @@ export default class Population {
     static #dots;
     static #fitnessCache;
     static #bestDotFitness;
-    static #dynamicMutationRate;
+    static #dynamicMutationRateTimes32;
     static #newBrainDirections;
     static #gen;
     static #populationCount;
@@ -19,15 +19,15 @@ export default class Population {
         Population.#allocatingString = "Allocating dot memory...";
     }
 
-    static config(size, brainSize, onlyBest, initialBestDotFitness) {
+    static config(populationCount, brainSize, onlyBest, initialBestDotFitness) {
         let i = 0;
         console.log(Population.#allocatingString);
         Population.#gen = 1;
-        Population.#populationCount = size;
+        Population.#populationCount = populationCount;
         Population.#brainSize = brainSize;
         Population.#onlyBest = onlyBest;
         Population.#bestDotFitness = initialBestDotFitness;
-        Population.#dynamicMutationRate = Util.divide(1530, brainSize);
+        Population.#dynamicMutationRateTimes32 = Math.min(1000, Util.divide(1530, brainSize)) * 32;
 
         Population.#dots = new Array(Population.#populationCount);
         while (i < Population.#populationCount) {
@@ -88,7 +88,7 @@ export default class Population {
         let randFitnessCoef;
         let fitnessSum = 0;
         let fitnessSumCoef = 0;
-        let randTo1000;
+        let randTo32000;
         let randToBrainSize;
         let directions;
         let newDirections;
@@ -162,11 +162,11 @@ export default class Population {
             j = 0;
             while (j < Population.#brainSize) {
                 // scaleCache = Util.divide(32767, 1000); = 32
-                randTo1000 = 1000;
-                while (!(randTo1000 < 1000)) {
-                    randTo1000 = Util.divide(Util.abs(Util.random()), 32);
+                randTo32000 = 32000;
+                while (!(randTo32000 < 32000)) {
+                    randTo32000 = Util.abs(Util.random());
                 }
-                if (randTo1000 < Population.#dynamicMutationRate) {
+                if (randTo32000 < Population.#dynamicMutationRateTimes32) {
                     newDirections[j] = AccelerationVectorPair.random();
                     mutated = true;
                 } else {
