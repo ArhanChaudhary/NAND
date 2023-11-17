@@ -6,7 +6,6 @@ export default class Population {
     static #dots;
     static #fitnessCache;
     static #bestDotFitness;
-    static #dynamicMutationRateTimes32;
     static #newBrainDirections;
     static #gen;
     static #populationCount;
@@ -32,7 +31,6 @@ export default class Population {
         Population.#brainSize = brainSize;
         Population.#onlyBest = onlyBest;
         Population.#bestDotFitness = initialBestDotFitness;
-        Population.#dynamicMutationRateTimes32 = Math.min(1000, Util.divide(1530, brainSize)) * 32;
 
         dot = new Dot();
         brain = dot.getBrain();
@@ -156,7 +154,14 @@ export default class Population {
         let newDirections;
         let scaleCache;
         let mutated;
+        let dynamicMutationRateTimes32;
+        let minStep;
 
+        minStep = Dot.getMinStep();
+        if (minStep == 32767) {
+            minStep = Population.#brainSize;
+        }
+        dynamicMutationRateTimes32 = Math.min(1000, Util.divide(1530, minStep)) * 32;
         Population.#bestDotFitness = -1;
         while (i < Population.#populationCount) {
             dot = Population.#dots[i];
@@ -230,7 +235,7 @@ export default class Population {
                 while (!(randTo32000 < 32000)) {
                     randTo32000 = Util.abs(Util.random());
                 }
-                if (randTo32000 < Population.#dynamicMutationRateTimes32) {
+                if (randTo32000 < dynamicMutationRateTimes32) {
                     newDirections[j] = AccelerationVectorPair.random();
                     mutated = true;
                 } else {

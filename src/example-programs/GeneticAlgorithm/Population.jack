@@ -2,7 +2,6 @@ class Population {
     static Array dots;
     static Array fitnessCache;
     static int bestDotFitness;
-    static int dynamicMutationRateTimes32;
     static Array newBrainDirections;
     static int gen;
     static int populationCount;
@@ -55,7 +54,6 @@ class Population {
         let brainSize = _brainSize;
         let onlyBest = _onlyBest;
         let bestDotFitness = initialBestDotFitness;
-        let dynamicMutationRateTimes32 = Math.min(1000, 1530 / brainSize) * 32;
 
         let dot = Dot.new();
         let brain = dot.getBrain();
@@ -185,7 +183,14 @@ class Population {
         var Array newDirections;
         var int scaleCache;
         var boolean mutated;
+        var int dynamicMutationRateTimes32;
+        var int minStep;
 
+        let minStep = Dot.getMinStep();
+        if (minStep = 32767) {
+            let minStep = brainSize;
+        }
+        let dynamicMutationRateTimes32 = Math.min(1000, 1530 / brainSize) * 32;
         let bestDotFitness = -1;
         while (i < populationCount) {
             let dot = dots[i];
