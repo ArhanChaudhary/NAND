@@ -105,7 +105,7 @@ class Population {
         p = (remainingHeap - 5) / (d + 3)
         */
         let populationCount = Math.min(
-            (remainingExtendedHeap + brainSize + 1) / (diff + brainSize + 3),
+            (remainingExtendedHeap + brainSize - 3) / (diff + brainSize + 5),
             (remainingHeap - 5) / (diff + 3)
         );
 

@@ -84,7 +84,7 @@ export default class Population {
         p = (remainingHeap - 5) / (d + 3)
         */
         Population.#populationCount = Math.min(
-            Util.divide(remainingExtendedHeap + brainSize + 1, diff + brainSize + 3),
+            Util.divide(remainingExtendedHeap + brainSize - 3, diff + brainSize + 5),
             Util.divide(remainingHeap - 5, diff + 3)
         );
         Population.#fitnessCache = new Array(Population.#populationCount);

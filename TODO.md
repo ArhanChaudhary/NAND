@@ -1,5 +1,8 @@
 # TODO (genetic algorithm)
-* ensure consistent binomial distribution
+let minStep = Dot.getMinStep();
+        if (minStep = 32767) {
+            let minStep = brainSize; <-- should be brain.getStep() ????
+        }
 * menu: initialXY goalXY selectObstacles onlyBest continue (different config functions)
 
 # TODO (NAND)
