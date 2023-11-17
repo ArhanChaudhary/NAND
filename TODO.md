@@ -1,7 +1,7 @@
 # TODO (genetic algorithm)
-* dynamically choose populationCount
 * goal step count is wrong
 * menu: initialXY goalXY selectObstacles onlyBest continue (different config functions)
+* dont mutate rest of brain if loop ends early
 
 # TODO (NAND)
 * cannot set variable names to keywords in compiler

@@ -40,7 +40,6 @@ export default class Main {
 
     static async main() {
         let brainSize;
-        let populationCount;
         let firstPairComponent;
         Util.init();
         AccelerationVectorPair.init();
@@ -73,11 +72,10 @@ export default class Main {
         Main.#goalY = 128;
         Main.#onlyBest = 0;
         await Main.selectObstacles();
-        brainSize = Util.divide(Main.#initialGoalDist, 2) - 2;
-        populationCount = Util.divide(8000, brainSize + 2) - 2;
+        brainSize = Util.divide(Main.#initialGoalDist, 2);
         Brain.config(brainSize);
         Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, brainSize, Main.#obstacles);
-        Population.config(populationCount, brainSize, Main.#onlyBest, Main.#initialBestDotFitness);
+        Population.config(brainSize, Main.#onlyBest, Main.#initialBestDotFitness);
         Main.refreshDisplay();
         window.interval = 25;
         async function tmp() {
@@ -380,9 +378,9 @@ export default class Main {
             obstacleX = obstacleX + obstacleX;
             if (Main.#obstacles[i] == -1) {
                 Util.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
-            } else if (!(Main.#obstacles[i] == 0)) {
+            }/* else if (!(Main.#obstacles[i] == 0)) {
                 Util.drawText(Util.divide(32767, Main.#obstacles[i]), obstacleX + 8, obstacleY + 8);
-            }
+            }*/
             i++;
         }
     }

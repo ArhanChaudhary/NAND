@@ -19,24 +19,85 @@ export default class Population {
         Population.#allocatingString = "Allocating dot memory...";
     }
 
-    static config(populationCount, brainSize, onlyBest, initialBestDotFitness) {
+    static config(brainSize, onlyBest, initialBestDotFitness) {
         let i = 0;
+        let dot;
+        let brain;
+        let directions;
+        let diff;
+        let remainingExtendedHeap;
+        let remainingHeap;
         console.log(Population.#allocatingString);
         Population.#gen = 1;
-        Population.#populationCount = populationCount;
         Population.#brainSize = brainSize;
         Population.#onlyBest = onlyBest;
         Population.#bestDotFitness = initialBestDotFitness;
         Population.#dynamicMutationRateTimes32 = Math.min(1000, Util.divide(1530, brainSize)) * 32;
 
+        dot = new Dot();
+        brain = dot.getBrain();
+        directions = brain.getDirections();
+        // hardcoded values, update whenever
+        diff = 96;
+        remainingHeap = 9530;
+
+        remainingExtendedHeap = remainingHeap + 8192;
+        /*
+        // populationCount upper bound
+
+        // dots
+        populationCount + 2
+        // dots memory
+        + populationCount * diff
+        // fitnessCache
+        + populationCount + 2
+        // newBrainDirections
+        + (populationCount - 1) + 2
+        // newBrainDirections memory
+        + (populationCount - 1) * (brainSize + 2)
+        // remaining space
+        = remainingExtendedHeap
+
+        populationCount + 2 + populationCount * diff + populationCount + 2 + (populationCount - 1) + 2 + (populationCount - 1) * (brainSize + 2) = remainingExtendedHeap
+        p + 2 + pd + p + 2 + p - 1 + 2 + (p - 1) * (b + 2) = remainingExtendedHeap
+        p + 2 + pd + p + 2 + p - 1 + 2 + pb + 2p - b - 2 = remainingExtendedHeap
+
+        p + pd + p + p + pb + p + p = remainingExtendedHeap - 3 + b
+        p(1 + d + 1 + 1 + b + 1 + 1) = remainingExtendedHeap - 3 + b
+        p = (remainingExtendedHeap + b - 3) / (d + b + 5)
+
+        // populationCount lower bound
+
+        // dots
+        populationCount + 2
+        // dots memory
+        + populationCount * diff
+        // fitnessCache
+        + populationCount + 2
+        // newBrainDirections
+        + (populationCount - 1) + 2
+        // remaining space
+        = remainingHeap
+
+        populationCount + 2 + populationCount * diff + populationCount + 2 + (populationCount - 1) + 2 = remainingHeap
+        p + 2 + pd + p + 2 + p - 1 + 2 = remainingHeap
+        p + pd + p + p = remainingHeap - 5
+        p(1 + d + 1 + 1) = remainingHeap - 5
+        p = (remainingHeap - 5) / (d + 3)
+        */
+        Population.#populationCount = Math.min(
+            Util.divide(remainingExtendedHeap + brainSize + 1, diff + brainSize + 3),
+            Util.divide(remainingHeap - 5, diff + 3)
+        );
+        Population.#fitnessCache = new Array(Population.#populationCount);
         Population.#dots = new Array(Population.#populationCount);
+        Population.#dots[0] = dot;
+        i = 1;
         while (i < Population.#populationCount) {
             Population.#dots[i] = new Dot();
             i++;
         }
         i = 0;
-
-        Population.#fitnessCache = new Array(Population.#populationCount);
 
         // auxilliary memory
         Population.#newBrainDirections = new Array(Population.#populationCount - 1);
@@ -79,6 +140,7 @@ export default class Population {
     static naturalSelection() {
         let dot;
         let bestDot;
+        let brain;
         let dotFitness;
         let i = 0;
         let j;
@@ -113,7 +175,8 @@ export default class Population {
         }
 
         if (bestDot.getReachedGoal()) {
-            Dot.setMinStep(bestDot.getBrain().getStep());
+            brain = bestDot.getBrain();
+            Dot.setMinStep(brain.getStep());
         }
 
         i = 0;
@@ -156,13 +219,14 @@ export default class Population {
                 }
                 j++;
             }
-            directions = dot.getBrain().getDirections();
+            brain = dot.getBrain();
+            directions = brain.getDirections();
             newDirections = Population.#newBrainDirections[i];
             mutated = false;
             j = 0;
             while (j < Population.#brainSize) {
                 // scaleCache = Util.divide(32767, 1000); = 32
-                randTo32000 = 32000;
+                randTo32000 = Util.abs(Util.random());
                 while (!(randTo32000 < 32000)) {
                     randTo32000 = Util.abs(Util.random());
                 }
@@ -187,11 +251,14 @@ export default class Population {
         }
         i = 0;
         while (i < Population.#populationCount) {
-            directions = Population.#dots[i].getBrain().getDirections();
-            Population.#dots[i].instantiate();
-            Population.#dots[i].getBrain().instantiate();
+            dot = Population.#dots[i];
+            brain = dot.getBrain();
+            directions = brain.getDirections();
+            dot.instantiate();
+            brain.instantiate();
             if (i == 0) {
-                newDirections = bestDot.getBrain().getDirections();
+                brain = bestDot.getBrain();
+                newDirections = brain.getDirections();
             } else {
                 newDirections = Population.#newBrainDirections[i - 1];
             }

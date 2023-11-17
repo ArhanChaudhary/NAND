@@ -39,7 +39,6 @@ class Main {
 
     function void main() {
         var int brainSize;
-        var int populationCount;
         var boolean firstPairComponent;
         do Util.init();
         do AccelerationVectorPair.init();
@@ -69,11 +68,10 @@ class Main {
         let goalY = 128;
         let onlyBest = false;
         do Main.selectObstacles();
-        let brainSize = (initialGoalDist / 2) - 2;
-        let populationCount = (8000 / (brainSize + 2)) - 2;
+        let brainSize = initialGoalDist / 2;
         do Brain.config(brainSize);
         do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
-        do Population.config(populationCount, brainSize, onlyBest, initialBestDotFitness);
+        do Population.config(brainSize, onlyBest, initialBestDotFitness);
         do Main.refreshDisplay();
         while (true) {
             if (Population.allDotsDead()) {
