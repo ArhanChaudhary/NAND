@@ -36,12 +36,16 @@ export default class Brain {
         return this.#directions;
     }
 
+    incStep() {
+        this.#step++;
+    }
+
     getStep() {
         return this.#step + 1;
     }
 
     getNextDirection() {
         this.#step++;
-        return this.#directions[this.#step];;
+        return this.#directions[this.#step];
     }
 }

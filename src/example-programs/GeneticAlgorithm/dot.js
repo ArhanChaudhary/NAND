@@ -85,6 +85,8 @@ export default class Dot {
                 this.#dead = -1;
             } else if (firstPairComponent) {
                 this.#acc = this.#brain.getNextDirection();
+            } else {
+                this.#brain.incStep();
             }
 
             if (firstPairComponent) {

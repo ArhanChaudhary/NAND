@@ -72,7 +72,7 @@ export default class Main {
         Main.#goalY = 128;
         Main.#onlyBest = 0;
         await Main.selectObstacles();
-        brainSize = Util.divide(Main.#initialGoalDist, 2);
+        brainSize = Main.#initialGoalDist;
         Brain.config(brainSize);
         Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, brainSize, Main.#obstacles);
         Population.config(brainSize, Main.#onlyBest, Main.#initialBestDotFitness);

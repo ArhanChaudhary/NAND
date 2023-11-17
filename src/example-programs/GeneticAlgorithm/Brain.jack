@@ -36,6 +36,10 @@ class Brain {
         return directions;
     }
 
+    method void incStep() {
+        let step = step + 1;
+    }
+
     method int getStep() {
         return step + 1;
     }

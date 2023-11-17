@@ -76,6 +76,8 @@ class Dot {
                 let dead = true;
             } else if (firstPairComponent) {
                 let acc = brain.getNextDirection();
+            } else {
+                do brain.incStep();
             }
 
             if (firstPairComponent) {

@@ -1,7 +1,6 @@
 # TODO (genetic algorithm)
-* goal step count is wrong
+* ensure consistent binomial distribution
 * menu: initialXY goalXY selectObstacles onlyBest continue (different config functions)
-* dont mutate rest of brain if loop ends early
 
 # TODO (NAND)
 * cannot set variable names to keywords in compiler
