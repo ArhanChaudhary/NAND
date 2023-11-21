@@ -39,7 +39,7 @@ export default class Population {
         diff = 96;
         remainingHeap = 9530;
 
-        remainingExtendedHeap = remainingHeap + 8192;
+        remainingExtendedHeap = Util.add(remainingHeap, 8192);
         /*
         // populationCount upper bound
 
@@ -83,25 +83,25 @@ export default class Population {
         p(1 + d + 1 + 1) = remainingHeap - 5
         p = (remainingHeap - 5) / (d + 3)
         */
-        Population.#populationCount = Math.min(
-            Util.divide(remainingExtendedHeap + brainSize - 3, diff + brainSize + 5),
-            Util.divide(remainingHeap - 5, diff + 3)
+        Population.#populationCount = Util.min(
+            Util.divide(Util.sub(Util.add(remainingExtendedHeap, brainSize), 3), Util.add(Util.add(diff, brainSize), 5)),
+            Util.divide(Util.sub(remainingHeap, 5), Util.add(diff, 3))
         );
         Population.#fitnessCache = new Array(Population.#populationCount);
         Population.#dots = new Array(Population.#populationCount);
         Population.#dots[0] = dot;
         i = 1;
-        while (i < Population.#populationCount) {
+        while (Util.lt(i, Population.#populationCount)) {
             Population.#dots[i] = new Dot();
-            i++;
+            i = Util.add(i, 1);
         }
         i = 0;
 
         // auxilliary memory
-        Population.#newBrainDirections = new Array(Population.#populationCount - 1);
-        while (i < Population.#populationCount - 1) {
+        Population.#newBrainDirections = new Array(Util.sub(Population.#populationCount, 1));
+        while (Util.lt(i, Util.sub(Population.#populationCount, 1))) {
             Population.#newBrainDirections[i] = new Array(Population.#brainSize);
-            i++;
+            i = Util.add(i, 1);
         }
     }
 
@@ -116,23 +116,23 @@ export default class Population {
     static update(firstPairComponent) {
         let i = 0;
         let dot;
-        while (i < Population.#populationCount) {
+        while (Util.lt(i, Population.#populationCount)) {
             dot = Population.#dots[i];
-            dot.update(!Population.#onlyBest || i == 0, firstPairComponent);
-            i++;
+            dot.update(Util.not(Population.#onlyBest) | Util.eq(i, 0), firstPairComponent);
+            i = Util.add(i, 1);
         }
     }
 
     static allDotsDead() {
         let i = 0;
         let dot;
-        while (i < Population.#populationCount) {
+        while (Util.lt(i, Population.#populationCount)) {
             dot = Population.#dots[i];
-            if (!dot.getDead())
+            if (Util.not(dot.getDead()))
                 return 0;
-            i++;
+            i = Util.add(i, 1);
         }
-        return -1;
+        return Util.neg(1);
     }
 
     static naturalSelection() {
@@ -158,25 +158,25 @@ export default class Population {
         let minStep;
 
         minStep = Dot.getMinStep();
-        if (minStep == 32767) {
+        if (Util.eq(minStep, 32767)) {
             minStep = Population.#brainSize;
         }
-        dynamicMutationRateTimes32 = Math.min(1000, Util.divide(1530, minStep)) * 32;
-        Population.#bestDotFitness = -1;
-        while (i < Population.#populationCount) {
+        dynamicMutationRateTimes32 = Util.mult(Util.min(1000, Util.divide(1530, minStep)), 32);
+        Population.#bestDotFitness = Util.neg(1);
+        while (Util.lt(i, Population.#populationCount)) {
             dot = Population.#dots[i];
             dotFitness = dot.calculateFitness();
             Population.#fitnessCache[i] = dotFitness;
-            if (dotFitness > Population.#bestDotFitness) {
+            if (Util.gt(dotFitness, Population.#bestDotFitness)) {
                 Population.#bestDotFitness = dotFitness;
                 bestDot = dot;
             }
-            fitnessSum += dotFitness;
-            if (fitnessSum >= 32768) {
-                fitnessSum = fitnessSum - 32768;
-                fitnessSumCoef++;
+            fitnessSum = Util.add(fitnessSum, dotFitness);
+            if (Util.lt(fitnessSum, 0)) {
+                fitnessSum = Util.add(fitnessSum, Util.not(32767));
+                fitnessSumCoef = Util.add(fitnessSumCoef, 1);
             }
-            i++;
+            i = Util.add(i, 1);
         }
 
         if (bestDot.getReachedGoal()) {
@@ -185,25 +185,25 @@ export default class Population {
         }
 
         i = 0;
-        while (i < Population.#populationCount - 1) {
-            if (fitnessSumCoef == 0) {
+        while (Util.lt(i, Util.sub(Population.#populationCount, 1))) {
+            if (Util.eq(fitnessSumCoef, 0)) {
                 randFitnessCoef = 0;
             } else {
                 scaleCache = Util.divide(32767, fitnessSumCoef);
                 randFitnessCoef = 32767;
-                while (randFitnessCoef > fitnessSumCoef) {
+                while (Util.gt(randFitnessCoef, fitnessSumCoef)) {
                     // fitnessSumCoef = 296, randFitnessCoef = 32698
                     // this results in randFitnessCoef = 297 which is out of bounds
                     randFitnessCoef = Util.divide(Util.abs(Util.random()), scaleCache);
                 }
             }
             randFitness = Util.abs(Util.random());
-            if (randFitnessCoef == fitnessSumCoef) {
-                if (fitnessSum == 0) {
+            if (Util.eq(randFitnessCoef, fitnessSumCoef)) {
+                if (Util.eq(fitnessSum, 0)) {
                     randFitness = 0;
                 } else {
                     scaleCache = Util.divide(32767, fitnessSum);
-                    while (randFitness > fitnessSum) {
+                    while (Util.gt(randFitness, fitnessSum)) {
                         // same with this it can also go out of bounds
                         randFitness = Util.divide(Util.abs(Util.random()), scaleCache);
                     }
@@ -212,69 +212,69 @@ export default class Population {
             selectionSum = 0;
             selectionSumCoef = 0;
             j = 0;
-            while (j < Population.#populationCount) {
-                selectionSum += Population.#fitnessCache[j];
-                if (selectionSum >= 32768) {
-                    selectionSum = selectionSum - 32768;
-                    selectionSumCoef++;
+            while (Util.lt(j, Population.#populationCount)) {
+                selectionSum = Util.add(selectionSum, Population.#fitnessCache[j]);
+                if (Util.lt(selectionSum, 0)) {
+                    selectionSum = Util.add(selectionSum, Util.not(32767));
+                    selectionSumCoef = Util.add(selectionSumCoef, 1);
                 }
-                if (selectionSumCoef > randFitnessCoef || (selectionSumCoef == randFitnessCoef && selectionSum > randFitness)) {
+                if (Util.gt(selectionSumCoef, randFitnessCoef) | (Util.eq(selectionSumCoef, randFitnessCoef) & Util.gt(selectionSum, randFitness))) {
                     dot = Population.#dots[j];
                     j = Population.#populationCount;
                 }
-                j++;
+                j = Util.add(j, 1);
             }
             brain = dot.getBrain();
             directions = brain.getDirections();
             newDirections = Population.#newBrainDirections[i];
-            mutated = false;
+            mutated = 0;
             j = 0;
-            while (j < Population.#brainSize) {
+            while (Util.lt(j, Population.#brainSize)) {
                 // scaleCache = Util.divide(32767, 1000); = 32
                 randTo32000 = Util.abs(Util.random());
-                while (!(randTo32000 < 32000)) {
+                while (Util.not(Util.lt(randTo32000, 32000))) {
                     randTo32000 = Util.abs(Util.random());
                 }
-                if (randTo32000 < dynamicMutationRateTimes32) {
+                if (Util.lt(randTo32000, dynamicMutationRateTimes32)) {
                     newDirections[j] = AccelerationVectorPair.random();
-                    mutated = true;
+                    mutated = Util.neg(1);
                 } else {
                     newDirections[j] = directions[j];
                 }
-                j++;
+                j = Util.add(j, 1);
             }
-            if (!mutated) {
+            if (Util.not(mutated)) {
                 scaleCache = Util.divide(32767, Population.#brainSize);
                 randToBrainSize = Population.#brainSize;
-                // randToBrainSize can be negative Math.abs does not guarantee positive (-32768)
-                while (!((randToBrainSize > -1) && (randToBrainSize < Population.#brainSize))) {
+                // randToBrainSize can be negative Util.abs does not guarantee positive (-32768)
+                while (Util.not(Util.gt(randToBrainSize, Util.neg(1)) & Util.lt(randToBrainSize, Population.#brainSize))) {
                     randToBrainSize = Util.divide(Util.abs(Util.random()), scaleCache);
                 }
                 newDirections[randToBrainSize] = AccelerationVectorPair.random();
             }
-            i++;
+            i = Util.add(i, 1);
         }
         i = 0;
-        while (i < Population.#populationCount) {
+        while (Util.lt(i, Population.#populationCount)) {
             dot = Population.#dots[i];
             brain = dot.getBrain();
             directions = brain.getDirections();
             dot.instantiate();
             brain.instantiate();
-            if (i == 0) {
+            if (Util.eq(i, 0)) {
                 brain = bestDot.getBrain();
                 newDirections = brain.getDirections();
             } else {
-                newDirections = Population.#newBrainDirections[i - 1];
+                newDirections = Population.#newBrainDirections[Util.sub(i, 1)];
             }
             j = 0;
-            while (j < Population.#brainSize) {
+            while (Util.lt(j, Population.#brainSize)) {
                 directions[j] = newDirections[j];
-                j++;
+                j = Util.add(j, 1);
             }
-            i++;
+            i = Util.add(i, 1);
         }
         Util.clearScreen();
-        Population.#gen++;
+        Population.#gen = Util.add(Population.#gen, 1);
     }
 }

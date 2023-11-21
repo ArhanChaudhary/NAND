@@ -1,4 +1,5 @@
 import AccelerationVectorPair from "./accelerationvectorpair.js";
+import Util from "./util.js";
 
 export default class Brain {
     #directions;
@@ -15,21 +16,21 @@ export default class Brain {
 
     constructor(directions) {
         if (directions) {
-            this.#step = -1;
+            this.#step = Util.neg(1);
             this.#directions = directions;
         } else {
             let i = 0;
-            this.#step = -1;
+            this.#step = Util.neg(1);
             this.#directions = new Array(Brain.#brainSize);
-            while (i < Brain.#brainSize) {
+            while (Util.lt(i, Brain.#brainSize)) {
                 this.#directions[i] = AccelerationVectorPair.random();
-                i++;
+                i = Util.add(i, 1);
             }
         }
     }
 
     instantiate() {
-        this.#step = -1;
+        this.#step = Util.neg(1);
     }
 
     getDirections() {
@@ -37,15 +38,15 @@ export default class Brain {
     }
 
     incStep() {
-        this.#step++;
+        this.#step = Util.add(this.#step, 1);
     }
 
     getStep() {
-        return this.#step + 1;
+        return Util.add(this.#step, 1);
     }
 
     getNextDirection() {
-        this.#step++;
+        this.#step = Util.add(this.#step, 1);
         return this.#directions[this.#step];
     }
 }

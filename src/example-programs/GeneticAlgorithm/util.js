@@ -7,7 +7,7 @@ export default class Util {
     static #keyPressed = 0;
 
     static init() {
-        Util.setColor(-1);
+        Util.setColor(Util.neg(1));
         Util.#next = 42;
 
         let prev;
@@ -43,7 +43,7 @@ export default class Util {
                 if (e.key.length !== 1) return;
                 keyValue = e.key.charCodeAt(0);
             }
-            if (keyValue !== prev && prev !== 0) {
+            if (keyValue !== prev & prev !== 0) {
                 keyValue = 0;
             }
             prev = keyValue;
@@ -56,12 +56,80 @@ export default class Util {
         });
     }
 
+    static validate(callee, argumentsKwd) {
+        let args = [...argumentsKwd];
+        let calleeLen = callee.length;
+        if (args.length !== calleeLen) {
+            throw new Error(`Expected ${calleeLen} arguments, got ${args.length}`);
+        }
+        for (let i = 0; i < args.length; i++) {
+            if (!Number.isInteger(args[i]) || args[i] < 0 || args[i] > 65535) {
+                throw new Error(`Expected number between 0 and 65535, got ${args[i]}`);
+            }
+        }
+    }
+
+    static neg(n) {
+        Util.validate(Util.neg, arguments);
+        return -n & 65535;
+    }
+
+    static not(n) {
+        Util.validate(Util.not, arguments);
+        return ~n & 65535;
+    }
+
+    static add(a, b) {
+        Util.validate(Util.add, arguments);
+        return (a + b) & 65535;
+    }
+
+    static sub(a, b) {
+        Util.validate(Util.sub, arguments);
+        return (a - b) & 65535;
+    }
+
+    static mult(a, b) {
+        Util.validate(Util.mult, arguments);
+        return (a * b) & 65535;
+    }
+
     static divide(a, b) {
-        if (b == 0) {
+        Util.validate(Util.divide, arguments);
+        if (Util.eq(b, 0)) {
             alert(`Division by zero: ${a}, ${b}`);
             throw new Error(`Division by zero: ${a}, ${b}`);
         }
         return Math.trunc(a / b);
+    }
+
+    static lt(a, b) {
+        Util.validate(Util.lt, arguments);
+        if (a >= 32768) a -= 65536;
+        if (b >= 32768) b -= 65536;
+        return a < b ? Util.neg(1) : 0;
+    }
+
+    static eq(a, b) {
+        Util.validate(Util.eq, arguments);
+        return a === b ? Util.neg(1) : 0;
+    }
+
+    static gt(a, b) {
+        Util.validate(Util.gt, arguments);
+        if (a >= 32768) a -= 65536;
+        if (b >= 32768) b -= 65536;
+        return a > b ? Util.neg(1) : 0;
+    }
+
+    static max(a, b) {
+        if (Util.gt(a, b)) return a;
+        return b;
+    }
+
+    static min(a, b) {
+        if (Util.gt(a, b)) return b;
+        return a;
     }
 
     static drawRectangle(x1, y1, x2, y2) {
@@ -71,9 +139,9 @@ export default class Util {
     }
 
     static setColor(b) {
-        if (b == -1) {
+        if (Util.eq(b, Util.neg(1))) {
             ctx.fillStyle = 'black';
-        } else if (b == 0) {
+        } else if (Util.eq(b, 0)) {
             ctx.fillStyle = 'white';
         }
     }
@@ -83,21 +151,14 @@ export default class Util {
     }
 
     static random() {
-        Util.#next = (Util.#next * 25173 + 13849) & 65535;
+        Util.#next = Util.add(Util.mult(Util.#next, 25173), 13849);
         return Util.#next;
-        // let ret = Math.trunc(Math.random() * 65536);
-        // if (ret >= 32768) {
-        //     ret -= 65536;
-        // }
-        // return ret;
     }
 
     static abs(n) {
-        if (n >= 32768) {
-            if (n == 32768) debugger;
-            return 65536 - n;
-        }
-        return n;
+        if (Util.gt(n, 0))
+            return n;
+        return Util.neg(n);
     }
 
     static clearScreen() {

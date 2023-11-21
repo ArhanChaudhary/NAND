@@ -1,8 +1,10 @@
 # TODO (genetic algorithm)
-let minStep = Dot.getMinStep();
+* Util.true Util.false and Util.div
+* let minStep = Dot.getMinStep();
         if (minStep = 32767) {
             let minStep = brainSize; <-- should be brain.getStep() ????
         }
+* draw reach goal
 * menu: initialXY goalXY selectObstacles onlyBest continue (different config functions)
 
 # TODO (NAND)
@@ -21,6 +23,7 @@ let minStep = Dot.getMinStep();
 * random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
 * should acceleration vectors mutate in consecutive pairs as it is or individually?
 * determine optimal dynamicMutationRate constant (current is 1530)
+* BFS constants
 
 # TODO (for later)
 * graphing calculator in jack
