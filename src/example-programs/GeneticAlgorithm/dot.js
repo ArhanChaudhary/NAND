@@ -2,6 +2,17 @@ import Brain from "./brain.js";
 import Util from "./util.js";
 import Main from "./main.js";
 
+const div = Util.div;
+const gt = Util.gt;
+const neg = Util.neg;
+const not = Util.not;
+const add = Util.add;
+const lt = Util.lt;
+const eq = Util.eq;
+const abs = Util.abs;
+const sub = Util.sub;
+const max = Util.max;
+const mult = Util.mult;
 export default class Dot {
     static #initialX;
     static #initialY;
@@ -29,7 +40,7 @@ export default class Dot {
         Dot.#goalY = goalY;
         Dot.#brainSize = brainSize;
         Dot.#minStep = 32767;
-        Dot.#stepWeight = Util.divide(22767, Brain.getBrainSize());
+        Dot.#stepWeight = div(22767, Brain.getBrainSize());
         Dot.#obstacles = obstacles;
     }
 
@@ -78,11 +89,11 @@ export default class Dot {
     update(andShow, firstPairComponent) {
         let newVelXIsNegative;
         let newVelYIsNegative;
-        if (Util.gt(this.#brain.getStep(), Dot.#minStep)) {
-            this.#dead = Util.neg(1);
-        } else if (Util.not(this.#dead)) {
-            if (Util.not(Util.gt(Dot.#brainSize, this.#brain.getStep()))) {
-                this.#dead = Util.neg(1);
+        if (gt(this.#brain.getStep(), Dot.#minStep)) {
+            this.#dead = neg(1);
+        } else if (not(this.#dead)) {
+            if (eq(Dot.#brainSize, this.#brain.getStep())) {
+                this.#dead = neg(1);
             } else if (firstPairComponent) {
                 this.#acc = this.#brain.getNextDirection();
             } else {
@@ -90,65 +101,65 @@ export default class Dot {
             }
 
             if (firstPairComponent) {
-                this.#velX = Util.add(this.#velX, this.#acc.getX());
-                this.#velY = Util.add(this.#velY, this.#acc.getY());
+                this.#velX = add(this.#velX, this.#acc.getX());
+                this.#velY = add(this.#velY, this.#acc.getY());
             } else {
-                this.#velX = Util.add(this.#velX, this.#acc.getX2());
-                this.#velY = Util.add(this.#velY, this.#acc.getY2());
+                this.#velX = add(this.#velX, this.#acc.getX2());
+                this.#velY = add(this.#velY, this.#acc.getY2());
             }
 
-            newVelXIsNegative = Util.lt(this.#velX, 0);
-            newVelYIsNegative = Util.lt(this.#velY, 0);
+            newVelXIsNegative = lt(this.#velX, 0);
+            newVelYIsNegative = lt(this.#velY, 0);
 
             if (newVelXIsNegative) {
-                this.#velX = Util.neg(this.#velX);
+                this.#velX = neg(this.#velX);
             }
 
             if (newVelYIsNegative) {
-                this.#velY = Util.neg(this.#velY);
+                this.#velY = neg(this.#velY);
             }
 
-            if (Util.gt(this.#velX, 5)) {
+            if (gt(this.#velX, 5)) {
                 this.#velX = 5;
                 this.#velY = 0;
-            } else if (Util.eq(this.#velX, 4)) {
-                if (Util.gt(this.#velY, 3)) {
+            } else if (eq(this.#velX, 4)) {
+                if (gt(this.#velY, 3)) {
                     this.#velY = 3;
                 }
-            } else if (Util.eq(this.#velX, 0)) {
-                if (Util.gt(this.#velY, 5)) {
+            } else if (eq(this.#velX, 0)) {
+                if (gt(this.#velY, 5)) {
                     this.#velY = 5;
                 }
-            } else if (Util.gt(this.#velY, 4)) {
+            } else if (gt(this.#velY, 4)) {
                 this.#velY = 4;
             }
 
             if (newVelXIsNegative) {
-                this.#velX = Util.neg(this.#velX);
+                this.#velX = neg(this.#velX);
             }
 
             if (newVelYIsNegative) {
-                this.#velY = Util.neg(this.#velY);
+                this.#velY = neg(this.#velY);
             }
 
-            this.#posX = Util.add(this.#posX, this.#velX);
-            this.#posY = Util.add(this.#posY, this.#velY);
+            this.#posX = add(this.#posX, this.#velX);
+            this.#posY = add(this.#posY, this.#velY);
 
             // || so it short circuits
-            if (Util.lt(this.#posX, 2) | Util.lt(this.#posY, 2) | Util.gt(this.#posX, 510) | Util.gt(this.#posY, 254) || Util.eq(Dot.#obstacles[Main.getGridIndex(this.#posX, this.#posY)], Util.neg(1))) {
-                this.#dead = Util.neg(1);
-            } else if (Util.not(Util.gt(Util.abs(Util.sub(this.#posX, Dot.#goalX)), 3) | Util.gt(Util.abs(Util.sub(this.#posY, Dot.#goalY)), 3))) {
-                this.#reachedGoal = Util.neg(1);
-                this.#dead = Util.neg(1);
+            if (lt(this.#posX, 2) | lt(this.#posY, 2) | gt(this.#posX, 510) | gt(this.#posY, 254) || eq(Dot.#obstacles[Main.getGridIndex(this.#posX, this.#posY)], neg(1))) {
+                this.#dead = neg(1);
+            } else if (not(gt(abs(sub(this.#posX, Dot.#goalX)), 3) | gt(abs(sub(this.#posY, Dot.#goalY)), 3))) {
+                this.#reachedGoal = neg(1);
+                this.#dead = neg(1);
             } else
             // show function
             if (andShow) {
                 Util.setColor(0);
-                Util.drawRectangle(Util.sub(this.#prevX, 1), Util.sub(this.#prevY, 1), Util.add(this.#prevX, 1), Util.add(this.#prevY, 1));
-                Util.setColor(Util.neg(1));
+                Util.drawRectangle(sub(this.#prevX, 1), sub(this.#prevY, 1), add(this.#prevX, 1), add(this.#prevY, 1));
+                Util.setColor(neg(1));
                 this.#prevX = this.#posX;
                 this.#prevY = this.#posY;
-                Util.drawRectangle(Util.sub(this.#prevX, 1), Util.sub(this.#prevY, 1), Util.add(this.#prevX, 1), Util.add(this.#prevY, 1));
+                Util.drawRectangle(sub(this.#prevX, 1), sub(this.#prevY, 1), add(this.#prevX, 1), add(this.#prevY, 1));
             } else {
                 // needs to be here since calculateFitness uses prevX and prevY
                 this.#prevX = this.#posX;
@@ -159,12 +170,12 @@ export default class Dot {
 
     calculateFitness() {
         if (this.#reachedGoal) {
-            return Util.max(10000, Util.sub(32767, Util.mult(Dot.#stepWeight, this.#brain.getStep())));
+            return max(10000, sub(32767, mult(Dot.#stepWeight, this.#brain.getStep())));
         }
         // needed if goal is blocked off completely and the current grid index hasnt been flooded (is 0)
         // for example if this was 0 then during the natural selection process no dot would be selected
         // because everything is 0 and it would all just evolve off of one random dot which makes no sense
         // it's also not easily possible to set it to 1 in flood itself because of ROM concerns
-        return Util.max(1, Dot.#obstacles[Main.getGridIndex(this.#prevX, this.#prevY)]);
+        return max(1, Dot.#obstacles[Main.getGridIndex(this.#prevX, this.#prevY)]);
     }
 }

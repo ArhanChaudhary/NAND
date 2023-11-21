@@ -7,7 +7,7 @@ export default class Util {
     static #keyPressed = 0;
 
     static init() {
-        Util.setColor(Util.neg(1));
+        Util.setColor(neg(1));
         Util.#next = 42;
 
         let prev;
@@ -70,33 +70,33 @@ export default class Util {
     }
 
     static neg(n) {
-        Util.validate(Util.neg, arguments);
+        Util.validate(neg, arguments);
         return -n & 65535;
     }
 
     static not(n) {
-        Util.validate(Util.not, arguments);
+        Util.validate(not, arguments);
         return ~n & 65535;
     }
 
     static add(a, b) {
-        Util.validate(Util.add, arguments);
+        Util.validate(add, arguments);
         return (a + b) & 65535;
     }
 
     static sub(a, b) {
-        Util.validate(Util.sub, arguments);
+        Util.validate(sub, arguments);
         return (a - b) & 65535;
     }
 
     static mult(a, b) {
-        Util.validate(Util.mult, arguments);
+        Util.validate(mult, arguments);
         return (a * b) & 65535;
     }
 
-    static divide(a, b) {
-        Util.validate(Util.divide, arguments);
-        if (Util.eq(b, 0)) {
+    static div(a, b) {
+        Util.validate(div, arguments);
+        if (eq(b, 0)) {
             alert(`Division by zero: ${a}, ${b}`);
             throw new Error(`Division by zero: ${a}, ${b}`);
         }
@@ -104,31 +104,31 @@ export default class Util {
     }
 
     static lt(a, b) {
-        Util.validate(Util.lt, arguments);
+        Util.validate(lt, arguments);
         if (a >= 32768) a -= 65536;
         if (b >= 32768) b -= 65536;
-        return a < b ? Util.neg(1) : 0;
+        return a < b ? neg(1) : 0;
     }
 
     static eq(a, b) {
-        Util.validate(Util.eq, arguments);
-        return a === b ? Util.neg(1) : 0;
+        Util.validate(eq, arguments);
+        return a === b ? neg(1) : 0;
     }
 
     static gt(a, b) {
-        Util.validate(Util.gt, arguments);
+        Util.validate(gt, arguments);
         if (a >= 32768) a -= 65536;
         if (b >= 32768) b -= 65536;
-        return a > b ? Util.neg(1) : 0;
+        return a > b ? neg(1) : 0;
     }
 
     static max(a, b) {
-        if (Util.gt(a, b)) return a;
+        if (gt(a, b)) return a;
         return b;
     }
 
     static min(a, b) {
-        if (Util.gt(a, b)) return b;
+        if (gt(a, b)) return b;
         return a;
     }
 
@@ -139,9 +139,9 @@ export default class Util {
     }
 
     static setColor(b) {
-        if (Util.eq(b, Util.neg(1))) {
+        if (eq(b, neg(1))) {
             ctx.fillStyle = 'black';
-        } else if (Util.eq(b, 0)) {
+        } else if (eq(b, 0)) {
             ctx.fillStyle = 'white';
         }
     }
@@ -151,14 +151,14 @@ export default class Util {
     }
 
     static random() {
-        Util.#next = Util.add(Util.mult(Util.#next, 25173), 13849);
+        Util.#next = add(mult(Util.#next, 25173), 13849);
         return Util.#next;
     }
 
     static abs(n) {
-        if (Util.gt(n, 0))
+        if (gt(n, 0))
             return n;
-        return Util.neg(n);
+        return neg(n);
     }
 
     static clearScreen() {
@@ -169,3 +169,12 @@ export default class Util {
         return this.#keyPressed;
     }
 }
+const div = Util.div;
+const gt = Util.gt;
+const neg = Util.neg;
+const not = Util.not;
+const add = Util.add;
+const lt = Util.lt;
+const eq = Util.eq;
+const sub = Util.sub;
+const mult = Util.mult;
