@@ -69,10 +69,10 @@ class Dot {
 
     method void update(boolean andShow, boolean firstPairComponent) {
         var boolean newVelXIsNegative, newVelYIsNegative;
-        if (brain.getStep() > minStep) {
+        if (brain.getStep() = minStep) {
             let dead = true;
         } else if (~dead) {
-            if (brainSize = brain.getStep()) {
+            if (brain.getStep() = brainSize) {
                 let dead = true;
             } else if (firstPairComponent) {
                 let acc = brain.getNextDirection();

@@ -89,10 +89,10 @@ export default class Dot {
     update(andShow, firstPairComponent) {
         let newVelXIsNegative;
         let newVelYIsNegative;
-        if (gt(this.#brain.getStep(), Dot.#minStep)) {
+        if (eq(this.#brain.getStep(), Dot.#minStep)) {
             this.#dead = neg(1);
         } else if (not(this.#dead)) {
-            if (eq(Dot.#brainSize, this.#brain.getStep())) {
+            if (eq(this.#brain.getStep(), Dot.#brainSize)) {
                 this.#dead = neg(1);
             } else if (firstPairComponent) {
                 this.#acc = this.#brain.getNextDirection();
