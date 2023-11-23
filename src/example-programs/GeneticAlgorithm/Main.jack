@@ -68,7 +68,7 @@ class Main {
         let goalY = 128;
         let onlyBest = false;
         do Main.selectObstacles();
-        let brainSize = initialGoalDist;
+        let brainSize = Math.max(5, initialGoalDist);
         do Brain.config(brainSize);
         do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
         do Population.config(brainSize, onlyBest, initialBestDotFitness);
