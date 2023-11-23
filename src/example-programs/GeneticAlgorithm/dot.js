@@ -148,22 +148,23 @@ export default class Dot {
             // || so it short circuits
             if (lt(this.#posX, 2) | lt(this.#posY, 2) | gt(this.#posX, 510) | gt(this.#posY, 254) || eq(Dot.#obstacles[Main.getGridIndex(this.#posX, this.#posY)], neg(1))) {
                 this.#dead = neg(1);
-            } else if (not(gt(abs(sub(this.#posX, Dot.#goalX)), 3) | gt(abs(sub(this.#posY, Dot.#goalY)), 3))) {
-                this.#reachedGoal = neg(1);
-                this.#dead = neg(1);
-            } else
-            // show function
-            if (andShow) {
-                Util.setColor(0);
-                Util.drawRectangle(sub(this.#prevX, 1), sub(this.#prevY, 1), add(this.#prevX, 1), add(this.#prevY, 1));
-                Util.setColor(neg(1));
-                this.#prevX = this.#posX;
-                this.#prevY = this.#posY;
-                Util.drawRectangle(sub(this.#prevX, 1), sub(this.#prevY, 1), add(this.#prevX, 1), add(this.#prevY, 1));
             } else {
-                // needs to be here since calculateFitness uses prevX and prevY
-                this.#prevX = this.#posX;
-                this.#prevY = this.#posY;
+                if (not(gt(abs(sub(this.#posX, Dot.#goalX)), 3) | gt(abs(sub(this.#posY, Dot.#goalY)), 3))) {
+                    this.#reachedGoal = neg(1);
+                    this.#dead = neg(1);
+                }
+                if (andShow) {
+                    Util.setColor(0);
+                    Util.drawRectangle(sub(this.#prevX, 1), sub(this.#prevY, 1), add(this.#prevX, 1), add(this.#prevY, 1));
+                    Util.setColor(neg(1));
+                    this.#prevX = this.#posX;
+                    this.#prevY = this.#posY;
+                    Util.drawRectangle(sub(this.#prevX, 1), sub(this.#prevY, 1), add(this.#prevX, 1), add(this.#prevY, 1));
+                } else {
+                    // needs to be here since calculateFitness uses prevX and prevY
+                    this.#prevX = this.#posX;
+                    this.#prevY = this.#posY;
+                }
             }
         }
     }

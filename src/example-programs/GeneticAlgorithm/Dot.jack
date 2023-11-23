@@ -143,22 +143,23 @@ class Dot {
 
             if ((posX < 2) | (posY < 2) | (posX > 510) | (posY > 254) | (obstacles[Main.getGridIndex(posX, posY)] = true)) {
                 let dead = true;
-            } else if (~((Math.abs(posX - goalX) > 3) | (Math.abs(posY - goalY) > 3))) {
-                let reachedGoal = true;
-                let dead = true;
-            } else
-            // show function
-            if (andShow) {
-                // needs to be here since calculateFitness uses prevX and prevY
-                do Screen.setColor(false);
-                do Screen.drawRectangle(prevX - 1, prevY - 1, prevX + 1, prevY + 1);
-                do Screen.setColor(true);
-                let prevX = posX;
-                let prevY = posY;
-                do Screen.drawRectangle(prevX - 1, prevY - 1, prevX + 1, prevY + 1);
             } else {
-                let prevX = posX;
-                let prevY = posY;
+                if (~((Math.abs(posX - goalX) > 3) | (Math.abs(posY - goalY) > 3))) {
+                    let reachedGoal = true;
+                    let dead = true;
+                }
+                if (andShow) {
+                    // needs to be here since calculateFitness uses prevX and prevY
+                    do Screen.setColor(false);
+                    do Screen.drawRectangle(prevX - 1, prevY - 1, prevX + 1, prevY + 1);
+                    do Screen.setColor(true);
+                    let prevX = posX;
+                    let prevY = posY;
+                    do Screen.drawRectangle(prevX - 1, prevY - 1, prevX + 1, prevY + 1);
+                } else {
+                    let prevX = posX;
+                    let prevY = posY;
+                }
             }
         }
     }
