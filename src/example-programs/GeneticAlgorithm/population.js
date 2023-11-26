@@ -276,15 +276,17 @@ export default class Population {
             directions = brain.getDirections();
             dot.instantiate();
             brain.instantiate();
-            if (eq(i, 0)) {
+            j = 0;
+            if (not(eq(i, 0))) {
+                newDirections = Population.#newBrainDirections[sub(i, 1)];
+                minStep = newDirections[Population.#brainSize];
+            } else if (dot === bestDot) {
+                minStep = 0;
+            } else {
                 brain = bestDot.getBrain();
                 newDirections = brain.getDirections();
                 minStep = Population.#brainSize;
-            } else {
-                newDirections = Population.#newBrainDirections[sub(i, 1)];
-                minStep = newDirections[Population.#brainSize];
             }
-            j = 0;
             while (lt(j, minStep)) {
                 directions[j] = newDirections[j];
                 j = add(j, 1);

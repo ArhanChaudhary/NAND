@@ -1,5 +1,7 @@
 # TODO (genetic algorithm)
-* optimize best dot copying
+* better bestDot choosing: if same fitness but less steps then change
+* change hardcoded heap values in js mirror
+* accelerationvectortrio
 * menu: initialXY goalXY selectObstacles onlyBest continue (different config functions)
 
 # TODO (NAND)

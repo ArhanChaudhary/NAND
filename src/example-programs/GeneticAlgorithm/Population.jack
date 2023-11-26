@@ -294,15 +294,17 @@ class Population {
             let directions = brain.getDirections();
             do dot.instantiate();
             do brain.instantiate();
-            if (i = 0) {
+            let j = 0;
+            if (~(i = 0)) {
+                let newDirections = newBrainDirections[i - 1];
+                let minStep = newDirections[brainSize];
+            } else if (dot = bestDot) {
+                let minStep = 0;
+            } else {
                 let brain = bestDot.getBrain();
                 let newDirections = brain.getDirections();
                 let minStep = brainSize;
-            } else {
-                let newDirections = newBrainDirections[i - 1];
-                let minStep = newDirections[brainSize];
             }
-            let j = 0;
             while (j < minStep) {
                 let directions[j] = newDirections[j];
                 let j = j + 1;
