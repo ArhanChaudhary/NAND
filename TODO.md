@@ -1,10 +1,5 @@
 # TODO (genetic algorithm)
-* Util.true Util.false and Util.div
-* let minStep = Dot.getMinStep();
-        if (minStep = 32767) {
-            let minStep = brainSize; <-- should be brain.getStep() ????
-        }
-* draw reach goal
+* optimize best dot copying
 * menu: initialXY goalXY selectObstacles onlyBest continue (different config functions)
 
 # TODO (NAND)

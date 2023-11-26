@@ -73,17 +73,17 @@ class Population {
         // newBrainDirections
         + (populationCount - 1) + 2
         // newBrainDirections memory
-        + (populationCount - 1) * (brainSize + 2)
+        + (populationCount - 1) * (brainSize + 3)
         // remaining space
         = remainingExtendedHeap
 
-        populationCount + 2 + populationCount * diff + populationCount + 2 + (populationCount - 1) + 2 + (populationCount - 1) * (brainSize + 2) = remainingExtendedHeap
-        p + 2 + pd + p + 2 + p - 1 + 2 + (p - 1) * (b + 2) = remainingExtendedHeap
-        p + 2 + pd + p + 2 + p - 1 + 2 + pb + 2p - b - 2 = remainingExtendedHeap
+        populationCount + 2 + populationCount * diff + populationCount + 2 + (populationCount - 1) + 2 + (populationCount - 1) * (brainSize + 3) = remainingExtendedHeap
+        p + 2 + pd + p + 2 + p - 1 + 2 + (p - 1) * (b + 3) = remainingExtendedHeap
+        p + 2 + pd + p + 2 + p - 1 + 2 + pb + 3p - b - 3 = remainingExtendedHeap
 
-        p + pd + p + p + pb + p + p = remainingExtendedHeap - 3 + b
-        p(1 + d + 1 + 1 + b + 1 + 1) = remainingExtendedHeap - 3 + b
-        p = (remainingExtendedHeap + b - 3) / (d + b + 5)
+        p + pd + p + p + pb + p + p + p = remainingExtendedHeap - 2 + b
+        p(1 + d + 1 + 1 + b + 1 + 1 + 1) = remainingExtendedHeap - 2 + b
+        p = (remainingExtendedHeap + b - 2) / (d + b + 6)
 
         // populationCount lower bound
 
@@ -105,7 +105,7 @@ class Population {
         p = (remainingHeap - 5) / (d + 3)
         */
         let populationCount = Math.min(
-            (remainingExtendedHeap + brainSize - 3) / (diff + brainSize + 5),
+            (remainingExtendedHeap + brainSize - 2) / (diff + brainSize + 6),
             (remainingHeap - 5) / (diff + 3)
         );
 
@@ -119,16 +119,16 @@ class Population {
         }
         let i = 0;
 
-        // auxilliary memory
         let newBrainDirections = Array.new(populationCount - 1);
         if (~(newBrainDirections < 16387)) {
             do Sys.error(6);
         }
+        // auxilliary memory
         do Screen.setColor(false);
         do Screen.drawRectangle(176, 122, 368, 133);
         do Screen.setColor(true);
         while (i < (populationCount - 1)) {
-            let newBrainDirections[i] = Array.new(brainSize);
+            let newBrainDirections[i] = Array.new(brainSize + 1);
             let i = i + 1;
         }
         do Screen.clearScreen();
@@ -178,19 +178,15 @@ class Population {
         var int fitnessSum;
         var int fitnessSumCoef;
         var int randTo32000;
-        var int randToBrainSize;
+        var int randToMinStep;
         var Array directions;
         var Array newDirections;
         var int scaleCache;
         var boolean mutated;
         var int dynamicMutationRateTimes32;
         var int minStep;
+        var int dotMinStepCache;
 
-        let minStep = Dot.getMinStep();
-        if (minStep = 32767) {
-            let minStep = brainSize;
-        }
-        let dynamicMutationRateTimes32 = Math.min(1000, 1530 / brainSize) * 32;
         let bestDotFitness = -1;
         while (i < populationCount) {
             let dot = dots[i];
@@ -210,7 +206,8 @@ class Population {
 
         if (bestDot.getReachedGoal()) {
             let brain = bestDot.getBrain();
-            do Dot.setMinStep(brain.getStep());
+            let dotMinStepCache = brain.getStep();
+            do Dot.setMinStep(dotMinStepCache);
         }
 
         let i = 0;
@@ -256,9 +253,15 @@ class Population {
             let brain = dot.getBrain();
             let directions = brain.getDirections();
             let newDirections = newBrainDirections[i];
+            if (dotMinStepCache = 0) {
+                let minStep = brain.getStep();
+            } else {
+                let minStep = dotMinStepCache;
+            }
+            let dynamicMutationRateTimes32 = Math.min(1000, 1530 / minStep) * 32;
             let mutated = false;
             let j = 0;
-            while (j < brainSize) {
+            while (j < minStep) {
                 // scaleCache = 32767 / 1000 = 32
                 let randTo32000 = Math.abs(Util.random());
                 while (~(randTo32000 < 32000)) {
@@ -272,14 +275,15 @@ class Population {
                 }
                 let j = j + 1;
             }
+            let newDirections[brainSize] = minStep; // cache for later
             if (~mutated) {
-                let scaleCache = 32767 / brainSize;
-                let randToBrainSize = brainSize;
-                // randToBrainSize can be negative Math.abs does not guarantee positive (-32768)
-                while (~((randToBrainSize > -1) & (randToBrainSize < brainSize))) {
-                    let randToBrainSize = Math.abs(Util.random()) / scaleCache;
+                let scaleCache = 32767 / minStep;
+                let randToMinStep = minStep;
+                // randToMinStep can be negative Math.abs does not guarantee positive (-32768)
+                while (~((randToMinStep > -1) & (randToMinStep < minStep))) {
+                    let randToMinStep = Math.abs(Util.random()) / scaleCache;
                 }
-                let newDirections[randToBrainSize] = AccelerationVectorPair.random();
+                let newDirections[randToMinStep] = AccelerationVectorPair.random();
             }
             let i = i + 1;
         }
@@ -293,11 +297,13 @@ class Population {
             if (i = 0) {
                 let brain = bestDot.getBrain();
                 let newDirections = brain.getDirections();
+                let minStep = brainSize;
             } else {
                 let newDirections = newBrainDirections[i - 1];
+                let minStep = newDirections[brainSize];
             }
             let j = 0;
-            while (j < brainSize) {
+            while (j < minStep) {
                 let directions[j] = newDirections[j];
                 let j = j + 1;
             }

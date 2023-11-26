@@ -63,17 +63,17 @@ export default class Population {
         // newBrainDirections
         + (populationCount - 1) + 2
         // newBrainDirections memory
-        + (populationCount - 1) * (brainSize + 2)
+        + (populationCount - 1) * (brainSize + 3)
         // remaining space
         = remainingExtendedHeap
 
-        populationCount + 2 + populationCount * diff + populationCount + 2 + (populationCount - 1) + 2 + (populationCount - 1) * (brainSize + 2) = remainingExtendedHeap
-        p + 2 + pd + p + 2 + p - 1 + 2 + (p - 1) * (b + 2) = remainingExtendedHeap
-        p + 2 + pd + p + 2 + p - 1 + 2 + pb + 2p - b - 2 = remainingExtendedHeap
+        populationCount + 2 + populationCount * diff + populationCount + 2 + (populationCount - 1) + 2 + (populationCount - 1) * (brainSize + 3) = remainingExtendedHeap
+        p + 2 + pd + p + 2 + p - 1 + 2 + (p - 1) * (b + 3) = remainingExtendedHeap
+        p + 2 + pd + p + 2 + p - 1 + 2 + pb + 3p - b - 3 = remainingExtendedHeap
 
-        p + pd + p + p + pb + p + p = remainingExtendedHeap - 3 + b
-        p(1 + d + 1 + 1 + b + 1 + 1) = remainingExtendedHeap - 3 + b
-        p = (remainingExtendedHeap + b - 3) / (d + b + 5)
+        p + pd + p + p + pb + p + p + p = remainingExtendedHeap - 2 + b
+        p(1 + d + 1 + 1 + b + 1 + 1 + 1) = remainingExtendedHeap - 2 + b
+        p = (remainingExtendedHeap + b - 2) / (d + b + 6)
 
         // populationCount lower bound
 
@@ -95,7 +95,7 @@ export default class Population {
         p = (remainingHeap - 5) / (d + 3)
         */
         Population.#populationCount = min(
-            div(sub(add(remainingExtendedHeap, brainSize), 3), add(add(diff, brainSize), 5)),
+            div(sub(add(remainingExtendedHeap, brainSize), 2), add(add(diff, brainSize), 6)),
             div(sub(remainingHeap, 5), add(diff, 3))
         );
         Population.#fitnessCache = new Array(Population.#populationCount);
@@ -108,10 +108,10 @@ export default class Population {
         }
         i = 0;
 
-        // auxilliary memory
         Population.#newBrainDirections = new Array(sub(Population.#populationCount, 1));
+        // auxilliary memory
         while (lt(i, sub(Population.#populationCount, 1))) {
-            Population.#newBrainDirections[i] = new Array(Population.#brainSize);
+            Population.#newBrainDirections[i] = new Array(add(Population.#brainSize, 1));
             i = add(i, 1);
         }
     }
@@ -160,19 +160,15 @@ export default class Population {
         let fitnessSum = 0;
         let fitnessSumCoef = 0;
         let randTo32000;
-        let randToBrainSize;
+        let randToMinStep;
         let directions;
         let newDirections;
         let scaleCache;
         let mutated;
         let dynamicMutationRateTimes32;
         let minStep;
+        let dotMinStepCache = 0;
 
-        minStep = Dot.getMinStep();
-        if (eq(minStep, 32767)) {
-            minStep = Population.#brainSize;
-        }
-        dynamicMutationRateTimes32 = mult(min(1000, div(1530, minStep)), 32);
         Population.#bestDotFitness = neg(1);
         while (lt(i, Population.#populationCount)) {
             dot = Population.#dots[i];
@@ -192,7 +188,8 @@ export default class Population {
 
         if (bestDot.getReachedGoal()) {
             brain = bestDot.getBrain();
-            Dot.setMinStep(brain.getStep());
+            dotMinStepCache = brain.getStep();
+            Dot.setMinStep(dotMinStepCache);
         }
 
         i = 0;
@@ -238,9 +235,15 @@ export default class Population {
             brain = dot.getBrain();
             directions = brain.getDirections();
             newDirections = Population.#newBrainDirections[i];
+            if (dotMinStepCache == 0) {
+                minStep = brain.getStep();
+            } else {
+                minStep = dotMinStepCache;
+            }
+            dynamicMutationRateTimes32 = mult(min(1000, div(1530, minStep)), 32);
             mutated = 0;
             j = 0;
-            while (lt(j, Population.#brainSize)) {
+            while (lt(j, minStep)) {
                 // scaleCache = div(32767, 1000); = 32
                 randTo32000 = abs(Util.random());
                 while (not(lt(randTo32000, 32000))) {
@@ -254,14 +257,15 @@ export default class Population {
                 }
                 j = add(j, 1);
             }
+            newDirections[Population.#brainSize] = minStep; // cache for later
             if (not(mutated)) {
-                scaleCache = div(32767, Population.#brainSize);
-                randToBrainSize = Population.#brainSize;
-                // randToBrainSize can be negative abs does not guarantee positive (-32768)
-                while (not(gt(randToBrainSize, neg(1)) & lt(randToBrainSize, Population.#brainSize))) {
-                    randToBrainSize = div(abs(Util.random()), scaleCache);
+                scaleCache = div(32767, minStep);
+                randToMinStep = minStep;
+                // randToMinStep can be negative abs does not guarantee positive (-32768)
+                while (not(gt(randToMinStep, neg(1)) & lt(randToMinStep, minStep))) {
+                    randToMinStep = div(abs(Util.random()), scaleCache);
                 }
-                newDirections[randToBrainSize] = AccelerationVectorPair.random();
+                newDirections[randToMinStep] = AccelerationVectorPair.random();
             }
             i = add(i, 1);
         }
@@ -275,11 +279,13 @@ export default class Population {
             if (eq(i, 0)) {
                 brain = bestDot.getBrain();
                 newDirections = brain.getDirections();
+                minStep = Population.#brainSize;
             } else {
                 newDirections = Population.#newBrainDirections[sub(i, 1)];
+                minStep = newDirections[Population.#brainSize];
             }
             j = 0;
-            while (lt(j, Population.#brainSize)) {
+            while (lt(j, minStep)) {
                 directions[j] = newDirections[j];
                 j = add(j, 1);
             }
