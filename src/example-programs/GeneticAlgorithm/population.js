@@ -150,6 +150,7 @@ export default class Population {
         let dot;
         let bestDot;
         let brain;
+        let bestDotBrain;
         let dotFitness;
         let i = 0;
         let j;
@@ -177,6 +178,13 @@ export default class Population {
             if (gt(dotFitness, Population.#bestDotFitness)) {
                 Population.#bestDotFitness = dotFitness;
                 bestDot = dot;
+            // ensures brain and bestDotBrain is only defined when necessary
+            } else if (eq(dotFitness, Population.#bestDotFitness)) {
+                brain = dot.getBrain();
+                bestDotBrain = bestDot.getBrain(); // doesnt run when bestDot is null
+                if (lt(brain.getStep(), bestDotBrain.getStep())) {
+                    bestDot = dot;
+                }
             }
             fitnessSum = add(fitnessSum, dotFitness);
             if (lt(fitnessSum, 0)) {

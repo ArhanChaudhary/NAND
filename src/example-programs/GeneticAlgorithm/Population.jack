@@ -168,6 +168,7 @@ class Population {
         var Dot dot;
         var Dot bestDot;
         var Brain brain;
+        var Brain bestDotBrain;
         var int dotFitness;
         var int i;
         var int j;
@@ -195,6 +196,13 @@ class Population {
             if (dotFitness > bestDotFitness) {
                 let bestDotFitness = dotFitness;
                 let bestDot = dot;
+            // ensures brain and bestDotBrain is only defined when necessary
+            } else if (dotFitness = bestDotFitness) {
+                let brain = dot.getBrain();
+                let bestDotBrain = bestDot.getBrain(); // doesnt run when bestDot is null
+                if (brain.getStep() < bestDotBrain.getStep()) {
+                    let bestDot = dot;
+                }
             }
             let fitnessSum = fitnessSum + dotFitness;
             if (fitnessSum < 0) {
