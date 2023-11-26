@@ -13,6 +13,7 @@ const abs = Util.abs;
 const sub = Util.sub;
 const mult = Util.mult;
 const min = Util.min;
+const random = Util.random;
 export default class Population {
     static #dots;
     static #fitnessCache;
@@ -210,10 +211,10 @@ export default class Population {
                 while (gt(randFitnessCoef, fitnessSumCoef)) {
                     // fitnessSumCoef = 296, randFitnessCoef = 32698
                     // this results in randFitnessCoef = 297 which is out of bounds
-                    randFitnessCoef = div(abs(Util.random()), scaleCache);
+                    randFitnessCoef = div(abs(random()), scaleCache);
                 }
             }
-            randFitness = abs(Util.random());
+            randFitness = abs(random());
             if (eq(randFitnessCoef, fitnessSumCoef)) {
                 if (eq(fitnessSum, 0)) {
                     randFitness = 0;
@@ -221,7 +222,7 @@ export default class Population {
                     scaleCache = div(32767, fitnessSum);
                     while (gt(randFitness, fitnessSum)) {
                         // same with this it can also go out of bounds
-                        randFitness = div(abs(Util.random()), scaleCache);
+                        randFitness = div(abs(random()), scaleCache);
                     }
                 }
             }
@@ -253,9 +254,9 @@ export default class Population {
             j = 0;
             while (lt(j, minStep)) {
                 // scaleCache = div(32767, 1000); = 32
-                randTo32000 = abs(Util.random());
+                randTo32000 = abs(random());
                 while (not(lt(randTo32000, 32000))) {
-                    randTo32000 = abs(Util.random());
+                    randTo32000 = abs(random());
                 }
                 if (lt(randTo32000, dynamicMutationRateTimes32)) {
                     newDirections[j] = AccelerationVectorPair.random();
@@ -271,7 +272,7 @@ export default class Population {
                 randToMinStep = minStep;
                 // randToMinStep can be negative abs does not guarantee positive (-32768)
                 while (not(gt(randToMinStep, neg(1)) & lt(randToMinStep, minStep))) {
-                    randToMinStep = div(abs(Util.random()), scaleCache);
+                    randToMinStep = div(abs(random()), scaleCache);
                 }
                 newDirections[randToMinStep] = AccelerationVectorPair.random();
             }

@@ -1,11 +1,16 @@
 import Util from "./util.js";
 
-const add = Util.add;
-const abs = Util.abs;
-const lt = Util.lt;
+const div = Util.div;
+const gt = Util.gt;
 const neg = Util.neg;
 const not = Util.not;
-const div = Util.div;
+const add = Util.add;
+const lt = Util.lt;
+const eq = Util.eq;
+const abs = Util.abs;
+const sub = Util.sub;
+const mult = Util.mult;
+const min = Util.min;
 const random = Util.random;
 export default class AccelerationVectorPair {
     #x;

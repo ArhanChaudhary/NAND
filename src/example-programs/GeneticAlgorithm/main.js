@@ -11,8 +11,11 @@ const not = Util.not;
 const add = Util.add;
 const lt = Util.lt;
 const eq = Util.eq;
+const abs = Util.abs;
 const sub = Util.sub;
+const mult = Util.mult;
 const min = Util.min;
+const random = Util.random;
 export default class Main {
     static #initialX;
     static #initialY;
@@ -70,7 +73,7 @@ export default class Main {
         await new Promise(resolve => {
             function tmp() {
                 if (eq(Util.keyPressed(), 0)) {
-                    Util.random();
+                    random();
                     setTimeout(tmp, 0);
                 } else {
                     resolve();

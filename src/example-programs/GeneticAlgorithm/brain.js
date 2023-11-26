@@ -1,6 +1,18 @@
 import AccelerationVectorPair from "./accelerationvectorpair.js";
 import Util from "./util.js";
 
+const div = Util.div;
+const gt = Util.gt;
+const neg = Util.neg;
+const not = Util.not;
+const add = Util.add;
+const lt = Util.lt;
+const eq = Util.eq;
+const abs = Util.abs;
+const sub = Util.sub;
+const mult = Util.mult;
+const min = Util.min;
+const random = Util.random;
 export default class Brain {
     #directions;
     #step;

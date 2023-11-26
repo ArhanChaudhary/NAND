@@ -1,6 +1,6 @@
 # TODO (genetic algorithm)
-* better bestDot choosing: if same fitness but less steps then change
 * change hardcoded heap values in js mirror
+* same seed test js mirror same as jack
 * accelerationvectortrio
 * menu: initialXY goalXY selectObstacles onlyBest continue (different config functions)
 
