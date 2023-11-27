@@ -1,7 +1,7 @@
 # TODO (genetic algorithm)
-* change hardcoded heap values in js mirror
-* same seed test js mirror same as jack
+* fix minStep not being reset on re-place obstacles
 * accelerationvectortrio
+* look into why specifically Math.max(5, Main.#initialGoalDist); is needed
 * menu: initialXY goalXY selectObstacles onlyBest continue (different config functions)
 
 # TODO (NAND)

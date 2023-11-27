@@ -48,7 +48,7 @@ export default class Population {
         brain = dot.getBrain();
         directions = brain.getDirections();
         // hardcoded values, update whenever
-        diff = 96;
+        diff = brainSize + 18;
         remainingHeap = 9530;
 
         remainingExtendedHeap = add(remainingHeap, 8192);
