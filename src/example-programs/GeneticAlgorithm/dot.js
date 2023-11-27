@@ -13,6 +13,8 @@ const abs = Util.abs;
 const sub = Util.sub;
 const max = Util.max;
 const mult = Util.mult;
+const min = Util.min;
+const random = Util.random;
 export default class Dot {
     static #initialX;
     static #initialY;
@@ -39,9 +41,13 @@ export default class Dot {
         Dot.#goalX = goalX;
         Dot.#goalY = goalY;
         Dot.#brainSize = brainSize;
+        Dot.#obstacles = obstacles;
+        Dot.resetMinStep();
+    }
+
+    static resetMinStep() {
         Dot.#minStep = 32767;
         Dot.#stepWeight = div(22767, Brain.getBrainSize());
-        Dot.#obstacles = obstacles;
     }
 
     constructor() {

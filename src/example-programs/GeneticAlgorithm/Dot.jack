@@ -19,9 +19,13 @@ class Dot {
         let goalX = _goalX;
         let goalY = _goalY;
         let brainSize = _brainSize;
-        let minStep = 32767;
-        let stepWeight = 22767 / _brainSize;
         let obstacles = _obstacles;
+        do Dot.resetMinStep();
+    }
+
+    function void resetMinStep() {
+        let minStep = 32767;
+        let stepWeight = 22767 / brainSize;
     }
 
     constructor Dot new() {

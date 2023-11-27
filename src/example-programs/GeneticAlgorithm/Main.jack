@@ -62,7 +62,7 @@ class Main {
             do Util.random();
         do Screen.drawRectangle(70, 57, 442, 154);
 
-        let initialX = 10;
+        let initialX = 300;
         let initialY = 128;
         let goalX = 500;
         let goalY = 128;
@@ -78,8 +78,11 @@ class Main {
                 do Population.naturalSelection();
                 if (Keyboard.keyPressed() = 140) {
                     do Main.selectObstacles();
+                    do Main.refreshDisplay();
+                    do Dot.resetMinStep();
+                } else {
+                    do Main.refreshDisplay();
                 }
-                do Main.refreshDisplay();
                 let firstPairComponent = false;
             } else {
                 let firstPairComponent = ~firstPairComponent;

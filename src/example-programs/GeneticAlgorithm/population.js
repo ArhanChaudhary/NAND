@@ -11,6 +11,7 @@ const lt = Util.lt;
 const eq = Util.eq;
 const abs = Util.abs;
 const sub = Util.sub;
+const max = Util.max;
 const mult = Util.mult;
 const min = Util.min;
 const random = Util.random;
