@@ -344,15 +344,15 @@ export default class Main {
 
         if (eq(penalty, neg(2))) {
             if (Main.#isAdjacent) {
-                floodVal = add(Main.#floodDist, 12);
+                floodVal = add(Main.#floodDist, 11);
             } else {
                 floodVal = add(Main.#floodDist, 65);
             }
         } else if (eq(penalty, neg(1))) {
             if (Main.#isAdjacent) {
-                floodVal = add(Main.#floodDist, 9);
+                floodVal = add(Main.#floodDist, 8);
             } else {
-                // cant be ran because this will override add(the, 13) case
+                // cant be ran because this will override the add(, 11) case
                 // it also isnt natural for dots to get past such an obstacle in a single diagonal step
                 return;
             }

@@ -1,5 +1,5 @@
 # TODO (genetic algorithm)
-* fix minStep not being reset on re-place obstacles
+* bfs doesnt work on the top???
 * accelerationvectortrio
 * look into why specifically Math.max(5, Main.#initialGoalDist); is needed
 * menu: initialXY goalXY selectObstacles onlyBest continue (different config functions)

@@ -293,14 +293,14 @@ class Main {
 
         if (penalty = -2) {
             if (isAdjacent) {
-                let floodVal = floodDist + 12;
+                let floodVal = floodDist + 11;
             } else {
                 let floodVal = floodDist + 65;
             }
         } else if (penalty = -1) {
             if (isAdjacent) {
-                // cant be ran because this will override the + 13 case
-                let floodVal = floodDist + 9;
+                // cant be ran because this will override the + 11 case
+                let floodVal = floodDist + 8;
             } else {
                 return;
             }
