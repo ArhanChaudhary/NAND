@@ -367,7 +367,7 @@ class Output {
         if (cursorIsOdd) {
             let cursor = cursor + 1;
         }
-        while (currentRow < cursor) {
+        while (~(currentRow > cursor)) {
             let currentRow = currentRow + 352;
         }
         if (currentRow = 8128) {

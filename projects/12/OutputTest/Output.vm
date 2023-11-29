@@ -972,8 +972,7 @@ label FALSE_CASE22
 label WHILE_ITER23
 push local 0
 push static 4
-lt
-not
+gt
 if-goto WHILE_BREAKER24
 push local 0
 push constant 352
