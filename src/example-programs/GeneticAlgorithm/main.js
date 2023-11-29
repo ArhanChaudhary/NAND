@@ -90,7 +90,8 @@ export default class Main {
         Main.#goalY = 128;
         Main.#onlyBest = 0;
         await Main.selectObstacles();
-        brainSize = Math.max(5, Main.#initialGoalDist);
+        // maximum amount of steps to move across a 16x16 grid square
+        brainSize = max(Main.#initialGoalDist, 5);
         Brain.config(brainSize);
         Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, brainSize, Main.#obstacles);
         Population.config(brainSize, Main.#onlyBest, Main.#initialBestDotFitness);
@@ -360,8 +361,6 @@ export default class Main {
         } else {
             if (Main.#isAdjacent) {
                 floodVal = add(Main.#floodDist, 5);
-                if (floodVal === 47)
-                    debugger;
             } else {
                 floodVal = add(Main.#floodDist, 7);
             }

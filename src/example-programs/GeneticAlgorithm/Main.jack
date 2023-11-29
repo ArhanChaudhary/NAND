@@ -68,7 +68,8 @@ class Main {
         let goalY = 128;
         let onlyBest = false;
         do Main.selectObstacles();
-        let brainSize = Math.max(5, initialGoalDist);
+        // maximum amount of steps to move across a 16x16 grid square
+        let brainSize = Math.max(initialGoalDist, 5);
         do Brain.config(brainSize);
         do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
         do Population.config(brainSize, onlyBest, initialBestDotFitness);

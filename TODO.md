@@ -1,7 +1,4 @@
 # TODO (genetic algorithm)
-* bfs doesnt work on the top???
-* accelerationvectortrio
-* look into why specifically Math.max(5, Main.#initialGoalDist); is needed
 * menu: initialXY goalXY selectObstacles onlyBest continue (different config functions)
 
 # TODO (NAND)
@@ -23,6 +20,7 @@
 * BFS constants
 
 # TODO (for later)
+* take into account steps dot hasnt reach goal, ie 100 steps to reach 100 fitness is better than 150 steps to reach 105 fitness
 * graphing calculator in jack
 * nand in nand
 * lisp interpreter
