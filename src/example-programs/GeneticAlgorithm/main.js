@@ -325,14 +325,15 @@ export default class Main {
             topLeft = sub(bottomLeft, rightIndex);
             topRight = sub(bottomRight, rightIndex);
 
+            // || so it short circuits
             penalty = min(
                 add(
-                    Main.floodIndexOutOfBounds(i, bottomLeft) | Main.#obstacles[bottomLeft],
-                    Main.floodIndexOutOfBounds(i, bottomRight) | Main.#obstacles[bottomRight]
+                    Main.floodIndexOutOfBounds(i, bottomLeft) || eq(Main.#obstacles[bottomLeft], neg(1)),
+                    Main.floodIndexOutOfBounds(i, bottomRight) || eq(Main.#obstacles[bottomRight], neg(1))
                 ),
                 add(
-                    Main.floodIndexOutOfBounds(i, topLeft) | Main.#obstacles[topLeft],
-                    Main.floodIndexOutOfBounds(i, topRight) | Main.#obstacles[topRight]
+                    Main.floodIndexOutOfBounds(i, topLeft) || eq(Main.#obstacles[topLeft], neg(1)),
+                    Main.floodIndexOutOfBounds(i, topRight) || eq(Main.#obstacles[topRight], neg(1))
                 )
             );
             i = sub(i, rightIndex);
@@ -359,6 +360,8 @@ export default class Main {
         } else {
             if (Main.#isAdjacent) {
                 floodVal = add(Main.#floodDist, 5);
+                if (floodVal === 47)
+                    debugger;
             } else {
                 floodVal = add(Main.#floodDist, 7);
             }
@@ -400,9 +403,9 @@ export default class Main {
             obstacleX = add(obstacleX, obstacleX);
             if (eq(Main.#obstacles[i], neg(1))) {
                 Util.drawRectangle(obstacleX, obstacleY, add(obstacleX, 15), add(obstacleY, 15));
-            }/* else if (not(eq(Main.#obstacles[i], 0))) {
+            } else if (not(eq(Main.#obstacles[i], 0))) {
                 Util.drawText(div(32767, Main.#obstacles[i]), add(obstacleX, 8), add(obstacleY, 8));
-            }*/
+            }
             i = add(i, 1);
         }
     }
