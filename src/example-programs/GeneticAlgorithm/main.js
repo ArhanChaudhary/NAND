@@ -30,6 +30,8 @@ export default class Main {
     static #floodDist;
     static #initialGoalDist;
     static #initialBestDotFitness;
+    static #resetMinStep;
+    static #precomputeFitnesses;
 
     static #generationString;
     static #goalStepCountString;
@@ -38,6 +40,13 @@ export default class Main {
     static #placeString;
     static #escString;
     static #precomputingString;
+    static #optionOne;
+    static #optionTwo;
+    static #optionThree;
+    static #optionFour;
+    static #optionFourToggled;
+    static #optionFive;
+    static #optionSelect;
 
     static init() {
         let i = 0;
@@ -48,6 +57,13 @@ export default class Main {
         Main.#placeString = "Place obstacles with the arrow, enter, and delete keys.";
         Main.#escString = "Press esc to finish.";
         Main.#precomputingString = "Precomputing fitnesses...";
+        Main.#optionOne = "1) Set initial dot position";
+        Main.#optionTwo = "2) Set goal position";
+        Main.#optionThree = "3) Set obstacles";
+        Main.#optionFour = "4) Show all dots";
+        Main.#optionFourToggled = "4) Show only best dot";
+        Main.#optionFive = "5) Continue";
+        Main.#optionSelect = "Select an option: ";
         Main.#floodQueue = new Array(100);
         Main.#obstacles = new Array(512);
         while (lt(i, 512)) {
@@ -84,26 +100,36 @@ export default class Main {
         });
         Util.drawRectangle(70, 57, 442, 154);
 
-        Main.#initialX = 10;
-        Main.#initialY = 128;
-        Main.#goalX = 500;
-        Main.#goalY = 128;
         Main.#onlyBest = 0;
-        await Main.selectObstacles();
+        Main.setInitialDot();
+        Main.setGoal();
+        await Main.setObstacles();
+        Util.clearScreen();
+        Main.precomputeFitnesses();
         // maximum amount of steps to move across a 16x16 grid square
         brainSize = max(Main.#initialGoalDist, 5);
         Brain.config(brainSize);
-        Dot.config(Main.#initialX, Main.#initialY, Main.#goalX, Main.#goalY, brainSize, Main.#obstacles);
+        Dot.config(brainSize, Main.#obstacles);
         Population.config(brainSize, Main.#onlyBest, Main.#initialBestDotFitness);
         Main.refreshDisplay();
         window.interval = 25;
         async function tmp() {
             if (Population.allDotsDead()) {
                 Population.naturalSelection();
+                Main.#precomputeFitnesses = 0;
+                Main.#resetMinStep = 0;
                 if (eq(Util.keyPressed(), 140)) {
-                    await Main.selectObstacles();
+                    await Main.showMenu();
+                } else {
+                    Util.clearScreen();
+                }
+                if (Main.#precomputeFitnesses) {
+                    Main.precomputeFitnesses();
                 }
                 Main.refreshDisplay();
+                if (Main.#resetMinStep) {
+                    Dot.resetMinStep();
+                }
                 firstPairComponent = 0;
             } else {
                 firstPairComponent = not(firstPairComponent);
@@ -114,25 +140,26 @@ export default class Main {
         tmp();
     }
 
-    static async selectObstacles() {
+    static setInitialDot() {
+        Main.#initialX = 10;
+        Main.#initialY = 128;
+        Dot.setInitialPosition(Main.#initialX, Main.#initialY);
+    }
+
+    static setGoal() {
+        Main.#goalX = 500;
+        Main.#goalY = 128;
+        Dot.setGoalPosition(Main.#goalX, Main.#goalY);
+    }
+
+    static async setObstacles() {
         let selectorX = 0;
         let selectorY = 0;
         let selectorIndex = 0;
         let key = 0;
         let drag = 0;
         let draggingEnter = 0;
-        let i = 0;
-        let i2 = 0;
-        let allowUp;
-        let allowDown;
-        let allowRight;
-        let allowLeft;
-        while (not(gt(i, 511))) {
-            if (not(eq(Main.#obstacles[i], neg(1)))) {
-                Main.#obstacles[i] = 0;
-            }
-            i = add(i, 1);
-        }
+
         console.log(Main.#placeString);
         console.log(Main.#escString);
         selectorX = 256;
@@ -235,6 +262,23 @@ export default class Main {
                 await new Promise(resolve => setTimeout(resolve, 50));
             }
         }
+    }
+
+    static precomputeFitnesses() {
+        let allowUp;
+        let allowDown;
+        let allowRight;
+        let allowLeft;
+        let i = 0;
+        let i2 = 0;
+
+        while (not(gt(i, 511))) {
+            if (not(eq(Main.#obstacles[i], neg(1)))) {
+                Main.#obstacles[i] = 0;
+            }
+            i = add(i, 1);
+        }
+
         console.log(Main.#precomputingString);
 
         i = Main.getGridIndex(Main.#goalX, Main.#goalY);
@@ -443,6 +487,60 @@ export default class Main {
         }
         // ret should be (posY / 16) * 32 + (posX / 16)
         return ret;
+    }
+
+    static async showMenu() {
+        let selected;
+        let toAlert = "";
+        Util.clearScreen();
+        toAlert += Main.#optionOne;
+        toAlert += "\n";
+        toAlert += Main.#optionTwo;
+        toAlert += "\n";
+        toAlert += Main.#optionThree;
+        toAlert += "\n";
+        if (Main.#onlyBest) {
+            toAlert += Main.#optionFour;
+        } else {
+            toAlert += Main.#optionFourToggled;
+        }
+        toAlert += "\n";
+        toAlert += Main.#optionFive;
+        toAlert += "\n";
+        toAlert += "\n";
+        await new Promise(resolve => {
+            function tmp() {
+                if (eq(Util.keyPressed(), 0)) {
+                    resolve();
+                } else {
+                    setTimeout(tmp, 0);
+                }
+            }
+            tmp();
+        });
+        toAlert += Main.#optionSelect;
+        selected = +prompt(toAlert) || 0;
+        // for GUIs and exit (so precomputeFitness/refreshDisplay runs with an already cleared screen)
+        if (eq(selected, 1) | eq(selected, 2) | eq(selected, 3) | eq(selected, 5))
+            Util.clearScreen();
+        if (eq(selected, 1)) {
+            Main.setInitialDot();
+            Main.#resetMinStep = neg(1);
+        } else if (eq(selected, 2)) {
+            Main.setGoal();
+            Main.#precomputeFitnesses = neg(1);
+            Main.#resetMinStep = neg(1);
+        } else if (eq(selected, 3)) {
+            await Main.setObstacles();
+            Main.#precomputeFitnesses = neg(1);
+            Main.#resetMinStep = neg(1);
+        } else if (eq(selected, 4)) {
+            Main.#onlyBest = not(Main.#onlyBest);
+            Population.toggleOnlyBest();
+        }
+        if (not(eq(selected, 5))) {
+            await Main.showMenu();
+        }
     }
 }
 Main.main();

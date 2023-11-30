@@ -35,14 +35,20 @@ export default class Dot {
     static #minStep;
     static #obstacles;
 
-    static config(initialX, initialY, goalX, goalY, brainSize, obstacles) {
-        Dot.#initialX = initialX;
-        Dot.#initialY = initialY;
-        Dot.#goalX = goalX;
-        Dot.#goalY = goalY;
+    static config(brainSize, obstacles) {
         Dot.#brainSize = brainSize;
         Dot.#obstacles = obstacles;
         Dot.resetMinStep();
+    }
+
+    static setInitialPosition(initialX, initialY) {
+        Dot.#initialX = initialX;
+        Dot.#initialY = initialY;
+    }
+
+    static setGoalPosition(goalX, goalY) {
+        Dot.#goalX = goalX;
+        Dot.#goalY = goalY;
     }
 
     static resetMinStep() {

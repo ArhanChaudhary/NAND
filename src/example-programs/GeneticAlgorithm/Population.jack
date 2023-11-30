@@ -134,6 +134,10 @@ class Population {
         do Screen.clearScreen();
     }
 
+    function void toggleOnlyBest() {
+        let onlyBest = ~onlyBest;
+    }
+
     function int getGen() {
         return gen;
     }
@@ -319,7 +323,6 @@ class Population {
             }
             let i = i + 1;
         }
-        do Screen.clearScreen();
         let gen = gen + 1;
     }
 }

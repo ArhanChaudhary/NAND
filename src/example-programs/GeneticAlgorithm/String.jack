@@ -53,6 +53,10 @@ class String {
         return currentLength;
     }
 
+    method void clear() {
+        let currentLength = 0;
+    }
+
     /** Returns the character at the j-th location of this string. */
     method char charAt(int j) {
         if (~(j < currentLength))

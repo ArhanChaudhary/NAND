@@ -1,5 +1,5 @@
 # TODO (genetic algorithm)
-* menu: initialXY goalXY selectObstacles onlyBest continue (different config functions)
+* center menu
 
 # TODO (NAND)
 * cannot set variable names to keywords in compiler
@@ -11,7 +11,7 @@
     * you cant malloc 0 even if the original OS could
     * theres no Sys.error(18) String.eraseLastChar String is empty
     * arguments keyword
-* actually code the ui
+* actually code the ui (viewable ram and rom)
 
 # TODO (stats testing)
 * random acceleration vector shouldnt actually be random, it slightly modifies current by +-1

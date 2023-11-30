@@ -13,14 +13,20 @@ class Dot {
     static int minStep;
     static Array obstacles;
 
-    function void config(int _initialX, int _initialY, int _goalX, int _goalY, int _brainSize, Array _obstacles) {
-        let initialX = _initialX;
-        let initialY = _initialY;
-        let goalX = _goalX;
-        let goalY = _goalY;
+    function void config(int _brainSize, Array _obstacles) {
         let brainSize = _brainSize;
         let obstacles = _obstacles;
         do Dot.resetMinStep();
+    }
+
+    function void setInitialPosition(int _initialX, int _initialY) {
+        let initialX = _initialX;
+        let initialY = _initialY;
+    }
+
+    function void setGoalPosition(int _goalX, int _goalY) {
+        let goalX = _goalX;
+        let goalY = _goalY;
     }
 
     function void resetMinStep() {

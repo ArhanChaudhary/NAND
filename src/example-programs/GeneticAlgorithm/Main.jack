@@ -11,6 +11,8 @@ class Main {
     static int floodDist;
     static boolean initialGoalDist;
     static boolean initialBestDotFitness;
+    static boolean resetMinStep;
+    static boolean precomputeFitnesses;
 
     static String generationString;
     static String goalStepCountString;
@@ -19,9 +21,17 @@ class Main {
     static String placeString;
     static String escString;
     static String precomputingString;
+    static String optionOne;
+    static String optionTwo;
+    static String optionThree;
+    static String optionFour;
+    static String optionFourToggled;
+    static String optionFive;
+    static String optionSelect;
 
     function void init() {
         var int i;
+        do Keyboard.init();
         let generationString = "Generation: ";
         let goalStepCountString = "Goal step count: ";
         let goalDistanceString = "Goal distance: ";
@@ -29,6 +39,13 @@ class Main {
         let placeString = "Place obstacles with the arrow, enter, and delete keys.";
         let escString = "Press esc to finish.";
         let precomputingString = "Precomputing fitnesses...";
+        let optionOne = "1) Set initial dot position";
+        let optionTwo = "2) Set goal position";
+        let optionThree = "3) Set obstacles";
+        let optionFour = "4) Show all dots";
+        let optionFourToggled = "4) Show only best dot";
+        let optionFive = "5) Continue";
+        let optionSelect = "Select an option: ";
         let floodQueue = Array.new(100);
         let obstacles = Array.new(512);
         while (i < 512) {
@@ -62,27 +79,34 @@ class Main {
             do Util.random();
         do Screen.drawRectangle(70, 57, 442, 154);
 
-        let initialX = 300;
-        let initialY = 128;
-        let goalX = 500;
-        let goalY = 128;
         let onlyBest = false;
-        do Main.selectObstacles();
+        do Main.setInitialDot();
+        do Main.setGoal();
+        do Main.setObstacles();
+        do Screen.clearScreen();
+        do Main.precomputeFitnesses();
         // maximum amount of steps to move across a 16x16 grid square
         let brainSize = Math.max(initialGoalDist, 5);
         do Brain.config(brainSize);
-        do Dot.config(initialX, initialY, goalX, goalY, brainSize, obstacles);
+        do Dot.config(brainSize, obstacles);
         do Population.config(brainSize, onlyBest, initialBestDotFitness);
         do Main.refreshDisplay();
         while (true) {
             if (Population.allDotsDead()) {
                 do Population.naturalSelection();
+                let precomputeFitnesses = false;
+                let resetMinStep = false;
                 if (Keyboard.keyPressed() = 140) {
-                    do Main.selectObstacles();
-                    do Main.refreshDisplay();
-                    do Dot.resetMinStep();
+                    do Main.showMenu();
                 } else {
-                    do Main.refreshDisplay();
+                    do Screen.clearScreen();
+                }
+                if (precomputeFitnesses) {
+                    do Main.precomputeFitnesses();
+                }
+                do Main.refreshDisplay();
+                if (resetMinStep) {
+                    do Dot.resetMinStep();
                 }
                 let firstPairComponent = false;
             } else {
@@ -92,23 +116,25 @@ class Main {
         }
     }
 
-    function void selectObstacles() {
+    function void setInitialDot() {
+        let initialX = 10;
+        let initialY = 128;
+        do Dot.setInitialPosition(initialX, initialY);
+    }
+
+    function void setGoal() {
+        let goalX = 500;
+        let goalY = 128;
+        do Dot.setGoalPosition(goalX, goalY);
+    }
+
+    function void setObstacles() {
         var int selectorX;
         var int selectorY;
         var int selectorIndex;
         var int key;
         var boolean drag;
         var boolean draggingEnter;
-        var int i, i2;
-        var boolean allowUp;
-        var boolean allowDown;
-        var boolean allowRight;
-        var boolean allowLeft;
-        while (~(i > 511)) {
-            if (~(obstacles[i] = true))
-                let obstacles[i] = false;
-            let i = i + 1;
-        }
 
         do Output.moveCursor(3, 5);
         do Output.printString(placeString);
@@ -181,10 +207,24 @@ class Main {
                 } else {
                     let key = 0;
                 }
-                do Sys.wait(150);
+                do Sys.wait(125);
             }
         }
-        do Screen.clearScreen();
+    }
+
+    function void precomputeFitnesses() {
+        var boolean allowUp;
+        var boolean allowDown;
+        var boolean allowRight;
+        var boolean allowLeft;
+        var int i, i2;
+
+        while (~(i > 511)) {
+            if (~(obstacles[i] = true))
+                let obstacles[i] = false;
+            let i = i + 1;
+        }
+
         do Output.moveCursor(11, 21);
         do Output.printString(precomputingString);
 
@@ -390,5 +430,49 @@ class Main {
         }
         // ret should be (posY / 16) * 32 + (posX / 16)
         return ret;
+    }
+
+    function void showMenu() {
+        var int selected;
+        do Screen.clearScreen();
+        do Output.moveCursor(0, 0);
+        do Output.printString(optionOne);
+        do Output.println();
+        do Output.printString(optionTwo);
+        do Output.println();
+        do Output.printString(optionThree);
+        do Output.println();
+        if (onlyBest) {
+            do Output.printString(optionFour);
+        } else {
+            do Output.printString(optionFourToggled);
+        }
+        do Output.println();
+        do Output.printString(optionFive);
+        do Output.println();
+        do Output.println();
+        while (~(Keyboard.keyPressed() = 0)) {}
+        let selected = Keyboard.readInt(optionSelect);
+        // for GUIs and exit (so precomputeFitness/refreshDisplay runs with an already cleared screen)
+        if ((selected = 1) | (selected = 2) | (selected = 3) | (selected = 5))
+            do Screen.clearScreen();
+        if (selected = 1) {
+            do Main.setInitialDot();
+            let resetMinStep = true;
+        } else if (selected = 2) {
+            do Main.setGoal();
+            let precomputeFitnesses = true;
+            let resetMinStep = true;
+        } else if (selected = 3) {
+            do Main.setObstacles();
+            let precomputeFitnesses = true;
+            let resetMinStep = true;
+        } else if (selected = 4) {
+            let onlyBest = ~onlyBest;
+            do Population.toggleOnlyBest();
+        }
+        if (~(selected = 5)) {
+            do Main.showMenu();
+        }
     }
 }

@@ -118,6 +118,10 @@ export default class Population {
         }
     }
 
+    static toggleOnlyBest() {
+        Population.#onlyBest = not(Population.#onlyBest);
+    }
+
     static getGen() {
         return Population.#gen;
     }
@@ -303,7 +307,6 @@ export default class Population {
             }
             i = add(i, 1);
         }
-        Util.clearScreen();
         Population.#gen = add(Population.#gen, 1);
     }
 }
