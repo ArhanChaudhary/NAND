@@ -57,7 +57,7 @@ fn placebit16_0(b: bool) -> u16 {
 	u16_from_bool(b)
 }
 
-pub fn word16_16(a: bool, b: bool, c: bool, d: bool, e: bool, f: bool, g: bool, h: bool, 
+pub fn word16_16(a: bool, b: bool, c: bool, d: bool, e: bool, f: bool, g: bool, h: bool,
         i: bool, j: bool, k: bool, l: bool, m: bool, n: bool, o: bool, p: bool) -> u16 {
 	placebit16_0(a) |
     placebit16(b, 1) |
@@ -118,7 +118,7 @@ pub fn aregister(in_: u16, load: bool) -> u16 {
 	out
 }
 
-static mut RAM16K_MEMORY: Vec<u16> = Vec::new();
+static mut RAM16K_MEMORY: [u16; 16384] = [0; 16384];
 
 pub fn ram16k(in_: u16, load: bool, address: u16) -> u16 {
 	if address >= 16384 {
@@ -133,7 +133,7 @@ pub fn ram16k(in_: u16, load: bool, address: u16) -> u16 {
 
 #[wasm_bindgen(js_name=getRAM)]
 pub fn get_ram() -> Vec<u16> {
-	unsafe { RAM16K_MEMORY.clone() }
+	unsafe { RAM16K_MEMORY.to_vec() }
 }
 
 static mut CURRENT_KEY: u16 = 0;
@@ -162,7 +162,7 @@ pub fn load_rom(in_: JsValue) {
 	}
 }
 
-static mut SCREEN_MEMORY: Vec<u16> = Vec::new();
+static mut SCREEN_MEMORY: [u16; 8192] = [0; 8192];
 
 pub fn screen(in_: u16, load: bool, address: u16) -> u16 {
 	let out = unsafe { &SCREEN_MEMORY }[address as usize];
@@ -174,7 +174,7 @@ pub fn screen(in_: u16, load: bool, address: u16) -> u16 {
 
 #[wasm_bindgen(js_name=getScreen)]
 pub fn get_screen() -> Vec<u16> {
-	unsafe { SCREEN_MEMORY.clone() }
+	unsafe { SCREEN_MEMORY.to_vec() }
 }
 
 #[wasm_bindgen]
@@ -190,11 +190,4 @@ pub fn render(ctx: CanvasRenderingContext2d, screen_memory: Vec<u16>) {
 			}
 		}
 	}
-}
-
-#[wasm_bindgen(start)]
-fn init() {
-	unsafe { RAM16K_MEMORY = vec![0; 16384] };
-	// unsafe { ROM32K_MEMORY = vec![0; 32768] };
-	unsafe { SCREEN_MEMORY = vec![0; 8192] };
 }
