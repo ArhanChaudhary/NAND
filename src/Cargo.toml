@@ -9,8 +9,8 @@ crate-type = ["cdylib", "rlib"]
 path = "core/builtins.rs"
 
 [dependencies]
-js-sys = "0.3.64"
-wasm-bindgen = "0.2.84"
+js-sys = "0.3.66"
+wasm-bindgen = "0.2.89"
 
 [dependencies.web-sys]
 version = "0.3"
