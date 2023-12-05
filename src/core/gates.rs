@@ -1,4 +1,4 @@
-use crate::{NAND, nbit16, nbit16_0, word16_16};
+use crate::{nbit16, nbit16_0, word16_16, NAND};
 
 pub fn not(a: bool) -> bool {
     NAND(a, a)
@@ -59,7 +59,7 @@ pub fn and16(a: u16, b: u16) -> u16 {
         and(nbit16(a, 12), nbit16(b, 12)),
         and(nbit16(a, 13), nbit16(b, 13)),
         and(nbit16(a, 14), nbit16(b, 14)),
-        and(nbit16(a, 15), nbit16(b, 15))
+        and(nbit16(a, 15), nbit16(b, 15)),
     );
 }
 
@@ -80,54 +80,52 @@ pub fn mux16(a: u16, b: u16, sel: bool) -> u16 {
         mux(nbit16(a, 12), nbit16(b, 12), sel),
         mux(nbit16(a, 13), nbit16(b, 13), sel),
         mux(nbit16(a, 14), nbit16(b, 14), sel),
-        mux(nbit16(a, 15), nbit16(b, 15), sel)
+        mux(nbit16(a, 15), nbit16(b, 15), sel),
     );
 }
 
 pub fn is_zero(in_: u16) -> bool {
-    return not(
+    return not(or(
+        nbit16(in_, 15),
         or(
-            nbit16(in_, 15),
+            nbit16(in_, 14),
             or(
-                nbit16(in_, 14),
+                nbit16(in_, 13),
                 or(
-                    nbit16(in_, 13),
+                    nbit16(in_, 12),
                     or(
-                        nbit16(in_, 12),
+                        nbit16(in_, 11),
                         or(
-                            nbit16(in_, 11),
+                            nbit16(in_, 10),
                             or(
-                                nbit16(in_, 10),
+                                nbit16(in_, 9),
                                 or(
-                                    nbit16(in_, 9),
+                                    nbit16(in_, 8),
                                     or(
-                                        nbit16(in_, 8),
+                                        nbit16(in_, 7),
                                         or(
-                                            nbit16(in_, 7),
+                                            nbit16(in_, 6),
                                             or(
-                                                nbit16(in_, 6),
+                                                nbit16(in_, 5),
                                                 or(
-                                                    nbit16(in_, 5),
+                                                    nbit16(in_, 4),
                                                     or(
-                                                        nbit16(in_, 4),
+                                                        nbit16(in_, 3),
                                                         or(
-                                                            nbit16(in_, 3),
-                                                            or(
-                                                                nbit16(in_, 2),
-                                                                or(nbit16(in_, 1), nbit16_0(in_))
-                                                            )
-                                                        )
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )
-    );
+                                                            nbit16(in_, 2),
+                                                            or(nbit16(in_, 1), nbit16_0(in_)),
+                                                        ),
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ));
 }
