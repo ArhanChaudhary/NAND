@@ -116,7 +116,7 @@ static mut DREGISTER_DFFOUT: u16 = 0;
 
 pub fn dregister(in_: u16, load: bool) -> u16 {
     let out = unsafe { DREGISTER_DFFOUT };
-    if unsafe { CLOCK } && load {
+    if load && unsafe { CLOCK } {
         unsafe { DREGISTER_DFFOUT = in_ };
         return in_;
     }
@@ -127,7 +127,7 @@ static mut AREGISTER_DFFOUT: u16 = 0;
 
 pub fn aregister(in_: u16, load: bool) -> u16 {
     let out = unsafe { AREGISTER_DFFOUT };
-    if unsafe { CLOCK } && load {
+    if load && unsafe { CLOCK } {
         unsafe { AREGISTER_DFFOUT = in_ };
         return in_;
     }
@@ -141,7 +141,7 @@ pub fn ram16k(in_: u16, load: bool, address: u16) -> u16 {
         return 0;
     }
     let out = unsafe { &RAM16K_MEMORY }[address as usize];
-    if unsafe { CLOCK } && load {
+    if load && unsafe { CLOCK } {
         unsafe { RAM16K_MEMORY[address as usize] = in_ };
     }
     out
@@ -161,7 +161,7 @@ pub fn keyboard(load: bool, pressed: u16) -> u16 {
     unsafe { CURRENT_KEY }
 }
 
-static mut ROM32K_MEMORY: Vec<u16> = Vec::new();
+static mut ROM32K_MEMORY: [u16; 32768] = [0; 32768];
 
 pub fn rom32k(address: u16) -> u16 {
     unsafe { ROM32K_MEMORY[address as usize] }
@@ -169,20 +169,18 @@ pub fn rom32k(address: u16) -> u16 {
 
 #[wasm_bindgen(js_name=loadROM)]
 pub fn load_rom(in_: JsValue) {
-    unsafe { ROM32K_MEMORY.clear() };
-    let arr: Array = in_.into();
-    for i in 0..arr.length() {
-        let s = arr.get(i).as_string().unwrap();
-        let n = u16::from_str_radix(&s, 2).unwrap();
-        unsafe { ROM32K_MEMORY.push(n) };
-    }
+    Array::from(&in_).for_each(&mut |v, i, _| {
+        unsafe {
+            ROM32K_MEMORY[i as usize] = u16::from_str_radix(&v.as_string().unwrap(), 2).unwrap()
+        };
+    });
 }
 
 static mut SCREEN_MEMORY: [u16; 8192] = [0; 8192];
 
 pub fn screen(in_: u16, load: bool, address: u16) -> u16 {
     let out = unsafe { &SCREEN_MEMORY }[address as usize];
-    if unsafe { CLOCK } && load {
+    if load && unsafe { CLOCK } {
         unsafe { SCREEN_MEMORY[address as usize] = in_ };
     }
     out
