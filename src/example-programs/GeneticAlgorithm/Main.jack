@@ -62,11 +62,11 @@ class Main {
         do Population.init();
         do Main.init();
 
-        // do Screen.drawRectangle(80, 67, 432, 144);
-        do Screen.drawRectangle(70, 57, 442, 154);
+        // do Screen.drawRectangle(81, 67, 433, 144);
+        do Screen.drawRectangle(71, 57, 443, 154);
         do Screen.setColor(false);
-        // do Screen.drawRectangle(82, 69, 430, 142);
-        do Screen.drawRectangle(72, 59, 440, 152);
+        // do Screen.drawRectangle(83, 69, 431, 142);
+        do Screen.drawRectangle(73, 59, 441, 152);
         do Output.moveCursor(6, 11);
         do Output.printString("Welcome to my genetic algorithm simulation!");
         do Output.moveCursor(8, 10);

@@ -340,6 +340,3 @@ return
 function String.doubleQuote 0
 push constant 34
 return
-function String.init 0
-push constant 0
-return
