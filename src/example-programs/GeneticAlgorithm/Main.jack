@@ -77,7 +77,7 @@ class Main {
         do Output.printString("Press any key to start.");
         while (Keyboard.keyPressed() = 0)
             do Util.random();
-        do Screen.drawRectangle(70, 57, 442, 154);
+        do Screen.drawRectangle(71, 57, 443, 154);
 
         let onlyBest = false;
         do Main.setInitialDot();
@@ -435,22 +435,27 @@ class Main {
     function void showMenu() {
         var int selected;
         do Screen.clearScreen();
-        do Output.moveCursor(0, 0);
+        do Screen.setColor(true);
+        // do Screen.drawRectangle(153, 78, 369, 155);
+        do Screen.drawRectangle(143, 68, 379, 165);
+        do Screen.setColor(false);
+        // do Screen.drawRectangle(155, 80, 367, 153);
+        do Screen.drawRectangle(145, 70, 377, 163);
+        do Output.moveCursor(7, 19);
         do Output.printString(optionOne);
-        do Output.println();
+        do Output.moveCursor(8, 19);
         do Output.printString(optionTwo);
-        do Output.println();
+        do Output.moveCursor(9, 19);
         do Output.printString(optionThree);
-        do Output.println();
+        do Output.moveCursor(10, 19);
         if (onlyBest) {
             do Output.printString(optionFour);
         } else {
             do Output.printString(optionFourToggled);
         }
-        do Output.println();
+        do Output.moveCursor(11, 19);
         do Output.printString(optionFive);
-        do Output.println();
-        do Output.println();
+        do Output.moveCursor(13, 19);
         while (~(Keyboard.keyPressed() = 0)) {}
         let selected = Keyboard.readInt(optionSelect);
         // for GUIs and exit (so precomputeFitness/refreshDisplay runs with an already cleared screen)

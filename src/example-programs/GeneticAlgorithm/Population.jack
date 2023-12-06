@@ -8,10 +8,12 @@ class Population {
     static int brainSize;
     static boolean onlyBest;
     static String allocatingString;
+    static String escapeString;
 
     function void init() {
         // let dots = null;
         let allocatingString = "Allocating dot memory...";
+        let escapeString = "Hold escape in the simulation to open the menu.";
     }
 
     function void config(int _brainSize, boolean _onlyBest, int initialBestDotFitness) {
