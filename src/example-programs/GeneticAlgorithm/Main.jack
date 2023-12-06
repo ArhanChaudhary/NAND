@@ -57,10 +57,6 @@ class Main {
     function void main() {
         var int brainSize;
         var boolean firstPairComponent;
-        do Util.init();
-        do AccelerationVectorPair.init();
-        do Population.init();
-        do Main.init();
 
         // do Screen.drawRectangle(81, 67, 433, 144);
         do Screen.drawRectangle(71, 57, 443, 154);
@@ -74,6 +70,10 @@ class Main {
         do Output.moveCursor(9, 17);
         do Output.printString("as little steps as possible.");
         do Output.moveCursor(12, 20);
+        do Util.init();
+        do AccelerationVectorPair.init();
+        do Population.init();
+        do Main.init();
         do Output.printString("Press any key to start.");
         while (Keyboard.keyPressed() = 0)
             do Util.random();
