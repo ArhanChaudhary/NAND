@@ -27,6 +27,8 @@ class Population {
 
         do Output.moveCursor(11, 22);
         do Output.printString(allocatingString);
+        do Output.moveCursor(15, 9);
+        do Output.printString(escapeString);
         // if (~(dots = null)) {
         //     while (i < populationCount) {
         //         let dot = dots[i];
@@ -127,7 +129,8 @@ class Population {
         }
         // auxilliary memory
         do Screen.setColor(false);
-        do Screen.drawRectangle(176, 122, 368, 133);
+        do Screen.drawRectangle(177, 122, 369, 133);
+        do Screen.drawRectangle(73, 166, 449, 177);
         do Screen.setColor(true);
         while (i < (populationCount - 1)) {
             let newBrainDirections[i] = Array.new(brainSize + 1);

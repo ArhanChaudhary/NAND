@@ -1,5 +1,4 @@
 # TODO (genetic algorithm)
-* center menu
 * goal and initial dot gui
 
 # TODO (NAND)
