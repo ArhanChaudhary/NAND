@@ -1,4 +1,4 @@
-import Engine from "./engine";
+import compiler from "./main";
 import fs from "fs";
 
 let path = process.argv[process.argv.length - 1];
@@ -20,17 +20,7 @@ if (path.endsWith('.jack')) {
     }));
 }
 
-let out: Array<{fileName: string, file: string[]}> = [];
-inputFiles.forEach(fileData => {
-    try {
-        const engine = new Engine(fileData);
-        engine.compileClass();
-        out.push(engine.getOut());
-    } catch (err: any) {
-        console.log(err.toString());
-    }
-});
-// Engine.postValidation();
+const out = compiler(inputFiles);
 out.forEach(fileData => {
     if (path.includes('.jack')) {
         fs.writeFileSync(path.replace('.jack', '.vm'), fileData.file.join('\n'));
