@@ -1,4 +1,7 @@
 # TODO (genetic algorithm)
+* showAllDots doesnt display obstacles
+* compiler CLI should add OS files if directory
+* assembler CLI
 * goal and initial dot gui
 
 # TODO (NAND)
