@@ -1,8 +1,8 @@
 # TODO (genetic algorithm)
 * pop this 9 and pop this 8 optimize
-* showAllDots doesnt display obstacles
-* compiler CLI should add OS files if directory
 * assembler CLI
+* compiler CLI should add OS files if directory
+* showAllDots doesnt display obstacles
 * goal and initial dot gui
 
 # TODO (NAND)
