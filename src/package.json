@@ -8,7 +8,8 @@
     "rwbuild": "wasm-pack build",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json"
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "esm-node": "node --experimental-specifier-resolution=node --loader ts-node/esm"
   },
   "dependencies": {
     "@types/node": "^20.3.3",
