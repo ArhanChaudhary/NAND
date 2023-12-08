@@ -1,50 +1,61 @@
 <script lang="ts" context="module">
-  export const JackOS: Array<{fileName: string, file: string[]}> = [];
+  export const JackOS: Array<{ fileName: string; file: string[] }> = [];
 
   for (const [OSFilePath, OSFile] of Object.entries(
-    import.meta.glob('../os/*.jack', { as: 'raw' })
+    import.meta.glob("../os/*.jack", { as: "raw" })
   )) {
     JackOS.push({
-      fileName: OSFilePath.replace('../os/', '').replace('.jack', ''),
-      file: (await OSFile() as string).split('\n'),
+      fileName: OSFilePath.replace("../os/", "").replace(".jack", ""),
+      file: ((await OSFile()) as string).split("\n"),
     });
   }
 </script>
 
 <script lang="ts">
-  import { runner } from './runner-store'
+  import { runner } from "./runner-store";
 
-  let mHz = '0';
-  let NANDCalls = '0';
+  let mHz = "0";
+  let NANDCalls = "0";
   $: if ($runner) {
-    const offscreen = document.querySelector('canvas').transferControlToOffscreen();
-    $runner.postMessage({action: 'initialize', canvas: offscreen}, [offscreen]);
-    $runner.addEventListener('message', (e: { data: { action: any; hz: number; NANDCalls: bigint; }; }) => {
-      switch (e.data.action) {
-        case 'emitInfo':
-          if (e.data.hz >= 100_000) {
-            mHz = Number(e.data.hz / 1_000_000).toPrecision(3) + ' MHz';
-          } else if (e.data.hz >= 1_000) {
-            mHz = Number(e.data.hz / 1_000).toPrecision(3) + ' KHz';
-          } else {
-            mHz = Number(e.data.hz).toPrecision(3) + ' Hz';
-          }
+    const offscreen = document
+      .querySelector("canvas")
+      .transferControlToOffscreen();
+    $runner.postMessage({ action: "initialize", canvas: offscreen }, [
+      offscreen,
+    ]);
+    $runner.addEventListener(
+      "message",
+      (e: { data: { action: any; hz: number; NANDCalls: bigint } }) => {
+        switch (e.data.action) {
+          case "emitInfo":
+            if (e.data.hz >= 100_000) {
+              mHz = Number(e.data.hz / 1_000_000).toPrecision(3) + " MHz";
+            } else if (e.data.hz >= 1_000) {
+              mHz = Number(e.data.hz / 1_000).toPrecision(3) + " KHz";
+            } else {
+              mHz = Number(e.data.hz).toPrecision(3) + " Hz";
+            }
 
-          if (e.data.NANDCalls >= 1_000_000_000_000n) {
-            NANDCalls = Number(e.data.NANDCalls * 1000n / 1_000_000_000_000n) / 1000 + ' trillion';
-          } else if (e.data.NANDCalls >= 1_000_000_000n) {
-            NANDCalls = Number(e.data.NANDCalls * 10n / 1_000_000_000n) / 10 + ' billion';
-          } else if (e.data.NANDCalls >= 1_000_000n) {
-            NANDCalls = Number(e.data.NANDCalls / 1_000_000n) + ' million';
-          } else {
-            NANDCalls = '0';
-          }
-          break;
+            if (e.data.NANDCalls >= 1_000_000_000_000n) {
+              NANDCalls =
+                Number((e.data.NANDCalls * 1000n) / 1_000_000_000_000n) / 1000 +
+                " trillion";
+            } else if (e.data.NANDCalls >= 1_000_000_000n) {
+              NANDCalls =
+                Number((e.data.NANDCalls * 10n) / 1_000_000_000n) / 10 +
+                " billion";
+            } else if (e.data.NANDCalls >= 1_000_000n) {
+              NANDCalls = Number(e.data.NANDCalls / 1_000_000n) + " million";
+            } else {
+              NANDCalls = "0";
+            }
+            break;
+        }
       }
-    });
+    );
 
     let prev: number;
-    document.addEventListener("keydown", e => {
+    document.addEventListener("keydown", (e) => {
       let keyValue: number | undefined = {
         Enter: 128,
         Backspace: 129,
@@ -80,15 +91,21 @@
         keyValue = 0;
       }
       prev = keyValue;
-      $runner.postMessage({action: 'keyboard', key: keyValue});
+      $runner.postMessage({ action: "keyboard", key: keyValue });
     });
 
     document.addEventListener("keyup", () => {
       prev = 0;
-      $runner.postMessage({action: 'keyboard', key: 0});
+      $runner.postMessage({ action: "keyboard", key: 0 });
     });
   }
 </script>
+
+<div id="computer-wrapper">
+  <canvas width="512" height="256" />
+  <div id="secHz">Clock speed: {mHz}</div>
+  <div id="NANDCalls">NAND Calls: {NANDCalls}</div>
+</div>
 
 <style lang="scss">
   canvas {
@@ -106,9 +123,3 @@
     font-size: 22px;
   }
 </style>
-
-<div id="computer-wrapper">
-  <canvas width="512" height="256" />
-  <div id="secHz">Clock speed: {mHz}</div>
-  <div id="NANDCalls">NAND Calls: {NANDCalls}</div>
-</div>

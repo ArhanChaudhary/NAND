@@ -1,15 +1,15 @@
 export default class SymbolTable {
-    private symbolTable: { [symbol: string]: number } = {};
+  private symbolTable: { [symbol: string]: number } = {};
 
-    public addEntry(symbol: string, address: number): void {
-        this.symbolTable[symbol] = address;
-    }
+  public addEntry(symbol: string, address: number): void {
+    this.symbolTable[symbol] = address;
+  }
 
-    public contains(symbol: string): boolean {
-        return symbol in this.symbolTable;
-    }
+  public contains(symbol: string): boolean {
+    return symbol in this.symbolTable;
+  }
 
-    public getAddress(symbol: string): number {
-        return this.symbolTable[symbol];
-    }
+  public getAddress(symbol: string): number {
+    return this.symbolTable[symbol];
+  }
 }

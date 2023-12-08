@@ -1,8 +1,4 @@
+import cssnano from "cssnano";
+import postcssPresetEnv from "postcss-preset-env";
 
-import cssnano from 'cssnano';
-import postcssPresetEnv from 'postcss-preset-env';
-
-export const plugins = [
-  cssnano,
-  postcssPresetEnv,
-];
+export const plugins = [cssnano, postcssPresetEnv];

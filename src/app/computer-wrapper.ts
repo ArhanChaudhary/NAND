@@ -43,11 +43,14 @@ function runner() {
 const emitIntervalDelay = 50;
 let prevEmit: number;
 const prevSecTotalAvgTime = 1;
-const prevSecTotals: number[] = []
+const prevSecTotals: number[] = [];
 function emitInfo() {
   const currentEmit = performance.now();
-  const secTotal = emitIntervalTotal / (currentEmit - prevEmit) * 1000;
-  if (prevSecTotals.length === 1000 * prevSecTotalAvgTime / emitIntervalDelay) {
+  const secTotal = (emitIntervalTotal / (currentEmit - prevEmit)) * 1000;
+  if (
+    prevSecTotals.length ===
+    (1000 * prevSecTotalAvgTime) / emitIntervalDelay
+  ) {
     prevSecTotals.shift();
   }
   prevSecTotals.push(secTotal);
@@ -58,32 +61,34 @@ function emitInfo() {
   let hz = prevSecTotals.reduce((a, b) => a + b) / prevSecTotals.length;
 
   self.postMessage({
-    action: 'emitInfo',
+    action: "emitInfo",
     hz,
     NANDCalls: computer.NANDCalls(),
   });
 }
 
 async function initialize() {
-  screen = new Worker(new URL('screen.ts', import.meta.url), { type: 'module' });
-  await new Promise<void>(resolve => {
-    screen.addEventListener('message', e => {
-      if (e.data === 'ready') {
+  screen = new Worker(new URL("screen.ts", import.meta.url), {
+    type: "module",
+  });
+  await new Promise<void>((resolve) => {
+    screen.addEventListener("message", (e) => {
+      if (e.data === "ready") {
         resolve();
       }
     });
   });
 
   let emitInterval: NodeJS.Timeout | void;
-  self.addEventListener('message', function(e) {
+  self.addEventListener("message", function (e) {
     switch (e.data.action) {
-      case 'initialize':
+      case "initialize":
         screen.postMessage(e.data.canvas, [e.data.canvas]);
         break;
-      case 'loadROM':
+      case "loadROM":
         computer.loadROM(e.data.machineCode);
         break;
-      case 'start':
+      case "start":
         if (emitInterval) return;
         stopRunner = false;
         // runner first because worker startup is slow and the very first emit
@@ -94,10 +99,10 @@ async function initialize() {
         prevEmit = performance.now();
         emitInterval = setInterval(emitInfo, emitIntervalDelay);
         break;
-      case 'keyboard':
+      case "keyboard":
         computer.keyboard(true, e.data.key);
         break;
-      case 'reset':
+      case "reset":
         if (!prevEmit) return;
         stopRunner = true;
         computer.ticktock(true);
@@ -106,25 +111,26 @@ async function initialize() {
         emitIntervalTotal = 0;
         prevSecTotals.length = 0;
         self.postMessage({
-          action: 'emitInfo',
+          action: "emitInfo",
           hz: 0,
           NANDCalls: 0,
         });
         break;
-      case 'stop':
+      case "stop":
         stopRunner = true;
         emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
         break;
-      case 'speed':
+      case "speed":
         const minLogValue = Math.log10(slowestStep);
         const maxLogValue = Math.log10(fastestStep);
-        const logScaledValue = minLogValue + (e.data.speed / 100) * (maxLogValue - minLogValue);
+        const logScaledValue =
+          minLogValue + (e.data.speed / 100) * (maxLogValue - minLogValue);
         const linearScaledValue = Math.pow(10, logScaledValue);
         step = linearScaledValue;
     }
   });
 
-  self.postMessage({action: 'ready'});
+  self.postMessage({ action: "ready" });
 }
 
 initialize();

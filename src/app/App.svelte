@@ -1,18 +1,25 @@
 <script lang="ts">
-  import Computer from './Computer.svelte';
-  import Nav from './Nav.svelte';
-  import { runner } from './runner-store.js';
+  import Computer from "./Computer.svelte";
+  import Nav from "./Nav.svelte";
+  import { runner } from "./runner-store.js";
 
-  const runner_ = new Worker(new URL('./computer-wrapper.ts', import.meta.url), { type: "module" });
-  runner_.addEventListener('message', e => {
-    if (e.data.action === 'ready')
-      $runner = runner_;
+  const runner_ = new Worker(
+    new URL("./computer-wrapper.ts", import.meta.url),
+    { type: "module" }
+  );
+  runner_.addEventListener("message", (e) => {
+    if (e.data.action === "ready") $runner = runner_;
   });
 </script>
 
+<main>
+  <Nav />
+  <Computer />
+</main>
+
 <!-- no scss because it complains about unused css in normalize.css -->
 <style>
-  @import 'normalize.css';
+  @import "normalize.css";
   main {
     background-color: tan;
     display: flex;
@@ -21,8 +28,3 @@
     height: 100dvh;
   }
 </style>
-
-<main>
-  <Nav />
-  <Computer />
-</main>

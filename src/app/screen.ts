@@ -4,10 +4,10 @@ import * as computer from "core";
 async function initialize() {
   let ctx: OffscreenCanvasRenderingContext2D;
   let running = false;
-  self.addEventListener('message', function(e) {
+  self.addEventListener("message", function (e) {
     if (!ctx) {
-      ctx = e.data.getContext('2d');
-      ctx.fillStyle = 'black';
+      ctx = e.data.getContext("2d");
+      ctx.fillStyle = "black";
       return;
     }
     if (running) return;
@@ -19,10 +19,12 @@ async function initialize() {
     // instantly do the render in the other message making the running = false
     // completely pointless. Add a small buffer to make sure the next message
     // is processed early enough
-    setTimeout(() => {running = false}, 0);
+    setTimeout(() => {
+      running = false;
+    }, 0);
   });
 
-  self.postMessage('ready');
+  self.postMessage("ready");
 }
 
 initialize();
