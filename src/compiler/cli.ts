@@ -15,13 +15,31 @@ if (path.endsWith(".jack")) {
     },
   ];
 } else {
-  const files = fs
+  const JackOS = fs
+    .readdirSync("os")
+    .filter((OSFileName: string) => OSFileName.endsWith(".jack"))
+    .map((OSFileName: string) => `os/${OSFileName}`);
+  const inputFileNames = fs
     .readdirSync(path)
-    .filter((fileName: string) => fileName.endsWith(".jack"));
-  inputFiles = files.map((fileName: string) => ({
-    fileName: fileName.replace(/\.jack$/, ""),
-    file: fs.readFileSync(`${path}/${fileName}`, "utf-8").split("\n"),
-  }));
+    .filter((fileName: string) => fileName.endsWith(".jack"))
+    .map((fileName: string) => `${path}/${fileName}`);
+  inputFiles = inputFileNames
+    .concat(
+      JackOS.filter(
+        (OSFileName: string) =>
+          !inputFileNames.find(
+            (inputFileName: string) =>
+              inputFileName.split("/").pop() === OSFileName.split("/").pop()
+          )
+      )
+    )
+    .map((fileName: string) => ({
+      fileName: fileName
+        .split("/")
+        .pop()
+        ?.replace(/\.jack$/, ""),
+      file: fs.readFileSync(fileName, "utf-8").split("\n") as string[],
+    }));
 }
 
 const out = compiler(inputFiles);
