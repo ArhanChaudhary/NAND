@@ -512,7 +512,7 @@ export default class CodeWriter {
                 out.push(CodeWriter.segmentMemoryMap[segment]);
                 if (index === 0) {
                     out.push('A=M');
-                } else if (index <= 8) {
+                } else if (index <= 7) {
                     out.push('A=M+1');
                     for (let i = 0; i < index - 1; i++) {
                         out.push('A=A+1');
