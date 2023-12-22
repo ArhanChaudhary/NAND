@@ -64,7 +64,7 @@ fn add16(a: u16, b: u16) -> u16 {
     let x13 = xor(b13, carry13);
     let carry14 = or(and(b13, carry13), and(a13, x13));
     let x14 = xor(b14, carry14);
-    return word16_16(
+    word16_16(
         xor(a0, b0),
         xor(a1, x1),
         xor(a2, x2),
@@ -81,7 +81,7 @@ fn add16(a: u16, b: u16) -> u16 {
         xor(a13, x13),
         xor(a14, x14),
         xor(a15, xor(b15, or(and(b14, carry14), and(a14, x14)))),
-    );
+    )
 }
 
 pub fn inc16(in_: u16) -> u16 {
@@ -89,6 +89,7 @@ pub fn inc16(in_: u16) -> u16 {
 }
 
 // NOTE: combining all the bools into a single opcode doesn't seem to have any performance impact
+#[allow(clippy::too_many_arguments)]
 pub fn alu(x: u16, y: u16, zx: bool, nx: bool, zy: bool, ny: bool, f: bool, no: bool) -> u16 {
     // zx
     let x1 = mux16(x, 0, zx);

@@ -22,7 +22,7 @@ fn mux(a: bool, b: bool, sel: bool) -> bool {
 }
 
 pub fn not16(in_: u16) -> u16 {
-    return word16_16(
+    word16_16(
         not(nbit16_0(in_)),
         not(nbit16(in_, 1)),
         not(nbit16(in_, 2)),
@@ -39,11 +39,11 @@ pub fn not16(in_: u16) -> u16 {
         not(nbit16(in_, 13)),
         not(nbit16(in_, 14)),
         not(nbit16(in_, 15)),
-    );
+    )
 }
 
 pub fn and16(a: u16, b: u16) -> u16 {
-    return word16_16(
+    word16_16(
         and(nbit16_0(a), nbit16_0(b)),
         and(nbit16(a, 1), nbit16(b, 1)),
         and(nbit16(a, 2), nbit16(b, 2)),
@@ -60,11 +60,11 @@ pub fn and16(a: u16, b: u16) -> u16 {
         and(nbit16(a, 13), nbit16(b, 13)),
         and(nbit16(a, 14), nbit16(b, 14)),
         and(nbit16(a, 15), nbit16(b, 15)),
-    );
+    )
 }
 
 pub fn mux16(a: u16, b: u16, sel: bool) -> u16 {
-    return word16_16(
+    word16_16(
         mux(nbit16_0(a), nbit16_0(b), sel),
         mux(nbit16(a, 1), nbit16(b, 1), sel),
         mux(nbit16(a, 2), nbit16(b, 2), sel),
@@ -81,11 +81,11 @@ pub fn mux16(a: u16, b: u16, sel: bool) -> u16 {
         mux(nbit16(a, 13), nbit16(b, 13), sel),
         mux(nbit16(a, 14), nbit16(b, 14), sel),
         mux(nbit16(a, 15), nbit16(b, 15), sel),
-    );
+    )
 }
 
 pub fn is_zero(in_: u16) -> bool {
-    return not(or(
+    not(or(
         nbit16(in_, 15),
         or(
             nbit16(in_, 14),
@@ -127,5 +127,5 @@ pub fn is_zero(in_: u16) -> bool {
                 ),
             ),
         ),
-    ));
+    ))
 }

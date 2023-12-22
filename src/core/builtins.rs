@@ -57,6 +57,7 @@ fn placebit16_0(b: bool) -> u16 {
     u16_from_bool(b)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn word16_16(
     a: bool,
     b: bool,
