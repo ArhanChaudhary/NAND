@@ -64,7 +64,7 @@ class String {
             let currentLength = currentLength - 1;
     }
 
-    /** Returns the integer value of this string, 
+    /** Returns the integer value of this string,
      *  until a non-digit character is detected. */
     method int intValue() {
         var int v, i, isNegative;
@@ -125,10 +125,13 @@ class String {
     function char backSpace() {
         return 129;
     }
-    
+
 
     /** Returns the double quote (") character. */
     function char doubleQuote() {
         return 34;
+    }
+
+    function void init() {
     }
 }

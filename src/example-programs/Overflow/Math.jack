@@ -35,8 +35,8 @@ class Math {
         return x;
     }
 
-    /** Returns the product of x and y. 
-    *  When a Jack compiler detects the multiplication operator '*' in the 
+    /** Returns the product of x and y.
+    *  When a Jack compiler detects the multiplication operator '*' in the
     *  program's code, it handles it by invoking this method. In other words,
     *  the Jack expressions x*y and multiply(x,y) return the same value.
     */
@@ -55,7 +55,7 @@ class Math {
     }
 
     /** Returns the integer part of x/y.
-     *  When a Jack compiler detects the multiplication operator '/' in the 
+     *  When a Jack compiler detects the multiplication operator '/' in the
      *  program's code, it handles it by invoking this method. In other words,
      *  the Jack expressions x/y and divide(x,y) return the same value.
      */
@@ -63,7 +63,7 @@ class Math {
         var int i, quotient;
         var boolean negDividend, negDivisor;
         var boolean breaker;
-        
+
         if (divisor = 0) {
             do Sys.error(3);
         }
@@ -131,7 +131,7 @@ class Math {
     /** Returns the greater number. */
     function int max(int a, int b) {
         if (~(a > b)) return b;
-        return a;   
+        return a;
     }
 
     /** Returns the smaller number. */

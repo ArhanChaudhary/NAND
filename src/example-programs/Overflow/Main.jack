@@ -3,7 +3,7 @@ class Main {
         do Main.foo();
         do Main.main();
     }
-     
+
     function void foo() {
         var int b;
         var int c;
