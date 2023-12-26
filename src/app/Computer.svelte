@@ -101,30 +101,41 @@
   }
 </script>
 
-<div id="computer-wrapper">
-  <div id="computer-frame">
-    <div id="canvas-wrapper">
+<div id="computer-container">
+  <div id="computer-wrapper">
+    <div id="computer-frame">
       <canvas width="512" height="256" />
-      <!-- <div id="secHz">Clock speed: {mHz}</div>
-      <div id="NANDCalls">NAND Calls: {NANDCalls}</div> -->
     </div>
+    <div id="computer-frame-bottom"></div>
+    <div id="computer-neck"></div>
+    <div id="computer-base"></div>
+    <div id="secHz">Clock speed: {mHz}</div>
+    <div id="NANDCalls">NAND Calls: {NANDCalls}</div>
   </div>
-  <div id="computer-frame-bottom"></div>
-  <div id="computer-neck"></div>
-  <div id="computer-base"></div>
 </div>
 
 <style lang="scss">
-  #computer-wrapper {
-    --container-width: 100vw;
+  #computer-container {
+    overflow: hidden;
+    background-color: hsl(222, 19%, 22%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    --container-width: 50vw;
     --container-height: calc(100dvh - var(--nav-height));
+    height: var(--container-height);
+    width: var(--container-width);
+  }
+
+  #computer-wrapper {
 
     // MAKE SURE TO CHANGE 1.39 IF ANYTHING ELSE IS CHANGED
 
     --px: calc(
-      min(var(--container-width), var(--container-height) * 1.39) / 810
+      min(var(--container-width) - 10px, (var(--container-height) - 10px) * 1.171) / 810
     );
-    --frame-padding: calc(var(--px) * 65);
+    --frame-padding: calc(var(--px) * 60);
+    justify-self: end;
     flex-flow: column;
     display: flex;
     align-items: center;
@@ -133,19 +144,15 @@
     background-color: hsl(41, 25%, 77%);
     padding: var(--frame-padding);
   }
-  #canvas-wrapper {
-    padding: 0px;
-    background: hsl(0, 0%, 85%);
+  canvas {
     border: calc(var(--px) * 15) solid;
     border-color: hsl(34, 11%, 57%) hsl(34, 15%, 68%) hsl(40, 42%, 87%);
-  }
-  canvas {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     background: hsl(0, 0%, 7%);
     display: block;
     aspect-ratio: 2 / 1;
-    width: calc(var(--px) * 650);
+    width: calc(var(--px) * 680);
   }
   #computer-frame-bottom {
     border-top: calc(var(--px) * 8) solid hsl(34, 8%, 50%);
@@ -166,10 +173,12 @@
     height: calc(var(--px) * 60);
     background-color: hsl(34, 15%, 68%);
   }
-  // #secHz {
-  //   font-size: 30px;
-  // }
-  // #NANDCalls {
-  //   font-size: 22px;
-  // }
+  #secHz {
+    align-self: flex-start;
+    font-size: 30px;
+  }
+  #NANDCalls {
+    align-self: flex-start;
+    font-size: 22px;
+  }
 </style>

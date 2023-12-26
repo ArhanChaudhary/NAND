@@ -1,6 +1,7 @@
 <script lang="ts">
   import Computer from "./Computer.svelte";
   import Nav from "./Nav.svelte";
+  import IDE from "./IDE.svelte";
   import { runner } from "./runner-store.js";
 
   const runner_ = new Worker(
@@ -14,10 +15,10 @@
 
 <Nav />
 <main>
+  <IDE />
   <Computer />
 </main>
 
-<!-- no scss because it complains about unused css in normalize.css -->
 <style global type="scss">
   @import "normalize.css";
   * {
@@ -25,10 +26,6 @@
     color: lightgray;
   }
   main {
-    background-color: hsl(0, 0%, 21%);
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: calc(100dvh - var(--nav-height));
   }
 </style>
