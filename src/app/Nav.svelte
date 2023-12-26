@@ -88,6 +88,7 @@
 </script>
 
 <nav>
+  <img id="logo" alt="" src="static/logo.png">
   <button on:click={startRunner}> Start </button>
   <button on:click={stopRunner}> Stop </button>
   <button on:click={resetRunner}> Reset </button>
@@ -108,12 +109,22 @@
   :root {
     --nav-height: 60px;
   }
+
+  #logo {
+    height: 100%;
+  }
+
+  button {
+    background-color: transparent;
+    border: none;
+  }
+
   nav {
-    /* position: absolute;
-    top: 0; */
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 30px;
     width: 100%;
     height: var(--nav-height);
-    background-color: lightslategray;
+    background-color: hsl(220, 10%, 12%);
   }
 </style>

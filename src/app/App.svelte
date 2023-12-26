@@ -22,6 +22,7 @@
   @import "normalize.css";
   * {
     box-sizing: border-box;
+    color: lightgray;
   }
   main {
     background-color: hsl(0, 0%, 21%);
