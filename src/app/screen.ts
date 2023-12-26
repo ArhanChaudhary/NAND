@@ -7,7 +7,7 @@ async function initialize() {
   self.addEventListener("message", function (e) {
     if (!ctx) {
       ctx = e.data.getContext("2d");
-      ctx.fillStyle = "black";
+      ctx.fillStyle = "rgb(177, 247, 121)";
       return;
     }
     if (running) return;

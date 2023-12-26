@@ -105,11 +105,15 @@
 </nav>
 
 <style>
+  :root {
+    --nav-height: 60px;
+  }
   nav {
-    position: absolute;
-    top: 0;
+    /* position: absolute;
+    top: 0; */
+    display: block;
     width: 100%;
-    height: 60px;
+    height: var(--nav-height);
     background-color: lightslategray;
   }
 </style>

@@ -12,19 +12,22 @@
   });
 </script>
 
+<Nav />
 <main>
-  <Nav />
   <Computer />
 </main>
 
 <!-- no scss because it complains about unused css in normalize.css -->
-<style>
+<style global type="scss">
   @import "normalize.css";
+  * {
+    box-sizing: border-box;
+  }
   main {
-    background-color: tan;
+    background-color: hsl(0, 0%, 21%);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100dvh;
+    height: calc(100dvh - var(--nav-height));
   }
 </style>

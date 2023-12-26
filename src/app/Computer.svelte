@@ -102,24 +102,76 @@
 </script>
 
 <div id="computer-wrapper">
-  <canvas width="512" height="256" />
-  <div id="secHz">Clock speed: {mHz}</div>
-  <div id="NANDCalls">NAND Calls: {NANDCalls}</div>
+  <div id="computer-frame">
+    <div id="canvas-wrapper">
+      <canvas width="512" height="256" />
+      <!-- <div id="secHz">Clock speed: {mHz}</div>
+      <div id="NANDCalls">NAND Calls: {NANDCalls}</div> -->
+    </div>
+  </div>
+  <div id="computer-bottom"></div>
+  <div id="computer-hanger-wrapper">
+    <div id="computer-hanger"></div>
+    <div id="computer-hanger-bottom"></div>
+  </div>
+  <div id="computer-holder"></div>
 </div>
 
 <style lang="scss">
+  #computer-wrapper {
+    object-fit: contain;
+    --frame-padding: 65px;
+    flex-flow: column;
+    display: flex;
+    align-items: center;
+  }
+  #computer-frame {
+    // box-shadow: inset 0px 5px 10px -4px black, inset 5px 0px 10px -4px black, inset -5px 0px 10px -4px black;
+    background-color:hsl(41, 25%, 77%);
+    padding: var(--frame-padding);
+  }
+  #canvas-wrapper {
+    padding: 0px;
+    background: hsl(0, 0%, 85%);
+    border: 15px solid;
+    // border-color: hsl(34, 11%, 57%) hsl(34, 13%, 64%) hsl(40, 16%, 71%);
+    border-color: hsl(34, 11%, 57%) hsl(34, 15%, 68%) hsl(40, 42%, 87%);
+  }
   canvas {
     image-rendering: pixelated;
     image-rendering: crisp-edges;
-    border: 2px solid black;
-    background: white;
+    background: hsl(0, 0%, 7%);
+    display: block;
     aspect-ratio: 2 / 1;
-    height: 500px;
+    width: 650px;
   }
-  #secHz {
-    font-size: 30px;
+  #computer-bottom {
+    border-top: 8px solid hsl(34, 8%, 50%);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    width: 100%;
   }
-  #NANDCalls {
-    font-size: 22px;
+  #computer-hanger-wrapper {
+    width: calc(100% - var(--frame-padding) * 2);
   }
+  #computer-hanger {
+    box-shadow: inset 0px 6px 16px -2px hsl(34, 4%, 25%);
+    height: 30px;
+    background-color:hsl(41, 5%, 65%);
+  }
+  #computer-hanger-bottom {
+    border-top: 4px solid hsl(0, 0%, 45%);
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    width: 100%;
+  }
+  #computer-holder {
+
+  }
+  // #secHz {
+  //   font-size: 30px;
+  // }
+  // #NANDCalls {
+  //   font-size: 22px;
+  // }
 </style>
