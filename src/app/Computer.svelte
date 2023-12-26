@@ -109,32 +109,34 @@
       <div id="NANDCalls">NAND Calls: {NANDCalls}</div> -->
     </div>
   </div>
-  <div id="computer-bottom"></div>
-  <div id="computer-hanger-wrapper">
-    <div id="computer-hanger"></div>
-    <div id="computer-hanger-bottom"></div>
-  </div>
-  <div id="computer-holder"></div>
+  <div id="computer-frame-bottom"></div>
+  <div id="computer-neck"></div>
+  <div id="computer-base"></div>
 </div>
 
 <style lang="scss">
   #computer-wrapper {
-    object-fit: contain;
-    --frame-padding: 65px;
+    --container-width: 100vw;
+    --container-height: calc(100dvh - var(--nav-height));
+
+    // MAKE SURE TO CHANGE 1.39 IF ANYTHING ELSE IS CHANGED
+
+    --px: calc(
+      min(var(--container-width), var(--container-height) * 1.39) / 810
+    );
+    --frame-padding: calc(var(--px) * 65);
     flex-flow: column;
     display: flex;
     align-items: center;
   }
   #computer-frame {
-    // box-shadow: inset 0px 5px 10px -4px black, inset 5px 0px 10px -4px black, inset -5px 0px 10px -4px black;
-    background-color:hsl(41, 25%, 77%);
+    background-color: hsl(41, 25%, 77%);
     padding: var(--frame-padding);
   }
   #canvas-wrapper {
     padding: 0px;
     background: hsl(0, 0%, 85%);
-    border: 15px solid;
-    // border-color: hsl(34, 11%, 57%) hsl(34, 13%, 64%) hsl(40, 16%, 71%);
+    border: calc(var(--px) * 15) solid;
     border-color: hsl(34, 11%, 57%) hsl(34, 15%, 68%) hsl(40, 42%, 87%);
   }
   canvas {
@@ -143,30 +145,26 @@
     background: hsl(0, 0%, 7%);
     display: block;
     aspect-ratio: 2 / 1;
-    width: 650px;
+    width: calc(var(--px) * 650);
   }
-  #computer-bottom {
-    border-top: 8px solid hsl(34, 8%, 50%);
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
+  #computer-frame-bottom {
+    border-top: calc(var(--px) * 8) solid hsl(34, 8%, 50%);
+    border-left: calc(var(--px) * 10) solid transparent;
+    border-right: calc(var(--px) * 10) solid transparent;
     width: 100%;
   }
-  #computer-hanger-wrapper {
-    width: calc(100% - var(--frame-padding) * 2);
-  }
-  #computer-hanger {
+  #computer-neck {
     box-shadow: inset 0px 6px 16px -2px hsl(34, 4%, 25%);
-    height: 30px;
-    background-color:hsl(41, 5%, 65%);
+    height: calc(var(--px) * 30);
+    background-color: hsl(41, 5%, 65%);
+    width: calc(100% - var(--frame-padding) * 2);
+    border-bottom: solid calc(var(--px) * 4) hsl(0, 0%, 45%);
   }
-  #computer-hanger-bottom {
-    border-top: 4px solid hsl(0, 0%, 45%);
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    width: 100%;
-  }
-  #computer-holder {
 
+  #computer-base {
+    width: 100%;
+    height: calc(var(--px) * 60);
+    background-color: hsl(34, 15%, 68%);
   }
   // #secHz {
   //   font-size: 30px;
