@@ -13,6 +13,15 @@
 
 <script lang="ts">
   import { runner } from "./runner-store";
+  import { onMount } from "svelte";
+
+  onMount(() => {
+    let computerWrapper = document.getElementById("computer-wrapper");
+    computerWrapper.style.setProperty(
+      "--computer-wrapper-aspect-ratio",
+      computerWrapper.clientWidth / computerWrapper.clientHeight + ""
+    );
+  });
 
   let mHz = "0";
   let NANDCalls = "0";
@@ -161,12 +170,11 @@
     }
 
     #computer-wrapper {
-      // MAKE SURE TO CHANGE 1.171 IF ANYTHING ELSE IS CHANGED
-
       --px: calc(
         min(
             var(--container-width) - 10px,
-            (var(--container-height) - 10px) * 1.171
+            (var(--container-height) - 10px) *
+              var(--computer-wrapper-aspect-ratio)
           ) / 810
       );
       --frame-padding: calc(var(--px) * 60);
@@ -273,12 +281,13 @@
 
       #secHz {
         align-self: flex-start;
-        font-size: 30px;
+        margin-top: calc(var(--px) * 3);
+        font-size: calc(var(--px) * 30);
       }
 
       #NANDCalls {
         align-self: flex-start;
-        font-size: 22px;
+        font-size: calc(var(--px) * 22);
       }
     }
   }
