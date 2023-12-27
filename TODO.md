@@ -3,15 +3,27 @@
 * goal and initial dot gui
 
 # TODO (NAND)
+* order example programs
 * cannot set variable names to keywords in compiler
 * ensure all subroutines are defined at compile time
 * compilererror stash, too many static error
-* better readme
+* readme
+  * Writing programs in NAND
+    * jack tutorial, base of https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf and https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf
     * if and else doesn't require bracket
     * [][] works
     * you cant malloc 0 even if the original OS could
     * theres no Sys.error(18) String.eraseLastChar String is empty
     * arguments keyword
+  * NAND's example programs
+    * HelloWorld
+    * Average
+    * Pong
+    * Square
+    * Static
+    * Overflow
+    * 2048
+    * GeneticAlgorithm
 * actually code the ui (viewable ram and rom)
 
 # TODO (stats testing)

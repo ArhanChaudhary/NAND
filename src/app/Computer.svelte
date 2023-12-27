@@ -16,7 +16,7 @@
 
   let mHz = "0";
   let NANDCalls = "0";
-  $: if ($runner && false) {
+  $: if ($runner) {
     const offscreen = document
       .querySelector("canvas")
       .transferControlToOffscreen();
