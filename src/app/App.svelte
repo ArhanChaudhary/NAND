@@ -19,7 +19,7 @@
   <Computer />
 </main>
 
-<style global type="scss">
+<style global lang="scss">
   @import "normalize.css";
   * {
     box-sizing: border-box;

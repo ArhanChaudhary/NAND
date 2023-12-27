@@ -16,7 +16,7 @@
 
   let mHz = "0";
   let NANDCalls = "0";
-  $: if ($runner) {
+  $: if ($runner && false) {
     const offscreen = document
       .querySelector("canvas")
       .transferControlToOffscreen();
@@ -107,8 +107,38 @@
       <canvas width="512" height="256" />
     </div>
     <div id="computer-frame-bottom"></div>
-    <div id="computer-neck"></div>
-    <div id="computer-base"></div>
+    <div id="computer-neck">
+      <div id="neck-divider"></div>
+    </div>
+    <div id="computer-base">
+      <div id="rom-container">
+        <div id="rom-oval"></div>
+        <div id="rom-inserter"></div>
+      </div>
+      <div class="computer-base-divider"></div>
+      <span class="empty-space"></span>
+      <div class="computer-base-divider"></div>
+      <div id="dots-col-wrapper">
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+      </div>
+    </div>
     <div id="secHz">Clock speed: {mHz}</div>
     <div id="NANDCalls">NAND Calls: {NANDCalls}</div>
   </div>
@@ -125,60 +155,131 @@
     --container-height: calc(100dvh - var(--nav-height));
     height: var(--container-height);
     width: var(--container-width);
-  }
 
-  #computer-wrapper {
+    .empty-space {
+      flex-grow: 1;
+    }
 
-    // MAKE SURE TO CHANGE 1.39 IF ANYTHING ELSE IS CHANGED
+    #computer-wrapper {
+      // MAKE SURE TO CHANGE 1.171 IF ANYTHING ELSE IS CHANGED
 
-    --px: calc(
-      min(var(--container-width) - 10px, (var(--container-height) - 10px) * 1.171) / 810
-    );
-    --frame-padding: calc(var(--px) * 60);
-    justify-self: end;
-    flex-flow: column;
-    display: flex;
-    align-items: center;
-  }
-  #computer-frame {
-    background-color: hsl(41, 25%, 77%);
-    padding: var(--frame-padding);
-  }
-  canvas {
-    border: calc(var(--px) * 15) solid;
-    border-color: hsl(34, 11%, 57%) hsl(34, 15%, 68%) hsl(40, 42%, 87%);
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-    background: hsl(0, 0%, 7%);
-    display: block;
-    aspect-ratio: 2 / 1;
-    width: calc(var(--px) * 680);
-  }
-  #computer-frame-bottom {
-    border-top: calc(var(--px) * 8) solid hsl(34, 8%, 50%);
-    border-left: calc(var(--px) * 10) solid transparent;
-    border-right: calc(var(--px) * 10) solid transparent;
-    width: 100%;
-  }
-  #computer-neck {
-    box-shadow: inset 0px 6px 16px -2px hsl(34, 4%, 25%);
-    height: calc(var(--px) * 30);
-    background-color: hsl(41, 5%, 65%);
-    width: calc(100% - var(--frame-padding) * 2);
-    border-bottom: solid calc(var(--px) * 4) hsl(0, 0%, 45%);
-  }
+      --px: calc(
+        min(
+            var(--container-width) - 10px,
+            (var(--container-height) - 10px) * 1.171
+          ) / 810
+      );
+      --frame-padding: calc(var(--px) * 60);
+      justify-self: end;
+      flex-flow: column;
+      display: flex;
+      align-items: center;
 
-  #computer-base {
-    width: 100%;
-    height: calc(var(--px) * 60);
-    background-color: hsl(34, 15%, 68%);
-  }
-  #secHz {
-    align-self: flex-start;
-    font-size: 30px;
-  }
-  #NANDCalls {
-    align-self: flex-start;
-    font-size: 22px;
+      #computer-frame {
+        background-color: hsl(41, 25%, 77%);
+        padding: var(--frame-padding);
+
+        canvas {
+          border: calc(var(--px) * 15) solid;
+          border-color: hsl(34, 11%, 57%) hsl(34, 15%, 68%) hsl(40, 42%, 87%);
+          image-rendering: pixelated;
+          image-rendering: crisp-edges;
+          background: hsl(0, 0%, 7%);
+          display: block;
+          aspect-ratio: 2 / 1;
+          width: calc(var(--px) * 680);
+        }
+      }
+
+      #computer-frame-bottom {
+        border-top: calc(var(--px) * 8) solid hsl(34, 8%, 50%);
+        border-left: calc(var(--px) * 10) solid transparent;
+        border-right: calc(var(--px) * 10) solid transparent;
+        width: 100%;
+      }
+
+      #computer-neck {
+        box-shadow: inset 0px 6px 16px -2px hsl(34, 4%, 25%);
+        height: calc(var(--px) * 30);
+        background-color: hsl(41, 5%, 65%);
+        width: calc(100% - var(--frame-padding) * 2);
+        border-bottom: solid calc(var(--px) * 4) hsl(0, 0%, 45%);
+        display: flex;
+        justify-content: center;
+
+        #neck-divider {
+          position: relative;
+          border-left: solid calc(var(--px) * 2) hsl(34, 10%, 35%);
+          height: 100%;
+        }
+      }
+
+      #computer-base {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        height: calc(var(--px) * 60);
+        background-color: hsl(34, 15%, 68%);
+
+        > :not(.computer-base-divider) {
+          margin: 0 calc(var(--px) * 10);
+        }
+
+        #dots-col-wrapper {
+          display: flex;
+          align-items: center;
+          height: 100%;
+        }
+
+        .dots-col {
+          height: calc(100% - var(--px) * 15);
+          border-left: calc(var(--px) * 3) dotted hsl(34, 15%, 43%);
+          margin-left: calc(var(--px) * 3);
+        }
+
+        .computer-base-divider {
+          position: relative;
+          border-left: solid var(--px) hsl(34, 10%, 35%);
+          border-right: solid calc(var(--px) * 2) hsl(34, 15%, 80%);
+          height: 100%;
+        }
+
+        #rom-container {
+          height: 100%;
+          width: calc(var(--px) * 300);
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          #rom-oval {
+            position: absolute;
+            width: calc(var(--px) * 85);
+            height: calc(var(--px) * 50);
+            background: linear-gradient(hsl(34, 11%, 45%), hsl(34, 37%, 85%));
+            border-radius: 50%;
+          }
+
+          #rom-inserter {
+            width: 100%;
+            position: relative;
+            height: calc(var(--px) * 18);
+            background-color: hsl(0, 0%, 10%);
+            border: calc(var(--px) * 4) solid;
+            border-color: hsl(34, 12%, 58%) hsl(35, 15%, 62%) hsl(37, 17%, 73%);
+          }
+        }
+      }
+
+      #secHz {
+        align-self: flex-start;
+        font-size: 30px;
+      }
+
+      #NANDCalls {
+        align-self: flex-start;
+        font-size: 22px;
+      }
+    }
   }
 </style>

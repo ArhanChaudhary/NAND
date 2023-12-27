@@ -1,6 +1,6 @@
 <div id="ide"></div>
 
-<style type="scss">
+<style lang="scss">
   #ide {
     width: 50vw;
     align-self: stretch;
