@@ -41,7 +41,6 @@ pub fn u16_from_bool(b: bool) -> u16 {
 }
 
 pub fn nbit16(n: u16, i: u8) -> bool {
-    // TODO: this and placebit when used together can be further optimized
     bool_from_u16((n >> i) & 1)
 }
 

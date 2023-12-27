@@ -3,7 +3,9 @@
 * goal and initial dot gui
 
 # TODO (NAND)
+* actually code the ui (viewable ram and rom)
 * order example programs
+* move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
 * cannot set variable names to keywords in compiler
 * ensure all subroutines are defined at compile time
 * compilererror stash, too many static error
@@ -23,8 +25,8 @@
     * Static
     * Overflow
     * 2048
-    * GeneticAlgorithm
-* actually code the ui (viewable ram and rom)
+    * GeneticAlgorithm (will not reallocate)
+* vm escape bug
 
 # TODO (stats testing)
 * random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
@@ -40,5 +42,4 @@
 * barrel shifter
 * mouse input and click input
 * draw screen using prev diff
-* move rustwasm.render to worker
 * 32 bit architecture
