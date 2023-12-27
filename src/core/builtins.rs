@@ -119,9 +119,10 @@ pub fn dregister(in_: u16, load: bool) -> u16 {
     let out = unsafe { DREGISTER_DFFOUT };
     if load && unsafe { CLOCK } {
         unsafe { DREGISTER_DFFOUT = in_ };
-        return in_;
+        in_
+    } else {
+        out
     }
-    out
 }
 
 static mut AREGISTER_DFFOUT: u16 = 0;
@@ -130,20 +131,18 @@ pub fn aregister(in_: u16, load: bool) -> u16 {
     let out = unsafe { AREGISTER_DFFOUT };
     if load && unsafe { CLOCK } {
         unsafe { AREGISTER_DFFOUT = in_ };
-        return in_;
+        in_
+    } else {
+        out
     }
-    out
 }
 
 static mut RAM16K_MEMORY: [u16; 16384] = [0; 16384];
 
 pub fn ram16k(in_: u16, load: bool, address: u16) -> u16 {
-    if address >= 16384 {
-        return 0;
-    }
-    let out = unsafe { &RAM16K_MEMORY }[address as usize];
+    let out = unsafe { &RAM16K_MEMORY }[(address & 16383) as usize];
     if load && unsafe { CLOCK } {
-        unsafe { RAM16K_MEMORY[address as usize] = in_ };
+        unsafe { RAM16K_MEMORY[(address & 16383) as usize] = in_ };
     }
     out
 }
