@@ -9,16 +9,13 @@ class Main {
         var int c;
         do Output.moveCursor(0, 0);
         do Output.printInt(Memory.peek(0));
-        let b = 3;
+        let b = 0;
         while (b > 0) {
             let b = b - 1;
             let c = (4563 - 52) + c + c - (c + c);
-            let c = c & -20594;
         }
         while (b < 10) {
             let b = b + 1;
-            let c = (30000 + 25444) + c + c - (c + c);
-            let c = c | true;
         }
     }
 }
