@@ -8,4 +8,11 @@
 <b>N</b> and-powered\
 <b>D</b> evice\
 \
-is an emulated full stack computer architecture. Based on the Jack-VM-Hack platform specified in [The Elements of Computing Systems: Building a Modern Computer from First Principles](https://www.amazon.com/Elements-Computing-Systems-Building-Principles/dp/0262640686/ref=ed_oe_p), NAND is a learning project for me to understand how computers work.
+is a turing equivalent computer entirely built from a clock and NAND logic gates. NAND features its own machine code language, assembly language, assembler, VM language, VM translator, programming language, compiler, and IDE. NAND is based on the Jack-VM-Hack platform specified in the [Nand to Tetris course](https://www.nand2tetris.org).
+\
+\
+Here is a technical breakdown of the technologies used to build NAND:
+* Logic simulator: Rust [compiled to WebAssembly](https://github.com/rustwasm/wasm-bindgen) on a WebWorker
+* Assembler, VM translator, compiler, and IDE: TypeScript
+* NAND's Example programs: Jack (NAND's programming language) utilizing JavaScript to help with debugging
+* Frontend: Svelte with Vite
