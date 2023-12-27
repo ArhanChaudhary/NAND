@@ -119,24 +119,22 @@ pub fn pc_reg(in_: u16) -> u16 {
 static mut DREGISTER_DFFOUT: u16 = 0;
 
 pub fn dregister(in_: u16, load: bool) -> u16 {
-    let out = unsafe { DREGISTER_DFFOUT };
     if load && unsafe { CLOCK } {
         unsafe { DREGISTER_DFFOUT = in_ };
         in_
     } else {
-        out
+        unsafe { DREGISTER_DFFOUT }
     }
 }
 
 static mut AREGISTER_DFFOUT: u16 = 0;
 
 pub fn aregister(in_: u16, load: bool) -> u16 {
-    let out = unsafe { AREGISTER_DFFOUT };
     if load && unsafe { CLOCK } {
         unsafe { AREGISTER_DFFOUT = in_ };
         in_
     } else {
-        out
+        unsafe { AREGISTER_DFFOUT }
     }
 }
 
