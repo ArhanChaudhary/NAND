@@ -24,7 +24,9 @@
   * {
     box-sizing: border-box;
     color: lightgray;
+    font-family: monospace;
   }
+
   main {
     display: flex;
   }
