@@ -2,7 +2,7 @@
 
 <style lang="scss">
   #ide {
-    width: 50vw;
+    flex-grow: 1;
     align-self: stretch;
     background-color: hsl(222, 17%, 18%);
   }

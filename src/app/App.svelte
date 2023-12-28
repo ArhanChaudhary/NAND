@@ -29,5 +29,7 @@
 
   main {
     display: flex;
+    --main-height: calc(100dvh - var(--nav-height));
+    height: var(--main-height);
   }
 </style>

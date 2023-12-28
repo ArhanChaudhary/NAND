@@ -160,10 +160,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    --container-width: 50vw;
-    --container-height: calc(100dvh - var(--nav-height));
-    height: var(--container-height);
-    width: var(--container-width);
+    --computer-container-width: 100vw;
+    height: 100%;
+    width: var(--computer-container-width);
 
     .empty-space {
       flex-grow: 1;
@@ -172,9 +171,9 @@
     #computer-wrapper {
       --px: calc(
         min(
-            var(--container-width) - 10px,
-            (var(--container-height) - 10px) *
-              var(--computer-wrapper-aspect-ratio)
+            var(--computer-container-width) - 10px,
+            (var(--main-height) - 10px) *
+              var(--computer-wrapper-aspect-ratio, 1)
           ) / 810
       );
       --frame-padding: calc(var(--px) * 60);

@@ -6,6 +6,7 @@
 * actually code the ui (viewable ram and rom)
 * order example programs
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
+* figure out why copying the static arrays in builtins.rs is 50x slower
 * cannot set variable names to keywords in compiler
 * ensure all subroutines are defined at compile time
 * compilererror stash, too many static error
