@@ -6,7 +6,7 @@ import topLevelAwait from "vite-plugin-top-level-await";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "/NAND/",
+  base: "/NAND",
   plugins: [
     wasm(),
     svelte({ preprocess: sveltePreprocess({ postcss: true }) }),
