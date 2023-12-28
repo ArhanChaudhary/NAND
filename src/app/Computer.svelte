@@ -116,13 +116,13 @@
       <canvas width="512" height="256" />
       <div id="computer-frame-graphics-positioner">
         <div class="status-light-gradient">
-          <div class="status-light"></div>
+          <div class="status-light red"></div>
         </div>
         <div class="status-light-gradient">
-          <div class="status-light"></div>
+          <div class="status-light red"></div>
         </div>
         <div class="status-light-gradient">
-          <div class="status-light"></div>
+          <div class="status-light green"></div>
         </div>
         <div id="turn-off-button-positioner">
           <div id="turn-off-button-gradient">
@@ -223,11 +223,14 @@
           bottom: 0;
           right: 0;
           height: var(--frame-padding);
-          --graphic-gradient: linear-gradient(hsl(34, 15%, 64%), hsl(34, 35%, 90%));
+          --graphic-gradient: linear-gradient(
+            hsl(34, 15%, 64%),
+            hsl(34, 35%, 90%)
+          );
 
           .status-light-gradient {
-            width: calc(var(--px) * 25);
-            height: calc(var(--px) * 25);
+            width: calc(var(--px) * 29);
+            height: calc(var(--px) * 29);
             border-radius: 50%;
             background: var(--graphic-gradient);
             display: flex;
@@ -235,19 +238,28 @@
             justify-content: center;
 
             .status-light {
-              width: calc(var(--px) * 17);
-              height: calc(var(--px) * 17);
-              --background-gradient: radial-gradient(hsl(0, 0%, 45%), hsl(0, 0%, 5%));
+              width: calc(var(--px) * 20);
+              height: calc(var(--px) * 20);
+              --background-gradient: radial-gradient(
+                hsl(0, 0%, 45%),
+                hsl(0, 0%, 5%)
+              );
               background-image: var(--background-gradient);
               border-radius: 50%;
             }
 
             .status-light.green {
-              --background-gradient: radial-gradient(hsl(120, 100%, 50%), hsl(120, 100%, 10%));
+              --background-gradient: radial-gradient(
+                hsl(120, 100%, 50%),
+                hsl(120, 100%, 10%)
+              );
             }
 
             .status-light.red {
-              --background-gradient: radial-gradient(hsl(1, 100%, 60%), hsl(1, 100%, 15%));
+              --background-gradient: radial-gradient(
+                hsl(0, 100%, 65%),
+                hsl(0, 100%, 15%)
+              );
             }
           }
 
