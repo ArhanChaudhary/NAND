@@ -261,10 +261,19 @@
             .status-light {
               width: calc(var(--px) * 20);
               height: calc(var(--px) * 20);
-              --background-gradient: radial-gradient(
+              --red-gradient: radial-gradient(
+                hsl(0, 100%, 65%),
+                hsl(0, 100%, 15%)
+              );
+              --green-gradient: radial-gradient(
+                hsl(120, 100%, 50%),
+                hsl(120, 100%, 10%)
+              );
+              --default-gradient: radial-gradient(
                 hsl(0, 0%, 45%),
                 hsl(0, 0%, 5%)
               );
+              --background-gradient: var(--default-gradient);
               background-image: var(--background-gradient);
               border-radius: 50%;
             }
@@ -298,31 +307,22 @@
           }
 
           &.green .status-light {
-            --background-gradient: radial-gradient(
-              hsl(120, 100%, 50%),
-              hsl(120, 100%, 10%)
-            );
+            --background-gradient: var(--green-gradient);
           }
 
           &.red .status-light {
-            --background-gradient: radial-gradient(
-              hsl(0, 100%, 65%),
-              hsl(0, 100%, 15%)
-            );
+            --background-gradient: var(--red-gradient);
           }
 
           @for $i from 1 through 3 {
             &.loading .status-light-gradient:nth-child(#{$i}n) .status-light {
-              animation: blinker 0.5s step-start #{0.3 + $i * -0.1}s infinite;
+              animation: blinker 0.5s step-start #{0.3 - $i * 0.1}s infinite;
             }
           }
 
           @keyframes blinker {
             50% {
-              background: radial-gradient(
-                hsl(120, 100%, 50%),
-                hsl(120, 100%, 10%)
-              );
+              background: var(--green-gradient);
             }
           }
         }
