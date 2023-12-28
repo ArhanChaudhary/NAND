@@ -9,59 +9,17 @@
       file: ((await OSFile()) as string).split("\n"),
     });
   }
-</script>
 
-<script lang="ts">
-  import { runner } from "./runner-store";
-  import { onMount } from "svelte";
+  type emitInfoData = { hz: number; NANDCalls: bigint };
 
-  onMount(() => {
-    let computerWrapper = document.getElementById("computer-wrapper");
-    computerWrapper.style.setProperty(
-      "--computer-wrapper-aspect-ratio",
-      computerWrapper.clientWidth / computerWrapper.clientHeight + ""
-    );
-  });
-
-  let mHz = "0";
-  let NANDCalls = "0";
-  $: if ($runner && false) {
+  function initRunner(runner: Worker, messageHandler) {
     const offscreen = document
       .querySelector("canvas")
       .transferControlToOffscreen();
-    $runner.postMessage({ action: "initialize", canvas: offscreen }, [
+    runner.postMessage({ action: "initialize", canvas: offscreen }, [
       offscreen,
     ]);
-    $runner.addEventListener(
-      "message",
-      (e: { data: { action: any; hz: number; NANDCalls: bigint } }) => {
-        switch (e.data.action) {
-          case "emitInfo":
-            if (e.data.hz >= 100_000) {
-              mHz = Number(e.data.hz / 1_000_000).toPrecision(3) + " MHz";
-            } else if (e.data.hz >= 1_000) {
-              mHz = Number(e.data.hz / 1_000).toPrecision(3) + " KHz";
-            } else {
-              mHz = Number(e.data.hz).toPrecision(3) + " Hz";
-            }
-
-            if (e.data.NANDCalls >= 1_000_000_000_000n) {
-              NANDCalls =
-                Number((e.data.NANDCalls * 1000n) / 1_000_000_000_000n) / 1000 +
-                " trillion";
-            } else if (e.data.NANDCalls >= 1_000_000_000n) {
-              NANDCalls =
-                Number((e.data.NANDCalls * 10n) / 1_000_000_000n) / 10 +
-                " billion";
-            } else if (e.data.NANDCalls >= 1_000_000n) {
-              NANDCalls = Number(e.data.NANDCalls / 1_000_000n) + " million";
-            } else {
-              NANDCalls = "0";
-            }
-            break;
-        }
-      }
-    );
+    runner.addEventListener("message", messageHandler);
 
     let prev: number;
     document.addEventListener("keydown", (e) => {
@@ -100,14 +58,57 @@
         keyValue = 0;
       }
       prev = keyValue;
-      $runner.postMessage({ action: "keyboard", key: keyValue });
+      runner.postMessage({ action: "keyboard", key: keyValue });
     });
 
     document.addEventListener("keyup", () => {
       prev = 0;
-      $runner.postMessage({ action: "keyboard", key: 0 });
+      runner.postMessage({ action: "keyboard", key: 0 });
     });
   }
+</script>
+
+<script lang="ts">
+  import { runner } from "./runner-store";
+  import { onMount } from "svelte";
+
+  onMount(() => {
+    let computerWrapper = document.getElementById("computer-wrapper");
+    computerWrapper.style.setProperty(
+      "--computer-wrapper-aspect-ratio",
+      computerWrapper.clientWidth / computerWrapper.clientHeight + ""
+    );
+  });
+
+  let mHz = "0";
+  let NANDCalls = "0";
+  function messageHandler(e: { data: any }) {
+    switch (e.data.action) {
+      case "emitInfo":
+        if (e.data.hz >= 100_000) {
+          mHz = Number(e.data.hz / 1_000_000).toPrecision(3) + " MHz";
+        } else if (e.data.hz >= 1_000) {
+          mHz = Number(e.data.hz / 1_000).toPrecision(3) + " KHz";
+        } else {
+          mHz = Number(e.data.hz).toPrecision(3) + " Hz";
+        }
+
+        if (e.data.NANDCalls >= 1_000_000_000_000n) {
+          NANDCalls =
+            Number((e.data.NANDCalls * 1000n) / 1_000_000_000_000n) / 1000 +
+            " trillion";
+        } else if (e.data.NANDCalls >= 1_000_000_000n) {
+          NANDCalls =
+            Number((e.data.NANDCalls * 10n) / 1_000_000_000n) / 10 + " billion";
+        } else if (e.data.NANDCalls >= 1_000_000n) {
+          NANDCalls = Number(e.data.NANDCalls / 1_000_000n) + " million";
+        } else {
+          NANDCalls = "0";
+        }
+        break;
+    }
+  }
+  $: $runner && initRunner($runner, messageHandler);
 </script>
 
 <div id="computer-container">
@@ -144,6 +145,10 @@
       <span class="empty-space"></span>
       <div class="computer-base-divider"></div>
       <div id="dots-col-wrapper">
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
+        <div class="dots-col"></div>
         <div class="dots-col"></div>
         <div class="dots-col"></div>
         <div class="dots-col"></div>
