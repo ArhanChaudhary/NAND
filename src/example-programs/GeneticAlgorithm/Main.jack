@@ -49,7 +49,7 @@ class Main {
         let floodQueue = Array.new(100);
         let obstacles = Array.new(512);
         while (i < 512) {
-            let obstacles[i] = false;
+            let obstacles[i] = 0;
             let i = i + 1;
         }
     }
@@ -150,7 +150,7 @@ class Main {
                 let key = Keyboard.keyPressed();
             }
 
-            do Screen.setColor(obstacles[selectorIndex] = true);
+            do Screen.setColor(obstacles[selectorIndex] = -1);
             do Screen.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
             do Screen.setColor(true);
 
@@ -221,8 +221,8 @@ class Main {
         var int i, i2;
 
         while (~(i > 511)) {
-            if (~(obstacles[i] = true))
-                let obstacles[i] = false;
+            if (~(obstacles[i] = -1))
+                let obstacles[i] = 0;
             let i = i + 1;
         }
 
@@ -290,7 +290,7 @@ class Main {
         let initialGoalDist = obstacles[i2];
         let i = 0;
         while (i < 512) {
-            if (~((obstacles[i] = true) | (obstacles[i] = false))) {
+            if (~((obstacles[i] = -1) | (obstacles[i] = 0))) {
                 let obstacles[i] = Math.min(3276, 32767 / obstacles[i]);
                 if (i = i2) {
                     let initialBestDotFitness = obstacles[i];
@@ -321,15 +321,15 @@ class Main {
             let topRight = bottomRight - rightIndex;
 
             let penalty = Math.min(
-                (Main.floodIndexOutOfBounds(i, bottomLeft) | (obstacles[bottomLeft] = true)) +
-                (Main.floodIndexOutOfBounds(i, bottomRight) | (obstacles[bottomRight] = true)),
-                (Main.floodIndexOutOfBounds(i, topLeft) | (obstacles[topLeft] = true)) +
-                (Main.floodIndexOutOfBounds(i, topRight) | (obstacles[topRight] = true))
+                (Main.floodIndexOutOfBounds(i, bottomLeft) | (obstacles[bottomLeft] = -1)) +
+                (Main.floodIndexOutOfBounds(i, bottomRight) | (obstacles[bottomRight] = -1)),
+                (Main.floodIndexOutOfBounds(i, topLeft) | (obstacles[topLeft] = -1)) +
+                (Main.floodIndexOutOfBounds(i, topRight) | (obstacles[topRight] = -1))
             );
             let i = i - rightIndex;
         } else {
-            let rightIndex = Main.floodIndexOutOfBounds(i, i + rightIndex) | (obstacles[i + rightIndex] = true);
-            let leftIndex = Main.floodIndexOutOfBounds(i, i + leftIndex) | (obstacles[i + leftIndex] = true);
+            let rightIndex = Main.floodIndexOutOfBounds(i, i + rightIndex) | (obstacles[i + rightIndex] = -1);
+            let leftIndex = Main.floodIndexOutOfBounds(i, i + leftIndex) | (obstacles[i + leftIndex] = -1);
             let penalty = leftIndex + rightIndex;
         }
 
@@ -354,7 +354,7 @@ class Main {
             }
         }
 
-        if ((obstacles[i] = false) | (obstacles[i] > floodVal)) {
+        if ((obstacles[i] = 0) | (obstacles[i] > floodVal)) {
             let obstacles[i] = floodVal;
             let floodQueue[floodQueueLength] = i;
             let floodQueueLength = floodQueueLength + 1;
@@ -387,7 +387,7 @@ class Main {
             let obstacleX = obstacleX + obstacleX;
             let obstacleX = obstacleX + obstacleX;
             let obstacleX = obstacleX + obstacleX;
-            if (obstacles[i] = true)
+            if (obstacles[i] = -1)
                 do Screen.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
             let i = i + 1;
         }
@@ -406,7 +406,7 @@ class Main {
         if (minStep = 32767) {
             do Output.printString(goalDistanceString);
             let bestDotFitness = Population.getBestDotFitness();
-            if ((bestDotFitness = true) | (bestDotFitness = 1)) {
+            if (bestDotFitness = 1) {
                 do Output.printString(NAString);
             } else {
                 do Output.printInt(32767 / bestDotFitness);

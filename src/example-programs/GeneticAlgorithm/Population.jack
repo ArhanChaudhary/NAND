@@ -197,7 +197,8 @@ class Population {
         var int minStep;
         var int dotMinStepCache;
 
-        let bestDotFitness = -1;
+        // safe to set as 1 because 1) calcualteFitness return >= 1 and 2) bestDot can never be null after this loop
+        let bestDotFitness = 1;
         while (i < populationCount) {
             let dot = dots[i];
             let dotFitness = dot.calculateFitness();
