@@ -113,12 +113,15 @@ async function initialize() {
         self.postMessage({
           action: "emitInfo",
           hz: 0,
-          NANDCalls: 0,
+          NANDCalls: 0n,
         });
         break;
       case "stop":
         stopRunner = true;
         emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
+        self.postMessage({
+          action: "stopRunner",
+        });
         break;
       case "speed":
         const minLogValue = Math.log10(slowestStep);

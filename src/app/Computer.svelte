@@ -12,7 +12,13 @@
 
   type emitInfoData = { hz: number; NANDCalls: bigint };
 
-  function initRunner(runner: Worker, messageHandler) {
+  function initRunner(
+    runner: Worker,
+    messageHandler: {
+      (e: { data: any }): void;
+      (this: Worker, ev: MessageEvent<any>): any;
+    }
+  ) {
     const offscreen = document
       .querySelector("canvas")
       .transferControlToOffscreen();
@@ -82,6 +88,7 @@
 
   let mHz = "0";
   let NANDCalls = "0";
+  let statusClass = "";
   function messageHandler(e: { data: any }) {
     switch (e.data.action) {
       case "emitInfo":
@@ -92,7 +99,14 @@
         } else {
           mHz = Number(e.data.hz).toPrecision(3) + " Hz";
         }
-
+        if (e.data.NANDCalls > 45_000_000_000n) {
+          statusClass = "green";
+        } else if (e.data.NANDCalls === 0n) {
+          statusClass = "";
+        } else {
+          debugger;
+          statusClass = "loading";
+        }
         if (e.data.NANDCalls >= 1_000_000_000_000n) {
           NANDCalls =
             Number((e.data.NANDCalls * 1000n) / 1_000_000_000_000n) / 1000 +
@@ -106,6 +120,8 @@
           NANDCalls = "0";
         }
         break;
+      case "stopRunner":
+        statusClass = "red";
     }
   }
   $: $runner && initRunner($runner, messageHandler);
@@ -115,15 +131,15 @@
   <div id="computer-wrapper">
     <div id="computer-frame">
       <canvas width="512" height="256" />
-      <div id="computer-frame-graphics-positioner">
+      <div id="computer-frame-graphics-positioner" class={statusClass}>
         <div class="status-light-gradient">
-          <div class="status-light red"></div>
+          <div class="status-light"></div>
         </div>
         <div class="status-light-gradient">
-          <div class="status-light red"></div>
+          <div class="status-light"></div>
         </div>
         <div class="status-light-gradient">
-          <div class="status-light green"></div>
+          <div class="status-light"></div>
         </div>
         <div id="turn-off-button-positioner">
           <div id="turn-off-button-gradient">
@@ -252,20 +268,6 @@
               background-image: var(--background-gradient);
               border-radius: 50%;
             }
-
-            .status-light.green {
-              --background-gradient: radial-gradient(
-                hsl(120, 100%, 50%),
-                hsl(120, 100%, 10%)
-              );
-            }
-
-            .status-light.red {
-              --background-gradient: radial-gradient(
-                hsl(0, 100%, 65%),
-                hsl(0, 100%, 15%)
-              );
-            }
           }
 
           #turn-off-button-positioner {
@@ -292,6 +294,35 @@
                 box-shadow: inset 0 0 calc(var(--px) * 8) calc(var(--px) * -3)
                   hsl(0, 0%, 40%);
               }
+            }
+          }
+
+          &.green .status-light {
+            --background-gradient: radial-gradient(
+              hsl(120, 100%, 50%),
+              hsl(120, 100%, 10%)
+            );
+          }
+
+          &.red .status-light {
+            --background-gradient: radial-gradient(
+              hsl(0, 100%, 65%),
+              hsl(0, 100%, 15%)
+            );
+          }
+
+          @for $i from 1 through 3 {
+            &.loading .status-light-gradient:nth-child(#{$i}n) .status-light {
+              animation: blinker 0.5s step-start #{0.3 + $i * -0.1}s infinite;
+            }
+          }
+
+          @keyframes blinker {
+            50% {
+              background: radial-gradient(
+                hsl(120, 100%, 50%),
+                hsl(120, 100%, 10%)
+              );
             }
           }
         }
