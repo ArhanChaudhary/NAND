@@ -407,7 +407,7 @@ class Main {
             do Output.printString(goalDistanceString);
             let bestDotFitness = Population.getBestDotFitness();
             if ((bestDotFitness = true) | (bestDotFitness = 1)) {
-                do Output.printInt(NAString);
+                do Output.printString(NAString);
             } else {
                 do Output.printInt(32767 / bestDotFitness);
             }
