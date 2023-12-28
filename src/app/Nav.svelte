@@ -88,7 +88,7 @@
 </script>
 
 <nav>
-  <img id="logo" alt="" src="static/logo.png" />
+  <img id="logo" alt="" src="logo.png" />
   <button on:click={startRunner}> Start </button>
   <button on:click={stopRunner}> Stop </button>
   <button on:click={resetRunner}> Reset </button>
