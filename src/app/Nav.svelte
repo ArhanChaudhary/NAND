@@ -6,32 +6,42 @@
       file: string[];
     }>;
   }> = [];
-  for (const [exampleProgramPath, exampleProgramFileLoader] of Object.entries(
-    import.meta.glob("../example-programs/**/*.jack", { as: "raw" })
-  )) {
-    const exampleProgramName =
-      exampleProgramPath.split("/")[exampleProgramPath.split("/").length - 2];
-    const exampleProgramDatum = examplePrograms.find(
-      (exampleProgram) =>
-        exampleProgram.exampleProgramName === exampleProgramName
-    );
-    const exampleProgramFile = (await exampleProgramFileLoader()).split("\n");
-    const exampleProgramFileName = exampleProgramPath
-      .split("/")
-      [exampleProgramPath.split("/").length - 1].replace(".jack", "");
-    const exampleProgramFileDatum = {
-      fileName: exampleProgramFileName,
-      file: exampleProgramFile,
-    };
-    if (exampleProgramDatum) {
-      exampleProgramDatum.exampleProgramData.push(exampleProgramFileDatum);
-    } else {
-      examplePrograms.push({
-        exampleProgramName,
-        exampleProgramData: [exampleProgramFileDatum],
-      });
+  async function loadExamplePrograms() {
+    const exampleProgramPromises = [];
+    for (const [exampleProgramPath, exampleProgramFileLoader] of Object.entries(
+      import.meta.glob("../example-programs/**/*.jack", { as: "raw" })
+    )) {
+      const exampleProgramName =
+        exampleProgramPath.split("/")[exampleProgramPath.split("/").length - 2];
+      exampleProgramPromises.push(
+        exampleProgramFileLoader().then((exampleProgramFileRaw) => {
+          const exampleProgramFile = exampleProgramFileRaw.split("\n");
+          const exampleProgramDatum = examplePrograms.find(
+            (exampleProgram) =>
+              exampleProgram.exampleProgramName === exampleProgramName
+          );
+          const exampleProgramFileName = exampleProgramPath
+            .split("/")
+            [exampleProgramPath.split("/").length - 1].replace(".jack", "");
+          const exampleProgramFileDatum = {
+            fileName: exampleProgramFileName,
+            file: exampleProgramFile,
+          };
+          if (exampleProgramDatum) {
+            exampleProgramDatum.exampleProgramData.push(exampleProgramFileDatum);
+          } else {
+            examplePrograms.push({
+              exampleProgramName,
+              exampleProgramData: [exampleProgramFileDatum],
+            });
+          }
+        })
+      );
     }
+    await Promise.all(exampleProgramPromises);
+    return examplePrograms;
   }
+  let exampleProgramLoader = loadExamplePrograms();
 </script>
 
 <script lang="ts">
@@ -108,12 +118,16 @@
   <div class="nav-divider"></div>
   <span>
     <select on:change={loadExampleProgram}>
-      <option label="----"></option>
-      {#each examplePrograms as exampleProgram}
-        <option value={exampleProgram.exampleProgramName}
-          >{exampleProgram.exampleProgramName}</option
-        >
-      {/each}
+      {#await exampleProgramLoader}
+        <option label="Loading..."></option>
+      {:then}
+        <option label="----"></option>
+        {#each examplePrograms as exampleProgram}
+          <option value={exampleProgram.exampleProgramName}
+            >{exampleProgram.exampleProgramName}</option
+          >
+        {/each}
+      {/await}
     </select>
     <div style="margin-top: 4px">Load example program</div>
   </span>

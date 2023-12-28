@@ -1,16 +1,24 @@
 <script lang="ts" context="module">
-  export const JackOS: Array<{ fileName: string; file: string[] }> = [];
+  // export const JackOS: Array<{ fileName: string; file: string[] }> = [];
 
-  for (const [OSFilePath, OSFile] of Object.entries(
-    import.meta.glob("../os/*.jack", { as: "raw" })
-  )) {
-    JackOS.push({
-      fileName: OSFilePath.replace("../os/", "").replace(".jack", ""),
-      file: ((await OSFile()) as string).split("\n"),
-    });
-  }
+  // for (const [OSFilePath, OSFile] of Object.entries(
+  //   import.meta.glob("../os/*.jack", { as: "raw" })
+  // )) {
+  //   JackOS.push({
+  //     fileName: OSFilePath.replace("../os/", "").replace(".jack", ""),
+  //     file: ((await OSFile()) as string).split("\n"),
+  //   });
+  // }
 
-  type emitInfoData = { hz: number; NANDCalls: bigint };
+  export const JackOS: Array<{ fileName: string; file: string[] }> =
+    await Promise.all(
+      Object.entries(import.meta.glob("../os/*.jack", { as: "raw" })).map(
+        async ([OSFilePath, OSFile]) => ({
+          fileName: OSFilePath.replace("../os/", "").replace(".jack", ""),
+          file: ((await OSFile()) as string).split("\n"),
+        })
+      )
+    );
 
   function initRunner(
     runner: Worker,
