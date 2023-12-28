@@ -25,7 +25,7 @@
 
   let mHz = "0";
   let NANDCalls = "0";
-  $: if ($runner) {
+  $: if ($runner && false) {
     const offscreen = document
       .querySelector("canvas")
       .transferControlToOffscreen();
@@ -114,6 +114,22 @@
   <div id="computer-wrapper">
     <div id="computer-frame">
       <canvas width="512" height="256" />
+      <div id="computer-frame-graphics-positioner">
+        <div class="status-light-gradient">
+          <div class="status-light"></div>
+        </div>
+        <div class="status-light-gradient">
+          <div class="status-light"></div>
+        </div>
+        <div class="status-light-gradient">
+          <div class="status-light"></div>
+        </div>
+        <div id="turn-off-button-positioner">
+          <div id="turn-off-button-gradient">
+            <div id="turn-off-button"></div>
+          </div>
+        </div>
+      </div>
     </div>
     <div id="computer-frame-bottom"></div>
     <div id="computer-neck">
@@ -185,6 +201,7 @@
       #computer-frame {
         background-color: hsl(41, 25%, 77%);
         padding: var(--frame-padding);
+        position: relative;
 
         canvas {
           border: calc(var(--px) * 15) solid;
@@ -195,6 +212,71 @@
           display: block;
           aspect-ratio: 2 / 1;
           width: calc(var(--px) * 680);
+        }
+
+        #computer-frame-graphics-positioner {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: calc(var(--px) * 15);
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          height: var(--frame-padding);
+          --graphic-gradient: linear-gradient(hsl(34, 15%, 64%), hsl(34, 35%, 90%));
+
+          .status-light-gradient {
+            width: calc(var(--px) * 25);
+            height: calc(var(--px) * 25);
+            border-radius: 50%;
+            background: var(--graphic-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .status-light {
+              width: calc(var(--px) * 17);
+              height: calc(var(--px) * 17);
+              --background-gradient: radial-gradient(hsl(0, 0%, 45%), hsl(0, 0%, 5%));
+              background-image: var(--background-gradient);
+              border-radius: 50%;
+            }
+
+            .status-light.green {
+              --background-gradient: radial-gradient(hsl(120, 100%, 50%), hsl(120, 100%, 10%));
+            }
+
+            .status-light.red {
+              --background-gradient: radial-gradient(hsl(1, 100%, 60%), hsl(1, 100%, 15%));
+            }
+          }
+
+          #turn-off-button-positioner {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: var(--frame-padding);
+
+            #turn-off-button-gradient {
+              width: calc(var(--px) * 40);
+              height: calc(var(--px) * 40);
+              background: var(--graphic-gradient);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              border-radius: 50%;
+
+              #turn-off-button {
+                width: calc(var(--px) * 30);
+                height: calc(var(--px) * 30);
+                border-radius: 50%;
+                background-color: hsl(49, 24%, 83%);
+                box-shadow: inset 0 0 calc(var(--px) * 8) calc(var(--px) * -3)
+                  hsl(0, 0%, 40%);
+              }
+            }
+          }
         }
       }
 
