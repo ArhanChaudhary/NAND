@@ -112,7 +112,6 @@
         } else if (e.data.NANDCalls === 0n) {
           statusClass = "";
         } else {
-          debugger;
           statusClass = "loading";
         }
         if (e.data.NANDCalls >= 1_000_000_000_000n) {

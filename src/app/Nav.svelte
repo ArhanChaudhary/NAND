@@ -84,6 +84,11 @@
           )
       ),
     ];
+    program.sort((a, b) => {
+      if (a.fileName < b.fileName) return -1;
+      if (a.fileName > b.fileName) return 1;
+      return 0;
+    });
     const VMCode = compiler(program);
     const assembly = VMTranslator(VMCode);
     const machineCode = assembler(assembly);
