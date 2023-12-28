@@ -97,7 +97,7 @@ pub fn slice16_0to12(n: u16) -> u16 {
     n & 8191
 }
 
-fn slice16_0to13(n: u16) -> u16 {
+pub fn slice16_0to13(n: u16) -> u16 {
     n & 16383
 }
 
@@ -141,9 +141,9 @@ pub fn aregister(in_: u16, load: bool) -> u16 {
 static mut RAM16K_MEMORY: [u16; 16384] = [0; 16384];
 
 pub fn ram16k(in_: u16, load: bool, address: u16) -> u16 {
-    let out = unsafe { &RAM16K_MEMORY }[slice16_0to13(address) as usize];
+    let out = unsafe { &RAM16K_MEMORY }[address as usize];
     if load && unsafe { CLOCK } {
-        unsafe { RAM16K_MEMORY[slice16_0to13(address) as usize] = in_ };
+        unsafe { RAM16K_MEMORY[address as usize] = in_ };
     }
     out
 }
@@ -165,7 +165,7 @@ pub fn keyboard(load: bool, pressed: u16) -> u16 {
 static mut ROM32K_MEMORY: [u16; 32768] = [0; 32768];
 
 pub fn rom32k(address: u16) -> u16 {
-    unsafe { ROM32K_MEMORY[slice16_0to14(address) as usize] }
+    unsafe { ROM32K_MEMORY[address as usize] }
 }
 
 #[wasm_bindgen(js_name=loadROM)]

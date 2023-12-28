@@ -1,5 +1,4 @@
 # TODO (genetic algorithm)
-* showAllDots doesnt display obstacles
 * goal and initial dot gui
 
 # TODO (NAND)

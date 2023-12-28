@@ -5,8 +5,8 @@ use crate::{
     arithmetic::{alu, inc16},
     bool_from_u16, dregister,
     gates::{and, is_zero, mux16, not, or},
-    keyboard, nbit16, pc_reg, ram16k, rom32k, screen, slice16_0to12, slice16_0to14, tick, tock,
-    u16_from_bool,
+    keyboard, nbit16, pc_reg, ram16k, rom32k, screen, slice16_0to12, slice16_0to13, slice16_0to14,
+    tick, tock, u16_from_bool,
 };
 
 static mut PC_DFFOUT: u16 = 0;
@@ -38,7 +38,7 @@ pub fn cpu(in_m: u16, instruction: u16, reset: bool) {
 
     unsafe { CPU_DFFOUT[2] = slice16_0to14(aluy1) };
 
-    unsafe { CPU_DFFOUT[3] = pc(slice16_0to14(aluy1), false, reset) };
+    unsafe { CPU_DFFOUT[3] = slice16_0to14(pc(slice16_0to14(aluy1), false, reset)) };
 
     let aluout = alu(
         dregister(0, false),
@@ -88,7 +88,11 @@ fn memory(in_: u16, load: bool, address: u16) -> u16 {
     // 11 => KEYBOARD
 
     mux16(
-        ram16k(in_, and(not(nbit16(address, 14)), load), address),
+        ram16k(
+            in_,
+            and(not(nbit16(address, 14)), load),
+            slice16_0to13(address),
+        ),
         mux16(
             screen(
                 in_,
