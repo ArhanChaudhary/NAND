@@ -21,6 +21,7 @@ class Main {
     static String obstaclesString;
     static String escapeString;
     static String dotString;
+    static String goalString;
     static String precomputingString;
     static String optionOne;
     static String optionTwo;
@@ -41,6 +42,7 @@ class Main {
         let goalDistanceString = "Goal distance: ";
         let NAString = "NA";
         let dotString = "Set the initial dot position with the arrow and enter keys.";
+        let goalString = "Set the goal position with the arrow and enter keys.";
         let obstaclesString = "Place obstacles with the arrow, enter, and delete keys.";
         let escapeString = "Press escape to finish.";
         let precomputingString = "Precomputing fitnesses...";
@@ -86,8 +88,10 @@ class Main {
         do Screen.setColor(true);
 
         let onlyBest = false;
-        do Main.setInitialDotPosition();
-        do Main.setGoal();
+        do Main.setInitialDotOrGoalPosition(true);
+        let goalX = 257;
+        let goalY = 127;
+        do Main.setInitialDotOrGoalPosition(false);
         do Main.setObstacles();
         do Screen.clearScreen();
         do Main.precomputeFitnesses();
@@ -122,10 +126,36 @@ class Main {
         }
     }
 
-    function void setInitialDotPosition() {
+    function void setInitialDotOrGoalPosition(boolean setInitialDot) {
         var int key;
-        var int prevInitialX;
-        var int prevInitialY;
+        var int prevPositionX;
+        var int prevPositionY;
+        var int positionX;
+        var int positionY;
+        var int boundX;
+        var int boundY;
+        var int moveDelay;
+
+        var int sideLength;
+        var int halfSideLength;
+
+        if (setInitialDot) {
+            let sideLength = 3;
+            let halfSideLength = 1;
+            let positionX = initialX;
+            let positionY = initialY;
+            let boundX = 508;
+            let boundY = 253;
+            let moveDelay = 20;
+        } else {
+            let sideLength = 5;
+            let halfSideLength = 2;
+            let positionX = goalX;
+            let positionY = goalY;
+            let boundX = 507;
+            let boundY = 252;
+            let moveDelay = 35;
+        }
 
         let key = 1;
         while (~(key = 140)) {
@@ -133,38 +163,48 @@ class Main {
                 let key = Keyboard.keyPressed();
             }
             // this if statement is here so it renders properly if an obstacle is on the initial position
-            if (~(prevInitialX = 0)) {
-                do Main.drawObstacle(Main.getGridIndex(prevInitialX - 1, prevInitialY - 1));
-                do Main.drawObstacle(Main.getGridIndex(prevInitialX - 1, prevInitialY + 1));
-                do Main.drawObstacle(Main.getGridIndex(prevInitialX + 1, prevInitialY - 1));
-                do Main.drawObstacle(Main.getGridIndex(prevInitialX + 1, prevInitialY + 1));
+            if (~(prevPositionX = 0)) {
+                do Main.drawObstacle(Main.getGridIndex(prevPositionX - halfSideLength, prevPositionY - halfSideLength));
+                do Main.drawObstacle(Main.getGridIndex(prevPositionX - halfSideLength, prevPositionY + halfSideLength));
+                do Main.drawObstacle(Main.getGridIndex(prevPositionX + halfSideLength, prevPositionY - halfSideLength));
+                do Main.drawObstacle(Main.getGridIndex(prevPositionX + halfSideLength, prevPositionY + halfSideLength));
             }
-            let prevInitialX = initialX;
-            let prevInitialY = initialY;
+            let prevPositionX = positionX;
+            let prevPositionY = positionY;
             do Screen.setColor(false);
-            do Screen.drawRectangle(prevInitialX - 1, prevInitialY - 1, prevInitialX + 1, prevInitialY + 1);
+            do Screen.drawRectangle(
+                prevPositionX - halfSideLength,
+                prevPositionY - halfSideLength,
+                prevPositionX + halfSideLength,
+                prevPositionY + halfSideLength
+            );
             do Screen.setColor(true);
             if (key = 130) {
-                if (~(initialX = 1)) {
-                    let initialX = initialX - 3;
+                if (~(positionX = halfSideLength)) {
+                    let positionX = positionX - sideLength;
                 }
             } else if (key = 131) {
-                if (~(initialY = 1)) {
-                    let initialY = initialY - 3;
+                if (~(positionY = halfSideLength)) {
+                    let positionY = positionY - sideLength;
                 }
             } else if (key = 132) {
-                if (~(initialX = 508)) {
-                    let initialX = initialX + 3;
+                if (~(positionX = boundX)) {
+                    let positionX = positionX + sideLength;
                 }
             } else if (key = 133) {
-                if (~(initialY = 253)) {
-                    let initialY = initialY + 3;
+                if (~(positionY = boundY)) {
+                    let positionY = positionY + sideLength;
                 }
             }
-            do Screen.drawRectangle(initialX - 1, initialY - 1, initialX + 1, initialY + 1);
+            do Screen.drawRectangle(positionX - halfSideLength, positionY - halfSideLength, positionX + halfSideLength, positionY + halfSideLength);
             if (key = 1) {
-                do Output.moveCursor(3, 2);
-                do Output.printString(dotString);
+                if (setInitialDot) {
+                    do Output.moveCursor(3, 2);
+                    do Output.printString(dotString);
+                } else {
+                    do Output.moveCursor(3, 6);
+                    do Output.printString(goalString);
+                }
                 do Output.moveCursor(4, 21);
                 do Output.printString(escapeString);
                 // wait for key release
@@ -178,20 +218,26 @@ class Main {
             }
             if (~(key = 140)) {
                 let key = 0;
-                if (~(goalX = null)) {
-                    do Main.drawGoal();
+                if (setInitialDot) {
+                    if (~(goalX = null)) {
+                        do Main.drawGoal();
+                    }
+                } else {
+                    do Screen.drawRectangle(initialX - 1, initialY - 1, initialX + 1, initialY + 1);
                 }
-                do Sys.wait(20);
+                do Sys.wait(moveDelay);
             }
         }
-        do Dot.setInitialPosition(initialX, initialY);
-        do Population.instantiateDots();
-    }
-
-    function void setGoal() {
-        let goalX = 500;
-        let goalY = 128;
-        do Dot.setGoalPosition(goalX, goalY);
+        if (setInitialDot) {
+            let initialX = positionX;
+            let initialY = positionY;
+            do Dot.setInitialPosition(initialX, initialY);
+            do Population.instantiateDots();
+        } else {
+            let goalX = positionX;
+            let goalY = positionY;
+            do Dot.setGoalPosition(goalX, goalY);
+        }
     }
 
     function void setObstacles() {
@@ -404,9 +450,9 @@ class Main {
             }
         } else if (penalty = -1) {
             if (isAdjacent) {
-                // cant be ran because this will override the + 11 case
                 let floodVal = floodDist + 8;
             } else {
+                // cant be ran because this will override the + 11 case
                 return;
             }
         } else {
@@ -534,10 +580,10 @@ class Main {
             do Screen.setColor(true);
         }
         if (selected = 1) {
-            do Main.setInitialDotPosition();
+            do Main.setInitialDotOrGoalPosition(true);
             let resetMinStep = true;
         } else if (selected = 2) {
-            do Main.setGoal();
+            do Main.setInitialDotOrGoalPosition(false);
             let precomputeFitnesses = true;
             let resetMinStep = true;
         } else if (selected = 3) {
