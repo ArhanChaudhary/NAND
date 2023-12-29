@@ -184,9 +184,4 @@ class Dot {
         // it's also not easily possible to set it to 1 in flood itself because of ROM concerns
         return Math.max(1, obstacles[Main.getGridIndex(prevX, prevY)]);
     }
-
-    method void dispose() {
-        do brain.dispose();
-        do Memory.deAlloc(this);
-    }
 }

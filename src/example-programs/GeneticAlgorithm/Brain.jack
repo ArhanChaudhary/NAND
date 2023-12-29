@@ -48,9 +48,4 @@ class Brain {
         let step = step + 1;
         return directions[step];
     }
-
-    method void dispose() {
-        do directions.dispose();
-        do Memory.deAlloc(this);
-    }
 }

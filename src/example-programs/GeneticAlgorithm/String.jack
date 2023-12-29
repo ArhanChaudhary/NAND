@@ -42,12 +42,6 @@ class String {
         return this;
     }
 
-    /** Disposes this string. */
-    method void dispose() {
-        do stringArray.dispose();
-        do Memory.deAlloc(this);
-    }
-
     /** Returns the current length of this string. */
     method int length() {
         return currentLength;
