@@ -33,6 +33,8 @@ class Main {
     function void init() {
         var int i;
         do Keyboard.init();
+        let initialX = 256;
+        let initialY = 127;
         let goalX = null;
         let generationString = "Generation: ";
         let goalStepCountString = "Goal step count: ";
@@ -125,8 +127,6 @@ class Main {
         var int prevInitialX;
         var int prevInitialY;
 
-        let initialX = 256;
-        let initialY = 127;
         let key = 1;
         while (~(key = 140)) {
             while (key = 0) {
