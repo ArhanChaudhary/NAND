@@ -136,6 +136,10 @@
     </select>
     <div style="margin-top: 4px">Load example program</div>
   </span>
+  <a id="gh-logo-container" href="https://github.com/ArhanChaudhary/NAND">
+    <span></span
+    ><img alt="" src="github-mark.png" />
+  </a>
 </nav>
 
 <style lang="scss">
@@ -215,9 +219,6 @@
       margin-left: -10px;
     }
 
-    > :last-child {
-      margin-right: 4px;
-    }
     select {
       background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='7' fill='white'><path d='M0 0 7 7 14 0 12 0 7 5 2 0'/></svg>")
         no-repeat;
@@ -232,6 +233,26 @@
       appearance: none;
       cursor: pointer;
       padding: 2px 16px 2px 4px !important;
+    }
+
+    #gh-logo-container {
+      margin-left: auto;
+      height: 100%;
+
+      span {
+        display: inline-block;
+        width: 0px;
+        height: 0px;
+        border-style: solid;
+        border-width: 0 var(--nav-height) var(--nav-height) 0;
+        border-color: transparent white transparent transparent;
+      }
+
+      img {
+        background-color: white;
+        padding: 5px;
+        height: 100%;
+      }
     }
   }
 </style>
