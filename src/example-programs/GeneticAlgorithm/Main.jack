@@ -122,6 +122,8 @@ class Main {
 
     function void setInitialDotPosition() {
         var int key;
+        var int prevInitialX;
+        var int prevInitialY;
 
         let initialX = 256;
         let initialY = 127;
@@ -130,8 +132,17 @@ class Main {
             while (key = 0) {
                 let key = Keyboard.keyPressed();
             }
+            // this if statement is here so it renders properly if an obstacle is on the initial position
+            if (~(prevInitialX = 0)) {
+                do Main.drawObstacle(Main.getGridIndex(prevInitialX - 1, prevInitialY - 1));
+                do Main.drawObstacle(Main.getGridIndex(prevInitialX - 1, prevInitialY + 1));
+                do Main.drawObstacle(Main.getGridIndex(prevInitialX + 1, prevInitialY - 1));
+                do Main.drawObstacle(Main.getGridIndex(prevInitialX + 1, prevInitialY + 1));
+            }
+            let prevInitialX = initialX;
+            let prevInitialY = initialY;
             do Screen.setColor(false);
-            do Screen.drawRectangle(initialX - 1, initialY - 1, initialX + 1, initialY + 1);
+            do Screen.drawRectangle(prevInitialX - 1, prevInitialY - 1, prevInitialX + 1, prevInitialY + 1);
             do Screen.setColor(true);
             if (key = 130) {
                 if (~(initialX = 1)) {
@@ -167,11 +178,10 @@ class Main {
             }
             if (~(key = 140)) {
                 let key = 0;
-                do Main.drawObstacle(Main.getGridIndex(initialX, initialY));
                 if (~(goalX = null)) {
                     do Main.drawGoal();
                 }
-                do Sys.wait(25);
+                do Sys.wait(20);
             }
         }
         do Dot.setInitialPosition(initialX, initialY);

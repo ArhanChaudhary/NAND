@@ -1,5 +1,4 @@
 # TODO (genetic algorithm)
-* make goal cursor more natural
 * initial goal gui
 
 # TODO (NAND)
