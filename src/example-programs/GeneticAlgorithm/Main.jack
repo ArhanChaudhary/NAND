@@ -127,14 +127,6 @@ class Main {
         let initialY = 127;
         let key = 1;
         while (~(key = 140)) {
-            if (~(key = 1)) {
-                let key = 0;
-                do Main.drawObstacle(Main.getGridIndex(initialX, initialY));
-                if (~(goalX = null)) {
-                    do Main.drawGoal();
-                }
-                do Sys.wait(25);
-            }
             while (key = 0) {
                 let key = Keyboard.keyPressed();
             }
@@ -172,6 +164,14 @@ class Main {
                 do Screen.drawRectangle(17, 34, 489, 56);
                 do Screen.setColor(true);
                 do Main.drawObstacles();
+            }
+            if (~(key = 140)) {
+                let key = 0;
+                do Main.drawObstacle(Main.getGridIndex(initialX, initialY));
+                if (~(goalX = null)) {
+                    do Main.drawGoal();
+                }
+                do Sys.wait(25);
             }
         }
         do Dot.setInitialPosition(initialX, initialY);
