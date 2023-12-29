@@ -18,8 +18,9 @@ class Main {
     static String goalStepCountString;
     static String goalDistanceString;
     static String NAString;
-    static String placeString;
-    static String escString;
+    static String obstaclesString;
+    static String escapeString;
+    static String dotString;
     static String precomputingString;
     static String optionOne;
     static String optionTwo;
@@ -32,12 +33,14 @@ class Main {
     function void init() {
         var int i;
         do Keyboard.init();
+        let goalX = null;
         let generationString = "Generation: ";
         let goalStepCountString = "Goal step count: ";
         let goalDistanceString = "Goal distance: ";
         let NAString = "NA";
-        let placeString = "Place obstacles with the arrow, enter, and delete keys.";
-        let escString = "Press esc to finish.";
+        let dotString = "Set the initial dot position with the arrow and enter keys.";
+        let obstaclesString = "Place obstacles with the arrow, enter, and delete keys.";
+        let escapeString = "Press escape to finish.";
         let precomputingString = "Precomputing fitnesses...";
         let optionOne = "1) Set initial dot position";
         let optionTwo = "2) Set goal position";
@@ -81,7 +84,7 @@ class Main {
         do Screen.setColor(true);
 
         let onlyBest = false;
-        do Main.setInitialDot();
+        do Main.setInitialDotPosition();
         do Main.setGoal();
         do Main.setObstacles();
         do Screen.clearScreen();
@@ -117,10 +120,62 @@ class Main {
         }
     }
 
-    function void setInitialDot() {
-        let initialX = 10;
-        let initialY = 128;
+    function void setInitialDotPosition() {
+        var int key;
+
+        let initialX = 256;
+        let initialY = 127;
+        let key = 1;
+        while (~(key = 140)) {
+            if (~(key = 1)) {
+                let key = 0;
+                do Main.drawObstacle(Main.getGridIndex(initialX, initialY));
+                if (~(goalX = null)) {
+                    do Main.drawGoal();
+                }
+                do Sys.wait(25);
+            }
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+            }
+            do Screen.setColor(false);
+            do Screen.drawRectangle(initialX - 1, initialY - 1, initialX + 1, initialY + 1);
+            do Screen.setColor(true);
+            if (key = 130) {
+                if (~(initialX = 1)) {
+                    let initialX = initialX - 3;
+                }
+            } else if (key = 131) {
+                if (~(initialY = 1)) {
+                    let initialY = initialY - 3;
+                }
+            } else if (key = 132) {
+                if (~(initialX = 508)) {
+                    let initialX = initialX + 3;
+                }
+            } else if (key = 133) {
+                if (~(initialY = 253)) {
+                    let initialY = initialY + 3;
+                }
+            }
+            do Screen.drawRectangle(initialX - 1, initialY - 1, initialX + 1, initialY + 1);
+            if (key = 1) {
+                do Output.moveCursor(3, 2);
+                do Output.printString(dotString);
+                do Output.moveCursor(4, 21);
+                do Output.printString(escapeString);
+                // wait for key release
+                while (~(Keyboard.keyPressed() = 0)) {}
+                // wait for key press then hide
+                while (Keyboard.keyPressed() = 0) {}
+                do Screen.setColor(false);
+                do Screen.drawRectangle(17, 34, 489, 56);
+                do Screen.setColor(true);
+                do Main.drawObstacles();
+            }
+        }
         do Dot.setInitialPosition(initialX, initialY);
+        do Population.instantiateDots();
     }
 
     function void setGoal() {
@@ -138,15 +193,13 @@ class Main {
         var boolean draggingEnter;
 
         do Output.moveCursor(3, 5);
-        do Output.printString(placeString);
-        do Output.moveCursor(4, 22);
-        do Output.printString(escString);
+        do Output.printString(obstaclesString);
         let selectorX = 256;
         let selectorY = 112;
         let selectorIndex = 240;
         let key = 1;
         while (~(key = 140)) {
-            while (~(key > 0)) {
+            while (key = 0) {
                 let key = Keyboard.keyPressed();
             }
 
@@ -373,9 +426,16 @@ class Main {
 
     function void drawObstacles() {
         var int i;
+        while (i < 512) {
+            do Main.drawObstacle(i);
+            let i = i + 1;
+        }
+    }
+
+    function void drawObstacle(int i) {
         var int obstacleY;
         var int obstacleX;
-        while (i < 512) {
+        if (obstacles[i] = -1) {
             let obstacleY = 0;
             let obstacleX = i;
             while (~(obstacleX < 32)) {
@@ -387,9 +447,7 @@ class Main {
             let obstacleX = obstacleX + obstacleX;
             let obstacleX = obstacleX + obstacleX;
             let obstacleX = obstacleX + obstacleX;
-            if (obstacles[i] = -1)
-                do Screen.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
-            let i = i + 1;
+            do Screen.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
         }
     }
 
@@ -460,10 +518,13 @@ class Main {
         while (~(Keyboard.keyPressed() = 0)) {}
         let selected = Keyboard.readInt(optionSelect);
         // for GUIs and exit (so precomputeFitness/refreshDisplay runs with an already cleared screen)
-        if ((selected = 1) | (selected = 2) | (selected = 3) | (selected = 5))
-            do Screen.clearScreen();
+        if ((selected = 1) | (selected = 2) | (selected = 3) | (selected = 5)) {
+            do Screen.setColor(false);
+            do Screen.drawRectangle(143, 68, 379, 165);
+            do Screen.setColor(true);
+        }
         if (selected = 1) {
-            do Main.setInitialDot();
+            do Main.setInitialDotPosition();
             let resetMinStep = true;
         } else if (selected = 2) {
             do Main.setGoal();

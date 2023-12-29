@@ -1,5 +1,6 @@
 # TODO (genetic algorithm)
-* goal and initial dot gui
+* make goal cursor more natural
+* initial goal gui
 
 # TODO (NAND)
 * add github logo

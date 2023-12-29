@@ -331,4 +331,14 @@ class Population {
         }
         let gen = gen + 1;
     }
+
+    function void instantiateDots() {
+        var int i;
+        var Dot dot;
+        while (i < populationCount) {
+            let dot = dots[i];
+            do dot.instantiate();
+            let i = i + 1;
+        }
+    }
 }
