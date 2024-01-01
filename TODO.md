@@ -1,4 +1,5 @@
 # TODO (NAND)
+* make all promises follow the same resolve in else format
 * actually code the ui
 * viewable ram and rom
 * order example programs
@@ -45,6 +46,10 @@
 * dynamic mutation rate by regressing binomial distributions for different brain steps
 * choose population count based on remaining memory
 * unsigned division for more range for fitness
+* raster bit packing
+* string ascii packing
+* throw out part of the OS
+* A=-A ROM optimization
 
 # TODO (for later)
 * take into account steps dot hasnt reach goal, ie 100 steps to reach 100 fitness is better than 150 steps to reach 105 fitness

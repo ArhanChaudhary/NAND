@@ -232,7 +232,9 @@ class Main {
             let initialX = positionX;
             let initialY = positionY;
             do Dot.setInitialPosition(initialX, initialY);
-            do Population.instantiateDots();
+            if (~(goalX = null)) {
+                do Population.instantiateDots();
+            }
         } else {
             let goalX = positionX;
             let goalY = positionY;
