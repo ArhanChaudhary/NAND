@@ -420,11 +420,11 @@ export default class Main {
           draggingEnter = eq(key, 128);
           await new Promise((resolve) => {
             function tmp() {
-              if (eq(key, 0)) {
-                resolve();
-              } else {
+              if (not(eq(key, 0))) {
                 key = Util.keyPressed();
                 setTimeout(tmp, 0);
+              } else {
+                resolve();
               }
             }
             tmp();
@@ -744,10 +744,10 @@ export default class Main {
     toAlert += "\n";
     await new Promise((resolve) => {
       function tmp() {
-        if (eq(Util.keyPressed(), 0)) {
-          resolve();
-        } else {
+        if (not(eq(Util.keyPressed(), 0))) {
           setTimeout(tmp, 0);
+        } else {
+          resolve();
         }
       }
       tmp();
