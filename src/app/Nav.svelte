@@ -41,6 +41,34 @@
       );
     }
     await Promise.all(exampleProgramPromises);
+    const exampleProgramsOrder = [
+      "HelloWorld",
+      "Average",
+      "Pong",
+      "Square",
+      "Static",
+      "Overflow",
+      "2048",
+      "GeneticAlgorithm",
+    ];
+    function safeIndexOf(arr: string[], val: string) {
+      const index = arr.indexOf(val);
+      if (index === -1) throw new Error("not found");
+      return index;
+    }
+    examplePrograms.sort((a, b) => {
+      if (
+        safeIndexOf(exampleProgramsOrder, a.exampleProgramName) <
+        safeIndexOf(exampleProgramsOrder, b.exampleProgramName)
+      )
+        return -1;
+      if (
+        safeIndexOf(exampleProgramsOrder, a.exampleProgramName) >
+        safeIndexOf(exampleProgramsOrder, b.exampleProgramName)
+      )
+        return 1;
+      throw new Error("same name");
+    });
     return examplePrograms;
   }
   let exampleProgramLoader = loadExamplePrograms();
@@ -105,7 +133,7 @@
 </script>
 
 <nav>
-  <img id="logo" alt="" src="logo.png" draggable="false"/>
+  <img id="logo" alt="" src="logo.png" draggable="false" />
   <button on:click={startRunner}> Start </button>
   <button on:click={stopRunner}> Stop </button>
   <button on:click={resetRunner}> Reset </button>

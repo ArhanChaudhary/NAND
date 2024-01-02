@@ -1,7 +1,6 @@
 # TODO (NAND)
 * actually code the ui
 * viewable ram and rom
-* order example programs
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
 * figure out why copying the static arrays in builtins.rs is 50x slower
 * cannot set variable names to keywords in compiler
@@ -28,11 +27,12 @@
     * GeneticAlgorithm (will not reallocate)
 * vm escape bug
 
-# TODO (stats testing)
+# TODO (genetic algorithm)
 * random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
 * should acceleration vectors mutate in consecutive pairs as it is or individually?
 * determine optimal dynamicMutationRate constant (current is 1530)
 * BFS constants
+* * take into account steps dot hasnt reach goal, ie 100 steps to reach 100 fitness is better than 150 steps to reach 105 fitness
 
 # TODO (blog)
 * cache pairs of acceleration vectors
@@ -52,7 +52,6 @@
 * A=-A ROM optimization
 
 # TODO (for later)
-* take into account steps dot hasnt reach goal, ie 100 steps to reach 100 fitness is better than 150 steps to reach 105 fitness
 * graphing calculator in jack
 * nand in nand
 * lisp interpreter
