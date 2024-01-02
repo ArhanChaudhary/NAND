@@ -5,7 +5,7 @@
 <style lang="scss">
   #code-editor {
     background-color: hsl(222, 17%, 18%);
-    height: 100%;
+    flex-grow: 1;
     outline: 0;
     padding: 15px;
     padding-left: 50px;
