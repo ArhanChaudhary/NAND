@@ -1,9 +1,15 @@
-<div id="ide"></div>
+<script>
+  import CodeEditor from "./CodeEditor.svelte";
+</script>
+
+<div id="ide">
+  <CodeEditor />
+</div>
 
 <style lang="scss">
   #ide {
+    min-width: 0;
     flex-grow: 1;
-    align-self: stretch;
-    background-color: hsl(222, 17%, 18%);
+    height: 100%;
   }
 </style>

@@ -73,6 +73,5 @@
         background-color: hsl(222, 75%, 60%);
       }
     }
-
   }
 </style>
