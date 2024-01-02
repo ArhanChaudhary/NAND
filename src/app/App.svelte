@@ -20,7 +20,7 @@
 
   document.addEventListener("mousemove", (e) => {
     if (!mouse_is_down) return;
-    computer_vw = (1 - Math.max(0, e.clientX / window.innerWidth)) * 100;
+    computer_vw = (1 - Math.min(1, Math.max(0, e.clientX / window.innerWidth))) * 100;
   });
 
   document.addEventListener("mouseup", () => {
@@ -45,6 +45,8 @@
   }
 
   main {
+    // some shadows can overflow and cause scroll
+    overflow: hidden;
     display: flex;
     --main-height: calc(100dvh - var(--nav-height));
     height: var(--main-height);

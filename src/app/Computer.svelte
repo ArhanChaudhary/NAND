@@ -87,8 +87,8 @@
   import { onMount } from "svelte";
   export let computer_vw: Number;
 
+  let computerWrapper: HTMLDivElement;
   onMount(() => {
-    let computerWrapper = document.getElementById("computer-wrapper");
     computerWrapper.style.setProperty(
       "--computer-wrapper-aspect-ratio",
       computerWrapper.clientWidth / computerWrapper.clientHeight + ""
@@ -139,7 +139,7 @@
   id="computer-container"
   style="--computer-container-width: {computer_vw}vw;"
 >
-  <div id="computer-wrapper">
+  <div id="computer-wrapper" bind:this={computerWrapper}>
     <div id="computer-frame">
       <canvas width="512" height="256" />
       <div id="computer-frame-graphics-positioner" class={statusClass}>
