@@ -105,7 +105,7 @@
 </script>
 
 <nav>
-  <img id="logo" alt="" src="logo.png" />
+  <img id="logo" alt="" src="logo.png" draggable="false"/>
   <button on:click={startRunner}> Start </button>
   <button on:click={stopRunner}> Stop </button>
   <button on:click={resetRunner}> Reset </button>
@@ -139,7 +139,7 @@
     <div style="margin-top: 4px">Load example program</div>
   </span>
   <a id="gh-logo-container" href="https://github.com/ArhanChaudhary/NAND">
-    <span></span><img alt="" src="github-mark.png" />
+    <span></span><img alt="" src="github-mark.png" draggable="false" />
   </a>
 </nav>
 

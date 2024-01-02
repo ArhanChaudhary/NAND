@@ -95,25 +95,25 @@
     );
   });
 
-  let mHz = "0";
+  let clockSpeed = "0";
   let NANDCalls = "0";
-  let statusClass = "";
+  let lightStatus = "";
   function messageHandler(e: { data: any }) {
     switch (e.data.action) {
       case "emitInfo":
         if (e.data.hz >= 100_000) {
-          mHz = Number(e.data.hz / 1_000_000).toPrecision(3) + " MHz";
+          clockSpeed = Number(e.data.hz / 1_000_000).toPrecision(3) + " MHz";
         } else if (e.data.hz >= 1_000) {
-          mHz = Number(e.data.hz / 1_000).toPrecision(3) + " KHz";
+          clockSpeed = Number(e.data.hz / 1_000).toPrecision(3) + " KHz";
         } else {
-          mHz = Number(e.data.hz).toPrecision(3) + " Hz";
+          clockSpeed = Number(e.data.hz).toPrecision(3) + " Hz";
         }
         if (e.data.NANDCalls > 45_000_000_000n) {
-          statusClass = "green";
+          lightStatus = "green";
         } else if (e.data.NANDCalls === 0n) {
-          statusClass = "";
+          lightStatus = "";
         } else {
-          statusClass = "loading";
+          lightStatus = "loading";
         }
         if (e.data.NANDCalls >= 1_000_000_000_000n) {
           NANDCalls =
@@ -129,7 +129,7 @@
         }
         break;
       case "stopRunner":
-        statusClass = "red";
+        lightStatus = "red";
     }
   }
   $: $runner && initRunner($runner, messageHandler);
@@ -142,7 +142,7 @@
   <div id="computer-wrapper" bind:this={computerWrapper}>
     <div id="computer-frame">
       <canvas width="512" height="256" />
-      <div id="computer-frame-graphics-positioner" class={statusClass}>
+      <div id="computer-frame-graphics-positioner" class={lightStatus}>
         <div class="status-light-gradient">
           <div class="status-light"></div>
         </div>
@@ -177,7 +177,7 @@
         {/each}
       </div>
     </div>
-    <div id="secHz">Clock speed: {mHz}</div>
+    <div id="secHz">Clock speed: {clockSpeed}</div>
     <div id="NANDCalls">NAND Calls: {NANDCalls}</div>
   </div>
 </div>

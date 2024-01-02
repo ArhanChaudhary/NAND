@@ -20,7 +20,13 @@
 
   document.addEventListener("mousemove", (e) => {
     if (!mouse_is_down) return;
-    computer_vw = (1 - Math.min(1, Math.max(0, e.clientX / window.innerWidth))) * 100;
+    let ratio = e.clientX / window.innerWidth;
+    if (ratio < 0.05) {
+      ratio = 0;
+    } else if (ratio > 0.95) {
+      ratio = 1;
+    }
+    computer_vw = (1 - ratio) * 100;
   });
 
   document.addEventListener("mouseup", () => {
@@ -65,9 +71,9 @@
         position: absolute;
         z-index: 1;
         top: 0;
-        left: -5px;
+        left: -10px;
         height: 100%;
-        width: calc(100% + 10px);
+        width: calc(100% + 20px);
       }
 
       &:hover,
