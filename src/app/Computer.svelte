@@ -172,28 +172,9 @@
       <span class="empty-space"></span>
       <div class="computer-base-divider"></div>
       <div id="dots-col-wrapper">
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
-        <div class="dots-col"></div>
+        {#each Array(22) as _}
+          <div class="dots-col"></div>
+        {/each}
       </div>
     </div>
     <div id="secHz">Clock speed: {mHz}</div>
