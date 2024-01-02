@@ -28,7 +28,9 @@
             file: exampleProgramFile,
           };
           if (exampleProgramDatum) {
-            exampleProgramDatum.exampleProgramData.push(exampleProgramFileDatum);
+            exampleProgramDatum.exampleProgramData.push(
+              exampleProgramFileDatum
+            );
           } else {
             examplePrograms.push({
               exampleProgramName,
@@ -137,8 +139,7 @@
     <div style="margin-top: 4px">Load example program</div>
   </span>
   <a id="gh-logo-container" href="https://github.com/ArhanChaudhary/NAND">
-    <span></span
-    ><img alt="" src="github-mark.png" />
+    <span></span><img alt="" src="github-mark.png" />
   </a>
 </nav>
 
@@ -150,6 +151,8 @@
   nav {
     display: flex;
     align-items: center;
+    position: relative;
+    z-index: 1;
     gap: 30px;
     width: 100%;
     height: var(--nav-height);
@@ -238,6 +241,7 @@
     #gh-logo-container {
       margin-left: auto;
       height: 100%;
+      white-space: nowrap;
 
       span {
         display: inline-block;

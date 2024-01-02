@@ -1,5 +1,4 @@
 # TODO (NAND)
-* make all promises follow the same resolve in else format
 * actually code the ui
 * viewable ram and rom
 * order example programs
@@ -8,6 +7,7 @@
 * cannot set variable names to keywords in compiler
 * ensure all subroutines are defined at compile time
 * compilererror stash, too many static error
+* make NAND work on desktop safari
 * readme
   * Writing programs in NAND
     * jack tutorial, base of https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf and https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf

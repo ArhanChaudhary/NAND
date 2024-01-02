@@ -85,6 +85,7 @@
 <script lang="ts">
   import { runner } from "./runner-store";
   import { onMount } from "svelte";
+  export let computer_vw: Number;
 
   onMount(() => {
     let computerWrapper = document.getElementById("computer-wrapper");
@@ -134,7 +135,10 @@
   $: $runner && initRunner($runner, messageHandler);
 </script>
 
-<div id="computer-container">
+<div
+  id="computer-container"
+  style="--computer-container-width: {computer_vw}vw;"
+>
   <div id="computer-wrapper">
     <div id="computer-frame">
       <canvas width="512" height="256" />
@@ -200,13 +204,13 @@
 <style lang="scss">
   #computer-container {
     overflow: hidden;
+    position: relative;
     background-color: hsl(222, 19%, 22%);
     display: flex;
     justify-content: center;
     align-items: center;
-    --computer-container-width: 100vw;
     height: 100%;
-    width: var(--computer-container-width);
+    min-width: var(--computer-container-width);
 
     .empty-space {
       flex-grow: 1;
@@ -215,13 +219,12 @@
     #computer-wrapper {
       --px: calc(
         min(
-            var(--computer-container-width) - 10px,
-            (var(--main-height) - 10px) *
+            var(--computer-container-width) - 30px,
+            (var(--main-height) - 30px) *
               var(--computer-wrapper-aspect-ratio, 1)
           ) / 810
       );
       --frame-padding: calc(var(--px) * 60);
-      justify-self: end;
       flex-flow: column;
       display: flex;
       align-items: center;
