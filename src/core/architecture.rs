@@ -6,7 +6,7 @@ use crate::{
     bool_from_u16, dregister,
     gates::{and, is_zero, mux16, not, or},
     keyboard, nbit16, pc_reg, ram16k, rom32k, screen, slice16_0to12, slice16_0to13, slice16_0to14,
-    tick, tock, u16_from_bool,
+    tick, tock, u16_from_bool, reset_nand_calls,
 };
 
 static mut PC_DFFOUT: u16 = 0;
@@ -120,9 +120,18 @@ fn computer(reset: bool) {
 }
 
 #[wasm_bindgen]
-pub fn ticktock(reset: bool) {
+pub fn ticktock() {
     tick();
-    computer(reset);
+    computer(false);
     tock();
-    computer(reset);
+    computer(false);
+}
+
+#[wasm_bindgen]
+pub fn reset() {
+    tick();
+    computer(true);
+    tock();
+    computer(true);
+    reset_nand_calls();
 }

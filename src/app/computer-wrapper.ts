@@ -22,7 +22,7 @@ function runner() {
   // for this to complete before calling it again
   setTimeout(runner, 0);
   for (let i = 0; i < step; i++) {
-    computer.ticktock(false);
+    computer.ticktock();
   }
   emitIntervalTotal += step;
   // NOTE: although rustwasm is able to access SCREEN_MEMORY directly,
@@ -122,8 +122,7 @@ function start() {
 function reset() {
   if (!prevEmit) return;
   stopRunner = true;
-  computer.ticktock(true);
-  computer.resetNANDCalls();
+  computer.reset();
   emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
   emitIntervalTotal = 0;
   prevSecTotals.length = 0;
