@@ -2,6 +2,7 @@ import * as computer from "core";
 
 let screen: Worker;
 let stopRunner = false;
+let emitInterval: NodeJS.Timeout | void;
 let emitIntervalTotal = 0;
 // adjust accordingly
 // lowest value until the Hz starts to drop
@@ -58,11 +59,9 @@ function emitInfo() {
   prevEmit = currentEmit;
   emitIntervalTotal = 0;
 
-  let hz = prevSecTotals.reduce((a, b) => a + b) / prevSecTotals.length;
-
   self.postMessage({
     action: "emitInfo",
-    hz,
+    hz: prevSecTotals.reduce((a, b) => a + b) / prevSecTotals.length,
     NANDCalls: computer.NANDCalls(),
   });
 }
@@ -79,8 +78,7 @@ async function initialize() {
     });
   });
 
-  let emitInterval: NodeJS.Timeout | void;
-  self.addEventListener("message", function (e) {
+  self.addEventListener("message", (e) => {
     switch (e.data.action) {
       case "initialize":
         screen.postMessage(e.data.canvas, [e.data.canvas]);
@@ -89,51 +87,68 @@ async function initialize() {
         computer.loadROM(e.data.machineCode);
         break;
       case "start":
-        if (emitInterval) return;
-        stopRunner = false;
-        // runner first because worker startup is slow and the very first emit
-        // will be like half as fast as the following ones. So, we can call runner
-        // first and then define the interval and prevEmit to sort of nudge it
-        // closer to the actual value.
-        runner();
-        prevEmit = performance.now();
-        emitInterval = setInterval(emitInfo, emitIntervalDelay);
+        start(e);
         break;
       case "keyboard":
         computer.keyboard(true, e.data.key);
         break;
       case "reset":
-        if (!prevEmit) return;
-        stopRunner = true;
-        computer.ticktock(true);
-        computer.resetNANDCalls();
-        emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
-        emitIntervalTotal = 0;
-        prevSecTotals.length = 0;
-        self.postMessage({
-          action: "emitInfo",
-          hz: 0,
-          NANDCalls: 0n,
-        });
+        reset();
         break;
       case "stop":
-        stopRunner = true;
-        emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
-        self.postMessage({
-          action: "stopRunner",
-        });
+        stop();
         break;
       case "speed":
-        const minLogValue = Math.log10(slowestStep);
-        const maxLogValue = Math.log10(fastestStep);
-        const logScaledValue =
-          minLogValue + (e.data.speed / 100) * (maxLogValue - minLogValue);
-        const linearScaledValue = Math.pow(10, logScaledValue);
-        step = linearScaledValue;
+        speed(e);
+        break;
     }
   });
 
   self.postMessage({ action: "ready" });
+}
+
+function start(e: MessageEvent<any>) {
+  if (emitInterval) return;
+  stopRunner = false;
+  // runner first because worker startup is slow and the very first emit
+  // will be like half as fast as the following ones. So, we can call runner
+  // first and then define the interval and prevEmit to sort of nudge it
+  // closer to the actual value.
+  runner();
+  prevEmit = performance.now();
+  emitInterval = setInterval(emitInfo, emitIntervalDelay);
+}
+
+function reset() {
+  if (!prevEmit) return;
+  stopRunner = true;
+  computer.ticktock(true);
+  computer.resetNANDCalls();
+  emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
+  emitIntervalTotal = 0;
+  prevSecTotals.length = 0;
+  self.postMessage({
+    action: "emitInfo",
+    hz: 0,
+    NANDCalls: 0n,
+  });
+}
+
+function stop() {
+  stopRunner = true;
+  emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
+  self.postMessage({
+    action: "stopRunner",
+  });
+}
+
+function speed(e: MessageEvent<any>) {
+  const minLogValue = Math.log10(slowestStep);
+  const maxLogValue = Math.log10(fastestStep);
+  const logScaledValue =
+    minLogValue + (e.data.speed / 100) * (maxLogValue - minLogValue);
+  const linearScaledValue = Math.pow(10, logScaledValue);
+  step = linearScaledValue;
 }
 
 initialize();
