@@ -69,6 +69,18 @@
         return 1;
       throw new Error("same name");
     });
+    for (const exampleProgram of examplePrograms) {
+      const mainFileDatum = exampleProgram.exampleProgramData.find(
+        (fileDatum) => fileDatum.fileName === "Main"
+      );
+      if (!mainFileDatum) throw new Error("Main file not found");
+      exampleProgram.exampleProgramData = [
+        mainFileDatum,
+        ...exampleProgram.exampleProgramData.filter(
+          (fileDatum) => fileDatum.fileName !== "Main"
+        ),
+      ];
+    }
     return examplePrograms;
   }
   let exampleProgramLoader = loadExamplePrograms();
@@ -98,7 +110,7 @@
       );
       return;
     }
-    $runner.postMessage({ action: "start", machineCode });
+    $runner.postMessage({ action: "resetAndStart", machineCode });
   }
   function stopRunner() {
     $runner.postMessage({ action: "stop" });
