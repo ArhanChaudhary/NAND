@@ -46,7 +46,7 @@
   @import "normalize.css";
   * {
     box-sizing: border-box;
-    color: lightgray;
+    color: hsl(0, 0%, 83%);
     font-family: monospace;
   }
 

@@ -89,11 +89,14 @@ async function initialize() {
       case "start":
         start();
         break;
-      case "keyboard":
-        computer.keyboard(true, e.data.key);
-        break;
       case "reset":
         reset();
+        break;
+      case "resetAndStart":
+        resetAndStart(e);
+        break;
+      case "keyboard":
+        computer.keyboard(true, e.data.key);
         break;
       case "stop":
         stop();
@@ -131,6 +134,21 @@ function reset() {
     hz: 0,
     NANDCalls: 0n,
   });
+}
+
+function resetAndStart(e: MessageEvent<any>) {
+  if (prevEmit) {
+    computer.reset();
+    emitIntervalTotal = 0;
+    prevSecTotals.length = 0;
+    self.postMessage({
+      action: "emitInfo",
+      hz: 0,
+      NANDCalls: 0n,
+    });
+  }
+  computer.loadROM(e.data.machineCode);
+  start();
 }
 
 function stop() {
