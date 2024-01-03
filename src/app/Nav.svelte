@@ -197,7 +197,7 @@
     display: flex;
     align-items: center;
     position: relative;
-    overflow-x: hidden;
+    overflow-x: scroll;
     z-index: 1;
     gap: 30px;
     width: 100%;
