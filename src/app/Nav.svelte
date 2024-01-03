@@ -80,40 +80,10 @@
   import compiler from "../compiler/main";
   import { JackOS } from "./Computer.svelte";
   import { runner } from "./runner-store";
-  function startRunner() {
-    $runner.postMessage({ action: "start" });
-  }
-  function stopRunner() {
-    $runner.postMessage({ action: "stop" });
-  }
-  function resetRunner() {
-    $runner.postMessage({ action: "reset" });
-  }
-  function speedRunner(e: Event) {
-    $runner.postMessage({
-      action: "speed",
-      speed: (e.target as HTMLInputElement).valueAsNumber,
-    });
-  }
-  function loadExampleProgram(e: Event) {
-    resetRunner();
-    const exampleProgramName = (e.target as HTMLSelectElement).value;
-    const exampleProgram = examplePrograms.find(
-      (exampleProgram) =>
-        exampleProgram.exampleProgramName === exampleProgramName
-    );
-    if (!exampleProgram) return;
+  import { ide_context } from "./ide-context-store";
 
-    const program = [
-      ...exampleProgram.exampleProgramData,
-      ...JackOS.filter(
-        (OSFile) =>
-          !exampleProgram.exampleProgramData.find(
-            (exampleProgramFile) =>
-              exampleProgramFile.fileName === OSFile.fileName
-          )
-      ),
-    ];
+  function startRunner() {
+    const program = [...$ide_context];
     program.sort((a, b) => {
       if (a.fileName < b.fileName) return -1;
       if (a.fileName > b.fileName) return 1;
@@ -128,7 +98,38 @@
       );
       return;
     }
-    $runner.postMessage({ action: "loadROM", machineCode });
+    $runner.postMessage({ action: "start", machineCode });
+  }
+  function stopRunner() {
+    $runner.postMessage({ action: "stop" });
+  }
+  function resetRunner() {
+    $runner.postMessage({ action: "reset" });
+  }
+  function speedRunner(e: Event) {
+    $runner.postMessage({
+      action: "speed",
+      speed: (e.target as HTMLInputElement).valueAsNumber,
+    });
+  }
+  function loadExampleProgram(e: Event) {
+    const exampleProgramName = (e.target as HTMLSelectElement).value;
+    const exampleProgram = examplePrograms.find(
+      (exampleProgram) =>
+        exampleProgram.exampleProgramName === exampleProgramName
+    );
+    if (!exampleProgram) return;
+
+    $ide_context = [
+      ...exampleProgram.exampleProgramData,
+      ...JackOS.filter(
+        (OSFile) =>
+          !exampleProgram.exampleProgramData.find(
+            (exampleProgramFile) =>
+              exampleProgramFile.fileName === OSFile.fileName
+          )
+      ),
+    ];
   }
 </script>
 
