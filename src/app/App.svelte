@@ -12,9 +12,12 @@
     if (e.data.action === "ready") $runner = runner_;
   });
 
-  let computer_vw = 35;
-  let computer_width = Math.max(700, (computer_vw * window.innerWidth) / 100);
-  computer_vw = Math.min(85, (computer_width / window.innerWidth) * 100);
+  let computer_vw = 40;
+  let computer_width = Math.min(
+    window.innerWidth - 300,
+    Math.max(700, (computer_vw * window.innerWidth) / 100)
+  );
+  computer_vw = (computer_width / window.innerWidth) * 100;
 
   let mouse_is_down = false;
   function dividerMouseDown() {
