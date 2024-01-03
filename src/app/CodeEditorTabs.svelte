@@ -3,21 +3,46 @@
   let tabNames = [];
   $: {
     tabNames = $IDEContext.map((file) => file.fileName);
+    handleTabClick(tabNames[0]);
   }
   let activeTabName = "";
-  function handleTabClick(tab: string) {
-    activeTabName = tab;
+  function handleTabClick(tabName: string) {
+    activeTabName = tabName;
+  }
+  function handleTabAdd() {
+    let fileName: string;
+    while (true) {
+      fileName = prompt("Enter file name");
+      if ($IDEContext.some((file) => file.fileName === fileName)) {
+        alert("File name already exists");
+      } else {
+        break;
+      }
+    }
+    $IDEContext = $IDEContext.concat({
+      fileName,
+      file: `class ${fileName} {\n\n}`.split("\n"),
+    });
   }
 </script>
 
 <div id="tabs">
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
   {#each tabNames as tabName}<span
       class="tab"
       class:active={tabName === activeTabName}
-      on:click={() => handleTabClick(tabName)}>{tabName}<span class="tab-close"></span></span
-    >{/each}
+      on:click={() => handleTabClick(tabName)}
+      on:keydown={() => handleTabClick(tabName)}
+      role="button"
+      tabindex="0">{tabName}<span class="tab-close"></span></span
+    >{/each}<span
+    id="tab-add"
+    class="tab"
+    on:click={handleTabAdd}
+    on:keydown={handleTabAdd}
+    role="button"
+    tabindex="0"
+    aria-label="Add Tab">+</span
+  >
 </div>
 
 <style lang="scss">
@@ -55,5 +80,10 @@
       font-size: 15px;
       display: inline-block;
     }
+  }
+
+  #tab-add {
+    background-color: hsl(222, 12%, 14%);
+    margin-right: 5px;
   }
 </style>
