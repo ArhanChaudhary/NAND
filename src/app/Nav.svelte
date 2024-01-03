@@ -91,8 +91,8 @@
   import VMTranslator from "../vm/main";
   import compiler from "../compiler/main";
   import { JackOS } from "./Computer.svelte";
-  import { runner } from "./runner-store";
-  import { ide_context } from "./ide-context-store";
+  import { runner } from "./stores";
+  import { ide_context } from "./stores";
 
   function startRunner() {
     const program = [...$ide_context];

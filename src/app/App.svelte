@@ -2,7 +2,7 @@
   import Computer from "./Computer.svelte";
   import Nav from "./Nav.svelte";
   import IDE from "./IDE.svelte";
-  import { runner } from "./runner-store.js";
+  import { runner } from "./stores";
 
   const runner_ = new Worker(
     new URL("./computer-wrapper.ts", import.meta.url),

@@ -83,7 +83,7 @@
 </script>
 
 <script lang="ts">
-  import { runner } from "./runner-store";
+  import { runner } from "./stores";
   import { onMount } from "svelte";
   export let computer_vw: Number;
 
