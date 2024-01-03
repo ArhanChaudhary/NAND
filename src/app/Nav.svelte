@@ -164,7 +164,7 @@
         {/each}
       {/await}
     </select>
-    <div style="margin-top: 4px">Load example program</div>
+    <div>Load example program</div>
   </span>
   <a id="gh-logo-container" href="https://github.com/ArhanChaudhary/NAND">
     <span></span><img alt="" src="github-mark.png" draggable="false" />
@@ -265,6 +265,11 @@
       appearance: none;
       cursor: pointer;
       padding: 2px 16px 2px 4px !important;
+
+      + div {
+        margin-top: 4px;
+        white-space: nowrap;
+      }
     }
 
     #gh-logo-container {

@@ -4,7 +4,7 @@ import * as computer from "core";
 async function initialize() {
   let ctx: OffscreenCanvasRenderingContext2D;
   let running = false;
-  self.addEventListener("message", function (e) {
+  self.addEventListener("message", (e) => {
     if (!ctx) {
       ctx = e.data.getContext("2d");
       ctx.fillStyle = "rgb(177, 247, 121)";

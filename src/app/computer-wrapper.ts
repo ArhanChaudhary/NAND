@@ -87,7 +87,7 @@ async function initialize() {
         computer.loadROM(e.data.machineCode);
         break;
       case "start":
-        start(e);
+        start();
         break;
       case "keyboard":
         computer.keyboard(true, e.data.key);
@@ -107,7 +107,7 @@ async function initialize() {
   self.postMessage({ action: "ready" });
 }
 
-function start(e: MessageEvent<any>) {
+function start() {
   if (emitInterval) return;
   stopRunner = false;
   // runner first because worker startup is slow and the very first emit
