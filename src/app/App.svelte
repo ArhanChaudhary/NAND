@@ -13,6 +13,9 @@
   });
 
   let computer_vw = 35;
+  let computer_width = Math.max(700, (computer_vw * window.innerWidth) / 100);
+  computer_vw = Math.min(85, (computer_width / window.innerWidth) * 100);
+
   let mouse_is_down = false;
   function dividerMouseDown() {
     mouse_is_down = true;
@@ -21,9 +24,9 @@
   document.addEventListener("mousemove", (e) => {
     if (!mouse_is_down) return;
     let ratio = e.clientX / window.innerWidth;
-    if (ratio < 0.05) {
+    if (ratio < 0.1) {
       ratio = 0;
-    } else if (ratio > 0.95) {
+    } else if (ratio > 0.9) {
       ratio = 1;
     }
     computer_vw = (1 - ratio) * 100;
