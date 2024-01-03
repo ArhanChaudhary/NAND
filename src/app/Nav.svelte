@@ -91,11 +91,11 @@
   import VMTranslator from "../vm/main";
   import compiler from "../compiler/main";
   import { JackOS } from "./Computer.svelte";
-  import { runner } from "./stores";
-  import { ide_context } from "./stores";
+  import { runner, IDEContext, shouldResetAndStart } from "./stores";
 
+  $: $IDEContext, ($shouldResetAndStart = true);
   function startRunner() {
-    const program = [...$ide_context];
+    const program = [...$IDEContext];
     program.sort((a, b) => {
       if (a.fileName < b.fileName) return -1;
       if (a.fileName > b.fileName) return 1;
@@ -110,7 +110,11 @@
       );
       return;
     }
-    $runner.postMessage({ action: "resetAndStart", machineCode });
+    $runner.postMessage({
+      action: $shouldResetAndStart ? "resetAndStart" : "start",
+      machineCode,
+    });
+    $shouldResetAndStart = false;
   }
   function stopRunner() {
     $runner.postMessage({ action: "stop" });
@@ -132,7 +136,7 @@
     );
     if (!exampleProgram) return;
 
-    $ide_context = [
+    $IDEContext = [
       ...exampleProgram.exampleProgramData,
       ...JackOS.filter(
         (OSFile) =>
