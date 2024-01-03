@@ -3,9 +3,8 @@
   let tabNames = [];
   $: {
     tabNames = $IDEContext.map((file) => file.fileName);
-    handleTabClick(tabNames[0]);
   }
-  let activeTabName = "";
+  let activeTabName: string | undefined;
   function handleTabClick(tabName: string) {
     activeTabName = tabName;
   }
@@ -13,7 +12,9 @@
     let fileName: string;
     while (true) {
       fileName = prompt("Enter file name");
-      if ($IDEContext.some((file) => file.fileName === fileName)) {
+      if (!fileName) {
+
+      } else if ($IDEContext.some((file) => file.fileName === fileName)) {
         alert("File name already exists");
       } else {
         break;
@@ -23,26 +24,55 @@
       fileName,
       file: `class ${fileName} {\n\n}`.split("\n"),
     });
+    handleTabClick(fileName);
+  }
+  function handleTabDelete(tabName: string) {
+    if (!confirm(`Are you sure you want to delete ${tabName}?`)) return;
+    if (tabName === activeTabName) {
+      let index = tabNames.indexOf(tabName) + 1;
+      if (index === $IDEContext.length) {
+        handleTabClick(tabNames[index - 2]);
+      } else {
+        handleTabClick(tabNames[index]);
+      }
+    }
+    $IDEContext = $IDEContext.filter((file) => file.fileName !== tabName);
   }
 </script>
 
 <div id="tabs">
-  {#each tabNames as tabName}<span
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  {#each tabNames as tabName}
+    <span
       class="tab"
       class:active={tabName === activeTabName}
-      on:click={() => handleTabClick(tabName)}
-      on:keydown={() => handleTabClick(tabName)}
+      on:click|self={() => handleTabClick(tabName)}
       role="button"
-      tabindex="0">{tabName}<span class="tab-close"></span></span
-    >{/each}<span
+      tabindex="0"
+    >
+      {tabName}
+      <span
+        class="tab-delete"
+        on:click={() => handleTabDelete(tabName)}
+        role="button"
+        tabindex="0"
+        aria-label="Delete Tab"
+      >
+        &#10005;
+      </span>
+    </span>
+  {/each}
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <span
     id="tab-add"
     class="tab"
     on:click={handleTabAdd}
-    on:keydown={handleTabAdd}
     role="button"
     tabindex="0"
-    aria-label="Add Tab">+</span
+    aria-label="Add Tab"
   >
+    +
+  </span>
 </div>
 
 <style lang="scss">
@@ -59,9 +89,10 @@
   .tab {
     margin-right: 2px;
     cursor: pointer;
-    padding: 0 20px;
+    padding: 0 17px;
     position: relative;
     display: inline-flex;
+    max-width: fit-content;
     height: 100%;
     align-items: center;
     justify-content: center;
@@ -72,13 +103,23 @@
       background-color: hsl(222, 17%, 18%);
       color: inherit;
       box-shadow: 0px 6px 3px -3px hsl(222, 17%, 18%);
+
+      .tab-delete:hover {
+        background-color: hsl(222, 15%, 24%);
+      }
     }
 
-    .tab-close::after {
-      margin-left: 9px;
-      content: "\00d7";
-      font-size: 15px;
-      display: inline-block;
+    .tab-delete {
+      margin-left: 5px;
+      border-radius: 4px;
+      width: 17px;
+      font-size: 18px;
+      aspect-ratio: 1;
+      text-align: center;
+    }
+
+    .tab-delete:hover {
+      background-color: hsl(222, 17%, 33%);
     }
   }
 
