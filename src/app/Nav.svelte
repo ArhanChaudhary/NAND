@@ -91,7 +91,12 @@
   import VMTranslator from "../vm/main";
   import compiler from "../compiler/main";
   import { JackOS } from "./Computer.svelte";
-  import { runner, IDEContext, shouldResetAndStart } from "./stores";
+  import {
+    runner,
+    IDEContext,
+    shouldResetAndStart,
+    activeTabName,
+  } from "./stores";
 
   $: $IDEContext, ($shouldResetAndStart = true);
   function startRunner() {
@@ -146,6 +151,7 @@
           )
       ),
     ];
+    $activeTabName = "Main";
   }
 </script>
 

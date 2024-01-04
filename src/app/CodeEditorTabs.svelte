@@ -1,19 +1,15 @@
 <script lang="ts">
-  import { IDEContext } from "./stores";
+  import { IDEContext, activeTabName } from "./stores";
   let tabNames = [];
-  $: {
-    tabNames = $IDEContext.map((file) => file.fileName);
-  }
-  let activeTabName: string | undefined;
+  $: tabNames = $IDEContext.map((file) => file.fileName);
   function handleTabClick(tabName: string) {
-    activeTabName = tabName;
+    $activeTabName = tabName;
   }
   function handleTabAdd() {
     let fileName: string;
     while (true) {
       fileName = prompt("Enter file name");
       if (!fileName) {
-
       } else if ($IDEContext.some((file) => file.fileName === fileName)) {
         alert("File name already exists");
       } else {
@@ -28,7 +24,7 @@
   }
   function handleTabDelete(tabName: string) {
     if (!confirm(`Are you sure you want to delete ${tabName}?`)) return;
-    if (tabName === activeTabName) {
+    if (tabName === $activeTabName) {
       let index = tabNames.indexOf(tabName) + 1;
       if (index === $IDEContext.length) {
         handleTabClick(tabNames[index - 2]);
@@ -45,7 +41,7 @@
   {#each tabNames as tabName}
     <span
       class="tab"
-      class:active={tabName === activeTabName}
+      class:active={tabName === $activeTabName}
       on:click|self={() => handleTabClick(tabName)}
       role="button"
       tabindex="0"
