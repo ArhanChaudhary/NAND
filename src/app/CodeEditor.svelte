@@ -1,5 +1,23 @@
-<div id="code-editor" spellcheck="false" contenteditable="true">
-  <div></div>
+<script lang="ts">
+  import { IDEContext, activeTabName } from "./stores";
+
+  let file = [];
+  $: file = $IDEContext.find((file) => file.fileName === $activeTabName)?.file ?? [];
+</script>
+
+<div
+  id="code-editor"
+  spellcheck="false"
+  contenteditable="true"
+>
+  {#each file as line}
+    <div>
+      <!-- needed or some line breaks dont render properly -->
+      {#if line != ""}
+        {line}
+      {/if}
+    </div>
+  {/each}
 </div>
 
 <style lang="scss">
@@ -12,6 +30,7 @@
     overflow-y: scroll;
     scrollbar-width: none;
     counter-reset: line;
+    white-space: pre-wrap;
 
     &::-webkit-scrollbar {
       width: 0;
@@ -19,7 +38,7 @@
     }
 
     div {
-      padding: 3px 0;
+      line-height: 20px;
       position: relative;
 
       &::before {
