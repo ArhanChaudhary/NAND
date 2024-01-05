@@ -9,17 +9,28 @@
       e.target.innerText.replaceAll("\n\n", "\n").split("\n");
     $shouldResetAndStart = true;
   }
+  function handleEditorKeydown(e: any) {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      document.execCommand("insertText", false, "    ");
+    }
+  }
+  function handleEditorKeyup() {}
   window.addEventListener("beforeunload", () => {
     localStorage.setItem("IDEContext", JSON.stringify($IDEContext));
   });
 </script>
 
 {#key codeEditorContent}
+  <!-- svelte-ignore missing-declaration -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div
     id="code-editor"
     spellcheck="false"
     contenteditable="true"
     on:input={updateContext}
+    on:keydown|stopPropagation={handleEditorKeydown}
+    on:keyup|stopPropagation={handleEditorKeyup}
   >
     {#each codeEditorContent as line}
       <!-- needed or some line breaks dont render properly -->

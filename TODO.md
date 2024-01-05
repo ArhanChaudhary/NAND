@@ -1,7 +1,9 @@
 # TODO (NAND)
 * stopPropagation on contenteditable div
 * syntax highlighter
+* draggable tabs
 * viewable ram and rom
+* a lot more comments and remove comments and update syntax (no return etc) on example programs
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
 * detect ERRX in screen
 * figure out why copying the static arrays in builtins.rs is 50x slower
@@ -18,6 +20,7 @@
     * theres no Sys.error(18) String.eraseLastChar String is empty
     * arguments keyword
     * ub: abs -32768, stack overflows, heap overflows, modifying stack frame or registers,
+    * start will automatically reset on IDE input
   * NAND's example programs
     * HelloWorld
     * Average
