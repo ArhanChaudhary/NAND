@@ -2,6 +2,18 @@
   import { IDEContext, activeTabName } from "./stores";
   let tabNames = [];
   $: tabNames = $IDEContext.map((file) => file.fileName);
+  $: $activeTabName,
+    $IDEContext,
+    (() => {
+      const activeTab = document.querySelector(
+        `#tabs .tab[aria-label="${$activeTabName}"]`
+      );
+      if (activeTab) {
+        activeTab.scrollIntoView({
+          behavior: "instant",
+        });
+      }
+    })();
   function handleTabClick(tabName: string) {
     $activeTabName = tabName;
   }
@@ -16,10 +28,11 @@
         break;
       }
     }
-    $IDEContext = $IDEContext.concat({
+    $IDEContext.push({
       fileName,
-      file: `class ${fileName} {\n\n}`.split("\n"),
+      file: `class ${fileName} {\n\n}\n`.split("\n"),
     });
+    $IDEContext = $IDEContext;
     handleTabClick(fileName);
   }
   function handleTabDelete(tabName: string) {
@@ -45,6 +58,7 @@
       on:click|self={() => handleTabClick(tabName)}
       role="button"
       tabindex="0"
+      aria-label={tabName}
     >
       {tabName}
       <span
@@ -79,13 +93,12 @@
     background-color: hsl(222, 17%, 29%);
     box-shadow: 0 0 9px -4px black;
     overflow-x: scroll;
-    scrollbar-gutter: stable;
   }
 
   .tab {
     margin-right: 2px;
     cursor: pointer;
-    padding: 0 17px;
+    padding: 0 19px;
     position: relative;
     display: inline-flex;
     max-width: fit-content;
@@ -93,6 +106,7 @@
     align-items: center;
     justify-content: center;
     background-color: hsl(222, 17%, 25%);
+    scroll-margin: 30px;
     color: hsl(0deg 0% 78%);
 
     &.active {
@@ -106,9 +120,9 @@
     }
 
     .tab-delete {
-      margin-left: 5px;
+      margin-left: 6px;
       border-radius: 4px;
-      width: 17px;
+      width: 20px;
       font-size: 18px;
       aspect-ratio: 1;
       text-align: center;
