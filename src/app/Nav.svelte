@@ -98,8 +98,21 @@
     activeTabName,
   } from "./stores";
 
-  exampleProgramLoader.then(() => loadExampleProgram("HelloWorld"));
   $: $IDEContext, ($shouldResetAndStart = true);
+  exampleProgramLoader.then(() => {
+    if (shouldAutoLoad("HelloWorld")) {
+      loadExampleProgram("HelloWorld");
+    } else {
+      $activeTabName = "Main";
+    }
+  });
+  function shouldAutoLoad(exampleProgramName: string) {
+    if (!localStorage.getItem("IDEContext") && exampleProgramName === "HelloWorld") {
+      return true;
+    } else {
+      return null;
+    }
+  }
   function startRunner() {
     const program = [...$IDEContext];
     program.sort((a, b) => {
@@ -184,7 +197,10 @@
       {:then}
         <option label="----"></option>
         {#each examplePrograms as exampleProgram}
-          <option value={exampleProgram.exampleProgramName} selected={exampleProgram.exampleProgramName === "HelloWorld" || null}>
+          <option
+            value={exampleProgram.exampleProgramName}
+            selected={shouldAutoLoad(exampleProgram.exampleProgramName)}
+          >
             {exampleProgram.exampleProgramName}
           </option>
         {/each}

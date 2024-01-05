@@ -9,6 +9,9 @@
       e.target.innerText.split("\n");
     $shouldResetAndStart = true;
   }
+  window.addEventListener("beforeunload", () => {
+    localStorage.setItem("IDEContext", JSON.stringify($IDEContext));
+  });
 </script>
 
 <div
