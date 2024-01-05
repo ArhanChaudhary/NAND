@@ -1,23 +1,31 @@
 <script lang="ts">
   import { IDEContext, activeTabName } from "./stores";
 
-  let file = [];
-  $: file = $IDEContext.find((file) => file.fileName === $activeTabName)?.file ?? [];
+  let codeEditorContent = [];
+  $: codeEditorContent =
+    $IDEContext.find((file) => file.fileName === $activeTabName)?.file ?? [];
+  function updateContext(e: any) {
+    $IDEContext.find((file) => file.fileName === $activeTabName).file =
+      e.target.innerText.split("\n");
+  }
 </script>
 
 <div
   id="code-editor"
   spellcheck="false"
   contenteditable="true"
+  on:input={updateContext}
 >
-  {#each file as line}
-    <div>
-      <!-- needed or some line breaks dont render properly -->
-      {#if line != ""}
-        {line}
-      {/if}
-    </div>
-  {/each}
+  {#key codeEditorContent}
+    {#each codeEditorContent as line}
+      <div>
+        <!-- needed or some line breaks dont render properly -->
+        {#if line != ""}
+          {line}
+        {/if}
+      </div>
+    {/each}
+  {/key}
 </div>
 
 <style lang="scss">
