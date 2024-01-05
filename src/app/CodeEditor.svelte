@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { IDEContext, activeTabName } from "./stores";
+  import { IDEContext, activeTabName, shouldResetAndStart } from "./stores";
 
   let codeEditorContent = [];
   $: codeEditorContent =
@@ -7,6 +7,7 @@
   function updateContext(e: any) {
     $IDEContext.find((file) => file.fileName === $activeTabName).file =
       e.target.innerText.split("\n");
+    $shouldResetAndStart = true;
   }
 </script>
 
