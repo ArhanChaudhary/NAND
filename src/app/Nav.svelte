@@ -98,6 +98,7 @@
     activeTabName,
   } from "./stores";
 
+  exampleProgramLoader.then(() => loadExampleProgram("HelloWorld"));
   $: $IDEContext, ($shouldResetAndStart = true);
   function startRunner() {
     const program = [...$IDEContext];
@@ -133,8 +134,10 @@
       speed: (e.target as HTMLInputElement).valueAsNumber,
     });
   }
-  function loadExampleProgram(e: Event) {
-    const exampleProgramName = (e.target as HTMLSelectElement).value;
+  function exampleProgramSelectChange(e: Event) {
+    loadExampleProgram((e.target as HTMLSelectElement).value);
+  }
+  function loadExampleProgram(exampleProgramName: string) {
     const exampleProgram = examplePrograms.find(
       (exampleProgram) =>
         exampleProgram.exampleProgramName === exampleProgramName
@@ -175,15 +178,15 @@
   </div>
   <div class="nav-divider"></div>
   <span>
-    <select on:change={loadExampleProgram}>
+    <select on:change={exampleProgramSelectChange}>
       {#await exampleProgramLoader}
         <option label="Loading..."></option>
       {:then}
         <option label="----"></option>
         {#each examplePrograms as exampleProgram}
-          <option value={exampleProgram.exampleProgramName}
-            >{exampleProgram.exampleProgramName}</option
-          >
+          <option value={exampleProgram.exampleProgramName} selected={exampleProgram.exampleProgramName === "HelloWorld" || null}>
+            {exampleProgram.exampleProgramName}
+          </option>
         {/each}
       {/await}
     </select>

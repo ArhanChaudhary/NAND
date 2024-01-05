@@ -1,5 +1,6 @@
 # TODO (NAND)
-* actually code the ui
+* syntax highlighter
+* remove random space after
 * gh pages rust cache key doesnt actually work(??)
 * viewable ram and rom
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
