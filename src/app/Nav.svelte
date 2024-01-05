@@ -157,7 +157,7 @@
     );
     if (!exampleProgram) return;
 
-    $IDEContext = [
+    $IDEContext = structuredClone([
       ...exampleProgram.exampleProgramData,
       ...JackOS.filter(
         (OSFile) =>
@@ -166,7 +166,7 @@
               exampleProgramFile.fileName === OSFile.fileName
           )
       ),
-    ];
+    ]);
     $activeTabName = "Main";
   }
 </script>
