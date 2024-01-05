@@ -41,8 +41,8 @@ class Main {
         let goalStepCountString = "Goal step count: ";
         let goalDistanceString = "Goal distance: ";
         let NAString = "NA";
-        let dotString = "Set the initial dot position with the arrow and enter keys.";
-        let goalString = "Set the goal position with the arrow and enter keys.";
+        let dotString = "Set the initial dot position with the arrow keys.";
+        let goalString = "Set the goal position with the arrow keys.";
         let obstaclesString = "Place obstacles with the arrow, enter, and delete keys.";
         let escapeString = "Press escape to finish.";
         let precomputingString = "Precomputing fitnesses...";
@@ -199,10 +199,10 @@ class Main {
             do Screen.drawRectangle(positionX - halfSideLength, positionY - halfSideLength, positionX + halfSideLength, positionY + halfSideLength);
             if (key = 1) {
                 if (setInitialDot) {
-                    do Output.moveCursor(3, 2);
+                    do Output.moveCursor(3, 8);
                     do Output.printString(dotString);
                 } else {
-                    do Output.moveCursor(3, 6);
+                    do Output.moveCursor(3, 11);
                     do Output.printString(goalString);
                 }
                 do Output.moveCursor(4, 21);

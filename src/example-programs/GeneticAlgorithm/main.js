@@ -60,9 +60,8 @@ export default class Main {
     Main.#goalStepCountString = "Goal step count: ";
     Main.#goalDistanceString = "Goal distance: ";
     Main.#NAString = "NA";
-    Main.#dotString =
-      "Set the initial dot position with the arrow and enter keys.";
-    Main.#goalString = "Set the goal position with the arrow and enter keys.";
+    Main.#dotString = "Set the initial dot position with the arrow keys.";
+    Main.#goalString = "Set the goal position with the arrow keys.";
     Main.#obstaclesString =
       "Place obstacles with the arrow, enter, and delete keys.";
     Main.#escapeString = "Press escape to finish.";
