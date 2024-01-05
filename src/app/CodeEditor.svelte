@@ -6,7 +6,7 @@
     $IDEContext.find((file) => file.fileName === $activeTabName)?.file ?? [];
   function updateContext(e: any) {
     $IDEContext.find((file) => file.fileName === $activeTabName).file =
-      e.target.innerText.split("\n");
+      e.target.innerText.replaceAll("\n\n", "\n").split("\n");
     $shouldResetAndStart = true;
   }
   window.addEventListener("beforeunload", () => {
@@ -24,10 +24,11 @@
     {#each codeEditorContent as line}
       <div>
         <!-- needed or some line breaks dont render properly -->
-        {#if line != ""}
-          {line}
-        {/if}
-      </div>
+        {#if line == ""}
+          <br />{
+        :else}
+          {line}{
+        /if}</div>
     {/each}
   {/key}
 </div>
