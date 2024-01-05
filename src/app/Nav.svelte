@@ -204,6 +204,7 @@
     align-items: center;
     position: relative;
     overflow-x: scroll;
+    overflow-y: hidden;
     z-index: 1;
     gap: 30px;
     width: 100%;
