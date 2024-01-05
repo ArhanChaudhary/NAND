@@ -14,24 +14,20 @@
   });
 </script>
 
-<div
-  id="code-editor"
-  spellcheck="false"
-  contenteditable="true"
-  on:input={updateContext}
->
-  {#key codeEditorContent}
+{#key codeEditorContent}
+  <div
+    id="code-editor"
+    spellcheck="false"
+    contenteditable="true"
+    on:input={updateContext}
+  >
     {#each codeEditorContent as line}
-      <div>
-        <!-- needed or some line breaks dont render properly -->
-        {#if line == ""}
-          <br />{
-        :else}
-          {line}{
-        /if}</div>
+      <!-- needed or some line breaks dont render properly -->
+      <!-- prettier-ignore -->
+      <div>{#if line == ""}<br />{:else}{line}{/if}</div>
     {/each}
-  {/key}
-</div>
+  </div>
+{/key}
 
 <style lang="scss">
   #code-editor {
