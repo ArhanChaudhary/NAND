@@ -6,17 +6,18 @@
     $IDEContext.find((file) => file.fileName === $activeTabName)?.file ?? [];
   function updateContext(e: any) {
     let textContent = e.target.innerText.replaceAll("\n\n", "\n");
-    if (textContent === '\n') {
-      textContent = '';
+    if (textContent === "\n") {
+      textContent = "";
     }
-    $IDEContext.find((file) => file.fileName === $activeTabName).file = textContent.split("\n");
+    $IDEContext.find((file) => file.fileName === $activeTabName).file =
+      textContent.split("\n");
     $shouldResetAndStart = true;
   }
   function handleEditorKeydown(e: any) {
     if (e.key === "Tab") {
       e.preventDefault();
       document.execCommand("insertText", false, "    ");
-    } else if (e.key === "Backspace" && e.target.innerText === '\n') {
+    } else if (e.key === "Backspace" && e.target.innerText === "\n") {
       e.preventDefault();
     }
   }
@@ -72,6 +73,26 @@
         color: hsl(222, 13%, 44%);
         position: absolute;
         right: calc(100% + 13px);
+      }
+
+      :global(.keyword) {
+        color: hsl(355, 65%, 65%);
+      }
+
+      :global(.type) {
+        color: hsl(187, 47%, 55%);
+      }
+
+      :global(.number) {
+        color: hsl(286, 60%, 67%);
+      }
+
+      :global(.symbol) {
+        color: hsl(205, 100%, 55%);
+      }
+
+      :global(.comment) {
+        color: hsl(218, 10%, 45%);
       }
     }
   }
