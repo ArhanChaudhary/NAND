@@ -5,14 +5,19 @@
   $: codeEditorContent =
     $IDEContext.find((file) => file.fileName === $activeTabName)?.file ?? [];
   function updateContext(e: any) {
-    $IDEContext.find((file) => file.fileName === $activeTabName).file =
-      e.target.innerText.replaceAll("\n\n", "\n").split("\n");
+    let textContent = e.target.innerText.replaceAll("\n\n", "\n");
+    if (textContent === '\n') {
+      textContent = '';
+    }
+    $IDEContext.find((file) => file.fileName === $activeTabName).file = textContent.split("\n");
     $shouldResetAndStart = true;
   }
   function handleEditorKeydown(e: any) {
     if (e.key === "Tab") {
       e.preventDefault();
       document.execCommand("insertText", false, "    ");
+    } else if (e.key === "Backspace" && e.target.innerText === '\n') {
+      e.preventDefault();
     }
   }
   function handleEditorKeyup() {}
