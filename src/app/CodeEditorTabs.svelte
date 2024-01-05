@@ -1,19 +1,20 @@
 <script lang="ts">
   import { IDEContext, activeTabName } from "./stores";
-  let tabNames = [];
-  $: tabNames = $IDEContext.map((file) => file.fileName);
-  $: $activeTabName,
-    $IDEContext,
-    (() => {
-      const activeTab = document.querySelector(
-        `#tabs .tab[aria-label="${$activeTabName}"]`
-      );
-      if (activeTab) {
-        activeTab.scrollIntoView({
-          behavior: "instant",
-        });
-      }
-    })();
+  let componentRoot: HTMLDivElement;
+  function tabShouldBeActive(tabName: string, activeTabName: string) {
+    let ret = tabName === activeTabName;
+    if (ret) {
+      setTimeout(() => {
+        let activeTab = componentRoot.querySelector(".tab.active");
+        if (activeTab) {
+          activeTab.scrollIntoView({
+            behavior: "instant",
+          });
+        }
+      });
+    }
+    return ret;
+  }
   function handleTabClick(tabName: string) {
     $activeTabName = tabName;
   }
@@ -28,7 +29,7 @@
         break;
       }
     }
-    $IDEContext.push({
+    $IDEContext.unshift({
       fileName,
       file: `class ${fileName} {\n\n}\n`.split("\n"),
     });
@@ -38,6 +39,7 @@
   function handleTabDelete(tabName: string) {
     if (!confirm(`Are you sure you want to delete ${tabName}?`)) return;
     if (tabName === $activeTabName) {
+      const tabNames = $IDEContext.map((file) => file.fileName);
       let index = tabNames.indexOf(tabName) + 1;
       if (index === $IDEContext.length) {
         handleTabClick(tabNames[index - 2]);
@@ -49,16 +51,15 @@
   }
 </script>
 
-<div id="tabs">
+<div id="tabs" bind:this={componentRoot}>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
-  {#each tabNames as tabName}
+  {#each $IDEContext.map((file) => file.fileName) as tabName}
     <span
       class="tab"
-      class:active={tabName === $activeTabName}
+      class:active={tabShouldBeActive(tabName, $activeTabName)}
       on:click|self={() => handleTabClick(tabName)}
       role="button"
       tabindex="0"
-      aria-label={tabName}
     >
       {tabName}
       <span
@@ -71,9 +72,7 @@
         &#10005;
       </span>
     </span>
-  {/each}
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <span
+  {/each}<!-- svelte-ignore a11y-click-events-have-key-events --><span
     id="tab-add"
     class="tab"
     on:click={handleTabAdd}
@@ -134,7 +133,8 @@
   }
 
   #tab-add {
-    background-color: hsl(222, 12%, 14%);
+    color: white;
+    background-color: hsl(222, 19%, 52%);
     margin-right: 5px;
   }
 </style>
