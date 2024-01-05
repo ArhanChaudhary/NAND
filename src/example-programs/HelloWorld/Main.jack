@@ -5,10 +5,8 @@
 
 /** Hello World program. */
 class Main {
-   function void main() {
-      /* Prints some text using the standard library. */
-      do Output.printString("Hello world!");
-      do Output.println();      // New line
-      return;
-   }
+    function void main() {
+        /* Prints some text using the standard library. */
+        do Output.printString("Hello world!");
+    }
 }

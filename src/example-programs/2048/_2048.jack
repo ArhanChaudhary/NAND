@@ -31,7 +31,7 @@ class _2048 {
         let gridX = 21;
         let gridY = 11;
         let size = size_;
-        
+
         let grid = Array.new(size);
         let prevGrid = Array.new(size);
         let i = 0;
@@ -155,7 +155,7 @@ class _2048 {
             let iNext = size * 2;
             let iStop = (size * (size + 1)) - 1;
         }
-        
+
         let j = 0;
         let combinedPosition = -1;
         while (~(i = iStop)) {

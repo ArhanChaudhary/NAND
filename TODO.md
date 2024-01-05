@@ -1,5 +1,4 @@
 # TODO (NAND)
-* stopPropagation on contenteditable div
 * syntax highlighter
 * draggable tabs
 * viewable ram and rom

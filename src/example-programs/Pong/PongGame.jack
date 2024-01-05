@@ -8,7 +8,7 @@
  */
 class PongGame {
 
-    static PongGame instance; // the singelton, a Pong game instance     
+    static PongGame instance; // the singelton, a Pong game instance
     field Bat bat;            // the bat
     field Ball ball;          // the ball
     field int wall;           // the current wall that the ball is bouncing off of.
@@ -28,7 +28,7 @@ class PongGame {
         do Screen.drawRectangle(0, 238, 511, 240);
 	    do Output.moveCursor(22,0);
 	    do Output.printString("Score: 0");
-	
+
 	    let exit = false;
 	    let score = 0;
 	    let wall = 0;
@@ -50,7 +50,7 @@ class PongGame {
         let instance = PongGame.new();
         return;
     }
-    
+
     /** Returns the single instance of this Pong game. */
     function PongGame getInstance() {
         return instance;
@@ -91,7 +91,7 @@ class PongGame {
             do Output.moveCursor(10,27);
 	        do Output.printString("Game Over");
 	    }
-            
+
         return;
     }
 
@@ -99,7 +99,7 @@ class PongGame {
      * Handles ball movement, including bouncing.
      * If the ball bounces off a wall, finds its new direction.
      * If the ball bounces off the bat, increases the score by one
-     * and shrinks the bat's size, to make the game more challenging. 
+     * and shrinks the bat's size, to make the game more challenging.
      */
     method void moveBall() {
         var int bouncingDirection, batLeft, batRight, ballLeft, ballRight;
@@ -113,7 +113,7 @@ class PongGame {
             let batRight = bat.getRight();
             let ballLeft = ball.getLeft();
             let ballRight = ball.getRight();
-  
+
             if (wall = 4) {
                 let exit = (batLeft > ballRight) | (batRight < ballLeft);
                 if (~exit) {
@@ -123,7 +123,7 @@ class PongGame {
                     }
 
                     let batWidth = batWidth - 2;
-                    do bat.setWidth(batWidth);      
+                    do bat.setWidth(batWidth);
                     let score = score + 1;
                     do Output.moveCursor(22,7);
                     do Output.printInt(score);
