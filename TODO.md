@@ -1,5 +1,4 @@
 # TODO (NAND)
-* remove random space after
 * gh pages rust cache key doesnt actually work(??)
 * syntax highlighter
 * viewable ram and rom
