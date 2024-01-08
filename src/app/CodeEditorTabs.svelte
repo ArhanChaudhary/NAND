@@ -92,49 +92,49 @@
     background-color: hsl(222, 17%, 29%);
     box-shadow: 0 0 9px -4px black;
     overflow-x: scroll;
-  }
 
-  .tab {
-    margin-right: 2px;
-    cursor: pointer;
-    padding: 0 19px;
-    position: relative;
-    display: inline-flex;
-    max-width: fit-content;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    background-color: hsl(222, 17%, 25%);
-    scroll-margin: 30px;
-    color: hsl(0deg 0% 78%);
+    .tab {
+      margin-right: 2px;
+      cursor: pointer;
+      padding: 0 19px;
+      position: relative;
+      display: inline-flex;
+      max-width: fit-content;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      background-color: hsl(222, 17%, 25%);
+      scroll-margin: 30px;
+      color: hsl(0deg 0% 78%);
 
-    &.active {
-      background-color: hsl(222, 17%, 18%);
-      color: inherit;
-      box-shadow: 0px 6px 3px -3px hsl(222, 17%, 18%);
+      &.active {
+        background-color: hsl(222, 17%, 18%);
+        color: inherit;
+        box-shadow: 0px 6px 3px -3px hsl(222, 17%, 18%);
+
+        .tab-delete:hover {
+          background-color: hsl(222, 15%, 24%);
+        }
+      }
+
+      .tab-delete {
+        margin-left: 6px;
+        border-radius: 4px;
+        width: 20px;
+        font-size: 18px;
+        aspect-ratio: 1;
+        text-align: center;
+      }
 
       .tab-delete:hover {
-        background-color: hsl(222, 15%, 24%);
+        background-color: hsl(222, 17%, 33%);
       }
     }
 
-    .tab-delete {
-      margin-left: 6px;
-      border-radius: 4px;
-      width: 20px;
-      font-size: 18px;
-      aspect-ratio: 1;
-      text-align: center;
+    #tab-add {
+      color: white;
+      background-color: hsl(222, 19%, 52%);
+      margin-right: 5px;
     }
-
-    .tab-delete:hover {
-      background-color: hsl(222, 17%, 33%);
-    }
-  }
-
-  #tab-add {
-    color: white;
-    background-color: hsl(222, 19%, 52%);
-    margin-right: 5px;
   }
 </style>

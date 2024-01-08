@@ -107,7 +107,10 @@
     }
   });
   function shouldAutoLoad(exampleProgramName: string) {
-    if (!localStorage.getItem("IDEContext") && exampleProgramName === "HelloWorld") {
+    if (
+      !localStorage.getItem("IDEContext") &&
+      exampleProgramName === "HelloWorld"
+    ) {
       return true;
     } else {
       return null;
@@ -167,6 +170,7 @@
           )
       ),
     ]);
+    $activeTabName = "";
     $activeTabName = "Main";
   }
 </script>
