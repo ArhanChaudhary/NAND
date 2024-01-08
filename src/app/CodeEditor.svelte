@@ -86,7 +86,9 @@
   function queueUpdateContext(e: any) {
     clearTimeout(updateContextTimeout);
     updateContextTimeout = setTimeout(() => {
-      updateContext(e);
+      requestAnimationFrame(() => {
+        updateContext(e);
+      });
     }, 100);
   }
   const sel = window.getSelection();
