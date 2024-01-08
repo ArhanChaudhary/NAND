@@ -1,6 +1,6 @@
 # TODO (NAND)
 * syntax highlighter
-* dont show JackOS on tabs
+* nav and tabs custom scroller
 * draggable tabs
 * viewable ram and rom
 * a lot more comments and remove comments on example programs

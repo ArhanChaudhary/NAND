@@ -233,6 +233,12 @@
     width: 100%;
     height: var(--nav-height);
     background-color: hsl(220, 10%, 12%);
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
 
     #logo {
       padding: 5px;

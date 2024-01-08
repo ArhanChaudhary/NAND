@@ -92,6 +92,13 @@
     background-color: hsl(222, 17%, 29%);
     box-shadow: 0 0 9px -4px black;
     overflow-x: scroll;
+    overflow-y: hidden;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
 
     .tab {
       margin-right: 2px;
