@@ -252,6 +252,8 @@ class Main {
 
         do Output.moveCursor(3, 5);
         do Output.printString(obstaclesString);
+        do Output.moveCursor(4, 22);
+        do Output.printString(escapeString);
         let selectorX = 256;
         let selectorY = 112;
         let selectorIndex = 240;

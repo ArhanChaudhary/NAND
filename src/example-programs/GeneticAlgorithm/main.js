@@ -341,6 +341,7 @@ export default class Main {
     let draggingEnter = 0;
 
     console.log(Main.#obstaclesString);
+    console.log(Main.#escapeString);
     selectorX = 256;
     selectorY = 112;
     selectorIndex = 240;
