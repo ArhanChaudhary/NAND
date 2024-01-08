@@ -1,14 +1,15 @@
 # TODO (NAND)
-* syntax highlighter
+* common keybinds like undo etc
 * nav and tabs custom scroller
 * draggable tabs
 * viewable ram and rom
 * a lot more comments and remove comments on example programs
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
-* detect ERRX in screen
+* use keyboard memory address to detect halt
 * figure out why copying the static arrays in builtins.rs is 50x slower
 * cannot set variable names to keywords in compiler
-* ensure all subroutines are defined at compile time
+* ensure all subroutines and classes are defined at compile time
+* syntax highlighter (other types)
 * compilererror stash, too many static error
 * make NAND work on desktop safari
 * readme

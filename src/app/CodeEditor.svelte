@@ -118,7 +118,9 @@
       }
     }
 
-    let activeTabContext = $IDEContext.find((file) => file.fileName === $activeTabName);
+    let activeTabContext = $IDEContext.find(
+      (file) => file.fileName === $activeTabName
+    );
     if (activeTabContext) {
       activeTabContext.file = textContent.split("\n");
     }
@@ -146,7 +148,6 @@
       }
 
       let range = document.createRange();
-      let sel = window.getSelection();
       range.setStart(relativeChildNode, relativeLineCharacterOffset);
       range.collapse(true);
       sel.removeAllRanges();
@@ -165,13 +166,17 @@
   function highlightSyntax(code: string): string {
     return code.replaceAll(
       new RegExp(
-        String.raw`(\/\/.*)|(?<!\w)(\d+)(?!\w)|(".*?")|(${SymbolTokens.join(
+        String.raw`(\/\*[\s\S]*?\*\/)|(\/\/.*)|(?<!\w)(\d+)(?!\w)|(".*?")|(${SymbolTokens.join(
           "|"
         )})|\b(${TypeTokens.join("|")})\b|\b(${KeywordTokens.join("|")})\b`,
         "g"
       ),
-      (_, p1, p2, p3, p4, p5, p6) => {
-        if (p1) {
+      (_, p0, p1, p2, p3, p4, p5, p6) => {
+        if (p0) {
+          return `<span class='gray'>${p0
+            .split("\n")
+            .join('</span>\n<span class="gray">')}</span>`;
+        } else if (p1) {
           return `<span class='gray'>${p1}</span>`;
         } else if (p2) {
           return `<span class='purple'>${p2}</span>`;
