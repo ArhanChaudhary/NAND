@@ -116,8 +116,10 @@
       }
     }
 
-    $IDEContext.find((file) => file.fileName === $activeTabName).file =
-      textContent.split("\n");
+    let activeTabContext = $IDEContext.find((file) => file.fileName === $activeTabName);
+    if (activeTabContext) {
+      activeTabContext.file = textContent.split("\n");
+    }
     if (!line) return;
     document.querySelectorAll("#code-editor > div").forEach((div) => {
       div.remove();
