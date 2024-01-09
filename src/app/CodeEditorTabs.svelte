@@ -1,5 +1,6 @@
 <script lang="ts">
   import { IDEContext, activeTabName } from "./stores";
+  import { flip } from "svelte/animate";
   let componentRoot: HTMLDivElement;
   function tabShouldBeActive(tabName: string, activeTabName: string) {
     let ret = tabName === activeTabName;
@@ -15,10 +16,10 @@
     }
     return ret;
   }
-  function handleTabClick(tabName: string) {
+  function tabClick(tabName: string) {
     $activeTabName = tabName;
   }
-  function handleTabAdd() {
+  function tabAdd() {
     let fileName: string;
     while (true) {
       fileName = prompt("Enter file name");
@@ -34,37 +35,71 @@
       file: `class ${fileName} {\n\n}\n`.split("\n"),
     });
     $IDEContext = $IDEContext;
-    handleTabClick(fileName);
+    tabClick(fileName);
   }
-  function handleTabDelete(tabName: string) {
+  function tabDelete(tabName: string) {
     if (!confirm(`Are you sure you want to delete ${tabName}?`)) return;
     if (tabName === $activeTabName) {
       const tabNames = $IDEContext.map((file) => file.fileName);
       let index = tabNames.indexOf(tabName) + 1;
       if (index === $IDEContext.length) {
-        handleTabClick(tabNames[index - 2]);
+        tabClick(tabNames[index - 2]);
       } else {
-        handleTabClick(tabNames[index]);
+        tabClick(tabNames[index]);
       }
     }
     $IDEContext = $IDEContext.filter((file) => file.fileName !== tabName);
+  }
+
+  const dragTabDuration = 300;
+  let draggingTabName: string;
+  let animatingTabNames = new Set();
+  function tabDragStart(tabName: string) {
+    draggingTabName = tabName;
+  }
+  function tabDragEnd() {
+    draggingTabName = null;
+  }
+  function swapDraggingTabWith(tabName: string) {
+    if (draggingTabName === tabName || animatingTabNames.has(tabName)) return;
+    animatingTabNames.add(tabName);
+    setTimeout(() => {
+      animatingTabNames.delete(tabName);
+    }, dragTabDuration);
+    const draggingTabIndex = $IDEContext.findIndex(
+      (file) => file.fileName === draggingTabName
+    );
+    const swapWithTabIndex = $IDEContext.findIndex(
+      (file) => file.fileName === tabName
+    );
+    $IDEContext[draggingTabIndex] = $IDEContext.splice(
+      swapWithTabIndex,
+      1,
+      $IDEContext[draggingTabIndex]
+    )[0];
   }
 </script>
 
 <div id="tabs" bind:this={componentRoot}>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
-  {#each $IDEContext.map((file) => file.fileName) as tabName}
+  {#each $IDEContext.map((file) => file.fileName) as tabName (tabName)}
     <span
       class="tab"
       class:active={tabShouldBeActive(tabName, $activeTabName)}
-      on:click|self={() => handleTabClick(tabName)}
+      on:click|self={() => tabClick(tabName)}
       role="button"
       tabindex="0"
+      draggable="true"
+      animate:flip={{ duration: dragTabDuration }}
+      on:dragstart={() => tabDragStart(tabName)}
+      on:dragend={tabDragEnd}
+      on:dragenter={() => swapDraggingTabWith(tabName)}
+      on:dragover|preventDefault
     >
       {tabName}
       <span
         class="tab-delete"
-        on:click={() => handleTabDelete(tabName)}
+        on:click={() => tabDelete(tabName)}
         role="button"
         tabindex="0"
         aria-label="Delete Tab"
@@ -75,7 +110,7 @@
   {/each}<!-- svelte-ignore a11y-click-events-have-key-events --><span
     id="tab-add"
     class="tab"
-    on:click={handleTabAdd}
+    on:click={tabAdd}
     role="button"
     tabindex="0"
     aria-label="Add Tab"

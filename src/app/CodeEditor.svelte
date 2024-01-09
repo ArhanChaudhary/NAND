@@ -154,7 +154,7 @@
       sel.addRange(range);
     });
   }
-  function handleEditorKeydown(e: any) {
+  function editorKeydown(e: any) {
     if (e.key === "Tab") {
       e.preventDefault();
       document.execCommand("insertText", false, "    ");
@@ -162,7 +162,6 @@
       e.preventDefault();
     }
   }
-  function handleEditorKeyup() {}
   function highlightSyntax(code: string): string {
     return code.replaceAll(
       new RegExp(
@@ -214,8 +213,8 @@
     spellcheck="false"
     contenteditable="true"
     on:input={queueUpdateContext}
-    on:keydown|stopPropagation={handleEditorKeydown}
-    on:keyup|stopPropagation={handleEditorKeyup}
+    on:keydown|stopPropagation={editorKeydown}
+    on:keyup|stopPropagation
     bind:this={codeEditor}
   >
     {#key initialCodeEditorContent}

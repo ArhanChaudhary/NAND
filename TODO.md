@@ -1,5 +1,8 @@
 # TODO (NAND)
-* draggable tabs
+* entering < breaks the syntax highlighter
+* space between tabs in build
+* npm outdated and then npm update
+* dont scroll to focused tab on drag
 * common keybinds like undo etc
 * viewable ram and rom
 * a lot more comments and remove comments on example programs
