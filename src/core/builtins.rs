@@ -155,9 +155,9 @@ pub fn get_ram() -> Vec<u16> {
 
 static mut CURRENT_KEY: u16 = 0;
 #[wasm_bindgen]
-pub fn keyboard(load: bool, pressed: u16) -> u16 {
+pub fn keyboard(in_: u16, load: bool) -> u16 {
     if load {
-        unsafe { CURRENT_KEY = pressed };
+        unsafe { CURRENT_KEY = in_ };
     }
     unsafe { CURRENT_KEY }
 }

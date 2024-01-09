@@ -39,8 +39,8 @@ function runner() {
   // and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
   // but for now, this is the best I can do
   screen.postMessage(computer.getScreen());
-  if (computer.keyboard(false, 0) === 32767) {
-    computer.keyboard(true, 0);
+  if (computer.keyboard(0, false) === 32767) {
+    computer.keyboard(0, true);
     stop();
   }
 }
@@ -100,7 +100,7 @@ async function initialize() {
         resetAndStart(e);
         break;
       case "keyboard":
-        computer.keyboard(true, e.data.key);
+        computer.keyboard(e.data.key, true);
         break;
       case "stop":
         stop();

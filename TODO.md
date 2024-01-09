@@ -1,7 +1,4 @@
 # TODO (NAND)
-* switch keyboard arguments
-* rename in_
-* use keyboard memory address to detect halt
 * common keybinds like undo etc
 * draggable tabs
 * viewable ram and rom

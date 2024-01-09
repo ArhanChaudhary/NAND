@@ -5,8 +5,8 @@ use crate::{
     arithmetic::{alu, inc16},
     bool_from_u16, dregister,
     gates::{and, is_zero, mux16, not, or},
-    keyboard, nbit16, pc_reg, ram16k, rom32k, screen, slice16_0to12, slice16_0to13, slice16_0to14,
-    tick, tock, u16_from_bool, reset_nand_calls,
+    keyboard, nbit16, pc_reg, ram16k, reset_nand_calls, rom32k, screen, slice16_0to12,
+    slice16_0to13, slice16_0to14, tick, tock, u16_from_bool,
 };
 
 static mut PC_DFFOUT: u16 = 0;
@@ -100,8 +100,8 @@ fn memory(in_: u16, load: bool, address: u16) -> u16 {
                 slice16_0to12(address),
             ),
             keyboard(
-                and(and(nbit16(address, 13), nbit16(address, 14)), load),
                 in_,
+                and(and(nbit16(address, 13), nbit16(address, 14)), load),
             ),
             nbit16(address, 13),
         ),
