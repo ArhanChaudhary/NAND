@@ -1,6 +1,6 @@
 # TODO (NAND)
-* common keybinds like undo etc
 * draggable tabs
+* common keybinds like undo etc
 * viewable ram and rom
 * a lot more comments and remove comments on example programs
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
