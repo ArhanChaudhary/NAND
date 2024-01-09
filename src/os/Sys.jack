@@ -21,6 +21,7 @@ class Sys {
 
     /** Halts the program execution. */
     function void halt() {
+        do Memory.poke(24576, 32767);
         while (~false) {}
     }
 

@@ -39,6 +39,10 @@ function runner() {
   // and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
   // but for now, this is the best I can do
   screen.postMessage(computer.getScreen());
+  if (computer.keyboard(false, 0) === 32767) {
+    computer.keyboard(true, 0);
+    stop();
+  }
 }
 
 const emitIntervalDelay = 50;

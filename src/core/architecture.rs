@@ -99,7 +99,10 @@ fn memory(in_: u16, load: bool, address: u16) -> u16 {
                 and(and(not(nbit16(address, 13)), nbit16(address, 14)), load),
                 slice16_0to12(address),
             ),
-            keyboard(false, 0),
+            keyboard(
+                and(and(nbit16(address, 13), nbit16(address, 14)), load),
+                in_,
+            ),
             nbit16(address, 13),
         ),
         nbit16(address, 14),
