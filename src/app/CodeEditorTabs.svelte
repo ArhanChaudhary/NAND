@@ -2,7 +2,7 @@
   import { IDEContext, activeTabName } from "./stores";
   import { flip } from "svelte/animate";
   let componentRoot: HTMLDivElement;
-  function tabShouldBeActive(tabName: string, activeTabName: string) {
+  function tabShouldBeActive(tabName: string, activeTabName: string | null) {
     let ret = tabName === activeTabName;
     if (ret) {
       setTimeout(() => {
@@ -22,7 +22,7 @@
   function tabAdd() {
     let fileName: string;
     while (true) {
-      fileName = prompt("Enter file name");
+      fileName = prompt("Enter file name")!;
       if (!fileName) {
       } else if ($IDEContext.some((file) => file.fileName === fileName)) {
         alert("File name already exists");
@@ -52,7 +52,7 @@
   }
 
   const dragTabDuration = 300;
-  let draggingTabName: string;
+  let draggingTabName: string | null;
   let animatingTabNames = new Set();
   function tabDragStart(tabName: string) {
     draggingTabName = tabName;

@@ -28,7 +28,7 @@ export default class VMWriter {
           this.out[this.out.length - 2] === "push constant 0" &&
           this.out[this.out.length - 1].startsWith("push")
         ) {
-          const temp = this.out.pop();
+          const temp = this.out.pop()!;
           this.out.pop();
           this.write(temp);
         } else {
@@ -55,7 +55,7 @@ export default class VMWriter {
         break;
       case SymbolToken.AND:
         if (this.out[this.out.length - 1] === "push constant 0") {
-          const temp = this.out.pop();
+          const temp = this.out.pop()!;
           this.out.pop();
           this.write(temp);
         } else if (

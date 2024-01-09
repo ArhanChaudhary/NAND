@@ -28,7 +28,7 @@
     }
   ) {
     const offscreen = document
-      .querySelector("canvas")
+      .querySelector("canvas")!
       .transferControlToOffscreen();
     runner.postMessage({ action: "initialize", canvas: offscreen }, [
       offscreen,

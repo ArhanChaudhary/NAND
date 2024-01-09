@@ -69,13 +69,15 @@
   import { tick } from "svelte";
 
   let codeEditor: HTMLDivElement;
-  let initialCodeEditorContent = [];
+  let initialCodeEditorContent: string[] = [];
   $: $activeTabName, onSwitchTab();
   function onSwitchTab() {
-    initialCodeEditorContent = $IDEContext.find(
+    let activeTabNameFile = $IDEContext.find(
       (file) => file.fileName === $activeTabName
-    )?.file;
-    if (!initialCodeEditorContent) {
+    );
+    if (activeTabNameFile) {
+      initialCodeEditorContent = activeTabNameFile.file;
+    } else {
       initialCodeEditorContent = [];
     }
     initialCodeEditorContent = highlightSyntax(
@@ -91,9 +93,9 @@
       });
     }, 100);
   }
-  const sel = window.getSelection();
+  const sel = window.getSelection()!;
   function updateContext(e: any) {
-    let line = sel.anchorNode.parentElement.closest(".line");
+    let line = sel.anchorNode!.parentElement!.closest(".line");
     let lineNumber: number;
     let textContent = e.target.innerText.replaceAll("\n\n", "\n");
     let absoluteLineCharacterOffset: number;
@@ -103,18 +105,18 @@
         textContent = "";
       }
       absoluteLineCharacterOffset = sel.anchorOffset;
-      let selChildNode = sel.anchorNode;
+      let selChildNode = sel.anchorNode!;
       if (selChildNode.parentElement !== line) {
-        selChildNode = selChildNode.parentElement;
+        selChildNode = selChildNode.parentElement!;
       }
       let selChildNodeIndex = Array.prototype.indexOf.call(
         line.childNodes,
         selChildNode
       );
-      let prevSibling = line.childNodes[selChildNodeIndex - 1];
+      let prevSibling = line.childNodes[selChildNodeIndex - 1]!;
       while (prevSibling) {
-        absoluteLineCharacterOffset += prevSibling.textContent.length;
-        prevSibling = prevSibling.previousSibling;
+        absoluteLineCharacterOffset += prevSibling.textContent!.length;
+        prevSibling = prevSibling.previousSibling!;
       }
     }
 
@@ -135,13 +137,13 @@
         lineNumber = codeEditor.childNodes.length - 1;
       }
       let line = codeEditor.childNodes[lineNumber];
-      let relativeChildNode = line.childNodes[0];
+      let relativeChildNode = line.childNodes[0]!;
       let relativeLineCharacterOffset = absoluteLineCharacterOffset;
       while (
-        relativeChildNode.textContent.length < relativeLineCharacterOffset
+        relativeChildNode.textContent!.length < relativeLineCharacterOffset
       ) {
-        relativeLineCharacterOffset -= relativeChildNode.textContent.length;
-        relativeChildNode = relativeChildNode.nextSibling;
+        relativeLineCharacterOffset -= relativeChildNode.textContent!.length;
+        relativeChildNode = relativeChildNode.nextSibling!;
       }
       if (relativeChildNode.childNodes.length > 0) {
         relativeChildNode = relativeChildNode.childNodes[0];
@@ -174,7 +176,7 @@
         if (p0) {
           return `<span class='gray'>${p0
             .split("\n")
-            .map((line: string) => line == '' ? '<br>' : line)
+            .map((line: string) => (line == "" ? "<br>" : line))
             .join('</span>\n<span class="gray">')}</span>`;
         } else if (p1) {
           return `<span class='gray'>${p1}</span>`;

@@ -132,20 +132,20 @@
       );
       return;
     }
-    $runner.postMessage({
+    $runner!.postMessage({
       action: $shouldResetAndStart ? "resetAndStart" : "start",
       machineCode,
     });
     $shouldResetAndStart = false;
   }
   function stopRunner() {
-    $runner.postMessage({ action: "stop" });
+    $runner!.postMessage({ action: "stop" });
   }
   function resetRunner() {
-    $runner.postMessage({ action: "reset" });
+    $runner!.postMessage({ action: "reset" });
   }
   function speedRunner(e: Event) {
-    $runner.postMessage({
+    $runner!.postMessage({
       action: "speed",
       speed: (e.target as HTMLInputElement).valueAsNumber,
     });
