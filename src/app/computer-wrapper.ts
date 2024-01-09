@@ -157,6 +157,8 @@ function resetAndStart(e: MessageEvent<any>) {
 
 function stop() {
   stopRunner = true;
+  if (emitInterval)
+    emitInfo();
   emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
   self.postMessage({
     action: "stopRunner",
