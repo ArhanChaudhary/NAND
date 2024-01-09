@@ -175,6 +175,7 @@
         if (p0) {
           return `<span class='gray'>${p0
             .split("\n")
+            .map((line: string) => line == '' ? '<br>' : line)
             .join('</span>\n<span class="gray">')}</span>`;
         } else if (p1) {
           return `<span class='gray'>${p1}</span>`;
