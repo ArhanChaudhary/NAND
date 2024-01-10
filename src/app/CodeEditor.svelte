@@ -66,6 +66,7 @@
 
 <script lang="ts">
   import { IDEContext, activeTabName, shouldResetAndStart } from "./stores";
+  import { escape } from "html-escaper";
   import { tick } from "svelte";
 
   let codeEditor: HTMLDivElement;
@@ -176,27 +177,27 @@
         if (p0) {
           return `<span class='gray'>${p0
             .split("\n")
-            .map((line: string) => (line == "" ? "<br>" : line))
+            .map((line: string) => (line == "" ? "<br>" : escape(line)))
             .join('</span>\n<span class="gray">')}</span>`;
         } else if (p1) {
-          return `<span class='gray'>${p1}</span>`;
+          return `<span class='gray'>${escape(p1)}</span>`;
         } else if (p2) {
-          return `<span class='purple'>${p2}</span>`;
+          return `<span class='purple'>${escape(p2)}</span>`;
         } else if (p3) {
-          return `<span class='yellow'>${p3}</span>`;
+          return `<span class='yellow'>${escape(p3)}</span>`;
         } else if (p4) {
           if (SymbolTokens_Red.includes(p4)) {
-            return `<span class='red'>${p4}</span>`;
+            return `<span class='red'>${escape(p4)}</span>`;
           } else if (SymbolTokens_DarkBlue.includes(p4)) {
-            return `<span class='dark-blue'>${p4}</span>`;
+            return `<span class='dark-blue'>${escape(p4)}</span>`;
           } else if (SymbolTokens_Purple.includes(p4)) {
-            return `<span class='purple'>${p4}</span>`;
+            return `<span class='purple'>${escape(p4)}</span>`;
           }
           throw new Error("syntax highlighting failed");
         } else if (p5) {
-          return `<span class='light-blue'>${p5}</span>`;
+          return `<span class='light-blue'>${escape(p5)}</span>`;
         } else if (p6) {
-          return `<span class='red'>${p6}</span>`;
+          return `<span class='red'>${escape(p6)}</span>`;
         }
         throw new Error("syntax highlighting failed");
       }
