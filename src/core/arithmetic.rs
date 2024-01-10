@@ -1,6 +1,6 @@
 use crate::{
+    builtins::{nbit16, nbit16_0, word16_16},
     gates::{and, and16, mux16, not16, or, xor},
-    nbit16, nbit16_0, word16_16,
 };
 
 fn add16(a: u16, b: u16) -> u16 {

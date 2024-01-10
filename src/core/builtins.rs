@@ -1,7 +1,3 @@
-mod architecture;
-mod arithmetic;
-mod gates;
-
 use js_sys::Array;
 use wasm_bindgen::prelude::*;
 use web_sys::CanvasRenderingContext2d;

@@ -1,11 +1,11 @@
 # TODO (NAND)
+* move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
+* figure out why copying the static arrays in builtins.rs is 50x slower
 * dont scroll to focused tab on drag
 * make sure class name is valid (look in compiler)
 * common keybinds like undo etc
 * viewable ram and rom
 * a lot more comments and remove comments on example programs
-* move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
-* figure out why copying the static arrays in builtins.rs is 50x slower
 
 * cannot set variable names to keywords in compiler
 * ensure all subroutines and classes are defined at compile time
@@ -14,7 +14,7 @@
 * make NAND work on desktop safari
 * readme
   * Writing programs in NAND
-    * jack tutorial, base of https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf and https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf
+    * jack tutorial, base off https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf and https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf
     * if and else doesn't require bracket
     * [][] works
     * you cant malloc 0 even if the original OS could

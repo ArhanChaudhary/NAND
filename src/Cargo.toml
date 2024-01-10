@@ -6,7 +6,7 @@ edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
-path = "core/builtins.rs"
+path = "core/lib.rs"
 
 [dependencies]
 js-sys = "0.3.66"
