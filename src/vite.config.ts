@@ -13,7 +13,7 @@ export default defineConfig({
     topLevelAwait(),
   ],
   worker: {
-    plugins: [wasm(), topLevelAwait()],
+    plugins: () => [wasm(), topLevelAwait()],
   },
   build: {
     rollupOptions: {

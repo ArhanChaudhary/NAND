@@ -71,9 +71,16 @@ function emitInfo() {
 }
 
 async function initialize() {
-  screen = new Worker(new URL("screen.ts", import.meta.url), {
-    type: "module",
-  });
+  // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
+  if (import.meta.env.DEV) {
+    screen = new Worker(new URL("screen.ts", import.meta.url), {
+      type: "module",
+    });
+  } else {
+    screen = new Worker(new URL("screen.ts", import.meta.url), {
+      type: "classic",
+    });
+  }
   await new Promise<void>((resolve) => {
     screen.addEventListener("message", (e) => {
       if (e.data === "ready") {
@@ -157,8 +164,7 @@ function resetAndStart(e: MessageEvent<any>) {
 
 function stop() {
   stopRunner = true;
-  if (emitInterval)
-    emitInfo();
+  if (emitInterval) emitInfo();
   emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
   self.postMessage({
     action: "stopRunner",

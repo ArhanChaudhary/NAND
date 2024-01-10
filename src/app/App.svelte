@@ -4,10 +4,17 @@
   import IDE from "./IDE.svelte";
   import { runner } from "./stores";
 
-  const runner_ = new Worker(
-    new URL("./computer-wrapper.ts", import.meta.url),
-    { type: "module" }
-  );
+  // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
+  let runner_!: Worker;
+  if (import.meta.env.DEV) {
+    runner_ = new Worker(new URL("./computer-wrapper.ts", import.meta.url), {
+      type: "module",
+    });
+  } else {
+    runner_ = new Worker(new URL("./computer-wrapper.ts", import.meta.url), {
+      type: "classic",
+    });
+  }
   runner_.addEventListener("message", (e) => {
     if (e.data.action === "ready") $runner = runner_;
   });
