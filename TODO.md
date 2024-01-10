@@ -1,8 +1,6 @@
 # TODO (NAND)
-* entering < breaks the syntax highlighter
-* space between tabs in build
-* npm outdated and then npm update
 * dont scroll to focused tab on drag
+* make sure class name is valid (look in compiler)
 * common keybinds like undo etc
 * viewable ram and rom
 * a lot more comments and remove comments on example programs

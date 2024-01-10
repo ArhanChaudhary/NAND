@@ -32,7 +32,7 @@
     }
     $IDEContext.unshift({
       fileName,
-      file: `class ${fileName} {\n\n}\n`.split("\n"),
+      file: `class ${fileName} {\n    \n}\n`.split("\n"),
     });
     $IDEContext = $IDEContext;
     tabClick(fileName);

@@ -2,13 +2,13 @@ import CodeWriter from "./codewriter";
 import Parser, { CommandType } from "./parser";
 
 export default function VMTranslator(
-  inputFiles: Array<{ fileName: string; file: string[] }>
+  inputFiles: Array<{ fileName: string; VMCode: string[] }>
 ): string[] {
   const codeWriter = new CodeWriter();
   codeWriter.writeInit();
   inputFiles.forEach((fileData) => {
     codeWriter.setFileName(fileData.fileName);
-    const parser: Parser = new Parser(fileData.file);
+    const parser: Parser = new Parser(fileData.VMCode);
     while (parser.advance()) {
       switch (parser.commandType()) {
         case CommandType.C_ARITHMETIC:

@@ -45,10 +45,10 @@ export default class Engine {
     this.tokenizer.advance();
   }
 
-  public getOut(): { fileName: string; file: string[] } {
+  public getOut(): { fileName: string; VMCode: string[] } {
     return {
       fileName: this.fileName,
-      file: this.vmwriter.getOut(),
+      VMCode: this.vmwriter.getOut(),
     };
   }
 

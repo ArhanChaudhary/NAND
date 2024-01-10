@@ -2,8 +2,8 @@ import Engine from "./engine";
 
 export default function compiler(
   inputFiles: Array<{ fileName: string; file: string[] }>
-): Array<{ fileName: string; file: string[] }> {
-  let out: Array<{ fileName: string; file: string[] }> = [];
+): Array<{ fileName: string; VMCode: string[] }> {
+  let out: Array<{ fileName: string; VMCode: string[] }> = [];
   inputFiles.forEach((fileData) => {
     try {
       const engine = new Engine(fileData);
