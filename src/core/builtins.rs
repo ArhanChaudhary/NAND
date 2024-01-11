@@ -1,6 +1,6 @@
 use js_sys::Array;
 use wasm_bindgen::prelude::*;
-use web_sys::OffscreenCanvasRenderingContext2d;
+use web_sys::{ImageData, OffscreenCanvasRenderingContext2d};
 
 static mut NAND_CALLS: u64 = 0;
 #[allow(non_snake_case)]
@@ -190,14 +190,21 @@ pub fn get_screen() -> Vec<u16> {
 
 #[wasm_bindgen]
 pub fn render(ctx: OffscreenCanvasRenderingContext2d, screen_memory: &[u16]) {
-    ctx.clear_rect(0.0, 0.0, 512.0, 256.0);
+    let mut pixel_data = [0; 512 * 256 * 4];
     for (i, &word16) in screen_memory.iter().enumerate() {
         let y = i / 32;
         for j in 0..16 {
             if nbit16(word16, j) {
                 let x = ((i * 16) + j as usize) % 512;
-                ctx.fill_rect(x as f64, y as f64, 1.0, 1.0);
+                let index = (y * 512 + x) * 4;
+                pixel_data[index] = 177;
+                pixel_data[index + 1] = 247;
+                pixel_data[index + 2] = 121;
+                pixel_data[index + 3] = 255;
             }
         }
     }
+    let image_data =
+        ImageData::new_with_u8_clamped_array_and_sh(wasm_bindgen::Clamped(&pixel_data), 512, 256);
+    let _ = ctx.put_image_data(&image_data.unwrap(), 0.0, 0.0);
 }

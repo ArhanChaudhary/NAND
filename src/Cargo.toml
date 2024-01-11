@@ -16,6 +16,7 @@ wasm-bindgen = "0.2.89"
 version = "0.3"
 features = [
   "OffscreenCanvasRenderingContext2d",
+  "ImageData",
 ]
 
 [profile.release]
