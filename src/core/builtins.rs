@@ -137,7 +137,7 @@ pub fn aregister(in_: u16, load: bool) -> u16 {
 static mut RAM16K_MEMORY: [u16; 16384] = [0; 16384];
 
 pub fn ram16k(in_: u16, load: bool, address: u16) -> u16 {
-    let out = unsafe { &RAM16K_MEMORY }[address as usize];
+    let out = unsafe { RAM16K_MEMORY[address as usize] };
     if load && unsafe { CLOCK } {
         unsafe { RAM16K_MEMORY[address as usize] = in_ };
     }
@@ -176,7 +176,7 @@ pub fn load_rom(in_: JsValue) {
 static mut SCREEN_MEMORY: [u16; 8192] = [0; 8192];
 
 pub fn screen(in_: u16, load: bool, address: u16) -> u16 {
-    let out = unsafe { &SCREEN_MEMORY }[address as usize];
+    let out = unsafe { SCREEN_MEMORY[address as usize] };
     if load && unsafe { CLOCK } {
         unsafe { SCREEN_MEMORY[address as usize] = in_ };
     }

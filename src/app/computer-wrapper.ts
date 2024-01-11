@@ -9,9 +9,8 @@ let emitIntervalTotal = 0;
 // we want the lowest so the keyboard is faster
 const fastestStep = 30_000;
 const slowestStep = 1;
-
 let step = fastestStep;
-// adjust accordingly
+
 function runner() {
   if (stopRunner) {
     stopRunner = false;
