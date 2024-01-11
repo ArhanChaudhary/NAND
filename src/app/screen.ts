@@ -6,8 +6,7 @@ async function initialize() {
   let running = false;
   self.addEventListener("message", (e) => {
     if (!ctx) {
-      ctx = e.data.getContext("2d");
-      ctx.fillStyle = "rgb(177, 247, 121)";
+      ctx = e.data.getContext("2d", { alpha: false, desynchronized: true });
       return;
     }
     if (running) return;

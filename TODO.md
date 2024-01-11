@@ -23,6 +23,7 @@
     * arguments keyword
     * ub: abs -32768, stack overflows, heap overflows, modifying stack frame or registers,
     * start will automatically reset on IDE input
+    * document key register 32767 to stop
   * NAND's example programs
     * HelloWorld
     * Average
