@@ -189,7 +189,7 @@ pub fn get_screen() -> Vec<u16> {
 }
 
 #[wasm_bindgen]
-pub fn render(ctx: OffscreenCanvasRenderingContext2d, screen_memory: Vec<u16>) {
+pub fn render(ctx: OffscreenCanvasRenderingContext2d, screen_memory: &[u16]) {
     ctx.clear_rect(0.0, 0.0, 512.0, 256.0);
     for i in 0..8192u16 {
         let word16 = screen_memory[i as usize];
