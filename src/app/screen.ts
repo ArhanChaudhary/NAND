@@ -12,7 +12,7 @@ async function initialize() {
     }
     if (running) return;
     running = true;
-    computer.render(ctx as unknown as CanvasRenderingContext2D, e.data);
+    computer.render(ctx, e.data);
     // we need a settimeout and can't just put running = false alone here
     // because the computer.render call is synchronous; that is even if there
     // is another message it will first wait for the render to finish and then

@@ -1,6 +1,6 @@
 use js_sys::Array;
 use wasm_bindgen::prelude::*;
-use web_sys::CanvasRenderingContext2d;
+use web_sys::OffscreenCanvasRenderingContext2d;
 
 static mut NAND_CALLS: u64 = 0;
 #[allow(non_snake_case)]
@@ -189,7 +189,7 @@ pub fn get_screen() -> Vec<u16> {
 }
 
 #[wasm_bindgen]
-pub fn render(ctx: CanvasRenderingContext2d, screen_memory: Vec<u16>) {
+pub fn render(ctx: OffscreenCanvasRenderingContext2d, screen_memory: Vec<u16>) {
     ctx.clear_rect(0.0, 0.0, 512.0, 256.0);
     for i in 0..8192u16 {
         let word16 = screen_memory[i as usize];
