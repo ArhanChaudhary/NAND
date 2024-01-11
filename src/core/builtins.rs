@@ -191,12 +191,11 @@ pub fn get_screen() -> Vec<u16> {
 #[wasm_bindgen]
 pub fn render(ctx: OffscreenCanvasRenderingContext2d, screen_memory: &[u16]) {
     ctx.clear_rect(0.0, 0.0, 512.0, 256.0);
-    for i in 0..8192u16 {
-        let word16 = screen_memory[i as usize];
+    for (i, &word16) in screen_memory.iter().enumerate() {
         let y = i / 32;
         for j in 0..16 {
             if nbit16(word16, j) {
-                let x = ((i * 16) + j as u16) % 512;
+                let x = ((i * 16) + j as usize) % 512;
                 ctx.fill_rect(x as f64, y as f64, 1.0, 1.0);
             }
         }
