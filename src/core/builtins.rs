@@ -1,4 +1,5 @@
 use js_sys::Array;
+use std::ptr;
 use wasm_bindgen::prelude::*;
 use web_sys::{ImageData, OffscreenCanvasRenderingContext2d};
 
@@ -196,11 +197,10 @@ pub fn render(ctx: OffscreenCanvasRenderingContext2d, screen_memory: &[u16]) {
         for j in 0..16 {
             if nbit16(word16, j) {
                 let x = ((i * 16) + j as usize) % 512;
-                let index = (y * 512 + x) * 4;
-                pixel_data[index] = 177;
-                pixel_data[index + 1] = 247;
-                pixel_data[index + 2] = 121;
-                pixel_data[index + 3] = 255;
+                let index = y * 512 + x;
+                unsafe {
+                    ptr::write((pixel_data.as_mut_ptr() as *mut u32).add(index), 4286183345);
+                }
             }
         }
     }
