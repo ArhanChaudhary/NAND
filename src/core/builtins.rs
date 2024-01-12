@@ -198,7 +198,9 @@ pub fn render(ctx: OffscreenCanvasRenderingContext2d, screen_memory: &[u16]) {
                 let x = ((i * 16) + j as usize) % 512;
                 let index = y * 512 + x;
                 unsafe {
-                    (pixel_data.as_mut_ptr() as *mut u32).add(index).write(4286183345);
+                    (pixel_data.as_mut_ptr() as *mut u32)
+                        .add(index)
+                        .write(4286183345);
                 }
             }
         }

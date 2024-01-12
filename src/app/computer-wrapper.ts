@@ -1,4 +1,11 @@
-import * as computer from "core";
+import {
+  NANDCalls as computer_NANDCalls,
+  getScreen as computer_getScreen,
+  keyboard as computer_keyboard,
+  loadROM as computer_loadROM,
+  ticktock as computer_ticktock,
+  reset as computer_reset,
+} from "core";
 
 let screen: Worker;
 let stopRunner = false;
@@ -21,7 +28,7 @@ function runner() {
   // for this to complete before calling it again
   setTimeout(runner, 0);
   for (let i = 0; i < step; i++) {
-    computer.ticktock();
+    computer_ticktock();
   }
   emitIntervalTotal += step;
   // NOTE: although rustwasm is able to access SCREEN_MEMORY directly,
@@ -37,9 +44,9 @@ function runner() {
   // https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html
   // and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
   // but for now, this is the best I can do
-  screen.postMessage(computer.getScreen());
-  if (computer.keyboard(0, false) === 32767) {
-    computer.keyboard(0, true);
+  screen.postMessage(computer_getScreen());
+  if (computer_keyboard(0, false) === 32767) {
+    computer_keyboard(0, true);
     stop();
   }
 }
@@ -65,7 +72,7 @@ function emitInfo() {
   self.postMessage({
     action: "emitInfo",
     hz: prevSecTotals.reduce((a, b) => a + b) / prevSecTotals.length,
-    NANDCalls: computer.NANDCalls(),
+    NANDCalls: computer_NANDCalls(),
   });
 }
 
@@ -94,7 +101,7 @@ async function initialize() {
         screen.postMessage(e.data.canvas, [e.data.canvas]);
         break;
       case "loadROM":
-        computer.loadROM(e.data.machineCode);
+        computer_loadROM(e.data.machineCode);
         break;
       case "start":
         start();
@@ -106,7 +113,7 @@ async function initialize() {
         resetAndStart(e);
         break;
       case "keyboard":
-        computer.keyboard(e.data.key, true);
+        computer_keyboard(e.data.key, true);
         break;
       case "stop":
         stop();
@@ -135,7 +142,7 @@ function start() {
 function reset() {
   if (!prevEmit) return;
   stopRunner = true;
-  computer.reset();
+  computer_reset();
   emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
   emitIntervalTotal = 0;
   prevSecTotals.length = 0;
@@ -148,7 +155,7 @@ function reset() {
 
 function resetAndStart(e: MessageEvent<any>) {
   if (prevEmit) {
-    computer.reset();
+    computer_reset();
     emitIntervalTotal = 0;
     prevSecTotals.length = 0;
     self.postMessage({
@@ -157,7 +164,7 @@ function resetAndStart(e: MessageEvent<any>) {
       NANDCalls: 0n,
     });
   }
-  computer.loadROM(e.data.machineCode);
+  computer_loadROM(e.data.machineCode);
   start();
 }
 
