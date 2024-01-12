@@ -1,29 +1,12 @@
-// @ts-ignore
 import * as computer from "core";
 
-async function initialize() {
-  let ctx: OffscreenCanvasRenderingContext2D;
-  let running = false;
-  self.addEventListener("message", (e) => {
-    if (!ctx) {
-      ctx = e.data.getContext("2d", { alpha: false, desynchronized: true });
-      return;
-    }
-    if (running) return;
-    running = true;
-    computer.render(ctx, e.data);
-    // we need a settimeout and can't just put running = false alone here
-    // because the computer.render call is synchronous; that is even if there
-    // is another message it will first wait for the render to finish and then
-    // instantly do the render in the other message making the running = false
-    // completely pointless. Add a small buffer to make sure the next message
-    // is processed early enough
-    setTimeout(() => {
-      running = false;
-    }, 0);
-  });
+let ctx: OffscreenCanvasRenderingContext2D;
+self.addEventListener("message", (e) => {
+  if (!ctx) {
+    ctx = e.data.getContext("2d", { alpha: false, desynchronized: true });
+    return;
+  }
+  computer.render(ctx, e.data);
+});
 
-  self.postMessage("ready");
-}
-
-initialize();
+self.postMessage("ready");
