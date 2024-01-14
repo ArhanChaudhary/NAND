@@ -23,9 +23,6 @@ features = [
 ]
 
 [profile.release]
-debug = 0
-strip = "symbols"
-debug-assertions = false
 panic = "abort"
 codegen-units = 1
-lto = true
+lto = "fat"
