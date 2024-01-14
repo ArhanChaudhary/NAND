@@ -1,5 +1,5 @@
 # TODO (NAND)
-* you need both rustflags and cargo config.toml lmao????
+* you need both rustflags and cargo config.toml lmao???? why doesnt it work 
 * shared array buffer
 * look into https://github.com/rustwasm/wasm-pack/issues/1328
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
