@@ -4,6 +4,9 @@ version = "0.1.0"
 authors = ["Arhan Chaudhary <arhan.ch@gmail.com>"]
 edition = "2021"
 
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-O4", "--enable-threads", "--enable-bulk-memory"]
+
 [lib]
 crate-type = ["cdylib", "rlib"]
 path = "core/lib.rs"

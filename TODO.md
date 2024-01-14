@@ -1,6 +1,6 @@
 # TODO (NAND)
+* shared array buffer
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
-* figure out why copying the static arrays in builtins.rs is 50x slower
 * dont scroll to focused tab on drag
 * make sure class name is valid (look in compiler)
 * common keybinds like undo etc
@@ -39,7 +39,7 @@
 * should acceleration vectors mutate in consecutive pairs as it is or individually?
 * determine optimal dynamicMutationRate constant (current is 1530)
 * BFS constants
-* * take into account steps dot hasnt reach goal, ie 100 steps to reach 100 fitness is better than 150 steps to reach 105 fitness
+* take into account steps dot hasnt reach goal, ie 100 steps to reach 100 fitness is better than 150 steps to reach 105 fitness
 
 # TODO (blog)
 * cache pairs of acceleration vectors

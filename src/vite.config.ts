@@ -7,6 +7,12 @@ import topLevelAwait from "vite-plugin-top-level-await";
 // https://vitejs.dev/config/
 export default defineConfig({
   base: "/NAND",
+  server: {
+    headers: {
+      "Cross-Origin-Embedder-Policy": "require-corp",
+      "Cross-Origin-Opener-Policy": "same-origin",
+    },
+  },
   plugins: [
     wasm(),
     svelte({ preprocess: sveltePreprocess({ postcss: true }) }),
