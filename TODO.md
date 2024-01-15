@@ -1,7 +1,6 @@
 # TODO (NAND)
 * define pixel_data as a u32 and then cast it to a *const u8
 * is it more efficient to make PIXEL_DATA a global?
-* redefine onmessage thing
 * find out a way to pass WebAssembly.Module in the screen init
 * you need both rustflags and cargo config.toml lmao???? why doesnt it work
 * not all features like mutable_globals and bulk_memory etc might be needed
