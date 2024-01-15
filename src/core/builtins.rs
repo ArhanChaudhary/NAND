@@ -210,23 +210,19 @@ mod screen {
     // Still, this is nice to note for future me.
     #[wasm_bindgen]
     pub fn render() -> ImageData {
-        let mut pixel_data: [u8; 512 * 256 * 4] = [0; 512 * 256 * 4];
+        let mut pixel_data: [u32; 512 * 256] = [0; 512 * 256];
         for (i, &word16) in unsafe { SCREEN_MEMORY.iter().enumerate() } {
             let y = i / 32;
             for j in 0..16 {
                 if nbit16(word16, j) {
                     let x = ((i * 16) + j as usize) % 512;
                     let index = y * 512 + x;
-                    unsafe {
-                        (pixel_data.as_mut_ptr() as *mut u32)
-                            .add(index)
-                            .write(4286183345);
-                    }
+                    pixel_data[index] = 4286183345;
                 }
             }
         }
         let base = pixel_data.as_ptr() as u32;
-        let len = pixel_data.len() as u32;
+        let len = (pixel_data.len() * 4) as u32;
         let sliced_pixel_data = Uint8ClampedArray::new(
             &wasm_bindgen::memory()
                 .unchecked_into::<WebAssembly::Memory>()
