@@ -88,7 +88,8 @@ async function initialize() {
         screen.postMessage(
           {
             canvas: e.data.canvas,
-            memory,
+            wasm_module: (computer_init as any).__wbindgen_wasm_module,
+            wasm_memory: memory,
           },
           [e.data.canvas]
         );

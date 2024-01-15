@@ -1,5 +1,4 @@
 # TODO (NAND)
-* find out a way to pass WebAssembly.Module in the screen init
 * you need both rustflags and cargo config.toml lmao???? why doesnt it work
 * not all features like mutable_globals and bulk_memory etc might be needed
 * ensure alpha false and other flags actually make the screen faster
