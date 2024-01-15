@@ -190,7 +190,7 @@ mod screen {
         pub type ImageData;
 
         #[wasm_bindgen(constructor, catch)]
-        fn new(data: &Uint8ClampedArray, width: f64, height: f64) -> Result<ImageData, JsValue>;
+        fn new(data: &Uint8ClampedArray, width: u16, height: u16) -> Result<ImageData, JsValue>;
     }
 
     // I've tried out two separate algorithms to render the screen; here's a benchmark between
@@ -229,6 +229,6 @@ mod screen {
                 .buffer(),
         )
         .slice(base, base + len);
-        ImageData::new(&sliced_pixel_data, 512.0, 256.0).unwrap()
+        ImageData::new(&sliced_pixel_data, 512, 256).unwrap()
     }
 }
