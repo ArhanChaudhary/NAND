@@ -193,6 +193,21 @@ mod screen {
         fn new(data: &Uint8ClampedArray, width: f64, height: f64) -> Result<ImageData, JsValue>;
     }
 
+    // I've tried out two separate algorithms to render the screen; here's a benchmark between
+    // the two algorithms for my future reference.
+
+    // The current algorithm comfortably hovers at an average of around 0.28ms per blit. The
+    // second algorithm on the `alternative-screen-rendering-algorithm` branch performs at
+    // around 0.05ms per blit on empty screens, but at around 2.11ms per blit on the largest
+    // Square in the `Square` example program.
+
+    // Currently, I have no plans to switch between these two algorithms as
+    // 1) the magic number for when to switch would be vastly different across different
+    // platforms
+    // 2) It wouldn't do anything because the current algorithm is already fast enough to draw
+    // every frame (and optimizing in this case doesn't do anything because the actual computer
+    // runs on another web worker)
+    // Still, this is nice to note for future me.
     #[wasm_bindgen]
     pub fn render() -> ImageData {
         let mut pixel_data: [u8; 512 * 256 * 4] = [0; 512 * 256 * 4];
@@ -212,12 +227,12 @@ mod screen {
         }
         let base = pixel_data.as_ptr() as u32;
         let len = pixel_data.len() as u32;
-        let mem = Uint8ClampedArray::new(
+        let sliced_pixel_data = Uint8ClampedArray::new(
             &wasm_bindgen::memory()
                 .unchecked_into::<WebAssembly::Memory>()
                 .buffer(),
         )
         .slice(base, base + len);
-        ImageData::new(&mem, 512.0, 256.0).unwrap()
+        ImageData::new(&sliced_pixel_data, 512.0, 256.0).unwrap()
     }
 }
