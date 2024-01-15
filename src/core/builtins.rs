@@ -1,6 +1,5 @@
-use js_sys::Array;
+use js_sys::{Array, Uint8ClampedArray, WebAssembly};
 use wasm_bindgen::prelude::*;
-use web_sys::{ImageData, OffscreenCanvasRenderingContext2d};
 
 static mut NAND_CALLS: u64 = 0;
 #[allow(non_snake_case)]
@@ -183,29 +182,42 @@ pub fn screen(in_: u16, load: bool, address: u16) -> u16 {
     out
 }
 
-#[wasm_bindgen(js_name=getScreen)]
-pub fn get_screen() -> Vec<u16> {
-    unsafe { SCREEN_MEMORY.to_vec() }
-}
+mod screen {
+    use super::*;
 
-#[wasm_bindgen]
-pub fn render(ctx: OffscreenCanvasRenderingContext2d, screen_memory: &[u16]) {
-    let mut pixel_data = [0; 512 * 256 * 4];
-    for (i, &word16) in screen_memory.iter().enumerate() {
-        let y = i / 32;
-        for j in 0..16 {
-            if nbit16(word16, j) {
-                let x = ((i * 16) + j as usize) % 512;
-                let index = y * 512 + x;
-                unsafe {
-                    (pixel_data.as_mut_ptr() as *mut u32)
-                        .add(index)
-                        .write(4286183345);
+    #[wasm_bindgen]
+    extern "C" {
+        pub type ImageData;
+
+        #[wasm_bindgen(constructor, catch)]
+        fn new(data: &Uint8ClampedArray, width: f64, height: f64) -> Result<ImageData, JsValue>;
+    }
+
+    #[wasm_bindgen]
+    pub fn render() -> ImageData {
+        let mut pixel_data: [u8; 512 * 256 * 4] = [0; 512 * 256 * 4];
+        for (i, &word16) in unsafe { SCREEN_MEMORY.iter().enumerate() } {
+            let y = i / 32;
+            for j in 0..16 {
+                if nbit16(word16, j) {
+                    let x = ((i * 16) + j as usize) % 512;
+                    let index = y * 512 + x;
+                    unsafe {
+                        (pixel_data.as_mut_ptr() as *mut u32)
+                            .add(index)
+                            .write(4286183345);
+                    }
                 }
             }
         }
+        let base = pixel_data.as_ptr() as u32;
+        let len = pixel_data.len() as u32;
+        let mem = Uint8ClampedArray::new(
+            &wasm_bindgen::memory()
+                .unchecked_into::<WebAssembly::Memory>()
+                .buffer(),
+        )
+        .slice(base, base + len);
+        ImageData::new(&mem, 512.0, 256.0).unwrap()
     }
-    let image_data =
-        ImageData::new_with_u8_clamped_array_and_sh(wasm_bindgen::Clamped(&pixel_data), 512, 256);
-    let _ = ctx.put_image_data(&image_data.unwrap(), 0.0, 0.0);
 }

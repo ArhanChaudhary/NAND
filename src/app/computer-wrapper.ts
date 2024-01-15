@@ -1,6 +1,5 @@
-import {
+import computer_init, {
   NANDCalls as computer_NANDCalls,
-  getScreen as computer_getScreen,
   keyboard as computer_keyboard,
   loadROM as computer_loadROM,
   ticktock as computer_ticktock,
@@ -31,20 +30,7 @@ function runner() {
     computer_ticktock();
   }
   emitIntervalTotal += step;
-  // NOTE: although rustwasm is able to access SCREEN_MEMORY directly,
-  // we still have to pass it as a parameter and use that because of
-  // some complications with web workers and objects. According to
-  // https://stackoverflow.com/questions/69487177/how-to-call-a-external-function-inside-a-web-worker
-  // it's actually impossible to transfer the *same* non-serializable
-  // object between the main thread and workers. Notice how I said same;
-  // you may think that I can just import the wasm in the other worker
-  // but that's instead an entiretly new wasm instance with its own empty
-  // screen memory bitmap
-  // TODO: this problem *may* be solved in the future with
-  // https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html
-  // and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
-  // but for now, this is the best I can do
-  screen.postMessage(computer_getScreen());
+  screen.postMessage(undefined);
   if (computer_keyboard(0, false) === 32767) {
     computer_keyboard(0, true);
     stop();
@@ -77,6 +63,7 @@ function emitInfo() {
 }
 
 async function initialize() {
+  const { memory } = await computer_init();
   // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
   if (import.meta.env.DEV) {
     screen = new Worker(new URL("screen.ts", import.meta.url), {
@@ -98,7 +85,13 @@ async function initialize() {
   self.addEventListener("message", (e) => {
     switch (e.data.action) {
       case "initialize":
-        screen.postMessage(e.data.canvas, [e.data.canvas]);
+        screen.postMessage(
+          {
+            canvas: e.data.canvas,
+            memory,
+          },
+          [e.data.canvas]
+        );
         break;
       case "loadROM":
         computer_loadROM(e.data.machineCode);

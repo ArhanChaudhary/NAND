@@ -1,12 +1,16 @@
-import { render as computer_render } from "core";
+import computer_init, { render as computer_render } from "core";
 
 let ctx: OffscreenCanvasRenderingContext2D;
 self.addEventListener("message", (e) => {
   if (!ctx) {
-    ctx = e.data.getContext("2d", { alpha: false, desynchronized: true });
+    computer_init(undefined, e.data.memory);
+    ctx = e.data.canvas.getContext("2d", {
+      alpha: false,
+      desynchronized: true,
+    });
     return;
   }
-  computer_render(ctx, e.data);
+  ctx.putImageData(computer_render(), 0, 0);
 });
 
 self.postMessage("ready");
