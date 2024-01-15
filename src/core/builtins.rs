@@ -185,12 +185,25 @@ pub fn screen(in_: u16, load: bool, address: u16) -> u16 {
 mod screen {
     use super::*;
 
+    const SCREEN_WIDTH: usize = 512;
+    const SCREEN_HEIGHT: usize = 256;
+
+    const GREEN_COLOR_R: u8 = 177;
+    const GREEN_COLOR_G: u8 = 247;
+    const GREEN_COLOR_B: u8 = 121;
+
+    const GREEN_COLOR_DATA: u32 = (GREEN_COLOR_R as u32)
+        | (GREEN_COLOR_G as u32) << 8
+        | (GREEN_COLOR_B as u32) << 16
+        | 255 << 24;
+
     #[wasm_bindgen]
     extern "C" {
         pub type ImageData;
 
         #[wasm_bindgen(constructor, catch)]
-        fn new(data: &Uint8ClampedArray, width: u16, height: u16) -> Result<ImageData, JsValue>;
+        fn new(data: &Uint8ClampedArray, width: usize, height: usize)
+            -> Result<ImageData, JsValue>;
     }
 
     // I've tried out two separate algorithms to render the screen; here's a benchmark between
@@ -210,14 +223,13 @@ mod screen {
     // Still, this is nice to note for future me.
     #[wasm_bindgen]
     pub fn render() -> ImageData {
-        let mut pixel_data: [u32; 512 * 256] = [0; 512 * 256];
+        let mut pixel_data: [u32; SCREEN_WIDTH * SCREEN_HEIGHT] = [0; SCREEN_WIDTH * SCREEN_HEIGHT];
         for (i, &word16) in unsafe { SCREEN_MEMORY.iter().enumerate() } {
-            let y = i / 32;
+            let y = i / (SCREEN_WIDTH / 16) * SCREEN_WIDTH;
             for j in 0..16 {
                 if nbit16(word16, j) {
-                    let x = ((i * 16) + j as usize) % 512;
-                    let index = y * 512 + x;
-                    pixel_data[index] = 4286183345;
+                    let x = ((i * 16) + j as usize) % SCREEN_WIDTH;
+                    pixel_data[y + x] = GREEN_COLOR_DATA;
                 }
             }
         }
@@ -229,6 +241,6 @@ mod screen {
                 .buffer(),
         )
         .slice(base, base + len);
-        ImageData::new(&sliced_pixel_data, 512, 256).unwrap()
+        ImageData::new(&sliced_pixel_data, SCREEN_WIDTH, SCREEN_HEIGHT).unwrap()
     }
 }
