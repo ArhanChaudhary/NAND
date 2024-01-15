@@ -185,6 +185,14 @@ pub fn screen(in_: u16, load: bool, address: u16) -> u16 {
 mod screen {
     use super::*;
 
+    #[wasm_bindgen]
+    extern "C" {
+        pub type ImageData;
+
+        #[wasm_bindgen(constructor)]
+        fn js_new(data: &Uint8ClampedArray, width: usize, height: usize) -> ImageData;
+    }
+
     const SCREEN_WIDTH: usize = 512;
     const SCREEN_HEIGHT: usize = 256;
 
@@ -196,15 +204,6 @@ mod screen {
         | (GREEN_COLOR_G as u32) << 8
         | (GREEN_COLOR_B as u32) << 16
         | 255 << 24;
-
-    #[wasm_bindgen]
-    extern "C" {
-        pub type ImageData;
-
-        #[wasm_bindgen(constructor, catch)]
-        fn new(data: &Uint8ClampedArray, width: usize, height: usize)
-            -> Result<ImageData, JsValue>;
-    }
 
     // I've tried out two separate algorithms to render the screen; here's a benchmark between
     // the two algorithms for my future reference.
@@ -241,6 +240,6 @@ mod screen {
                 .buffer(),
         )
         .slice(base, base + len);
-        ImageData::new(&sliced_pixel_data, SCREEN_WIDTH, SCREEN_HEIGHT).unwrap()
+        ImageData::js_new(&sliced_pixel_data, SCREEN_WIDTH, SCREEN_HEIGHT)
     }
 }

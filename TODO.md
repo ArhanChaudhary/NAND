@@ -1,11 +1,8 @@
 # TODO (NAND)
-* define pixel_data as a u32 and then cast it to a *const u8
-* is it more efficient to make PIXEL_DATA a global?
 * find out a way to pass WebAssembly.Module in the screen init
 * you need both rustflags and cargo config.toml lmao???? why doesnt it work
 * not all features like mutable_globals and bulk_memory etc might be needed
 * ensure alpha false and other flags actually make the screen faster
-* look into https://github.com/rustwasm/wasm-pack/issues/1328
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
 * maybe a template for multithreaded svelte?
 * dont scroll to focused tab on drag
