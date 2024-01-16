@@ -1,5 +1,4 @@
 # TODO (NAND)
-* inspect wat, do i need nbit_0
 * checkout and perf old nand on big screen
 * block nand on safari https://github.com/DamonOehlman/detect-browser
 * experiment with different wasm-opt levels

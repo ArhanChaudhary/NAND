@@ -14,10 +14,6 @@ fn placebit16(b: bool, i: u8) -> u16 {
     u16_from_bool(b) << i
 }
 
-fn placebit16_0(b: bool) -> u16 {
-    u16_from_bool(b)
-}
-
 #[allow(clippy::too_many_arguments)]
 pub fn word16_16(
     a: bool,
@@ -37,7 +33,7 @@ pub fn word16_16(
     o: bool,
     p: bool,
 ) -> u16 {
-    placebit16_0(a)
+    placebit16(a, 0)
         | placebit16(b, 1)
         | placebit16(c, 2)
         | placebit16(d, 3)
