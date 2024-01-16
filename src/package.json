@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "rwbuild": "RUSTFLAGS='-C target-feature=+atomics,+bulk-memory,+mutable-globals' wasm-pack build --target web",
+    "rwbuild": "wasm-pack build --target web",
     "preview": "vite build && vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "esm-node": "node --experimental-specifier-resolution=node --loader ts-node/esm"
