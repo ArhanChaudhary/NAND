@@ -22,7 +22,7 @@
   let computer_vw = 40;
   let computer_width = (computer_vw * window.innerWidth) / 100;
   computer_width = Math.min(
-    window.innerWidth - 300,
+    Math.max(0, window.innerWidth - 300),
     Math.max(700, computer_width)
   );
   computer_vw = (computer_width / window.innerWidth) * 100;

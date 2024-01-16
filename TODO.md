@@ -1,6 +1,6 @@
 # TODO (NAND)
-* add headers to gh actions
 * make NAND work on desktop safari
+* experiment with different wasm-opt levels
 * ensure alpha false and other flags actually make the screen faster
 * not all features like mutable_globals and bulk_memory etc might be needed
 * you need both rustflags and cargo config.toml lmao???? why doesnt it work
