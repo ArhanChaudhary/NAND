@@ -29,3 +29,6 @@ web-sys = "0.3.67"
 panic = "abort"
 codegen-units = 1
 lto = "fat"
+# NOTE: tests with opt-level 2 have around the
+# performance with opt-level 3, so use opt-level
+# 3 for now.
