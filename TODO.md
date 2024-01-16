@@ -1,7 +1,7 @@
 # TODO (NAND)
 * inspect wat, do i need nbit_0
 * checkout and perf old nand on big screen
-* make NAND work on desktop safari
+* block nand on safari https://github.com/DamonOehlman/detect-browser
 * experiment with different wasm-opt levels
 * ensure alpha false and other flags actually make the screen faster
 * not all features like mutable_globals and bulk_memory etc might be needed

@@ -1,9 +1,9 @@
-use js_sys::{Array, Uint8ClampedArray, WebAssembly};
-use wasm_bindgen::prelude::*;
 use super::{
     bit_manipulation::nbit16,
     memory::{ROM32K_MEMORY, SCREEN_MEMORY},
 };
+use js_sys::{Array, Uint8ClampedArray, WebAssembly};
+use wasm_bindgen::prelude::*;
 
 pub static mut NAND_CALLS: u64 = 0;
 #[wasm_bindgen(js_name=NANDCalls)]

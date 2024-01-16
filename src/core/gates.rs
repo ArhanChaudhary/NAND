@@ -1,5 +1,5 @@
 use crate::builtins::{
-    bit_manipulation::{nbit16, nbit16_0, word16_16},
+    bit_manipulation::{nbit16, word16_16},
     hardware::NAND,
 };
 
@@ -26,7 +26,7 @@ fn mux(a: bool, b: bool, sel: bool) -> bool {
 
 pub fn not16(in_: u16) -> u16 {
     word16_16(
-        not(nbit16_0(in_)),
+        not(nbit16(in_, 0)),
         not(nbit16(in_, 1)),
         not(nbit16(in_, 2)),
         not(nbit16(in_, 3)),
@@ -47,7 +47,7 @@ pub fn not16(in_: u16) -> u16 {
 
 pub fn and16(a: u16, b: u16) -> u16 {
     word16_16(
-        and(nbit16_0(a), nbit16_0(b)),
+        and(nbit16(a, 0), nbit16(b, 0)),
         and(nbit16(a, 1), nbit16(b, 1)),
         and(nbit16(a, 2), nbit16(b, 2)),
         and(nbit16(a, 3), nbit16(b, 3)),
@@ -68,7 +68,7 @@ pub fn and16(a: u16, b: u16) -> u16 {
 
 pub fn mux16(a: u16, b: u16, sel: bool) -> u16 {
     word16_16(
-        mux(nbit16_0(a), nbit16_0(b), sel),
+        mux(nbit16(a, 0), nbit16(b, 0), sel),
         mux(nbit16(a, 1), nbit16(b, 1), sel),
         mux(nbit16(a, 2), nbit16(b, 2), sel),
         mux(nbit16(a, 3), nbit16(b, 3), sel),
@@ -116,7 +116,7 @@ pub fn is_zero(in_: u16) -> bool {
                                                         nbit16(in_, 3),
                                                         or(
                                                             nbit16(in_, 2),
-                                                            or(nbit16(in_, 1), nbit16_0(in_)),
+                                                            or(nbit16(in_, 1), nbit16(in_, 0)),
                                                         ),
                                                     ),
                                                 ),

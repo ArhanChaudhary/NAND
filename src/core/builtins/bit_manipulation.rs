@@ -10,10 +10,6 @@ pub fn nbit16(n: u16, i: u8) -> bool {
     bool_from_u16((n >> i) & 1)
 }
 
-pub fn nbit16_0(n: u16) -> bool {
-    bool_from_u16(n & 1)
-}
-
 fn placebit16(b: bool, i: u8) -> u16 {
     u16_from_bool(b) << i
 }
