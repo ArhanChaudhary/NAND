@@ -1,4 +1,5 @@
 # TODO (NAND)
+* inspect wat, do i need nbit_0
 * checkout and perf old nand on big screen
 * make NAND work on desktop safari
 * experiment with different wasm-opt levels

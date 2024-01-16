@@ -1,5 +1,5 @@
 use crate::{
-    builtins::{nbit16, nbit16_0, word16_16},
+    builtins::bit_manipulation::{nbit16, nbit16_0, word16_16},
     gates::{and, and16, mux16, not16, or, xor},
 };
 

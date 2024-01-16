@@ -1,10 +1,13 @@
-use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::prelude::*;
 
 use crate::{
     arithmetic::{alu, inc16},
     builtins::{
-        aregister, bool_from_u16, dregister, keyboard, nbit16, pc_reg, ram16k, reset_nand_calls,
-        rom32k, screen, slice16_0to12, slice16_0to13, slice16_0to14, tick, tock, u16_from_bool,
+        bit_manipulation::{
+            bool_from_u16, nbit16, slice16_0to12, slice16_0to13, slice16_0to14, u16_from_bool,
+        },
+        hardware::{keyboard, reset_nand_calls, tick, tock},
+        memory::{aregister, dregister, pc_reg, ram16k, rom32k, screen},
     },
     gates::{and, is_zero, mux16, not, or},
 };
