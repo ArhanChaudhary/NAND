@@ -1,4 +1,5 @@
 # TODO (NAND)
+* checkout and perf old nand on big screen
 * make NAND work on desktop safari
 * experiment with different wasm-opt levels
 * ensure alpha false and other flags actually make the screen faster

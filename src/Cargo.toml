@@ -5,7 +5,16 @@ authors = ["Arhan Chaudhary <arhan.ch@gmail.com>"]
 edition = "2021"
 
 [package.metadata.wasm-pack.profile.release]
-wasm-opt = ["-O4", "--enable-threads", "--enable-bulk-memory"]
+wasm-opt = [
+    "-O4",
+    "--inline-functions-with-loops",
+    "--traps-never-happen",
+    "--low-memory-unused",
+    "--fast-math",
+    "--zero-filled-memory",
+    "--enable-threads",
+    "--enable-bulk-memory",
+]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
