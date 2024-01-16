@@ -1,9 +1,11 @@
 # TODO (NAND)
-* you need both rustflags and cargo config.toml lmao???? why doesnt it work
-* not all features like mutable_globals and bulk_memory etc might be needed
+* add headers to gh actions
+* make NAND work on desktop safari
 * ensure alpha false and other flags actually make the screen faster
+* not all features like mutable_globals and bulk_memory etc might be needed
+* you need both rustflags and cargo config.toml lmao???? why doesnt it work
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
-* maybe a template for multithreaded svelte?
+
 * dont scroll to focused tab on drag
 * make sure class name is valid (look in compiler)
 * common keybinds like undo etc
@@ -14,7 +16,6 @@
 * ensure all subroutines and classes are defined at compile time
 * syntax highlighter (other types)
 * compilererror stash, too many static error
-* make NAND work on desktop safari
 * readme
   * Writing programs in NAND
     * jack tutorial, base off https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf and https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf
@@ -36,6 +37,7 @@
     * 2048
     * GeneticAlgorithm (will not reallocate)
 * vm escape bug
+* maybe a template for multithreaded svelte?
 
 # TODO (genetic algorithm)
 * random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
