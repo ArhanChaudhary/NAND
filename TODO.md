@@ -1,7 +1,6 @@
 # TODO (NAND)
-* every wasm flag
-* checkout and perf old nand on big screen
 * block nand on safari https://github.com/DamonOehlman/detect-browser
+* every wasm flag
 * ensure alpha false and other flags actually make the screen faster
 * not all features like mutable_globals and bulk_memory etc might be needed
 * you need both rustflags and cargo config.toml lmao???? why doesnt it work
