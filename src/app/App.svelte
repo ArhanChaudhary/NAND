@@ -61,7 +61,11 @@
   * {
     box-sizing: border-box;
     color: hsl(0, 0%, 83%);
-    font-family: monospace;
+    // https://qwtel.com/posts/software/the-monospaced-system-ui-css-font-stack/
+    font-family: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
+      "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
+      "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
+    font-size: 13px;
   }
 
   main {
