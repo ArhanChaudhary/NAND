@@ -5,6 +5,23 @@ use super::{
 use js_sys::{Array, Uint8ClampedArray, WebAssembly};
 use wasm_bindgen::prelude::*;
 
+// -----------------------------------------------
+
+// NAND + 🦀 + 🕸️ = ❤️
+#[allow(non_snake_case)]
+pub fn NAND(a: bool, b: bool) -> bool {
+    unsafe { NAND_CALLS += 1 };
+    !(a && b) // for science!!
+}
+
+//      ┌─────┐
+// A ->─┤     │
+//      │ NAND├─>─ Q
+// B ->─┤     │
+//      └─────┘
+
+// -----------------------------------------------
+
 pub static mut NAND_CALLS: u64 = 0;
 #[wasm_bindgen(js_name=NANDCalls)]
 pub fn nand_calls() -> u64 {
@@ -14,13 +31,6 @@ pub fn nand_calls() -> u64 {
 #[wasm_bindgen(js_name=resetNANDCalls)]
 pub fn reset_nand_calls() {
     unsafe { NAND_CALLS = 0 };
-}
-
-// for science!!
-#[allow(non_snake_case)]
-pub fn NAND(a: bool, b: bool) -> bool {
-    unsafe { NAND_CALLS += 1 };
-    !(a && b)
 }
 
 pub static mut CLOCK: bool = false;
