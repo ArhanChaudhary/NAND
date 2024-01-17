@@ -6,7 +6,7 @@ import computer_init, {
   reset as computer_reset,
 } from "core";
 
-let screen: Worker;
+let computer_screen: Worker;
 let stopRunner = false;
 let emitInterval: NodeJS.Timeout | void;
 let emitIntervalTotal = 0;
@@ -65,24 +65,24 @@ async function initialize_worker() {
   const { memory } = await computer_init();
   // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
   if (import.meta.env.DEV) {
-    screen = new Worker(new URL("computer-screen.ts", import.meta.url), {
+    computer_screen = new Worker(new URL("computer-screen.ts", import.meta.url), {
       type: "module",
     });
   } else {
-    screen = new Worker(new URL("computer-screen.ts", import.meta.url), {
+    computer_screen = new Worker(new URL("computer-screen.ts", import.meta.url), {
       type: "classic",
     });
   }
 
   await new Promise<void>((resolve) => {
-    screen.onmessage = (e) => {
+    computer_screen.onmessage = (e) => {
       if (e.data.action === "loaded") {
         resolve();
       }
     };
   });
 
-  screen.onmessage = null;
+  computer_screen.onmessage = null;
   self.onmessage = (e) => {
     switch (e.data.action) {
       case "initialize":
@@ -116,7 +116,7 @@ async function initialize_worker() {
 }
 
 async function initialize(canvas: OffscreenCanvas, memory: WebAssembly.Memory) {
-  screen.postMessage(
+  computer_screen.postMessage(
     {
       action: "initialize",
       canvas,
@@ -127,7 +127,7 @@ async function initialize(canvas: OffscreenCanvas, memory: WebAssembly.Memory) {
   );
 
   await new Promise<void>((resolve) => {
-    screen.onmessage = (e) => {
+    computer_screen.onmessage = (e) => {
       if (e.data.action === "ready") {
         resolve();
       }
@@ -135,12 +135,12 @@ async function initialize(canvas: OffscreenCanvas, memory: WebAssembly.Memory) {
   });
 
   self.postMessage({ action: "ready" });
-  screen.onmessage = null;
+  computer_screen.onmessage = null;
 }
 
 function start() {
   if (emitInterval) return;
-  screen.postMessage({ action: "startRendering" });
+  computer_screen.postMessage({ action: "startRendering" });
   // worker startup is slow and the very first emit will be significantly slower
   // than the following ones. So, we want to sort of nudge the first emit closer
   // closer to a higher value. A higher value happens if prevEmit and
@@ -154,7 +154,7 @@ function start() {
 
 function reset() {
   if (!prevEmit) return;
-  screen.postMessage({ action: "stopRendering" });
+  computer_screen.postMessage({ action: "stopRendering" });
   stopRunner = true;
   computer_reset();
   emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
@@ -183,7 +183,7 @@ function resetAndStart(e: MessageEvent<any>) {
 }
 
 function stop() {
-  screen.postMessage({ action: "stopRendering" });
+  computer_screen.postMessage({ action: "stopRendering" });
   stopRunner = true;
   if (emitInterval) emitInfo();
   emitInterval = clearInterval(emitInterval as NodeJS.Timeout);

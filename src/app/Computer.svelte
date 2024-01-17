@@ -8,20 +8,26 @@
     )
   );
 
-  export let runner: Worker;
+  export let computer_runner: Worker;
   // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
   if (import.meta.env.DEV) {
-    runner = new Worker(new URL("./computer-runner.ts", import.meta.url), {
-      type: "module",
-    });
+    computer_runner = new Worker(
+      new URL("./computer-runner.ts", import.meta.url),
+      {
+        type: "module",
+      }
+    );
   } else {
-    runner = new Worker(new URL("./computer-runner.ts", import.meta.url), {
-      type: "classic",
-    });
+    computer_runner = new Worker(
+      new URL("./computer-runner.ts", import.meta.url),
+      {
+        type: "classic",
+      }
+    );
   }
 
   const runnerLoader = new Promise<void>((resolve) => {
-    runner.addEventListener("message", (e) => {
+    computer_runner.addEventListener("message", (e) => {
       if (e.data.action === "loaded") {
         resolve();
       }
@@ -87,19 +93,19 @@
   onMount(initRunner);
   async function initRunner() {
     const offscreen = computerScreen.transferControlToOffscreen();
-    runner.postMessage({ action: "initialize", canvas: offscreen }, [
+    computer_runner.postMessage({ action: "initialize", canvas: offscreen }, [
       offscreen,
     ]);
 
     await new Promise<void>((resolve) => {
-      runner.addEventListener("message", (e) => {
+      computer_runner.addEventListener("message", (e) => {
         if (e.data.action === "ready") {
           resolve();
         }
       });
     });
 
-    runner.addEventListener("message", messageHandler);
+    computer_runner.addEventListener("message", messageHandler);
 
     let prev: number;
     document.addEventListener("keydown", (e) => {
@@ -138,12 +144,12 @@
         keyValue = 0;
       }
       prev = keyValue;
-      runner.postMessage({ action: "keyboard", key: keyValue });
+      computer_runner.postMessage({ action: "keyboard", key: keyValue });
     });
 
     document.addEventListener("keyup", () => {
       prev = 0;
-      runner.postMessage({ action: "keyboard", key: 0 });
+      computer_runner.postMessage({ action: "keyboard", key: 0 });
     });
   }
 </script>
@@ -158,7 +164,12 @@
     bind:this={computerWrapper}
   >
     <div id="computer-frame">
-      <canvas id="computer-screen" bind:this={computerScreen} width="512" height="256" />
+      <canvas
+        id="computer-screen"
+        bind:this={computerScreen}
+        width="512"
+        height="256"
+      />
       <div id="computer-frame-graphics-positioner" class={lightStatus}>
         <div class="status-light-gradient">
           <div class="status-light"></div>
