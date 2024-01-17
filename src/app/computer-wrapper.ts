@@ -73,15 +73,17 @@ async function initialize_worker() {
       type: "classic",
     });
   }
+
   await new Promise<void>((resolve) => {
-    screen.addEventListener("message", (e) => {
-      if (e.data.action === "ready") {
+    screen.onmessage = (e) => {
+      if (e.data.action === "loaded") {
         resolve();
       }
-    });
+    };
   });
 
-  self.addEventListener("message", (e) => {
+  screen.onmessage = null;
+  self.onmessage = (e) => {
     switch (e.data.action) {
       case "initialize":
         initialize(e.data.canvas, memory);
@@ -108,12 +110,12 @@ async function initialize_worker() {
         speed(e);
         break;
     }
-  });
+  };
 
-  self.postMessage({ action: "ready" });
+  self.postMessage({ action: "loaded" });
 }
 
-function initialize(canvas: OffscreenCanvas, memory: WebAssembly.Memory) {
+async function initialize(canvas: OffscreenCanvas, memory: WebAssembly.Memory) {
   screen.postMessage(
     {
       action: "initialize",
@@ -123,6 +125,17 @@ function initialize(canvas: OffscreenCanvas, memory: WebAssembly.Memory) {
     },
     [canvas]
   );
+
+  await new Promise<void>((resolve) => {
+    screen.onmessage = (e) => {
+      if (e.data.action === "ready") {
+        resolve();
+      }
+    };
+  });
+
+  self.postMessage({ action: "ready" });
+  screen.onmessage = null;
 }
 
 function start() {

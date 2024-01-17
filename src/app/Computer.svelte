@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  export const JackOS = await Promise.all(
+  const JackOSLoader = Promise.all(
     Object.entries(import.meta.glob("../os/*.jack", { as: "raw" })).map(
       async ([OSFilePath, OSFile]) => ({
         fileName: OSFilePath.replace("../os/", "").replace(".jack", ""),
@@ -19,13 +19,16 @@
       type: "classic",
     });
   }
-  await new Promise<void>((resolve) => {
+
+  const runnerLoader = new Promise<void>((resolve) => {
     runner.addEventListener("message", (e) => {
-      if (e.data.action === "ready") {
+      if (e.data.action === "loaded") {
         resolve();
       }
     });
   });
+
+  export const JackOS = (await Promise.all([JackOSLoader, runnerLoader]))[0];
 </script>
 
 <script lang="ts">
@@ -81,12 +84,21 @@
   }
 
   let computerCanvas: HTMLCanvasElement;
-  $: $runner && initRunner();
-  function initRunner() {
+  onMount(initRunner);
+  async function initRunner() {
     const offscreen = computerCanvas.transferControlToOffscreen();
     runner.postMessage({ action: "initialize", canvas: offscreen }, [
       offscreen,
     ]);
+
+    await new Promise<void>((resolve) => {
+      runner.addEventListener("message", (e) => {
+        if (e.data.action === "ready") {
+          resolve();
+        }
+      });
+    });
+
     runner.addEventListener("message", messageHandler);
 
     let prev: number;

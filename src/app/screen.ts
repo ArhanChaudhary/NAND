@@ -1,15 +1,19 @@
 import computer_init, { render as computer_render } from "core";
 
+// this seemingly redundant postMessage is necessary because new Worker() is
+// is asynchronous, and we need to wait for the worker to fully load
+self.postMessage({ action: "loaded" });
+
 let ctx: OffscreenCanvasRenderingContext2D;
-self.onmessage = (e) => {
-  let initialized = computer_init(e.data.wasm_module, e.data.wasm_memory);
+// servers as the initialize_worker function, but we need e
+self.onmessage = async (e) => {
+  await computer_init(e.data.wasm_module, e.data.wasm_memory);
   ctx = e.data.canvas.getContext("2d", {
     alpha: false,
     desynchronized: true,
   });
 
-  self.onmessage = async () => {
-    await initialized;
+  self.onmessage = (e) => {
     switch (e.data.action) {
       case "startRendering":
         startRendering();
@@ -19,6 +23,8 @@ self.onmessage = (e) => {
         break;
     }
   };
+
+  self.postMessage({ action: "ready" });
 };
 
 let stopRenderingLoop = false;
@@ -40,5 +46,3 @@ function startRendering() {
 function stopRendering() {
   stopRenderingLoop = true;
 }
-
-self.postMessage({ action: "ready" });
