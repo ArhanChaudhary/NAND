@@ -7,10 +7,28 @@
       })
     )
   );
+
+  export let runner: Worker;
+  // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
+  if (import.meta.env.DEV) {
+    runner = new Worker(new URL("./computer-wrapper.ts", import.meta.url), {
+      type: "module",
+    });
+  } else {
+    runner = new Worker(new URL("./computer-wrapper.ts", import.meta.url), {
+      type: "classic",
+    });
+  }
+  await new Promise<void>((resolve) => {
+    runner.addEventListener("message", (e) => {
+      if (e.data.action === "ready") {
+        resolve();
+      }
+    });
+  });
 </script>
 
 <script lang="ts">
-  import { runner } from "./stores";
   import { onMount } from "svelte";
   export let computer_vw: Number;
 
@@ -66,10 +84,10 @@
   $: $runner && initRunner();
   function initRunner() {
     const offscreen = computerCanvas.transferControlToOffscreen();
-    $runner!.postMessage({ action: "initialize", canvas: offscreen }, [
+    runner.postMessage({ action: "initialize", canvas: offscreen }, [
       offscreen,
     ]);
-    $runner!.addEventListener("message", messageHandler);
+    runner.addEventListener("message", messageHandler);
 
     let prev: number;
     document.addEventListener("keydown", (e) => {
@@ -108,12 +126,12 @@
         keyValue = 0;
       }
       prev = keyValue;
-      $runner!.postMessage({ action: "keyboard", key: keyValue });
+      runner.postMessage({ action: "keyboard", key: keyValue });
     });
 
     document.addEventListener("keyup", () => {
       prev = 0;
-      $runner!.postMessage({ action: "keyboard", key: 0 });
+      runner.postMessage({ action: "keyboard", key: 0 });
     });
   }
 </script>

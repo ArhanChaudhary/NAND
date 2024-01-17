@@ -90,13 +90,8 @@
   import assembler from "../assembler/main";
   import VMTranslator from "../vm/main";
   import compiler from "../compiler/main";
-  import { JackOS } from "./Computer.svelte";
-  import {
-    runner,
-    IDEContext,
-    shouldResetAndStart,
-    activeTabName,
-  } from "./stores";
+  import { JackOS, runner } from "./Computer.svelte";
+  import { IDEContext, shouldResetAndStart, activeTabName } from "./stores";
 
   $: $IDEContext, ($shouldResetAndStart = true);
   exampleProgramLoader.then(() => {
@@ -132,20 +127,20 @@
       );
       return;
     }
-    $runner!.postMessage({
+    runner.postMessage({
       action: $shouldResetAndStart ? "resetAndStart" : "start",
       machineCode,
     });
     $shouldResetAndStart = false;
   }
   function stopRunner() {
-    $runner!.postMessage({ action: "stop" });
+    runner.postMessage({ action: "stop" });
   }
   function resetRunner() {
-    $runner!.postMessage({ action: "reset" });
+    runner.postMessage({ action: "reset" });
   }
   function speedRunner(e: Event) {
-    $runner!.postMessage({
+    runner.postMessage({
       action: "speed",
       speed: (e.target as HTMLInputElement).valueAsNumber,
     });
