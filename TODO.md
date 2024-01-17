@@ -1,9 +1,7 @@
 # TODO (NAND)
-* block nand on safari https://github.com/DamonOehlman/detect-browser
-* every wasm flag
+* make screen run a requestAnimationFrame loop
+* every wasm flag (not all features like mutable_globals and bulk_memory etc might be needed)
 * ensure alpha false and other flags actually make the screen faster
-* not all features like mutable_globals and bulk_memory etc might be needed
-* you need both rustflags and cargo config.toml lmao???? why doesnt it work
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker
 
 * dont scroll to focused tab on drag

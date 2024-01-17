@@ -123,14 +123,16 @@ async function initialize() {
 
 function start() {
   if (emitInterval) return;
-  stopRunner = false;
-  // runner first because worker startup is slow and the very first emit
-  // will be like half as fast as the following ones. So, we can call runner
-  // first and then define the interval and prevEmit to sort of nudge it
-  // closer to the actual value.
+  screen.postMessage({ action: "startRendering" });
+  // worker startup is slow and the very first emit will be significantly slower
+  // than the following ones. So, we want to sort of nudge the first emit closer
+  // closer to a higher value. A higher value happens if prevEmit and
+  // currentEmit are closer together, so we first create the interval to make
+  // the comparsion happen sooner and then we defined prevEmit as late as
+  // possible, after runner()
+  emitInterval = setInterval(emitInfo, emitIntervalDelay);
   runner();
   prevEmit = performance.now();
-  emitInterval = setInterval(emitInfo, emitIntervalDelay);
 }
 
 function reset() {
