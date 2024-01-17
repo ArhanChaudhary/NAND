@@ -24,8 +24,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: "index.html", // This should be the entry HTML file for your app
-        "computer-wrapper": "app/computer-wrapper.ts",
-        screen: "app/screen.ts", // Adjust the path accordingly
+        "computer-runner": "app/computer-runner.ts",
+        "computer-screen": "app/screen.ts", // Adjust the path accordingly
       },
     },
   },

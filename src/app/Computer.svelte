@@ -11,11 +11,11 @@
   export let runner: Worker;
   // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
   if (import.meta.env.DEV) {
-    runner = new Worker(new URL("./computer-wrapper.ts", import.meta.url), {
+    runner = new Worker(new URL("./computer-runner.ts", import.meta.url), {
       type: "module",
     });
   } else {
-    runner = new Worker(new URL("./computer-wrapper.ts", import.meta.url), {
+    runner = new Worker(new URL("./computer-runner.ts", import.meta.url), {
       type: "classic",
     });
   }
@@ -83,10 +83,10 @@
     }
   }
 
-  let computerCanvas: HTMLCanvasElement;
+  let computerScreen: HTMLCanvasElement;
   onMount(initRunner);
   async function initRunner() {
-    const offscreen = computerCanvas.transferControlToOffscreen();
+    const offscreen = computerScreen.transferControlToOffscreen();
     runner.postMessage({ action: "initialize", canvas: offscreen }, [
       offscreen,
     ]);
@@ -153,12 +153,12 @@
   style="--computer-container-width: {computer_vw}vw;"
 >
   <div
-    id="computer-wrapper"
-    style="--computer-wrapper-aspect-ratio: {computerWrapperAspectRatio}"
+    id="computer-runner"
+    style="--computer-runner-aspect-ratio: {computerWrapperAspectRatio}"
     bind:this={computerWrapper}
   >
     <div id="computer-frame">
-      <canvas bind:this={computerCanvas} width="512" height="256" />
+      <canvas id="computer-screen" bind:this={computerScreen} width="512" height="256" />
       <div id="computer-frame-graphics-positioner" class={lightStatus}>
         <div class="status-light-gradient">
           <div class="status-light"></div>
@@ -214,12 +214,11 @@
       flex-grow: 1;
     }
 
-    #computer-wrapper {
+    #computer-runner {
       --px: calc(
         min(
             var(--computer-container-width) - 30px,
-            (var(--main-height) - 30px) *
-              var(--computer-wrapper-aspect-ratio, 1)
+            (var(--main-height) - 30px) * var(--computer-runner-aspect-ratio, 1)
           ) / 810
       );
       --frame-padding: calc(var(--px) * 60);
@@ -232,7 +231,7 @@
         padding: var(--frame-padding);
         position: relative;
 
-        canvas {
+        #computer-screen {
           border: calc(var(--px) * 15) solid;
           border-color: hsl(34, 11%, 57%) hsl(34, 15%, 68%) hsl(40, 42%, 87%);
           image-rendering: pixelated;

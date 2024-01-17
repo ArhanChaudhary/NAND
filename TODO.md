@@ -1,11 +1,9 @@
 # TODO (NAND)
-* rename computer-wrapper to runner and screen to hardware
-* infinite loop in computer-wrapper, move emitInfo to screen?
-* get requestAnimationFrame working in screen
+* get requestAnimationFrame working in screen, Calling the requestAnimationFrame() method requires the current worker to have an associated owner window. That means that the current worker must be created by window or by a dedicated worker that also has an associated owner window.
 * remove stopRunner message
 * every wasm flag (not all features like mutable_globals and bulk_memory etc might be needed)
-* ensure alpha false and other flags actually make the screen faster
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker, share emitInfo data with main thread
+* infinite loop in computer-runner, move emitInfo to screen?
 
 * dont scroll to focused tab on drag
 * make sure class name is valid (look in compiler)

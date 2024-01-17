@@ -65,11 +65,11 @@ async function initialize_worker() {
   const { memory } = await computer_init();
   // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
   if (import.meta.env.DEV) {
-    screen = new Worker(new URL("screen.ts", import.meta.url), {
+    screen = new Worker(new URL("computer-screen.ts", import.meta.url), {
       type: "module",
     });
   } else {
-    screen = new Worker(new URL("screen.ts", import.meta.url), {
+    screen = new Worker(new URL("computer-screen.ts", import.meta.url), {
       type: "classic",
     });
   }
