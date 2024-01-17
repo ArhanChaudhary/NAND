@@ -62,7 +62,7 @@ function emitInfo() {
   });
 }
 
-async function initialize() {
+async function initialize_worker() {
   const { memory } = await computer_init();
   // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
   if (import.meta.env.DEV) {
@@ -85,14 +85,7 @@ async function initialize() {
   self.addEventListener("message", (e) => {
     switch (e.data.action) {
       case "initialize":
-        screen.postMessage(
-          {
-            canvas: e.data.canvas,
-            wasm_module: (computer_init as any).__wbindgen_wasm_module,
-            wasm_memory: memory,
-          },
-          [e.data.canvas]
-        );
+        initialize(e.data.canvas, memory);
         break;
       case "loadROM":
         computer_loadROM(e.data.machineCode);
@@ -119,6 +112,17 @@ async function initialize() {
   });
 
   self.postMessage({ action: "ready" });
+}
+
+function initialize(canvas: OffscreenCanvas, memory: WebAssembly.Memory) {
+  screen.postMessage(
+    {
+      canvas,
+      wasm_module: (computer_init as any).__wbindgen_wasm_module,
+      wasm_memory: memory,
+    },
+    [canvas]
+  );
 }
 
 function start() {
@@ -182,4 +186,4 @@ function speed(e: MessageEvent<any>) {
   step = linearScaledValue;
 }
 
-initialize();
+initialize_worker();
