@@ -1,7 +1,8 @@
 # TODO (NAND)
+* rename computer-wrapper to runner and screen to hardware
+* infinite loop in computer-wrapper, move emitInfo to screen?
 * get requestAnimationFrame working in screen
 * remove stopRunner message
-* make screen run a requestAnimationFrame loop
 * every wasm flag (not all features like mutable_globals and bulk_memory etc might be needed)
 * ensure alpha false and other flags actually make the screen faster
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker, share emitInfo data with main thread

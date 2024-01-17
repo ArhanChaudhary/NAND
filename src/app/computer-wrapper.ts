@@ -30,7 +30,6 @@ function runner() {
     computer_ticktock();
   }
   emitIntervalTotal += step;
-  screen.postMessage(undefined);
   if (computer_keyboard(0, false) === 32767) {
     computer_keyboard(0, true);
     stop();
@@ -76,7 +75,7 @@ async function initialize_worker() {
   }
   await new Promise<void>((resolve) => {
     screen.addEventListener("message", (e) => {
-      if (e.data === "ready") {
+      if (e.data.action === "ready") {
         resolve();
       }
     });
@@ -117,6 +116,7 @@ async function initialize_worker() {
 function initialize(canvas: OffscreenCanvas, memory: WebAssembly.Memory) {
   screen.postMessage(
     {
+      action: "initialize",
       canvas,
       wasm_module: (computer_init as any).__wbindgen_wasm_module,
       wasm_memory: memory,
@@ -141,6 +141,7 @@ function start() {
 
 function reset() {
   if (!prevEmit) return;
+  screen.postMessage({ action: "stopRendering" });
   stopRunner = true;
   computer_reset();
   emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
@@ -169,6 +170,7 @@ function resetAndStart(e: MessageEvent<any>) {
 }
 
 function stop() {
+  screen.postMessage({ action: "stopRendering" });
   stopRunner = true;
   if (emitInterval) emitInfo();
   emitInterval = clearInterval(emitInterval as NodeJS.Timeout);

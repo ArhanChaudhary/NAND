@@ -20,7 +20,8 @@
   $: computer_vw, safelyUpdateComputerWrapperAspectRatio();
   async function safelyUpdateComputerWrapperAspectRatio() {
     await waitForOnMount;
-    computerWrapperAspectRatio = computerWrapper.clientWidth / computerWrapper.clientHeight || null;
+    computerWrapperAspectRatio =
+      computerWrapper.clientWidth / computerWrapper.clientHeight || null;
   }
 
   let clockSpeed = "0";
