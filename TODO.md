@@ -1,6 +1,5 @@
 # TODO (NAND)
 * try safari support
-* remove stopRunner message
 * every wasm flag (not all features like mutable_globals and bulk_memory etc might be needed)
 * minimal example of worker in worker and requestAnimationFrame not working
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker, share emitInfo data with main thread

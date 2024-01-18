@@ -1,9 +1,11 @@
 <script lang="ts" context="module">
+  import computer_init from "core";
+
   export let JackOS: {
     fileName: string;
     file: string[];
   }[];
-  const JackOSLoader = Promise.all(
+  const loadJackOS = Promise.all(
     Object.entries(import.meta.glob("../os/*.jack", { as: "raw" })).map(
       async ([OSFilePath, OSFile]) => ({
         fileName: OSFilePath.replace("../os/", "").replace(".jack", ""),
@@ -15,10 +17,17 @@
   });
 
   let computer_runner: Worker;
+  let computer_screen: Worker;
   // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
   if (import.meta.env.DEV) {
     computer_runner = new Worker(
       new URL("computer-runner.ts", import.meta.url),
+      {
+        type: "module",
+      }
+    );
+    computer_screen = new Worker(
+      new URL("computer-screen.ts", import.meta.url),
       {
         type: "module",
       }
@@ -30,31 +39,68 @@
         type: "classic",
       }
     );
+    computer_screen = new Worker(
+      new URL("computer-screen.ts", import.meta.url),
+      {
+        type: "classic",
+      }
+    );
   }
 
-  const runnerLoader = new Promise<void>((resolve) => {
-    computer_runner.addEventListener("message", (e) => {
+  const loadComputerRunner = new Promise<void>((resolve) => {
+    computer_runner.onmessage = (e) => {
       if (e.data.action === "loaded") {
         resolve();
       }
-    });
+    };
   });
 
-  await Promise.all([JackOSLoader, runnerLoader]);
+  const loadComputerScreen = new Promise<void>((resolve) => {
+    computer_screen.onmessage = (e) => {
+      if (e.data.action === "loaded") {
+        resolve();
+      }
+    };
+  });
+
+  let wasm_memory: WebAssembly.Memory;
+  const initializeComputerWasm = computer_init().then((resolved) => {
+    wasm_memory = resolved.memory;
+  });
+
+  const loadComputerRuntime = new Promise<void>(async (resolve) => {
+    await Promise.all([initializeComputerWasm, loadComputerRunner]);
+    computer_runner.postMessage({
+      wasm_module: (computer_init as any).__wbindgen_wasm_module,
+      wasm_memory,
+    });
+
+    computer_runner.onmessage = (e) => {
+      if (e.data.action === "ready") {
+        resolve();
+      }
+    };
+  });
+
+  await Promise.all([loadJackOS, loadComputerRuntime, loadComputerScreen]);
   export function startComputerRuntime(machineCode: string[]) {
     computer_runner.postMessage({ action: "start", machineCode });
+    computer_screen.postMessage({ action: "startRendering" });
   }
 
   export function resetAndStartComputerRuntime(machineCode: string[]) {
     computer_runner.postMessage({ action: "resetAndStart", machineCode });
+    computer_screen.postMessage({ action: "startRendering" });
   }
 
   export function resetComputerRuntime() {
     computer_runner.postMessage({ action: "reset" });
+    computer_screen.postMessage({ action: "stopRendering" });
   }
 
   export function stopComputerRuntime() {
     computer_runner.postMessage({ action: "stop" });
+    computer_screen.postMessage({ action: "stopRendering" });
   }
 
   export function speedComputerRuntime(speedPercentage: number) {
@@ -109,8 +155,10 @@
           NANDCalls = "0";
         }
         break;
-      case "stopRunner":
+      case "stopping":
         lightStatus = "red";
+        computer_screen.postMessage({ action: "stopRendering" });
+        break;
     }
   }
 
@@ -118,12 +166,17 @@
   onMount(initRunner);
   async function initRunner() {
     const offscreenCanvas = computerScreen.transferControlToOffscreen();
-    computer_runner.postMessage({ action: "initialize", canvas: offscreenCanvas }, [
-      offscreenCanvas,
-    ]);
+    computer_screen.postMessage(
+      {
+        canvas: offscreenCanvas,
+        wasm_module: (computer_init as any).__wbindgen_wasm_module,
+        wasm_memory,
+      },
+      [offscreenCanvas]
+    );
 
     await new Promise<void>((resolve) => {
-      computer_runner.onmessage = (e) => {
+      computer_screen.onmessage = (e) => {
         if (e.data.action === "ready") {
           resolve();
         }

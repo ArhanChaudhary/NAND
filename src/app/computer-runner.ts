@@ -6,7 +6,8 @@ import computer_init, {
   reset as computer_reset,
 } from "core";
 
-let computer_screen: Worker;
+self.postMessage({ action: "loaded" });
+
 let stopRunner = false;
 let emitInterval: NodeJS.Timeout | void;
 let emitIntervalTotal = 0;
@@ -50,10 +51,8 @@ function emitInfo() {
     prevSecTotals.shift();
   }
   prevSecTotals.push(secTotal);
-  // emitIntervalTotal / (currentEmit - prevEmit) = emitSecTotal / 1000
   prevEmit = currentEmit;
   emitIntervalTotal = 0;
-
   self.postMessage({
     action: "emitInfo",
     hz: prevSecTotals.reduce((a, b) => a + b) / prevSecTotals.length,
@@ -61,33 +60,11 @@ function emitInfo() {
   });
 }
 
-async function initialize_worker() {
-  const { memory } = await computer_init();
-  // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
-  if (import.meta.env.DEV) {
-    computer_screen = new Worker(new URL("computer-screen.ts", import.meta.url), {
-      type: "module",
-    });
-  } else {
-    computer_screen = new Worker(new URL("computer-screen.ts", import.meta.url), {
-      type: "classic",
-    });
-  }
+self.onmessage = async (e) => {
+  await computer_init(e.data.wasm_module, e.data.wasm_memory);
 
-  await new Promise<void>((resolve) => {
-    computer_screen.onmessage = (e) => {
-      if (e.data.action === "loaded") {
-        resolve();
-      }
-    };
-  });
-
-  computer_screen.onmessage = null;
   self.onmessage = (e) => {
     switch (e.data.action) {
-      case "initialize":
-        initialize(e.data.canvas, memory);
-        break;
       case "loadROM":
         computer_loadROM(e.data.machineCode);
         break;
@@ -112,35 +89,12 @@ async function initialize_worker() {
     }
   };
 
-  self.postMessage({ action: "loaded" });
-}
-
-async function initialize(canvas: OffscreenCanvas, memory: WebAssembly.Memory) {
-  computer_screen.postMessage(
-    {
-      action: "initialize",
-      canvas,
-      wasm_module: (computer_init as any).__wbindgen_wasm_module,
-      wasm_memory: memory,
-    },
-    [canvas]
-  );
-
-  await new Promise<void>((resolve) => {
-    computer_screen.onmessage = (e) => {
-      if (e.data.action === "ready") {
-        resolve();
-      }
-    };
-  });
-
   self.postMessage({ action: "ready" });
-  computer_screen.onmessage = null;
-}
+};
 
 function start() {
   if (emitInterval) return;
-  computer_screen.postMessage({ action: "startRendering" });
+  // computer_screen.postMessage({ action: "startRendering" });
   // worker startup is slow and the very first emit will be significantly slower
   // than the following ones. So, we want to sort of nudge the first emit closer
   // closer to a higher value. A higher value happens if prevEmit and
@@ -154,7 +108,6 @@ function start() {
 
 function reset() {
   if (!prevEmit) return;
-  computer_screen.postMessage({ action: "stopRendering" });
   stopRunner = true;
   computer_reset();
   emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
@@ -183,12 +136,11 @@ function resetAndStart(machineCode: string[]) {
 }
 
 function stop() {
-  computer_screen.postMessage({ action: "stopRendering" });
   stopRunner = true;
   if (emitInterval) emitInfo();
   emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
   self.postMessage({
-    action: "stopRunner",
+    action: "stopping",
   });
 }
 
@@ -200,5 +152,3 @@ function speed(speedPercentage: number) {
   const linearScaledValue = Math.pow(10, logScaledValue);
   step = linearScaledValue;
 }
-
-initialize_worker();
