@@ -25,7 +25,7 @@ export default defineConfig({
       input: {
         main: "index.html", // This should be the entry HTML file for your app
         "computer-runner": "app/computer-runner.ts",
-        "computer-screen": "app/screen.ts", // Adjust the path accordingly
+        "computer-screen": "app/computer-screen.ts", // Adjust the path accordingly
       },
     },
   },

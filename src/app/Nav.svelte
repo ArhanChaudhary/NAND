@@ -90,7 +90,14 @@
   import assembler from "../assembler/main";
   import VMTranslator from "../vm/main";
   import compiler from "../compiler/main";
-  import { JackOS, computer_runner } from "./Computer.svelte";
+  import {
+    JackOS,
+    startComputerRuntime,
+    resetAndStartComputerRuntime,
+    resetComputerRuntime,
+    stopComputerRuntime,
+    speedComputerRuntime,
+  } from "./Computer.svelte";
   import { IDEContext, shouldResetAndStart, activeTabName } from "./stores";
 
   $: $IDEContext, ($shouldResetAndStart = true);
@@ -101,6 +108,7 @@
       $activeTabName = "Main";
     }
   });
+
   function shouldAutoLoad(exampleProgramName: string) {
     if (
       !localStorage.getItem("IDEContext") &&
@@ -111,7 +119,8 @@
       return null;
     }
   }
-  function startRunner() {
+
+  function compileIDEContext() {
     const program = [...$IDEContext];
     program.sort((a, b) => {
       if (a.fileName < b.fileName) return -1;
@@ -122,32 +131,35 @@
     const assembly = VMTranslator(VMCode);
     const machineCode = assembler(assembly);
     if (machineCode.length >= 32768) {
-      alert(
-        `Program of length ${machineCode.length} too large to load into memory.`
-      );
+      return machineCode.length;
+    } else {
+      return machineCode;
+    }
+  }
+
+  function _startComputerRuntime() {
+    const machineCode = compileIDEContext();
+    if (typeof machineCode === "number") {
+      alert(`Program of length ${machineCode} too large to load into memory.`);
       return;
     }
-    computer_runner.postMessage({
-      action: $shouldResetAndStart ? "resetAndStart" : "start",
-      machineCode,
-    });
+
+    if ($shouldResetAndStart) {
+      resetAndStartComputerRuntime(machineCode);
+    } else {
+      startComputerRuntime(machineCode);
+    }
     $shouldResetAndStart = false;
   }
-  function stopRunner() {
-    computer_runner.postMessage({ action: "stop" });
+
+  function _speedComputerRuntime(e: Event) {
+    speedComputerRuntime((e.target as HTMLInputElement).valueAsNumber);
   }
-  function resetRunner() {
-    computer_runner.postMessage({ action: "reset" });
-  }
-  function speedRunner(e: Event) {
-    computer_runner.postMessage({
-      action: "speed",
-      speed: (e.target as HTMLInputElement).valueAsNumber,
-    });
-  }
+
   function exampleProgramSelectChange(e: Event) {
     loadExampleProgram((e.target as HTMLSelectElement).value);
   }
+
   function loadExampleProgram(exampleProgramName: string) {
     const exampleProgram = examplePrograms.find(
       (exampleProgram) =>
@@ -172,9 +184,9 @@
 
 <nav>
   <img id="logo" alt="" src="/logo.png" draggable="false" />
-  <button on:click={startRunner}> Start </button>
-  <button on:click={stopRunner}> Stop </button>
-  <button on:click={resetRunner}> Reset </button>
+  <button on:click={_startComputerRuntime}> Start </button>
+  <button on:click={stopComputerRuntime}> Stop </button>
+  <button on:click={resetComputerRuntime}> Reset </button>
   <div class="nav-divider"></div>
   <div id="speed-runner-container">
     <input
@@ -183,7 +195,7 @@
       min="0"
       max="100"
       value="100"
-      on:input={speedRunner}
+      on:input={_speedComputerRuntime}
     />
     <span>Slow</span>
     <span style="float: right">Fast</span>

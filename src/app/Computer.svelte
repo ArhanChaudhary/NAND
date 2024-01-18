@@ -1,4 +1,8 @@
 <script lang="ts" context="module">
+  export let JackOS: {
+    fileName: string;
+    file: string[];
+  }[];
   const JackOSLoader = Promise.all(
     Object.entries(import.meta.glob("../os/*.jack", { as: "raw" })).map(
       async ([OSFilePath, OSFile]) => ({
@@ -6,20 +10,22 @@
         file: ((await OSFile()) as string).split("\n"),
       })
     )
-  );
+  ).then((OSFiles) => {
+    JackOS = OSFiles;
+  });
 
-  export let computer_runner: Worker;
+  let computer_runner: Worker;
   // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
   if (import.meta.env.DEV) {
     computer_runner = new Worker(
-      new URL("./computer-runner.ts", import.meta.url),
+      new URL("computer-runner.ts", import.meta.url),
       {
         type: "module",
       }
     );
   } else {
     computer_runner = new Worker(
-      new URL("./computer-runner.ts", import.meta.url),
+      new URL("computer-runner.ts", import.meta.url),
       {
         type: "classic",
       }
@@ -34,7 +40,26 @@
     });
   });
 
-  export const JackOS = (await Promise.all([JackOSLoader, runnerLoader]))[0];
+  await Promise.all([JackOSLoader, runnerLoader]);
+  export function startComputerRuntime(machineCode: string[]) {
+    computer_runner.postMessage({ action: "start", machineCode });
+  }
+
+  export function resetAndStartComputerRuntime(machineCode: string[]) {
+    computer_runner.postMessage({ action: "resetAndStart", machineCode });
+  }
+
+  export function resetComputerRuntime() {
+    computer_runner.postMessage({ action: "reset" });
+  }
+
+  export function stopComputerRuntime() {
+    computer_runner.postMessage({ action: "stop" });
+  }
+
+  export function speedComputerRuntime(speedPercentage: number) {
+    computer_runner.postMessage({ action: "speed", speedPercentage });
+  }
 </script>
 
 <script lang="ts">
@@ -92,20 +117,20 @@
   let computerScreen: HTMLCanvasElement;
   onMount(initRunner);
   async function initRunner() {
-    const offscreen = computerScreen.transferControlToOffscreen();
-    computer_runner.postMessage({ action: "initialize", canvas: offscreen }, [
-      offscreen,
+    const offscreenCanvas = computerScreen.transferControlToOffscreen();
+    computer_runner.postMessage({ action: "initialize", canvas: offscreenCanvas }, [
+      offscreenCanvas,
     ]);
 
     await new Promise<void>((resolve) => {
-      computer_runner.addEventListener("message", (e) => {
+      computer_runner.onmessage = (e) => {
         if (e.data.action === "ready") {
           resolve();
         }
-      });
+      };
     });
 
-    computer_runner.addEventListener("message", messageHandler);
+    computer_runner.onmessage = messageHandler;
 
     let prev: number;
     document.addEventListener("keydown", (e) => {

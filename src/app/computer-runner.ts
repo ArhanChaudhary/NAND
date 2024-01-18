@@ -98,7 +98,7 @@ async function initialize_worker() {
         reset();
         break;
       case "resetAndStart":
-        resetAndStart(e);
+        resetAndStart(e.data.machineCode);
         break;
       case "keyboard":
         computer_keyboard(e.data.key, true);
@@ -107,7 +107,7 @@ async function initialize_worker() {
         stop();
         break;
       case "speed":
-        speed(e);
+        speed(e.data.speedPercentage);
         break;
     }
   };
@@ -167,7 +167,7 @@ function reset() {
   });
 }
 
-function resetAndStart(e: MessageEvent<any>) {
+function resetAndStart(machineCode: string[]) {
   if (prevEmit) {
     computer_reset();
     emitIntervalTotal = 0;
@@ -178,7 +178,7 @@ function resetAndStart(e: MessageEvent<any>) {
       NANDCalls: 0n,
     });
   }
-  computer_loadROM(e.data.machineCode);
+  computer_loadROM(machineCode);
   start();
 }
 
@@ -192,11 +192,11 @@ function stop() {
   });
 }
 
-function speed(e: MessageEvent<any>) {
+function speed(speedPercentage: number) {
   const minLogValue = Math.log10(slowestStep);
   const maxLogValue = Math.log10(fastestStep);
   const logScaledValue =
-    minLogValue + (e.data.speed / 100) * (maxLogValue - minLogValue);
+    minLogValue + (speedPercentage / 100) * (maxLogValue - minLogValue);
   const linearScaledValue = Math.pow(10, logScaledValue);
   step = linearScaledValue;
 }
