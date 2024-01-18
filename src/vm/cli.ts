@@ -3,13 +3,13 @@ import fs from "fs";
 
 let path = process.argv[process.argv.length - 1].replace(/\/$/, "");
 
-let inputFiles: Array<{ fileName: string; file: string[] }>;
+let inputFiles: Array<{ fileName: string; VMCode: string[] }>;
 let outputFile: string;
 if (path.endsWith(".vm")) {
   inputFiles = [
     {
       fileName: path.split("/").pop().replace(/\.vm$/, ""),
-      file: fs.readFileSync(path, "utf-8").split("\n"),
+      VMCode: fs.readFileSync(path, "utf-8").split("\n"),
     },
   ];
   outputFile = path.replace(/\.vm$/, ".asm");

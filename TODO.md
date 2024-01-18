@@ -1,9 +1,9 @@
 # TODO (NAND)
-* try safari support
-* every wasm flag (not all features like mutable_globals and bulk_memory etc might be needed)
-* minimal example of worker in worker and requestAnimationFrame not working
+* support safari, separate website where i just test resizing canvas
+* bisect and figure out when safari became slow
+* every wasm flag (not all features like mutable_globals and bulk_memory etc might be needed), test if current flags actually help
+* minimal example of worker in worker and requestAnimationFrame not working, gh issue?
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker, share emitInfo data with main thread
-* infinite loop in computer-runner, move emitInfo to screen?
 
 * dont scroll to focused tab on drag
 * make sure class name is valid (look in compiler)
@@ -37,6 +37,7 @@
     * GeneticAlgorithm (will not reallocate)
 * vm escape bug
 * maybe a template for multithreaded svelte?
+* read abt desynchronized
 
 # TODO (genetic algorithm)
 * random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
@@ -67,6 +68,4 @@
 * nand in nand
 * lisp interpreter
 * barrel shifter
-* mouse input and click input
-* draw screen using prev diff
-* 32 bit architecture
+* mouse input and click input (use RAM 24767 to avoid breaking backwards incompat)
