@@ -1,3 +1,6 @@
+# Very unfortunately, compiling with SharedArrayBuffer slows down safari by
+# an entire megahertz! Try it out; 188febf is super fast on safari while
+# f0e1e35 is laughably slow.
 [unstable]
 build-std = ['std', 'panic_abort']
 
