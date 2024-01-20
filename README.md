@@ -12,7 +12,7 @@ is a turing equivalent computer entirely built from a clock and NAND logic gates
 \
 \
 Here is a technical breakdown of the technologies used to build NAND:
-* Logic simulator: Rust [compiled to WebAssembly](https://github.com/rustwasm/wasm-bindgen) on a WebWorker
+* Logic simulator: Rust on Web Workers
 * Assembler, VM translator, compiler, and IDE: TypeScript
 * NAND's Example programs: Jack (NAND's programming language) utilizing JavaScript to help with debugging
 * Frontend: Svelte with Vite
