@@ -1,9 +1,9 @@
 # TODO (NAND)
-* bugzilla issue
+* is another offset worker faster (data race?)?
+
 * switch canvas to webgl experiment
 * every wasm flag (not all features like mutable_globals and bulk_memory etc might be needed), test if current flags actually help
 * no support for safari <= 16.2 which becomes <= 16.7 if i support webgl
-* minimal example of worker in worker and requestAnimationFrame not working, gh issue?
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker, share emitInfo data with main thread
 
 * dont scroll to focused tab on drag

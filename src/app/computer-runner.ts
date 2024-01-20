@@ -23,9 +23,12 @@ function runner() {
     stopRunner = false;
     return;
   }
-  // NOTE: there is no worry of runner being called while the previous call is
-  // running because this is a web worker, so it's single threaded and will wait
-  // for this to complete before calling it again
+  // Testing here has shown that a busy loop is actually the exact same speed
+  // as setTimeout(runner, 0)! This was a bit surprising to me, and I suspect
+  // this is due to v8 optimizations. Imagine how cool it would have been if
+  // this entire web worker ran on a busy loop and state was shared through
+  // SharedArrayBuffer. I can't really complain, though, as that probably
+  // would have been hell to implement lol
   setTimeout(runner, 0);
   for (let i = 0; i < step; i++) {
     computer_ticktock();
