@@ -16,16 +16,24 @@
     JackOS = OSFiles;
   });
 
-  let computer_runner: Worker;
+  let computer_runners: Worker[] = new Array<Worker>(
+    // number of clocks (runner threads) that run at the same time
+    // from testing the current implementation of just one runner is the fastest
+    // and more convenient to work with, but seeing how interesting the results
+    // of multithreading and data races makes this worth to note and toy around with
+    navigator.hardwareConcurrency - 1
+  );
   let computer_screen: Worker;
   // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
   if (import.meta.env.DEV) {
-    computer_runner = new Worker(
-      new URL("computer-runner.ts", import.meta.url),
-      {
-        type: "module",
-      }
-    );
+    for (let i = 0; i < computer_runners.length; i++) {
+      computer_runners[i] = new Worker(
+        new URL("computer-runner.ts", import.meta.url),
+        {
+          type: "module",
+        }
+      );
+    }
     computer_screen = new Worker(
       new URL("computer-screen.ts", import.meta.url),
       {
@@ -33,12 +41,14 @@
       }
     );
   } else {
-    computer_runner = new Worker(
-      new URL("computer-runner.ts", import.meta.url),
-      {
-        type: "classic",
-      }
-    );
+    for (let i = 0; i < computer_runners.length; i++) {
+      computer_runners[i] = new Worker(
+        new URL("computer-runner.ts", import.meta.url),
+        {
+          type: "classic",
+        }
+      );
+    }
     computer_screen = new Worker(
       new URL("computer-screen.ts", import.meta.url),
       {
@@ -46,14 +56,20 @@
       }
     );
   }
+  let computer_runner = computer_runners[0];
 
-  const loadComputerRunner = new Promise<void>((resolve) => {
-    computer_runner.onmessage = (e) => {
-      if (e.data.action === "loaded") {
-        resolve();
-      }
-    };
-  });
+  const loadComputerRunners = Promise.all(
+    computer_runners.map(
+      (computer_runner) =>
+        new Promise<void>((resolve) => {
+          computer_runner.onmessage = (e) => {
+            if (e.data.action === "loaded") {
+              resolve();
+            }
+          };
+        })
+    )
+  );
 
   const loadComputerScreen = new Promise<void>((resolve) => {
     computer_screen.onmessage = (e) => {
@@ -69,42 +85,63 @@
   });
 
   const loadComputerRuntime = new Promise<void>(async (resolve) => {
-    await Promise.all([initializeComputerWasm, loadComputerRunner]);
-    computer_runner.postMessage({
-      wasm_module: (computer_init as any).__wbindgen_wasm_module,
-      wasm_memory,
-    });
+    await Promise.all([initializeComputerWasm, loadComputerRunners]);
+    for (const computer_runner of computer_runners) {
+      computer_runner.postMessage({
+        wasm_module: (computer_init as any).__wbindgen_wasm_module,
+        wasm_memory,
+      });
+    }
 
-    computer_runner.onmessage = (e) => {
-      if (e.data.action === "ready") {
-        resolve();
-      }
-    };
+    await Promise.all(
+      computer_runners.map(
+        (computer_runner) =>
+          new Promise<void>(
+            (i) =>
+              (computer_runner.onmessage = (e) => {
+                if (e.data.action === "ready") {
+                  i();
+                }
+              })
+          )
+      )
+    );
+    resolve();
   });
 
   await Promise.all([loadJackOS, loadComputerRuntime, loadComputerScreen]);
   export function startComputerRuntime(machineCode: string[]) {
-    computer_runner.postMessage({ action: "start", machineCode });
+    for (const computer_runner of computer_runners) {
+      computer_runner.postMessage({ action: "start", machineCode });
+    }
     computer_screen.postMessage({ action: "startRendering" });
   }
 
   export function resetAndStartComputerRuntime(machineCode: string[]) {
-    computer_runner.postMessage({ action: "resetAndStart", machineCode });
+    for (const computer_runner of computer_runners) {
+      computer_runner.postMessage({ action: "resetAndStart", machineCode });
+    }
     computer_screen.postMessage({ action: "startRendering" });
   }
 
   export function resetComputerRuntime() {
-    computer_runner.postMessage({ action: "reset" });
+    for (const computer_runner of computer_runners) {
+      computer_runner.postMessage({ action: "reset" });
+    }
     computer_screen.postMessage({ action: "stopRendering" });
   }
 
   export function stopComputerRuntime() {
-    computer_runner.postMessage({ action: "stop" });
+    for (const computer_runner of computer_runners) {
+      computer_runner.postMessage({ action: "stop" });
+    }
     computer_screen.postMessage({ action: "stopRendering" });
   }
 
   export function speedComputerRuntime(speedPercentage: number) {
-    computer_runner.postMessage({ action: "speed", speedPercentage });
+    for (const computer_runner of computer_runners) {
+      computer_runner.postMessage({ action: "speed", speedPercentage });
+    }
   }
 </script>
 
