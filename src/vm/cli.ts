@@ -8,7 +8,7 @@ let outputFile: string;
 if (path.endsWith(".vm")) {
   inputFiles = [
     {
-      fileName: path.split("/").pop().replace(/\.vm$/, ""),
+      fileName: path.split("/").pop()!.replace(/\.vm$/, ""),
       VMCode: fs.readFileSync(path, "utf-8").split("\n"),
     },
   ];
@@ -19,7 +19,7 @@ if (path.endsWith(".vm")) {
     .filter((fileName: string) => fileName.endsWith(".vm"));
   inputFiles = files.map((fileName: string) => ({
     fileName: fileName.replace(/\.vm$/, ""),
-    file: fs.readFileSync(`${path}/${fileName}`, "utf-8").split("\n"),
+    VMCode: fs.readFileSync(`${path}/${fileName}`, "utf-8").split("\n"),
   }));
   outputFile = `${path}/${path.split("/").pop()}.asm`;
 }

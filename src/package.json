@@ -12,7 +12,6 @@
     "esm-node": "node --experimental-specifier-resolution=node --loader ts-node/esm"
   },
   "dependencies": {
-    "@types/node": "^20.10.8",
     "core": "file:./pkg",
     "cssnano": "^6.0.3",
     "detect-browser": "^5.3.0",

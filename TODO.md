@@ -1,6 +1,4 @@
 # TODO (NAND)
-* is another offset worker faster (data race?)?
-
 * switch canvas to webgl experiment
 * every wasm flag (not all features like mutable_globals and bulk_memory etc might be needed), test if current flags actually help
 * no support for safari <= 16.2 which becomes <= 16.7 if i support webgl

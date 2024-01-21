@@ -9,7 +9,7 @@ if (path.endsWith(".jack")) {
     {
       fileName: path
         .split("/")
-        .pop()
+        .pop()!
         .replace(/\.jack$/, ""),
       file: fs.readFileSync(path, "utf-8").split("\n"),
     },
@@ -36,8 +36,8 @@ if (path.endsWith(".jack")) {
     .map((fileName: string) => ({
       fileName: fileName
         .split("/")
-        .pop()
-        ?.replace(/\.jack$/, ""),
+        .pop()!
+        .replace(/\.jack$/, ""),
       file: fs.readFileSync(fileName, "utf-8").split("\n") as string[],
     }));
 }
@@ -50,5 +50,5 @@ out.forEach((fileData) => {
   } else {
     outputFile = `${path}/${fileData.fileName}.vm`;
   }
-  fs.writeFileSync(outputFile, fileData.file.join("\n"));
+  fs.writeFileSync(outputFile, fileData.VMCode.join("\n"));
 });
