@@ -1,9 +1,13 @@
 # TODO (NAND)
+* service worker for fun
+
 * switch canvas to webgl experiment
 * every wasm flag (not all features like mutable_globals and bulk_memory etc might be needed), test if current flags actually help
 * no support for safari <= 16.2 which becomes <= 16.7 if i support webgl
 * move rustwasm.render to worker https://rustwasm.github.io/wasm-bindgen/examples/wasm-in-web-worker.html and https://github.com/rustwasm/wasm-bindgen/tree/main/examples/wasm-in-web-worker, share emitInfo data with main thread
 
+* touch events for divider on mobile
+* mobile virtual keyboard?
 * dont scroll to focused tab on drag
 * make sure class name is valid (look in compiler)
 * common keybinds like undo etc
