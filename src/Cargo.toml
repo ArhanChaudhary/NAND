@@ -1,8 +1,10 @@
 [package]
-name = "core"
+name = "nand-core"
 version = "0.1.0"
 authors = ["Arhan Chaudhary <arhan.ch@gmail.com>"]
 edition = "2021"
+description = "NAND's computer API"
+license = "MIT"
 
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = [
