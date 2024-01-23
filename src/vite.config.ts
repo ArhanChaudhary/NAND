@@ -27,7 +27,7 @@ export default defineConfig({
             src: "/favicon.ico",
             sizes: "450x450",
             type: "image/png",
-            purpose: "any",
+            purpose: "any maskable",
           },
         ],
       }
