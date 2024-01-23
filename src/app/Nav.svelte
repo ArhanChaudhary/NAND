@@ -183,7 +183,14 @@
 </script>
 
 <nav>
-  <img id="logo" alt="" src="/logo.png" draggable="false" />
+  <img
+    id="logo"
+    alt=""
+    src="/logo.png"
+    draggable="false"
+    width="55.94"
+    height="60"
+  />
   <button on:click={_startComputerRuntime}> Start </button>
   <button on:click={stopComputerRuntime}> Stop </button>
   <button on:click={resetComputerRuntime}> Reset </button>
@@ -220,7 +227,13 @@
     <div>Load example program</div>
   </span>
   <a id="gh-logo-container" href="https://github.com/ArhanChaudhary/NAND">
-    <span></span><img alt="" src="/github-mark.png" draggable="false" />
+    <span></span><img
+      alt=""
+      src="/github-mark.png"
+      width="60"
+      height="60"
+      draggable="false"
+    />
   </a>
 </nav>
 
