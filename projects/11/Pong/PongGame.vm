@@ -36,23 +36,11 @@ push constant 0
 call Output.moveCursor 2
 pop temp 0
 push constant 8
-call String.new 1
-push constant 83
-call String.appendChar 2
-push constant 99
-call String.appendChar 2
-push constant 111
-call String.appendChar 2
-push constant 114
-call String.appendChar 2
-push constant 101
-call String.appendChar 2
-push constant 58
-call String.appendChar 2
-push constant 32
-call String.appendChar 2
-push constant 48
-call String.appendChar 2
+push constant 12755
+push constant 14703
+push constant 7525
+push constant 6176
+call String.newWithStr 5
 call Output.printString 1
 pop temp 0
 push constant 0
@@ -92,8 +80,6 @@ push argument 0
 pop pointer 0
 label WHILE_ITER0
 push this 3
-not
-not
 if-goto WHILE_BREAKER1
 label WHILE_ITER2
 push local 0
@@ -144,8 +130,7 @@ push constant 140
 eq
 not
 if-goto FALSE_CASE8
-push constant 1
-neg
+push constant -1
 pop this 3
 label FALSE_CASE8
 label TRUE_CASE7
@@ -183,25 +168,12 @@ push constant 27
 call Output.moveCursor 2
 pop temp 0
 push constant 9
-call String.new 1
-push constant 71
-call String.appendChar 2
-push constant 97
-call String.appendChar 2
-push constant 109
-call String.appendChar 2
-push constant 101
-call String.appendChar 2
-push constant 32
-call String.appendChar 2
-push constant 79
-call String.appendChar 2
-push constant 118
-call String.appendChar 2
-push constant 101
-call String.appendChar 2
+push constant 12487
+push constant 13037
+push constant 10144
+push constant 13046
 push constant 114
-call String.appendChar 2
+call String.newWithStr 6
 call Output.printString 1
 pop temp 0
 label FALSE_CASE11
@@ -253,8 +225,6 @@ lt
 or
 pop this 3
 push this 3
-not
-not
 if-goto FALSE_CASE14
 push local 4
 push local 1
@@ -263,8 +233,7 @@ add
 lt
 not
 if-goto FALSE_CASE15
-push constant 1
-neg
+push constant -1
 pop local 0
 goto TRUE_CASE16
 label FALSE_CASE15

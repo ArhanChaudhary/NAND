@@ -73,8 +73,6 @@ push constant 0
 pop local 1
 label WHILE_ITER4
 push local 1
-not
-not
 if-goto WHILE_BREAKER5
 label WHILE_ITER6
 push local 0
@@ -94,8 +92,7 @@ push constant 81
 eq
 not
 if-goto FALSE_CASE8
-push constant 1
-neg
+push constant -1
 pop local 1
 label FALSE_CASE8
 push local 0
@@ -152,8 +149,6 @@ label WHILE_ITER15
 push local 0
 push constant 0
 eq
-not
-not
 if-goto WHILE_BREAKER16
 call Keyboard.keyPressed 0
 pop local 0

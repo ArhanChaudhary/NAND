@@ -1,8 +1,7 @@
 function Main.main 1
 push constant 8001
 push constant 16
-push constant 1
-neg
+push constant -1
 call Main.fillMemory 3
 pop temp 0
 push constant 8000
@@ -14,8 +13,7 @@ pop temp 0
 push constant 0
 return
 function Main.convert 3
-push constant 1
-neg
+push constant -1
 pop local 2
 label WHILE_ITER0
 push local 2
@@ -31,16 +29,12 @@ pop local 0
 push local 1
 push constant 16
 gt
-not
-not
 if-goto FALSE_CASE2
 push argument 0
 push local 0
 and
 push constant 0
 eq
-not
-not
 if-goto FALSE_CASE3
 push constant 8000
 push local 1

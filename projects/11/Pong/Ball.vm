@@ -36,8 +36,7 @@ return
 function Ball.show 0
 push argument 0
 pop pointer 0
-push constant 1
-neg
+push constant -1
 call Screen.setColor 1
 pop temp 0
 push pointer 0
@@ -243,8 +242,6 @@ label TRUE_CASE13
 push this 0
 push this 10
 gt
-not
-not
 if-goto FALSE_CASE16
 push constant 1
 pop this 14
@@ -254,8 +251,6 @@ label FALSE_CASE16
 push this 0
 push this 11
 lt
-not
-not
 if-goto FALSE_CASE17
 push constant 2
 pop this 14
@@ -265,8 +260,6 @@ label FALSE_CASE17
 push this 1
 push this 12
 gt
-not
-not
 if-goto FALSE_CASE18
 push constant 3
 pop this 14
@@ -276,8 +269,6 @@ label FALSE_CASE18
 push this 1
 push this 13
 lt
-not
-not
 if-goto FALSE_CASE19
 push constant 4
 pop this 14
@@ -321,8 +312,7 @@ push this 2
 push constant 0
 lt
 push argument 1
-push constant 1
-neg
+push constant -1
 eq
 and
 or
