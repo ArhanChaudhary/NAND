@@ -9,7 +9,7 @@ import computer_init, {
 self.postMessage({ action: "loaded" });
 
 let stopRunner = false;
-let emitInterval: NodeJS.Timeout | void;
+let emitInterval: NodeJS.Timeout | undefined;
 let emitIntervalTotal = 0;
 // adjust accordingly
 // lowest value until the Hz starts to drop
@@ -111,10 +111,12 @@ function start() {
 
 function reset() {
   if (!prevEmit) return;
-  stopRunner = true;
+  if (emitInterval) {
+    stopRunner = true;
+    emitInterval = clearInterval(emitInterval as NodeJS.Timeout) as undefined;
+    emitIntervalTotal = 0;
+  }
   computer_reset();
-  emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
-  emitIntervalTotal = 0;
   prevSecTotals.length = 0;
   self.postMessage({
     action: "emitInfo",
@@ -139,9 +141,10 @@ function resetAndStart(machineCode: string[]) {
 }
 
 function stop() {
+  if (!emitInterval) return;
   stopRunner = true;
-  if (emitInterval) emitInfo();
-  emitInterval = clearInterval(emitInterval as NodeJS.Timeout);
+  emitInfo();
+  emitInterval = clearInterval(emitInterval as NodeJS.Timeout) as undefined;
   self.postMessage({
     action: "stopping",
   });
