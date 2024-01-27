@@ -1,5 +1,4 @@
 # TODO (NAND)
-* for maskable just change sizes in manifest and nothing else
 * make able to re-place obstacles (actually reallocate memory and stuff)
 
 * switch canvas to webgl experiment
