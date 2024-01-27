@@ -7,7 +7,7 @@ use crate::{
             bool_from_u16, nbit16, slice16_0to12, slice16_0to13, slice16_0to14, u16_from_bool,
         },
         hardware::{keyboard, reset_nand_calls, tick, tock},
-        memory::{aregister, dregister, pc_reg, ram16k, rom32k, screen},
+        memory::{aregister, dregister, pcregister, ram16k, rom32k, screen},
     },
     gates::{and, is_zero, mux16, not, or},
 };
@@ -15,7 +15,7 @@ use crate::{
 static mut PC_DFFOUT: u16 = 0;
 fn pc(in_: u16, load: bool, reset: bool) -> u16 {
     unsafe {
-        PC_DFFOUT = pc_reg(
+        PC_DFFOUT = pcregister(
             // reset
             mux16(
                 // load

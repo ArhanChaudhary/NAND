@@ -2,13 +2,18 @@ use super::hardware::CLOCK;
 use wasm_bindgen::prelude::*;
 
 static mut PC_DFFOUT: u16 = 0;
-pub fn pc_reg(in_: u16) -> u16 {
-    let out = unsafe { PC_DFFOUT };
+pub fn pcregister(in_: u16) -> u16 {
     // NOTE: load is always true
     if unsafe { CLOCK } {
+        let out = unsafe { PC_DFFOUT };
         unsafe { PC_DFFOUT = in_ };
+        // this *should* return in_, but from my experiments thusfar I haven't
+        // been able to find an implementation that works in a simpler way than
+        // what we currently have
+        out
+    } else {
+        unsafe { PC_DFFOUT }
     }
-    out
 }
 
 static mut DREGISTER_DFFOUT: u16 = 0;

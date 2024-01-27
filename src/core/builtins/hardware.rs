@@ -56,8 +56,11 @@ static mut CURRENT_KEY: u16 = 0;
 pub fn keyboard(in_: u16, load: bool) -> u16 {
     if load {
         unsafe { CURRENT_KEY = in_ };
+        in_
+    } else {
+        unsafe { CURRENT_KEY }
+
     }
-    unsafe { CURRENT_KEY }
 }
 
 #[wasm_bindgen]
