@@ -1,4 +1,7 @@
-import computer_init, { screen_init, render as screen_render } from "core";
+import computer_init, {
+  handle_message as screen_handle_message,
+  init as screen_init,
+} from "core";
 
 // this seemingly redundant postMessage is necessary because new Worker() is
 // is asynchronous, and we need to wait for the worker to fully load
@@ -13,48 +16,6 @@ self.onmessage = async (e) => {
       desynchronized: true,
     })
   );
-
-  self.onmessage = (e) => {
-    switch (e.data.action) {
-      case "startRendering":
-        startRendering();
-        break;
-      case "stopRendering":
-        stopRendering();
-        break;
-    }
-  };
-
+  self.onmessage = (e) => screen_handle_message(e.data.action);
   self.postMessage({ action: "ready" });
 };
-
-let stopRenderingLoop = false;
-function renderer() {
-  if (stopRenderingLoop) {
-    stopRenderingLoop = false;
-  } else {
-    requestAnimationFrame(renderer);
-  }
-  screen_render();
-}
-
-// We need this sort of locking mechanism because of the case of resetAndStart
-// *sometimes* we want to start rendering, and sometimes we don't want to do
-// anything because it's already rendering. So, instead of moving the logic
-// to prevent double rendering to the app logic, we can just do it here to
-// make it such that it still works even if multiple startRendering messages
-// are sent
-let currentlyRendering = false;
-function startRendering() {
-  if (!currentlyRendering) {
-    requestAnimationFrame(renderer);
-    currentlyRendering = true;
-  }
-}
-
-function stopRendering() {
-  if (currentlyRendering) {
-    stopRenderingLoop = true;
-    currentlyRendering = false;
-  }
-}

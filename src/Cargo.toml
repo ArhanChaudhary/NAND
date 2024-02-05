@@ -29,7 +29,10 @@ path = "core/lib.rs"
 [dependencies]
 js-sys = "0.3.67"
 wasm-bindgen = "0.2.90"
-web-sys = "0.3.67"
+
+[dependencies.web-sys]
+version = "0.3.67"
+features = ["Window", "DedicatedWorkerGlobalScope"]
 
 [profile.release]
 panic = "abort"

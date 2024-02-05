@@ -2,7 +2,6 @@ use super::{
     bit_manipulation::nbit16,
     memory::{ROM32K_MEMORY, SCREEN_MEMORY},
 };
-use crate::architecture::ticktock;
 use js_sys::{Array, Uint8ClampedArray, WebAssembly};
 use wasm_bindgen::prelude::*;
 
@@ -111,7 +110,6 @@ const GREEN_COLOR_DATA: u32 =
 // Still, this is nice to note for future me.
 pub static mut CTX: Option<OffscreenCanvasRenderingContext2d> = None;
 
-#[wasm_bindgen]
 pub fn render() {
     let mut pixel_data: [u32; SCREEN_WIDTH * SCREEN_HEIGHT] = [0; SCREEN_WIDTH * SCREEN_HEIGHT];
     for (i, &word16) in unsafe { SCREEN_MEMORY.iter().enumerate() } {
@@ -141,11 +139,4 @@ pub fn render() {
             .unwrap_unchecked()
             .put_image_data(&image_data, 0, 0)
     };
-}
-
-#[wasm_bindgen(js_name = ticktockFor)]
-pub fn ticktock_for(count: u16) {
-    for _ in 0..count {
-        ticktock();
-    }
 }
