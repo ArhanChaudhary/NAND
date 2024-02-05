@@ -24,12 +24,12 @@ pub fn NAND(a: bool, b: bool) -> bool {
 // -----------------------------------------------
 
 pub static mut NAND_CALLS: u64 = 0;
-#[wasm_bindgen(js_name=NANDCalls)]
+#[wasm_bindgen(js_name = NANDCalls)]
 pub fn nand_calls() -> u64 {
     unsafe { NAND_CALLS }
 }
 
-#[wasm_bindgen(js_name=resetNANDCalls)]
+#[wasm_bindgen(js_name = resetNANDCalls)]
 pub fn reset_nand_calls() {
     unsafe { NAND_CALLS = 0 };
 }
@@ -43,7 +43,7 @@ pub fn tock() {
     unsafe { CLOCK = false };
 }
 
-#[wasm_bindgen(js_name=loadROM)]
+#[wasm_bindgen(js_name = loadROM)]
 pub fn load_rom(in_: JsValue) {
     Array::from(&in_).for_each(&mut |v, i, _| {
         unsafe {
@@ -66,9 +66,22 @@ pub fn keyboard(in_: u16, load: bool) -> u16 {
 #[wasm_bindgen]
 extern "C" {
     pub type ImageData;
+    pub type OffscreenCanvasRenderingContext2d;
 
     #[wasm_bindgen(constructor)]
-    fn js_new(data: &Uint8ClampedArray, width: usize, height: usize) -> ImageData;
+    fn new_with_uint8_clamped_array_and_width_and_height(
+        data: &Uint8ClampedArray,
+        width: usize,
+        height: usize,
+    ) -> ImageData;
+
+    #[wasm_bindgen(method, js_name = putImageData)]
+    fn put_image_data(
+        this: &OffscreenCanvasRenderingContext2d,
+        imagedata: &ImageData,
+        dx: usize,
+        dy: usize,
+    );
 }
 
 const SCREEN_WIDTH: usize = 512;
@@ -96,8 +109,10 @@ const GREEN_COLOR_DATA: u32 =
 // every frame (and optimizing in this case doesn't do anything because the actual computer
 // runs on another web worker)
 // Still, this is nice to note for future me.
+pub static mut CTX: Option<OffscreenCanvasRenderingContext2d> = None;
+
 #[wasm_bindgen]
-pub fn render() -> ImageData {
+pub fn render() {
     let mut pixel_data: [u32; SCREEN_WIDTH * SCREEN_HEIGHT] = [0; SCREEN_WIDTH * SCREEN_HEIGHT];
     for (i, &word16) in unsafe { SCREEN_MEMORY.iter().enumerate() } {
         let y = i / (SCREEN_WIDTH / 16) * SCREEN_WIDTH;
@@ -116,10 +131,19 @@ pub fn render() -> ImageData {
             .buffer(),
     )
     .slice(base, base + len);
-    ImageData::js_new(&sliced_pixel_data, SCREEN_WIDTH, SCREEN_HEIGHT)
+    let image_data = ImageData::new_with_uint8_clamped_array_and_width_and_height(
+        &sliced_pixel_data,
+        SCREEN_WIDTH,
+        SCREEN_HEIGHT,
+    );
+    unsafe {
+        CTX.as_ref()
+            .unwrap_unchecked()
+            .put_image_data(&image_data, 0, 0)
+    };
 }
 
-#[wasm_bindgen(js_name=ticktockFor)]
+#[wasm_bindgen(js_name = ticktockFor)]
 pub fn ticktock_for(count: u16) {
     for _ in 0..count {
         ticktock();

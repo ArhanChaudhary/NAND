@@ -45,7 +45,7 @@ pub fn ram16k(in_: u16, load: bool, address: u16) -> u16 {
     out
 }
 
-#[wasm_bindgen(js_name=getRAM)]
+#[wasm_bindgen(js_name = getRAM)]
 pub fn get_ram() -> Vec<u16> {
     unsafe { RAM16K_MEMORY.to_vec() }
 }
