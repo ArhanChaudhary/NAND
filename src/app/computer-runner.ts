@@ -2,7 +2,7 @@ import computer_init, {
   NANDCalls as computer_NANDCalls,
   keyboard as computer_keyboard,
   loadROM as computer_loadROM,
-  ticktock as computer_ticktock,
+  ticktockFor as computer_ticktockFor,
   reset as computer_reset,
 } from "core";
 
@@ -30,9 +30,7 @@ function runner() {
   // SharedArrayBuffer. I can't really complain, though, as that probably
   // would have been hell to implement lol
   setTimeout(runner, 0);
-  for (let i = 0; i < step; i++) {
-    computer_ticktock();
-  }
+  computer_ticktockFor(step);
   emitIntervalTotal += step;
   if (computer_keyboard(0, false) === 32767) {
     computer_keyboard(0, true);

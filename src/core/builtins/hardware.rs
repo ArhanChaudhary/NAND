@@ -2,6 +2,7 @@ use super::{
     bit_manipulation::nbit16,
     memory::{ROM32K_MEMORY, SCREEN_MEMORY},
 };
+use crate::architecture::ticktock;
 use js_sys::{Array, Uint8ClampedArray, WebAssembly};
 use wasm_bindgen::prelude::*;
 
@@ -59,7 +60,6 @@ pub fn keyboard(in_: u16, load: bool) -> u16 {
         in_
     } else {
         unsafe { CURRENT_KEY }
-
     }
 }
 
@@ -117,4 +117,11 @@ pub fn render() -> ImageData {
     )
     .slice(base, base + len);
     ImageData::js_new(&sliced_pixel_data, SCREEN_WIDTH, SCREEN_HEIGHT)
+}
+
+#[wasm_bindgen(js_name=ticktockFor)]
+pub fn ticktock_for(count: u16) {
+    for _ in 0..count {
+        ticktock();
+    }
 }
