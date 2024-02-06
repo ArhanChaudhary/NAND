@@ -9,7 +9,7 @@ use wasm_bindgen::prelude::*;
 
 // NAND + 🦀 + 🕸️ = ❤️
 #[allow(non_snake_case)]
-pub fn NAND(a: bool, b: bool) -> bool {
+pub(crate) fn NAND(a: bool, b: bool) -> bool {
     unsafe { NAND_CALLS += 1 };
     !(a && b) // for science!!
 }
@@ -22,26 +22,25 @@ pub fn NAND(a: bool, b: bool) -> bool {
 
 // -----------------------------------------------
 
-pub static mut NAND_CALLS: u64 = 0;
-pub fn nand_calls() -> u64 {
+static mut NAND_CALLS: u64 = 0;
+pub(crate) fn nand_calls() -> u64 {
     unsafe { NAND_CALLS }
 }
 
-#[wasm_bindgen(js_name = resetNANDCalls)]
-pub fn reset_nand_calls() {
+pub(crate) fn reset_nand_calls() {
     unsafe { NAND_CALLS = 0 };
 }
 
-pub static mut CLOCK: bool = false;
-pub fn tick() {
+pub(crate) static mut CLOCK: bool = false;
+pub(crate) fn tick() {
     unsafe { CLOCK = true };
 }
 
-pub fn tock() {
+pub(crate) fn tock() {
     unsafe { CLOCK = false };
 }
 
-pub fn load_rom(in_: Vec<String>) {
+pub(crate) fn load_rom(in_: Vec<String>) {
     for (i, v) in in_.into_iter().enumerate() {
         unsafe {
             ROM32K_MEMORY[i] = u16::from_str_radix(v.as_str(), 2).unwrap();
@@ -50,7 +49,7 @@ pub fn load_rom(in_: Vec<String>) {
 }
 
 static mut CURRENT_KEY: u16 = 0;
-pub fn keyboard(in_: u16, load: bool) -> u16 {
+pub(crate) fn keyboard(in_: u16, load: bool) -> u16 {
     if load {
         unsafe { CURRENT_KEY = in_ };
         in_
@@ -61,8 +60,8 @@ pub fn keyboard(in_: u16, load: bool) -> u16 {
 
 #[wasm_bindgen]
 extern "C" {
-    pub type ImageData;
-    pub type OffscreenCanvasRenderingContext2d;
+    type ImageData;
+    pub(crate) type OffscreenCanvasRenderingContext2d;
 
     #[wasm_bindgen(constructor)]
     fn new_with_uint8_clamped_array_and_width_and_height(
@@ -105,9 +104,9 @@ const GREEN_COLOR_DATA: u32 =
 // every frame (and optimizing in this case doesn't do anything because the actual computer
 // runs on another web worker)
 // Still, this is nice to note for future me.
-pub static mut CTX: Option<OffscreenCanvasRenderingContext2d> = None;
+pub(crate) static mut CTX: Option<OffscreenCanvasRenderingContext2d> = None;
 
-pub fn render() {
+pub(crate) fn render() {
     let mut pixel_data: [u32; SCREEN_WIDTH * SCREEN_HEIGHT] = [0; SCREEN_WIDTH * SCREEN_HEIGHT];
     for (i, &word16) in unsafe { SCREEN_MEMORY.iter().enumerate() } {
         let y = i / (SCREEN_WIDTH / 16) * SCREEN_WIDTH;

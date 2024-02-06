@@ -1,4 +1,4 @@
-pub mod bit_manipulation;
-pub mod hardware;
-pub mod memory;
-pub mod runtime;
+pub(crate) mod bit_manipulation;
+pub(crate) mod hardware;
+pub(crate) mod memory;
+mod runtime;

@@ -84,13 +84,22 @@ fn add16(a: u16, b: u16) -> u16 {
     )
 }
 
-pub fn inc16(in_: u16) -> u16 {
+pub(crate) fn inc16(in_: u16) -> u16 {
     add16(in_, 1)
 }
 
 // NOTE: combining all the bools into a single opcode doesn't seem to have any performance impact
 #[allow(clippy::too_many_arguments)]
-pub fn alu(x: u16, y: u16, zx: bool, nx: bool, zy: bool, ny: bool, f: bool, no: bool) -> u16 {
+pub(crate) fn alu(
+    x: u16,
+    y: u16,
+    zx: bool,
+    nx: bool,
+    zy: bool,
+    ny: bool,
+    f: bool,
+    no: bool,
+) -> u16 {
     // zx
     let x1 = mux16(x, 0, zx);
     // nx

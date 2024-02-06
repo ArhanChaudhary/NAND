@@ -1,2 +1,2 @@
-pub mod screen;
-pub mod computer;
+mod computer;
+mod screen;

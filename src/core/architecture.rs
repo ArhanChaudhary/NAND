@@ -32,7 +32,7 @@ fn pc(in_: u16, load: bool, reset: bool) -> u16 {
 }
 
 static mut CPU_DFFOUT: [u16; 4] = [0; 4];
-pub fn cpu(in_m: u16, instruction: u16, reset: bool) {
+fn cpu(in_m: u16, instruction: u16, reset: bool) {
     unsafe { CPU_DFFOUT[1] = u16_from_bool(and(nbit16(instruction, 3), nbit16(instruction, 15))) };
 
     let aluy1 = aregister(0, false);
@@ -123,14 +123,14 @@ fn computer(reset: bool) {
     );
 }
 
-pub fn ticktock() {
+pub(crate) fn ticktock() {
     tick();
     computer(false);
     tock();
     computer(false);
 }
 
-pub fn reset() {
+pub(crate) fn reset() {
     tick();
     computer(true);
     tock();
