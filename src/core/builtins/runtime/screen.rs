@@ -1,11 +1,11 @@
-use crate::builtins::hardware::{render, OffscreenCanvasRenderingContext2d, CTX};
+use crate::builtins::hardware;
 use std::{cell::RefCell, rc::Rc};
 use wasm_bindgen::prelude::*;
 use web_sys::DedicatedWorkerGlobalScope;
 
 #[wasm_bindgen]
-pub fn screen_init(ctx: OffscreenCanvasRenderingContext2d) {
-    unsafe { CTX = Some(ctx) };
+pub fn screen_init(ctx: hardware::OffscreenCanvasRenderingContext2d) {
+    unsafe { hardware::CTX = Some(ctx) };
 }
 
 #[wasm_bindgen]
@@ -46,7 +46,7 @@ fn start_rendering() {
                 .unchecked_into::<DedicatedWorkerGlobalScope>()
                 .request_animation_frame(f.borrow().as_ref().unwrap().as_ref().unchecked_ref());
         }
-        render();
+        hardware::render();
     }));
     let _ = js_sys::global()
         .unchecked_into::<DedicatedWorkerGlobalScope>()

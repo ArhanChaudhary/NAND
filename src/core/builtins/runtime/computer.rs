@@ -57,7 +57,7 @@ static mut PREV_SEC_TOTALS: VecDeque<f64> = VecDeque::new();
 static mut PREV_EMIT: Option<f64> = None;
 static mut EMIT_INTERVAL: Option<i32> = None;
 static mut RUNNER_INTERVAL: Option<i32> = None;
-static mut EMIT_INTERVAL_TOTAL: f64 = 0.0;
+static mut EMIT_INTERVAL_TOTAL: usize = 0;
 
 fn runner() {
     unsafe {
@@ -70,7 +70,7 @@ fn runner() {
         for _ in 0..STEP {
             ticktock();
         }
-        EMIT_INTERVAL_TOTAL += STEP as f64;
+        EMIT_INTERVAL_TOTAL += STEP;
         if keyboard(0, false) == 32767 {
             keyboard(0, true);
             stop();
@@ -137,7 +137,7 @@ fn reset() {
                 .unchecked_into::<DedicatedWorkerGlobalScope>()
                 .clear_interval_with_handle(EMIT_INTERVAL.unwrap());
             EMIT_INTERVAL = None;
-            EMIT_INTERVAL_TOTAL = 0.0;
+            EMIT_INTERVAL_TOTAL = 0;
         }
     }
     architecture::reset();
@@ -159,7 +159,7 @@ fn reset() {
 fn reset_and_start(machine_code: Vec<String>) {
     if unsafe { PREV_EMIT.is_some() } {
         unsafe {
-            EMIT_INTERVAL_TOTAL = 0.0;
+            EMIT_INTERVAL_TOTAL = 0;
             PREV_SEC_TOTALS.clear();
         }
         architecture::reset();
@@ -232,13 +232,13 @@ fn emit_info() {
         .unwrap()
         .now();
     unsafe {
-        let sec_total = EMIT_INTERVAL_TOTAL / (current_emit - PREV_EMIT.unwrap()) * 1000.0;
+        let sec_total = EMIT_INTERVAL_TOTAL as f64 / (current_emit - PREV_EMIT.unwrap()) * 1000.0;
         if PREV_SEC_TOTALS.len() == (1000 * PREV_SEC_TOTAL_AVG_TIME) / EMIT_INTERVAL_DELAY {
             PREV_SEC_TOTALS.pop_front();
         }
         PREV_SEC_TOTALS.push_back(sec_total);
         PREV_EMIT = Some(current_emit);
-        EMIT_INTERVAL_TOTAL = 0.0;
+        EMIT_INTERVAL_TOTAL = 0;
     };
     let _ = js_sys::global()
         .unchecked_into::<DedicatedWorkerGlobalScope>()

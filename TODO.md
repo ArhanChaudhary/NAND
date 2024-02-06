@@ -1,15 +1,9 @@
 # TODO (NAND)
-* all (or most) use statements should have a prefix for forward compatibility and readability
-* update cargo crates
-* make all usizes their smaller sizes
-* make EMIT_INTERVAL_TOTAL a usize
 * screen_handle_message MessageData struct
-* .forget() heap memory leak
 * e.data.getcontext 2d move to screen.rs
-* remove pub from everything
-* make everything const fn
 * move the serde deserialize for getcontext to wasm
 * share emitInfo data with main thread and other variables if possible too
+* .forget() heap memory leak
 
 * "about" button
 * make able to re-place obstacles (actually reallocate memory and stuff)
