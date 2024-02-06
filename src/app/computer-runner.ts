@@ -8,8 +8,8 @@ import computer_init, {
 
 self.postMessage({ action: "loaded" });
 
-let stopRunner = false;
 let emitInterval: NodeJS.Timeout | undefined;
+let runnerInterval: NodeJS.Timeout | undefined;
 let emitIntervalTotal = 0;
 // adjust accordingly
 // lowest value until the Hz starts to drop
@@ -19,17 +19,12 @@ const slowestStep = 1;
 let step = fastestStep;
 
 function runner() {
-  if (stopRunner) {
-    stopRunner = false;
-    return;
-  }
   // Testing here has shown that a busy loop is actually the exact same speed
-  // as setTimeout(runner, 0)! This was a bit surprising to me, and I suspect
+  // as setInterval(runner, 0)! This was a bit surprising to me, and I suspect
   // this is due to v8 optimizations. Imagine how cool it would have been if
   // this entire web worker ran on a busy loop and state was shared through
   // SharedArrayBuffer. I can't really complain, though, as that probably
   // would have been hell to implement lol
-  setTimeout(runner, 0);
   computer_ticktockFor(step);
   emitIntervalTotal += step;
   if (computer_keyboard(0, false) === 32767) {
@@ -95,7 +90,6 @@ self.onmessage = async (e) => {
 
 function start() {
   if (emitInterval) return;
-  // computer_screen.postMessage({ action: "startRendering" });
   // worker startup is slow and the very first emit will be significantly slower
   // than the following ones. So, we want to sort of nudge the first emit closer
   // closer to a higher value. A higher value happens if prevEmit and
@@ -103,6 +97,7 @@ function start() {
   // the comparsion happen sooner and then we defined prevEmit as late as
   // possible, after runner()
   emitInterval = setInterval(emitInfo, emitIntervalDelay);
+  runnerInterval = setInterval(runner, 0);
   runner();
   prevEmit = performance.now();
 }
@@ -110,7 +105,7 @@ function start() {
 function reset() {
   if (!prevEmit) return;
   if (emitInterval) {
-    stopRunner = true;
+    runnerInterval = clearInterval(runnerInterval as NodeJS.Timeout) as undefined;
     emitInterval = clearInterval(emitInterval as NodeJS.Timeout) as undefined;
     emitIntervalTotal = 0;
   }
@@ -140,7 +135,7 @@ function resetAndStart(machineCode: string[]) {
 
 function stop() {
   if (!emitInterval) return;
-  stopRunner = true;
+  runnerInterval = clearInterval(runnerInterval as NodeJS.Timeout) as undefined;
   emitInfo();
   emitInterval = clearInterval(emitInterval as NodeJS.Timeout) as undefined;
   self.postMessage({
