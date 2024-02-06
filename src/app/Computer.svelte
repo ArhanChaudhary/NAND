@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  import computer_init from "core";
+  import runtime_init from "core";
 
   export let JackOS: {
     fileName: string;
@@ -64,14 +64,14 @@
   });
 
   let wasm_memory: WebAssembly.Memory;
-  const initializeComputerWasm = computer_init().then((resolved) => {
+  const initializeComputerWasm = runtime_init().then((resolved) => {
     wasm_memory = resolved.memory;
   });
 
   const loadComputerRuntime = new Promise<void>(async (resolve) => {
     await Promise.all([initializeComputerWasm, loadComputerRunner]);
     computer_runner.postMessage({
-      wasm_module: (computer_init as any).__wbindgen_wasm_module,
+      wasm_module: (runtime_init as any).__wbindgen_wasm_module,
       wasm_memory,
     });
 
@@ -129,28 +129,29 @@
     switch (e.data.action) {
       case "emitInfo":
         if (e.data.hz >= 100_000) {
-          clockSpeed = Number(e.data.hz / 1_000_000).toPrecision(3) + " MHz";
+          clockSpeed = (e.data.hz / 1_000_000).toPrecision(3) + " MHz";
         } else if (e.data.hz >= 1_000) {
-          clockSpeed = Number(e.data.hz / 1_000).toPrecision(3) + " KHz";
+          clockSpeed = (e.data.hz / 1_000).toPrecision(3) + " KHz";
         } else {
-          clockSpeed = Number(e.data.hz).toPrecision(3) + " Hz";
+          clockSpeed = e.data.hz.toPrecision(3) + " Hz";
         }
-        if (e.data.NANDCalls > 45_000_000_000n) {
+        if (e.data.NANDCalls > 45_000_000_000) {
           lightStatus = "green";
-        } else if (e.data.NANDCalls === 0n) {
+        } else if (e.data.NANDCalls === 0) {
           lightStatus = "";
         } else {
           lightStatus = "loading";
         }
-        if (e.data.NANDCalls >= 1_000_000_000_000n) {
+        if (e.data.NANDCalls >= 1_000_000_000_000) {
           NANDCalls =
-            Number((e.data.NANDCalls * 1000n) / 1_000_000_000_000n) / 1000 +
+            Math.round((e.data.NANDCalls * 1000) / 1_000_000_000_000) / 1000 +
             " trillion";
-        } else if (e.data.NANDCalls >= 1_000_000_000n) {
+        } else if (e.data.NANDCalls >= 1_000_000_000) {
           NANDCalls =
-            Number((e.data.NANDCalls * 10n) / 1_000_000_000n) / 10 + " billion";
-        } else if (e.data.NANDCalls >= 1_000_000n) {
-          NANDCalls = Number(e.data.NANDCalls / 1_000_000n) + " million";
+            Math.round((e.data.NANDCalls * 10) / 1_000_000_000) / 10 +
+            " billion";
+        } else if (e.data.NANDCalls >= 1_000_000) {
+          NANDCalls = Math.round(e.data.NANDCalls / 1_000_000) + " million";
         } else {
           NANDCalls = "0";
         }
@@ -169,7 +170,7 @@
     computer_screen.postMessage(
       {
         canvas: offscreenCanvas,
-        wasm_module: (computer_init as any).__wbindgen_wasm_module,
+        wasm_module: (runtime_init as any).__wbindgen_wasm_module,
         wasm_memory,
       },
       [offscreenCanvas]

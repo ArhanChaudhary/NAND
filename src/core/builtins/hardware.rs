@@ -2,7 +2,7 @@ use super::{
     bit_manipulation::nbit16,
     memory::{ROM32K_MEMORY, SCREEN_MEMORY},
 };
-use js_sys::{Array, Uint8ClampedArray, WebAssembly};
+use js_sys::{Uint8ClampedArray, WebAssembly};
 use wasm_bindgen::prelude::*;
 
 // -----------------------------------------------
@@ -23,7 +23,6 @@ pub fn NAND(a: bool, b: bool) -> bool {
 // -----------------------------------------------
 
 pub static mut NAND_CALLS: u64 = 0;
-#[wasm_bindgen(js_name = NANDCalls)]
 pub fn nand_calls() -> u64 {
     unsafe { NAND_CALLS }
 }
@@ -42,17 +41,15 @@ pub fn tock() {
     unsafe { CLOCK = false };
 }
 
-#[wasm_bindgen(js_name = loadROM)]
-pub fn load_rom(in_: JsValue) {
-    Array::from(&in_).for_each(&mut |v, i, _| {
+pub fn load_rom(in_: Vec<String>) {
+    for (i, v) in in_.into_iter().enumerate() {
         unsafe {
-            ROM32K_MEMORY[i as usize] = u16::from_str_radix(&v.as_string().unwrap(), 2).unwrap()
-        };
-    });
+            ROM32K_MEMORY[i] = u16::from_str_radix(v.as_str(), 2).unwrap();
+        }
+    }
 }
 
 static mut CURRENT_KEY: u16 = 0;
-#[wasm_bindgen]
 pub fn keyboard(in_: u16, load: bool) -> u16 {
     if load {
         unsafe { CURRENT_KEY = in_ };

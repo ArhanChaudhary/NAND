@@ -1,5 +1,3 @@
-use wasm_bindgen::prelude::*;
-
 use crate::{
     arithmetic::{alu, inc16},
     builtins::{
@@ -125,7 +123,6 @@ fn computer(reset: bool) {
     );
 }
 
-#[wasm_bindgen]
 pub fn ticktock() {
     tick();
     computer(false);
@@ -133,7 +130,6 @@ pub fn ticktock() {
     computer(false);
 }
 
-#[wasm_bindgen]
 pub fn reset() {
     tick();
     computer(true);
