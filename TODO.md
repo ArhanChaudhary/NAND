@@ -1,5 +1,4 @@
 # TODO (NAND)
-* share emitInfo data with main thread and other variables if possible too
 * EMIT_INTERVAL.unwrap()._closure.forget(); is this needed??
 * .forget() heap memory leak
 

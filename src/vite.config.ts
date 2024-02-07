@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import wasm from "vite-plugin-wasm";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
-import { VitePWA } from 'vite-plugin-pwa';
+import { VitePWA } from "vite-plugin-pwa";
 import sveltePreprocess from "svelte-preprocess";
 import topLevelAwait from "vite-plugin-top-level-await";
 
@@ -36,21 +36,12 @@ export default defineConfig({
             purpose: "maskable",
           },
         ],
-      }
+      },
     }),
     svelte({ preprocess: sveltePreprocess({ postcss: true }) }),
     topLevelAwait(),
   ],
   worker: {
     plugins: () => [wasm(), topLevelAwait()],
-  },
-  build: {
-    rollupOptions: {
-      input: {
-        main: "index.html", // This should be the entry HTML file for your app
-        "computer-runner": "app/computer-runner.ts",
-        "computer-screen": "app/computer-screen.ts", // Adjust the path accordingly
-      },
-    },
   },
 });

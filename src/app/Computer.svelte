@@ -21,26 +21,26 @@
   // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
   if (import.meta.env.DEV) {
     computer_runner = new Worker(
-      new URL("computer-runner.ts", import.meta.url),
+      new URL("computer-runtime.ts", import.meta.url),
       {
         type: "module",
       }
     );
     computer_screen = new Worker(
-      new URL("computer-screen.ts", import.meta.url),
+      new URL("screen-runtime.ts", import.meta.url),
       {
         type: "module",
       }
     );
   } else {
     computer_runner = new Worker(
-      new URL("computer-runner.ts", import.meta.url),
+      new URL("computer-runtime.ts", import.meta.url),
       {
         type: "classic",
       }
     );
     computer_screen = new Worker(
-      new URL("computer-screen.ts", import.meta.url),
+      new URL("screen-runtime.ts", import.meta.url),
       {
         type: "classic",
       }
@@ -244,7 +244,7 @@
   >
     <div id="computer-frame">
       <canvas
-        id="computer-screen"
+        id="screen-runner"
         bind:this={computerScreen}
         width="512"
         height="256"
@@ -321,7 +321,7 @@
         padding: var(--frame-padding);
         position: relative;
 
-        #computer-screen {
+        #screen-runner {
           border: calc(var(--px) * 15) solid;
           border-color: hsl(34, 11%, 57%) hsl(34, 15%, 68%) hsl(40, 42%, 87%);
           image-rendering: pixelated;
