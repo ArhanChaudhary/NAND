@@ -51,15 +51,32 @@ pub fn computer_handle_message(message: JsValue) {
 // we want the lowest so the keyboard is faster
 const FASTEST_STEP: usize = 30_000;
 const SLOWEST_STOP: usize = 1;
-static mut STEP: usize = FASTEST_STEP;
-
 const EMIT_INTERVAL_DELAY: usize = 50;
 const PREV_SEC_TOTAL_AVG_TIME: usize = 1;
+static mut STEP: usize = FASTEST_STEP;
 static mut PREV_SEC_TOTALS: VecDeque<f64> = VecDeque::new();
 static mut PREV_EMIT: Option<f64> = None;
 static mut EMIT_INTERVAL: Option<i32> = None;
 static mut RUNNER_INTERVAL: Option<i32> = None;
 static mut EMIT_INTERVAL_TOTAL: usize = 0;
+
+#[derive(Serialize)]
+struct EmitInfoMessage {
+    action: &'static str,
+    hz: f64,
+    #[serde(rename = "NANDCalls")]
+    nand_calls: u64,
+}
+
+impl Default for EmitInfoMessage {
+    fn default() -> Self {
+        EmitInfoMessage {
+            action: "emitInfo",
+            hz: 0.0,
+            nand_calls: 0,
+        }
+    }
+}
 
 fn runner() {
     // Testing here has shown that a busy loop is actually the exact same speed
@@ -214,24 +231,6 @@ fn speed(speed_percentage: u16) {
     }
 }
 
-#[allow(non_snake_case)]
-#[derive(Serialize)]
-struct EmitInfoMessage {
-    action: &'static str,
-    hz: f64,
-    NANDCalls: u64,
-}
-
-impl Default for EmitInfoMessage {
-    fn default() -> Self {
-        EmitInfoMessage {
-            action: "emitInfo",
-            hz: 0.0,
-            NANDCalls: 0,
-        }
-    }
-}
-
 fn emit_info() {
     let current_emit = js_sys::global()
         .dyn_into::<WorkerGlobalScope>()
@@ -254,7 +253,7 @@ fn emit_info() {
             &serde_wasm_bindgen::to_value(&EmitInfoMessage {
                 action: "emitInfo",
                 hz: unsafe { PREV_SEC_TOTALS.iter().sum::<f64>() / PREV_SEC_TOTALS.len() as f64 },
-                NANDCalls: nand_calls(),
+                nand_calls: nand_calls(),
             })
             .unwrap(),
         );
