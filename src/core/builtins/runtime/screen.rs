@@ -41,6 +41,7 @@ fn start_rendering() {
             unsafe {
                 STOP_RENDERING_LOOP = false;
             }
+            let _ = f.borrow_mut().take();
         } else {
             let _ = js_sys::global()
                 .unchecked_into::<DedicatedWorkerGlobalScope>()
