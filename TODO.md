@@ -1,7 +1,4 @@
 # TODO (NAND)
-* EMIT_INTERVAL.unwrap()._closure.forget(); is this needed??
-* .forget() heap memory leak
-
 * "about" button
 * make able to re-place obstacles (actually reallocate memory and stuff)
 * switch canvas to webgl experiment

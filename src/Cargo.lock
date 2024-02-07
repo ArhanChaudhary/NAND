@@ -34,6 +34,7 @@ name = "nand-core"
 version = "0.1.0"
 dependencies = [
  "js-sys",
+ "once_cell",
  "serde",
  "serde-wasm-bindgen",
  "wasm-bindgen",

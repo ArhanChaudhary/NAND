@@ -2,6 +2,7 @@ use crate::{
     architecture::{self, ticktock},
     builtins::hardware::{keyboard, load_rom, nand_calls},
 };
+use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use wasm_bindgen::prelude::*;
@@ -97,38 +98,32 @@ fn runner() {
     }
 }
 
+static mut EMIT_INFO_CLOSURE: Lazy<Closure<dyn Fn()>> = Lazy::new(|| Closure::new(emit_info));
+static mut RUNNER_CLOSURE: Lazy<Closure<dyn Fn()>> = Lazy::new(|| Closure::new(runner));
 fn start() {
-    if unsafe { RUNNER_INTERVAL.is_some() } {
-        return;
-    }
-    let emit_info_closure = Closure::<dyn Fn()>::new(emit_info);
     unsafe {
+        if RUNNER_INTERVAL.is_some() {
+            return;
+        }
         EMIT_INTERVAL = Some(
             js_sys::global()
                 .unchecked_into::<DedicatedWorkerGlobalScope>()
                 .set_interval_with_callback_and_timeout_and_arguments_0(
-                    emit_info_closure.as_ref().unchecked_ref(),
+                    EMIT_INFO_CLOSURE.as_ref().unchecked_ref(),
                     EMIT_INTERVAL_DELAY as i32,
                 )
                 .unwrap(),
         );
-    }
-    emit_info_closure.forget();
-
-    let runner_closure = Closure::<dyn Fn()>::new(runner);
-    unsafe {
         RUNNER_INTERVAL = Some(
             js_sys::global()
                 .unchecked_into::<DedicatedWorkerGlobalScope>()
                 .set_interval_with_callback_and_timeout_and_arguments_0(
-                    runner_closure.as_ref().unchecked_ref(),
+                    RUNNER_CLOSURE.as_ref().unchecked_ref(),
                     0,
                 )
                 .unwrap(),
         );
     }
-    runner_closure.forget();
-
     runner();
 
     // worker startup is slow and the very first emit will be significantly slower
@@ -213,7 +208,6 @@ fn stop() {
         .unchecked_into::<DedicatedWorkerGlobalScope>()
         .clear_interval_with_handle(unsafe { EMIT_INTERVAL.unwrap() });
     unsafe {
-        // EMIT_INTERVAL.unwrap()._closure.forget();
         EMIT_INTERVAL = None;
     }
     let _ = js_sys::global()

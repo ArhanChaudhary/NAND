@@ -1,6 +1,6 @@
 use crate::builtins::hardware::{self, OffscreenCanvasRenderingContext2d, CTX};
+use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
-use std::{cell::RefCell, rc::Rc};
 use wasm_bindgen::prelude::*;
 use web_sys::{DedicatedWorkerGlobalScope, OffscreenCanvas};
 
@@ -44,6 +44,21 @@ pub fn screen_handle_message(message: JsValue) {
 
 static mut STOP_RENDERING_LOOP: bool = false;
 static mut CURRENTLY_RENDERING: bool = false;
+static mut RENDERER_CLOSURE: Lazy<Closure<dyn Fn()>> = Lazy::new(|| Closure::new(renderer));
+
+fn renderer() {
+    if unsafe { STOP_RENDERING_LOOP } {
+        unsafe {
+            STOP_RENDERING_LOOP = false;
+        }
+    } else {
+        let _ = js_sys::global()
+            .unchecked_into::<DedicatedWorkerGlobalScope>()
+            .request_animation_frame(unsafe { RENDERER_CLOSURE.as_ref().unchecked_ref() });
+    }
+    hardware::render();
+}
+
 fn start_rendering() {
     // We need this sort of locking mechanism because of the case of resetAndStart
     // *sometimes* we want to start rendering, and sometimes we don't want to do
@@ -57,26 +72,9 @@ fn start_rendering() {
     unsafe {
         CURRENTLY_RENDERING = true;
     }
-    // https://rustwasm.github.io/wasm-bindgen/examples/request-animation-frame.html
-    let f = Rc::new(RefCell::new(None::<Closure<dyn FnMut()>>));
-    let g = f.clone();
-
-    *g.borrow_mut() = Some(Closure::new(move || {
-        if unsafe { STOP_RENDERING_LOOP } {
-            unsafe {
-                STOP_RENDERING_LOOP = false;
-            }
-            let _ = f.borrow_mut().take();
-        } else {
-            let _ = js_sys::global()
-                .unchecked_into::<DedicatedWorkerGlobalScope>()
-                .request_animation_frame(f.borrow().as_ref().unwrap().as_ref().unchecked_ref());
-        }
-        hardware::render();
-    }));
     let _ = js_sys::global()
         .unchecked_into::<DedicatedWorkerGlobalScope>()
-        .request_animation_frame(g.borrow().as_ref().unwrap().as_ref().unchecked_ref());
+        .request_animation_frame(unsafe { RENDERER_CLOSURE.as_ref().unchecked_ref() });
 }
 
 fn stop_rendering() {

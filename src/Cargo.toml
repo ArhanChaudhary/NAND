@@ -28,6 +28,7 @@ path = "core/lib.rs"
 
 [dependencies]
 js-sys = "0.3.68"
+once_cell = "1.19.0"
 serde = { version = "1.0.196", features = ["derive"] }
 serde-wasm-bindgen = "0.6.3"
 wasm-bindgen = "0.2.91"
