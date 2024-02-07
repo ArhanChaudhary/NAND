@@ -10,9 +10,11 @@ use web_sys::{DedicatedWorkerGlobalScope, WorkerGlobalScope};
 #[derive(Deserialize)]
 struct MessageData {
     action: String,
-    machineCode: Option<Vec<String>>,
+    #[serde(rename = "machineCode")]
+    machine_code: Option<Vec<String>>,
     key: Option<u16>,
-    speedPercentage: Option<u16>,
+    #[serde(rename = "speedPercentage")]
+    speed_percentage: Option<u16>,
 }
 
 #[wasm_bindgen]
@@ -20,7 +22,7 @@ pub fn computer_handle_message(data: JsValue) {
     let data: MessageData = serde_wasm_bindgen::from_value(data).unwrap();
     match data.action.as_str() {
         "loadROM" => {
-            load_rom(data.machineCode.unwrap());
+            load_rom(data.machine_code.unwrap());
         }
         "start" => {
             start();
@@ -29,7 +31,7 @@ pub fn computer_handle_message(data: JsValue) {
             reset();
         }
         "resetAndStart" => {
-            reset_and_start(data.machineCode.unwrap());
+            reset_and_start(data.machine_code.unwrap());
         }
         "keyboard" => {
             keyboard(data.key.unwrap(), true);
@@ -38,7 +40,7 @@ pub fn computer_handle_message(data: JsValue) {
             stop();
         }
         "speed" => {
-            speed(data.speedPercentage.unwrap());
+            speed(data.speed_percentage.unwrap());
         }
         _ => (),
     }
