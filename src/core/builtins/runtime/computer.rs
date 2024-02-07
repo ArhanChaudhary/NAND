@@ -79,6 +79,7 @@ fn runner() {
         stop();
     }
 }
+
 fn start() {
     if unsafe { RUNNER_INTERVAL.is_some() } {
         return;
@@ -156,14 +157,7 @@ fn reset() {
     }
     let _ = js_sys::global()
         .unchecked_into::<DedicatedWorkerGlobalScope>()
-        .post_message(
-            &serde_wasm_bindgen::to_value(&EmitInfoMessage {
-                action: "emitInfo",
-                hz: 0.0,
-                NANDCalls: 0,
-            })
-            .unwrap(),
-        );
+        .post_message(&serde_wasm_bindgen::to_value(&EmitInfoMessage::default()).unwrap());
 }
 
 fn reset_and_start(machine_code: Vec<String>) {
@@ -175,14 +169,7 @@ fn reset_and_start(machine_code: Vec<String>) {
         architecture::reset();
         let _ = js_sys::global()
             .unchecked_into::<DedicatedWorkerGlobalScope>()
-            .post_message(
-                &serde_wasm_bindgen::to_value(&EmitInfoMessage {
-                    action: "emitInfo",
-                    hz: 0.0,
-                    NANDCalls: 0,
-                })
-                .unwrap(),
-            );
+            .post_message(&serde_wasm_bindgen::to_value(&EmitInfoMessage::default()).unwrap());
     }
     load_rom(machine_code);
     start();
@@ -192,6 +179,7 @@ fn reset_and_start(machine_code: Vec<String>) {
 struct StopMessage {
     action: &'static str,
 }
+
 fn stop() {
     if unsafe { RUNNER_INTERVAL.is_none() } {
         return;
@@ -232,6 +220,16 @@ struct EmitInfoMessage {
     action: &'static str,
     hz: f64,
     NANDCalls: u64,
+}
+
+impl Default for EmitInfoMessage {
+    fn default() -> Self {
+        EmitInfoMessage {
+            action: "emitInfo",
+            hz: 0.0,
+            NANDCalls: 0,
+        }
+    }
 }
 
 fn emit_info() {
