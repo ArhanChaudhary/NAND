@@ -17,7 +17,7 @@ struct MessageData {
     speed_percentage: Option<u16>,
 }
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = computerHandleMessage)]
 pub fn computer_handle_message(message: JsValue) {
     let message_data: MessageData = serde_wasm_bindgen::from_value(message).unwrap();
     match message_data.action.as_str() {

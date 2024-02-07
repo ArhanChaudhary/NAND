@@ -1,8 +1,8 @@
-import runtime_init, { screen_handle_message, screen_init } from "nand-core";
+import runtimeInit, { screenHandleMessage, screenInit } from "nand-core";
 self.postMessage({ action: "loaded" });
 self.onmessage = async (e) => {
-  await runtime_init(e.data.wasm_module, e.data.wasm_memory);
-  screen_init(e.data.canvas);
-  self.onmessage = (e) => screen_handle_message(e.data);
+  await runtimeInit(e.data.wasm_module, e.data.wasm_memory);
+  screenInit(e.data.canvas);
+  self.onmessage = (e) => screenHandleMessage(e.data);
   self.postMessage({ action: "ready" });
 };

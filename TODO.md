@@ -1,17 +1,17 @@
 # TODO (NAND)
 * functionality
-  * switch canvas to webgl experiment
-  * every wasm flag (not all features like mutable_globals and bulk_memory etc might be needed), test if current flags actually help
   * viewable ram and rom
   * read abt desynchronized
 * example programs
   * make able to re-place obstacles (actually reallocate memory and stuff)
   * a lot more comments and remove comments on example programs
 * ui
+  * "about" button
+  * touch events for divider on mobile
   * common keybinds like undo etc
   * dont scroll to focused tab on drag
-  * touch events for divider on mobile
-  * "about" button
+  * copy pasting code with new lines messes things up (see "fix weirdness")
+  * code not starting after edit ide
   * no support for safari <= 16.2 which becomes <= 16.7 if i support webgl
 * compiler
   * optimize or -1 instruction

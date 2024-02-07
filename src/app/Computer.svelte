@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  import runtime_init from "nand-core";
+  import runtimeInit from "nand-core";
 
   export let JackOS: {
     fileName: string;
@@ -16,39 +16,33 @@
     JackOS = OSFiles;
   });
 
-  let computer_runner: Worker;
-  let computer_screen: Worker;
+  let computerRunner: Worker;
+  let screenRunner: Worker;
   // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
   if (import.meta.env.DEV) {
-    computer_runner = new Worker(
+    computerRunner = new Worker(
       new URL("computer-runtime.ts", import.meta.url),
       {
         type: "module",
       }
     );
-    computer_screen = new Worker(
-      new URL("screen-runtime.ts", import.meta.url),
-      {
-        type: "module",
-      }
-    );
+    screenRunner = new Worker(new URL("screen-runtime.ts", import.meta.url), {
+      type: "module",
+    });
   } else {
-    computer_runner = new Worker(
+    computerRunner = new Worker(
       new URL("computer-runtime.ts", import.meta.url),
       {
         type: "classic",
       }
     );
-    computer_screen = new Worker(
-      new URL("screen-runtime.ts", import.meta.url),
-      {
-        type: "classic",
-      }
-    );
+    screenRunner = new Worker(new URL("screen-runtime.ts", import.meta.url), {
+      type: "classic",
+    });
   }
 
   const loadComputerRunner = new Promise<void>((resolve) => {
-    computer_runner.onmessage = (e) => {
+    computerRunner.onmessage = (e) => {
       if (e.data.action === "loaded") {
         resolve();
       }
@@ -56,7 +50,7 @@
   });
 
   const loadComputerScreen = new Promise<void>((resolve) => {
-    computer_screen.onmessage = (e) => {
+    screenRunner.onmessage = (e) => {
       if (e.data.action === "loaded") {
         resolve();
       }
@@ -64,18 +58,20 @@
   });
 
   let wasm_memory: WebAssembly.Memory;
-  const initializeComputerWasm = runtime_init().then((resolved: { memory: WebAssembly.Memory; }) => {
-    wasm_memory = resolved.memory;
-  });
+  const initializeComputerWasm = runtimeInit().then(
+    (resolved: { memory: WebAssembly.Memory }) => {
+      wasm_memory = resolved.memory;
+    }
+  );
 
   const loadComputerRuntime = new Promise<void>(async (resolve) => {
     await Promise.all([initializeComputerWasm, loadComputerRunner]);
-    computer_runner.postMessage({
-      wasm_module: (runtime_init as any).__wbindgen_wasm_module,
+    computerRunner.postMessage({
+      wasm_module: (runtimeInit as any).__wbindgen_wasm_module,
       wasm_memory,
     });
 
-    computer_runner.onmessage = (e) => {
+    computerRunner.onmessage = (e) => {
       if (e.data.action === "ready") {
         resolve();
       }
@@ -84,27 +80,27 @@
 
   await Promise.all([loadJackOS, loadComputerRuntime, loadComputerScreen]);
   export function startComputerRuntime(machineCode: string[]) {
-    computer_runner.postMessage({ action: "start", machineCode });
-    computer_screen.postMessage({ action: "startRendering" });
+    computerRunner.postMessage({ action: "start", machineCode });
+    screenRunner.postMessage({ action: "startRendering" });
   }
 
   export function resetAndStartComputerRuntime(machineCode: string[]) {
-    computer_runner.postMessage({ action: "resetAndStart", machineCode });
-    computer_screen.postMessage({ action: "startRendering" });
+    computerRunner.postMessage({ action: "resetAndStart", machineCode });
+    screenRunner.postMessage({ action: "startRendering" });
   }
 
   export function resetComputerRuntime() {
-    computer_runner.postMessage({ action: "reset" });
-    computer_screen.postMessage({ action: "stopRendering" });
+    computerRunner.postMessage({ action: "reset" });
+    screenRunner.postMessage({ action: "stopRendering" });
   }
 
   export function stopComputerRuntime() {
-    computer_runner.postMessage({ action: "stop" });
-    computer_screen.postMessage({ action: "stopRendering" });
+    computerRunner.postMessage({ action: "stop" });
+    screenRunner.postMessage({ action: "stopRendering" });
   }
 
   export function speedComputerRuntime(speedPercentage: number) {
-    computer_runner.postMessage({ action: "speed", speedPercentage });
+    computerRunner.postMessage({ action: "speed", speedPercentage });
   }
 </script>
 
@@ -158,7 +154,7 @@
         break;
       case "stopping":
         lightStatus = "red";
-        computer_screen.postMessage({ action: "stopRendering" });
+        screenRunner.postMessage({ action: "stopRendering" });
         break;
     }
   }
@@ -167,24 +163,24 @@
   onMount(initRunner);
   async function initRunner() {
     const offscreenCanvas = computerScreen.transferControlToOffscreen();
-    computer_screen.postMessage(
+    screenRunner.postMessage(
       {
         canvas: offscreenCanvas,
-        wasm_module: (runtime_init as any).__wbindgen_wasm_module,
+        wasm_module: (runtimeInit as any).__wbindgen_wasm_module,
         wasm_memory,
       },
       [offscreenCanvas]
     );
 
     await new Promise<void>((resolve) => {
-      computer_screen.onmessage = (e) => {
+      screenRunner.onmessage = (e) => {
         if (e.data.action === "ready") {
           resolve();
         }
       };
     });
 
-    computer_runner.onmessage = messageHandler;
+    computerRunner.onmessage = messageHandler;
 
     let prev: number;
     document.addEventListener("keydown", (e) => {
@@ -223,13 +219,15 @@
         keyValue = 0;
       }
       prev = keyValue;
-      computer_runner.postMessage({ action: "keyboard", key: keyValue });
+      computerRunner.postMessage({ action: "keyboard", key: keyValue });
     });
 
     document.addEventListener("keyup", () => {
       prev = 0;
-      computer_runner.postMessage({ action: "keyboard", key: 0 });
+      computerRunner.postMessage({ action: "keyboard", key: 0 });
     });
+
+    setInterval(() => {}, 10000);
   }
 </script>
 

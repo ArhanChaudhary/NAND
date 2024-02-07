@@ -10,7 +10,7 @@ struct CanvasContextOptions {
     desynchronized: bool,
 }
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = screenInit)]
 pub fn screen_init(offscreen_canvas: OffscreenCanvas) {
     let ctx = offscreen_canvas
         .get_context_with_context_options(
@@ -32,7 +32,7 @@ struct MessageData {
     action: String,
 }
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = screenHandleMessage)]
 pub fn screen_handle_message(message: JsValue) {
     let message_data: MessageData = serde_wasm_bindgen::from_value(message).unwrap();
     match message_data.action.as_str() {
