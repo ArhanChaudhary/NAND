@@ -124,14 +124,17 @@ fn start() {
                 .unwrap(),
         );
     }
-    runner();
-
     // worker startup is slow and the very first emit will be significantly slower
     // than the following ones. So, we want to sort of nudge the first emit closer
     // closer to a higher value. A higher value happens if prevEmit and
     // currentEmit are closer together, so we first create the interval to make
-    // the comparsion happen sooner and then we defined prevEmit as late as
-    // possible, after runner()
+    // the comparsion happen sooner and then we define prevEmit as late as
+    // possible
+
+    // we can do this by running runner() twice to balance out the startup time
+    // and defining PREV_EMIT afterwards, and this seems to be consistent somehow
+    runner();
+    runner();
     unsafe {
         PREV_EMIT = Some(
             js_sys::global()

@@ -1,23 +1,25 @@
 # TODO (NAND)
-* "about" button
-* make able to re-place obstacles (actually reallocate memory and stuff)
-* switch canvas to webgl experiment
-* every wasm flag (not all features like mutable_globals and bulk_memory etc might be needed), test if current flags actually help
-* no support for safari <= 16.2 which becomes <= 16.7 if i support webgl
-
-* touch events for divider on mobile
-* mobile virtual keyboard?
-* dont scroll to focused tab on drag
-* make sure class name is valid (look in compiler)
-* common keybinds like undo etc
-* viewable ram and rom
-* a lot more comments and remove comments on example programs
-* optimize or -1 instruction
-
-* cannot set variable names to keywords in compiler
-* ensure all subroutines and classes are defined at compile time
-* syntax highlighter (other types)
-* compilererror stash, too many static error
+* functionality
+  * switch canvas to webgl experiment
+  * every wasm flag (not all features like mutable_globals and bulk_memory etc might be needed), test if current flags actually help
+  * viewable ram and rom
+  * read abt desynchronized
+* example programs
+  * make able to re-place obstacles (actually reallocate memory and stuff)
+  * a lot more comments and remove comments on example programs
+* ui
+  * common keybinds like undo etc
+  * dont scroll to focused tab on drag
+  * touch events for divider on mobile
+  * "about" button
+  * no support for safari <= 16.2 which becomes <= 16.7 if i support webgl
+* compiler
+  * optimize or -1 instruction
+  * make sure class name is valid
+  * cannot set variable names to keywords in compiler
+  * ensure all subroutines and classes are defined at compile time
+  * syntax highlighter (other types)
+  * compilererror stash, too many static error
 * readme
   * Writing programs in NAND
     * jack tutorial, base off https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf and https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf
@@ -38,9 +40,6 @@
     * Overflow
     * 2048
     * GeneticAlgorithm (will not reallocate)
-* vm escape bug
-* maybe a template for multithreaded svelte?
-* read abt desynchronized
 
 # TODO (genetic algorithm)
 * random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
@@ -65,6 +64,7 @@
 * string ascii packing
 * throw out part of the OS
 * A=-A ROM optimization
+* vm escape bug
 
 # TODO (for later)
 * graphing calculator in jack
