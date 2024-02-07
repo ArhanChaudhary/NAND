@@ -2,9 +2,8 @@ use crate::{
     architecture::{self, ticktock},
     builtins::hardware::{keyboard, load_rom, nand_calls},
 };
-use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
-use std::collections::VecDeque;
+use std::{cell::LazyCell, collections::VecDeque};
 use wasm_bindgen::prelude::*;
 use web_sys::{DedicatedWorkerGlobalScope, WorkerGlobalScope};
 
@@ -98,8 +97,9 @@ fn runner() {
     }
 }
 
-static mut EMIT_INFO_CLOSURE: Lazy<Closure<dyn Fn()>> = Lazy::new(|| Closure::new(emit_info));
-static mut RUNNER_CLOSURE: Lazy<Closure<dyn Fn()>> = Lazy::new(|| Closure::new(runner));
+static mut EMIT_INFO_CLOSURE: LazyCell<Closure<dyn Fn()>> =
+    LazyCell::new(|| Closure::new(emit_info));
+static mut RUNNER_CLOSURE: LazyCell<Closure<dyn Fn()>> = LazyCell::new(|| Closure::new(runner));
 fn start() {
     unsafe {
         if RUNNER_INTERVAL.is_some() {

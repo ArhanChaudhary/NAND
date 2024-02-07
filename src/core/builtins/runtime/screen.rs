@@ -1,6 +1,6 @@
 use crate::builtins::hardware::{self, OffscreenCanvasRenderingContext2d, CTX};
-use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
+use std::cell::LazyCell;
 use wasm_bindgen::prelude::*;
 use web_sys::{DedicatedWorkerGlobalScope, OffscreenCanvas};
 
@@ -44,7 +44,7 @@ pub fn screen_handle_message(message: JsValue) {
 
 static mut STOP_RENDERING_LOOP: bool = false;
 static mut CURRENTLY_RENDERING: bool = false;
-static mut RENDERER_CLOSURE: Lazy<Closure<dyn Fn()>> = Lazy::new(|| Closure::new(renderer));
+static mut RENDERER_CLOSURE: LazyCell<Closure<dyn Fn()>> = LazyCell::new(|| Closure::new(renderer));
 
 fn renderer() {
     if unsafe { STOP_RENDERING_LOOP } {
