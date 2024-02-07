@@ -1,11 +1,11 @@
-use crate::builtins::hardware;
+use crate::builtins::hardware::{self, OffscreenCanvasRenderingContext2d, CTX};
 use std::{cell::RefCell, rc::Rc};
 use wasm_bindgen::prelude::*;
 use web_sys::DedicatedWorkerGlobalScope;
 
 #[wasm_bindgen]
-pub fn screen_init(ctx: hardware::OffscreenCanvasRenderingContext2d) {
-    unsafe { hardware::CTX = Some(ctx) };
+pub fn screen_init(ctx: OffscreenCanvasRenderingContext2d) {
+    unsafe { CTX = Some(ctx) };
 }
 
 #[wasm_bindgen]

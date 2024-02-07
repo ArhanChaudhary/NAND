@@ -62,29 +62,29 @@ static mut RUNNER_INTERVAL: Option<i32> = None;
 static mut EMIT_INTERVAL_TOTAL: usize = 0;
 
 fn runner() {
+    // Testing here has shown that a busy loop is actually the exact same speed
+    // as setInterval(runner, 0)! This was a bit surprising to me, and I suspect
+    // this is due to v8 optimizations. Imagine how cool it would have been if
+    // this entire web worker ran on a busy loop and state was shared through
+    // SharedArrayBuffer. I can't really complain, though, as that probably
+    // would have been hell to implement lol
+    for _ in 0..unsafe { STEP } {
+        ticktock();
+    }
     unsafe {
-        // Testing here has shown that a busy loop is actually the exact same speed
-        // as setInterval(runner, 0)! This was a bit surprising to me, and I suspect
-        // this is due to v8 optimizations. Imagine how cool it would have been if
-        // this entire web worker ran on a busy loop and state was shared through
-        // SharedArrayBuffer. I can't really complain, though, as that probably
-        // would have been hell to implement lol
-        for _ in 0..STEP {
-            ticktock();
-        }
         EMIT_INTERVAL_TOTAL += STEP;
-        if keyboard(0, false) == 32767 {
-            keyboard(0, true);
-            stop();
-        }
+    }
+    if keyboard(0, false) == 32767 {
+        keyboard(0, true);
+        stop();
     }
 }
 fn start() {
+    if unsafe { EMIT_INTERVAL.is_some() } {
+        return;
+    }
+    let emit_info_closure = Closure::<dyn Fn()>::new(emit_info);
     unsafe {
-        if EMIT_INTERVAL.is_some() {
-            return;
-        }
-        let emit_info_closure = Closure::<dyn Fn()>::new(emit_info);
         EMIT_INTERVAL = Some(
             js_sys::global()
                 .unchecked_into::<DedicatedWorkerGlobalScope>()
@@ -94,9 +94,11 @@ fn start() {
                 )
                 .unwrap(),
         );
-        emit_info_closure.forget();
+    }
+    emit_info_closure.forget();
 
-        let runner_closure = Closure::<dyn Fn()>::new(runner);
+    let runner_closure = Closure::<dyn Fn()>::new(runner);
+    unsafe {
         RUNNER_INTERVAL = Some(
             js_sys::global()
                 .unchecked_into::<DedicatedWorkerGlobalScope>()
@@ -106,16 +108,18 @@ fn start() {
                 )
                 .unwrap(),
         );
-        runner_closure.forget();
+    }
+    runner_closure.forget();
 
-        runner();
+    runner();
 
-        // worker startup is slow and the very first emit will be significantly slower
-        // than the following ones. So, we want to sort of nudge the first emit closer
-        // closer to a higher value. A higher value happens if prevEmit and
-        // currentEmit are closer together, so we first create the interval to make
-        // the comparsion happen sooner and then we defined prevEmit as late as
-        // possible, after runner()
+    // worker startup is slow and the very first emit will be significantly slower
+    // than the following ones. So, we want to sort of nudge the first emit closer
+    // closer to a higher value. A higher value happens if prevEmit and
+    // currentEmit are closer together, so we first create the interval to make
+    // the comparsion happen sooner and then we defined prevEmit as late as
+    // possible, after runner()
+    unsafe {
         PREV_EMIT = Some(
             js_sys::global()
                 .dyn_into::<WorkerGlobalScope>()
@@ -128,18 +132,20 @@ fn start() {
 }
 
 fn reset() {
-    unsafe {
-        if PREV_EMIT.is_none() {
-            return;
-        }
-        if EMIT_INTERVAL.is_some() {
-            js_sys::global()
-                .unchecked_into::<DedicatedWorkerGlobalScope>()
-                .clear_interval_with_handle(RUNNER_INTERVAL.unwrap());
+    if unsafe { PREV_EMIT.is_none() } {
+        return;
+    }
+    if unsafe { EMIT_INTERVAL.is_some() } {
+        js_sys::global()
+            .unchecked_into::<DedicatedWorkerGlobalScope>()
+            .clear_interval_with_handle(unsafe { RUNNER_INTERVAL.unwrap() });
+        unsafe {
             RUNNER_INTERVAL = None;
-            js_sys::global()
-                .unchecked_into::<DedicatedWorkerGlobalScope>()
-                .clear_interval_with_handle(EMIT_INTERVAL.unwrap());
+        }
+        js_sys::global()
+            .unchecked_into::<DedicatedWorkerGlobalScope>()
+            .clear_interval_with_handle(unsafe { EMIT_INTERVAL.unwrap() });
+        unsafe {
             EMIT_INTERVAL = None;
             EMIT_INTERVAL_TOTAL = 0;
         }
@@ -187,13 +193,13 @@ struct StopMessage {
     action: &'static str,
 }
 fn stop() {
+    if unsafe { EMIT_INTERVAL.is_none() } {
+        return;
+    }
+    js_sys::global()
+        .unchecked_into::<DedicatedWorkerGlobalScope>()
+        .clear_interval_with_handle(unsafe { RUNNER_INTERVAL.unwrap() });
     unsafe {
-        if EMIT_INTERVAL.is_none() {
-            return;
-        }
-        js_sys::global()
-            .unchecked_into::<DedicatedWorkerGlobalScope>()
-            .clear_interval_with_handle(RUNNER_INTERVAL.unwrap());
         RUNNER_INTERVAL = None;
     }
     emit_info();

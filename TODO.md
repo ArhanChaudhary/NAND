@@ -20,6 +20,7 @@
 * common keybinds like undo etc
 * viewable ram and rom
 * a lot more comments and remove comments on example programs
+* optimize or -1 instruction
 
 * cannot set variable names to keywords in compiler
 * ensure all subroutines and classes are defined at compile time
