@@ -1,16 +1,41 @@
 use crate::builtins::hardware::{self, OffscreenCanvasRenderingContext2d, CTX};
+use serde::{Deserialize, Serialize};
 use std::{cell::RefCell, rc::Rc};
 use wasm_bindgen::prelude::*;
-use web_sys::DedicatedWorkerGlobalScope;
+use web_sys::{DedicatedWorkerGlobalScope, OffscreenCanvas};
 
-#[wasm_bindgen]
-pub fn screen_init(ctx: OffscreenCanvasRenderingContext2d) {
-    unsafe { CTX = Some(ctx) };
+#[derive(Serialize)]
+struct CanvasContextOptions {
+    alpha: bool,
+    desynchronized: bool,
 }
 
 #[wasm_bindgen]
-pub fn screen_handle_message(msg: &str) {
-    match msg {
+pub fn screen_init(offscreen_canvas: OffscreenCanvas) {
+    let ctx = offscreen_canvas
+        .get_context_with_context_options(
+            "2d",
+            &serde_wasm_bindgen::to_value(&CanvasContextOptions {
+                alpha: false,
+                desynchronized: true,
+            })
+            .unwrap(),
+        )
+        .unwrap()
+        .unwrap()
+        .unchecked_into::<OffscreenCanvasRenderingContext2d>();
+    unsafe { CTX = Some(ctx) };
+}
+
+#[derive(Deserialize)]
+struct MessageData {
+    action: String,
+}
+
+#[wasm_bindgen]
+pub fn screen_handle_message(message: JsValue) {
+    let message_data: MessageData = serde_wasm_bindgen::from_value(message).unwrap();
+    match message_data.action.as_str() {
         "startRendering" => start_rendering(),
         "stopRendering" => stop_rendering(),
         _ => unreachable!(),

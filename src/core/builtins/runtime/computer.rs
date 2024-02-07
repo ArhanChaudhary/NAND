@@ -18,11 +18,11 @@ struct MessageData {
 }
 
 #[wasm_bindgen]
-pub fn computer_handle_message(data: JsValue) {
-    let data: MessageData = serde_wasm_bindgen::from_value(data).unwrap();
-    match data.action.as_str() {
+pub fn computer_handle_message(message: JsValue) {
+    let message_data: MessageData = serde_wasm_bindgen::from_value(message).unwrap();
+    match message_data.action.as_str() {
         "loadROM" => {
-            load_rom(data.machine_code.unwrap());
+            load_rom(message_data.machine_code.unwrap());
         }
         "start" => {
             start();
@@ -31,16 +31,16 @@ pub fn computer_handle_message(data: JsValue) {
             reset();
         }
         "resetAndStart" => {
-            reset_and_start(data.machine_code.unwrap());
+            reset_and_start(message_data.machine_code.unwrap());
         }
         "keyboard" => {
-            keyboard(data.key.unwrap(), true);
+            keyboard(message_data.key.unwrap(), true);
         }
         "stop" => {
             stop();
         }
         "speed" => {
-            speed(data.speed_percentage.unwrap());
+            speed(message_data.speed_percentage.unwrap());
         }
         _ => (),
     }
@@ -80,7 +80,7 @@ fn runner() {
     }
 }
 fn start() {
-    if unsafe { EMIT_INTERVAL.is_some() } {
+    if unsafe { RUNNER_INTERVAL.is_some() } {
         return;
     }
     let emit_info_closure = Closure::<dyn Fn()>::new(emit_info);
@@ -135,7 +135,7 @@ fn reset() {
     if unsafe { PREV_EMIT.is_none() } {
         return;
     }
-    if unsafe { EMIT_INTERVAL.is_some() } {
+    if unsafe { RUNNER_INTERVAL.is_some() } {
         js_sys::global()
             .unchecked_into::<DedicatedWorkerGlobalScope>()
             .clear_interval_with_handle(unsafe { RUNNER_INTERVAL.unwrap() });
@@ -193,7 +193,7 @@ struct StopMessage {
     action: &'static str,
 }
 fn stop() {
-    if unsafe { EMIT_INTERVAL.is_none() } {
+    if unsafe { RUNNER_INTERVAL.is_none() } {
         return;
     }
     js_sys::global()

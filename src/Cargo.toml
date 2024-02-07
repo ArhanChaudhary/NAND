@@ -39,6 +39,7 @@ features = [
     "Performance",
     "WorkerGlobalScope",
     "DedicatedWorkerGlobalScope",
+    "OffscreenCanvas",
 ]
 
 [profile.release]

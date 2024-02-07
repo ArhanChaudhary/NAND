@@ -1,10 +1,6 @@
 # TODO (NAND)
-* more conservative unsafe uses
-* replace emit_interval with runner_interval
-* EMIT_INTERVAL.unwrap()._closure.forget(); is this needed??
-* screen_handle_message MessageData struct
-* e.data.getcontext 2d move to screen.rs
 * share emitInfo data with main thread and other variables if possible too
+* EMIT_INTERVAL.unwrap()._closure.forget(); is this needed??
 * .forget() heap memory leak
 
 * "about" button
