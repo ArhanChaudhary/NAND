@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  import runtime_init from "core";
+  import runtime_init from "nand-core";
 
   export let JackOS: {
     fileName: string;
@@ -64,7 +64,7 @@
   });
 
   let wasm_memory: WebAssembly.Memory;
-  const initializeComputerWasm = runtime_init().then((resolved) => {
+  const initializeComputerWasm = runtime_init().then((resolved: { memory: WebAssembly.Memory; }) => {
     wasm_memory = resolved.memory;
   });
 
