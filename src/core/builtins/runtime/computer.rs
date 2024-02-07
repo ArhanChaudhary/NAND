@@ -106,6 +106,8 @@ fn start() {
         );
         runner_closure.forget();
 
+        runner();
+
         // worker startup is slow and the very first emit will be significantly slower
         // than the following ones. So, we want to sort of nudge the first emit closer
         // closer to a higher value. A higher value happens if prevEmit and
