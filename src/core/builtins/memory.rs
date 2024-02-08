@@ -35,7 +35,7 @@ pub(crate) fn aregister(in_: u16, load: bool) -> u16 {
     }
 }
 
-static mut RAM16K_MEMORY: [u16; 16384] = [0; 16384];
+pub(crate) static mut RAM16K_MEMORY: [u16; 16384] = [0; 16384];
 pub(crate) fn ram16k(in_: u16, load: bool, address: u16) -> u16 {
     let out = unsafe { RAM16K_MEMORY[address as usize] };
     if load && unsafe { CLOCK } {
@@ -48,12 +48,12 @@ pub(crate) fn ram16k(in_: u16, load: bool, address: u16) -> u16 {
 //     unsafe { RAM16K_MEMORY.to_vec() }
 // }
 
-pub static mut ROM32K_MEMORY: [u16; 32768] = [0; 32768];
+pub(crate) static mut ROM32K_MEMORY: [u16; 32768] = [0; 32768];
 pub(crate) fn rom32k(address: u16) -> u16 {
     unsafe { ROM32K_MEMORY[address as usize] }
 }
 
-pub static mut SCREEN_MEMORY: [u16; 8192] = [0; 8192];
+pub(crate) static mut SCREEN_MEMORY: [u16; 8192] = [0; 8192];
 pub(crate) fn screen(in_: u16, load: bool, address: u16) -> u16 {
     let out = unsafe { SCREEN_MEMORY[address as usize] };
     if load && unsafe { CLOCK } {

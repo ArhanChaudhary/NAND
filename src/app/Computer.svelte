@@ -57,18 +57,18 @@
     };
   });
 
-  let wasm_memory: WebAssembly.Memory;
+  let wasmMemory: WebAssembly.Memory;
   const initializeComputerWasm = runtimeInit().then(
     (resolved: { memory: WebAssembly.Memory }) => {
-      wasm_memory = resolved.memory;
+      wasmMemory = resolved.memory;
     }
   );
 
   const loadComputerRuntime = new Promise<void>(async (resolve) => {
     await Promise.all([initializeComputerWasm, loadComputerRunner]);
     computerRunner.postMessage({
-      wasm_module: (runtimeInit as any).__wbindgen_wasm_module,
-      wasm_memory,
+      wasmModule: (runtimeInit as any).__wbindgen_wasm_module,
+      wasmMemory,
     });
 
     computerRunner.onmessage = (e) => {
@@ -165,9 +165,9 @@
     const offscreenCanvas = computerScreen.transferControlToOffscreen();
     screenRunner.postMessage(
       {
-        canvas: offscreenCanvas,
-        wasm_module: (runtimeInit as any).__wbindgen_wasm_module,
-        wasm_memory,
+        offscreenCanvas,
+        wasmModule: (runtimeInit as any).__wbindgen_wasm_module,
+        wasmMemory,
       },
       [offscreenCanvas]
     );
