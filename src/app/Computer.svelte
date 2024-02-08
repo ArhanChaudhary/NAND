@@ -127,6 +127,7 @@
   let clockSpeed = "0";
   let NANDCalls = "0";
   let lightStatus = "";
+  let makeRedAfterwards = false;
   function messageHandler(e: { data: any }) {
     switch (e.data.action) {
       case "emitInfo":
@@ -137,7 +138,10 @@
         } else {
           clockSpeed = e.data.hz.toPrecision(3) + " Hz";
         }
-        if (e.data.NANDCalls > 45_000_000_000) {
+        if (makeRedAfterwards) {
+          lightStatus = "red";
+          makeRedAfterwards = false;
+        } else if (e.data.NANDCalls > 45_000_000_000) {
           lightStatus = "green";
         } else if (e.data.NANDCalls === 0) {
           lightStatus = "";
@@ -159,7 +163,9 @@
         }
         break;
       case "stopping":
-        lightStatus = "red";
+        // stopRendering calls emitInfo one last time so if we set it to
+        // red here it will immediately be set to green afterwards otherwise
+        makeRedAfterwards = true;
         screenRunner.postMessage({ action: "stopRendering" });
         break;
       case "emitMemory":
