@@ -19,7 +19,7 @@ pub struct EmitHardwareInfoMessage {
 
 impl Default for EmitHardwareInfoMessage {
     fn default() -> Self {
-        EmitHardwareInfoMessage {
+        Self {
             action: "emitInfo",
             hz: 0.0,
             nand_calls: 0,
@@ -37,8 +37,8 @@ static mut STOP_RENDERING_LOOP: bool = false;
 static mut CURRENTLY_RENDERING: bool = false;
 static mut RENDERER_CLOSURE: LazyCell<Closure<dyn Fn()>> = LazyCell::new(|| Closure::new(renderer));
 
-pub(crate) static mut PREV_SEC_TOTALS: VecDeque<f64> = VecDeque::new();
-pub(crate) static mut EMIT_INTERVAL_TOTAL: usize = 0;
+pub static mut PREV_SEC_TOTALS: VecDeque<f64> = VecDeque::new();
+pub static mut EMIT_INTERVAL_TOTAL: usize = 0;
 static mut PREV_EMIT: Option<f64> = None;
 static mut EMIT_INTERVAL: Option<i32> = None;
 static mut EMIT_INFO_CLOSURE: LazyCell<Closure<dyn Fn()>> =

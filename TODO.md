@@ -1,7 +1,6 @@
 # TODO (NAND)
 * functionality
   * viewable ram and rom
-  * even more conservative uses of unsafe
   * read abt desynchronized
   * go through this in DEPTH https://git.srht.taylor.fish/~taylor/binaryen/tree/7075d2e217d67a7a8ec76927817300f801a57b22/test/lit/help/optimization-opts.test
 * example programs

@@ -33,7 +33,7 @@ static mut RUNNER_INTERVAL: Option<i32> = None;
 static mut RUNNER_CLOSURE: LazyCell<Closure<dyn Fn()>> = LazyCell::new(|| Closure::new(runner));
 
 #[wasm_bindgen(js_name = computerHandleMessage)]
-pub fn computer_handle_message(message: JsValue) {
+pub fn handle_message(message: JsValue) {
     let received_worker_message: ReceivedWorkerMessage = serde_wasm_bindgen::from_value(message).unwrap();
     match received_worker_message.action.as_str() {
         "loadROM" => {

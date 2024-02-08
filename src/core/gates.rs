@@ -3,19 +3,19 @@ use crate::builtins::{
     hardware::NAND,
 };
 
-pub(crate) fn not(a: bool) -> bool {
+pub fn not(a: bool) -> bool {
     NAND(a, a)
 }
 
-pub(crate) fn and(a: bool, b: bool) -> bool {
+pub fn and(a: bool, b: bool) -> bool {
     not(NAND(a, b))
 }
 
-pub(crate) fn or(a: bool, b: bool) -> bool {
+pub fn or(a: bool, b: bool) -> bool {
     NAND(not(a), not(b))
 }
 
-pub(crate) fn xor(a: bool, b: bool) -> bool {
+pub fn xor(a: bool, b: bool) -> bool {
     let t1 = NAND(a, b);
     NAND(NAND(a, t1), NAND(b, t1))
 }
@@ -24,7 +24,7 @@ fn mux(a: bool, b: bool, sel: bool) -> bool {
     NAND(NAND(a, not(sel)), NAND(b, sel))
 }
 
-pub(crate) fn not16(in_: u16) -> u16 {
+pub fn not16(in_: u16) -> u16 {
     word16_16(
         not(nbit16(in_, 0)),
         not(nbit16(in_, 1)),
@@ -45,7 +45,7 @@ pub(crate) fn not16(in_: u16) -> u16 {
     )
 }
 
-pub(crate) fn and16(a: u16, b: u16) -> u16 {
+pub fn and16(a: u16, b: u16) -> u16 {
     word16_16(
         and(nbit16(a, 0), nbit16(b, 0)),
         and(nbit16(a, 1), nbit16(b, 1)),
@@ -66,7 +66,7 @@ pub(crate) fn and16(a: u16, b: u16) -> u16 {
     )
 }
 
-pub(crate) fn mux16(a: u16, b: u16, sel: bool) -> u16 {
+pub fn mux16(a: u16, b: u16, sel: bool) -> u16 {
     word16_16(
         mux(nbit16(a, 0), nbit16(b, 0), sel),
         mux(nbit16(a, 1), nbit16(b, 1), sel),
@@ -87,7 +87,7 @@ pub(crate) fn mux16(a: u16, b: u16, sel: bool) -> u16 {
     )
 }
 
-pub(crate) fn is_zero(in_: u16) -> bool {
+pub fn is_zero(in_: u16) -> bool {
     not(or(
         nbit16(in_, 15),
         or(

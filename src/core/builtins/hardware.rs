@@ -9,7 +9,7 @@ use wasm_bindgen::prelude::*;
 
 // NAND + 🦀 + 🕸️ = ❤️
 #[allow(non_snake_case)]
-pub(crate) fn NAND(a: bool, b: bool) -> bool {
+pub fn NAND(a: bool, b: bool) -> bool {
     unsafe { NAND_CALLS += 1 };
     !(a && b) // for science!!
 }
@@ -23,24 +23,24 @@ pub(crate) fn NAND(a: bool, b: bool) -> bool {
 // -----------------------------------------------
 
 static mut NAND_CALLS: u64 = 0;
-pub(crate) fn nand_calls() -> u64 {
+pub fn nand_calls() -> u64 {
     unsafe { NAND_CALLS }
 }
 
-pub(crate) fn reset_nand_calls() {
+pub fn reset_nand_calls() {
     unsafe { NAND_CALLS = 0 };
 }
 
-pub(crate) static mut CLOCK: bool = false;
-pub(crate) fn tick() {
+pub static mut CLOCK: bool = false;
+pub fn tick() {
     unsafe { CLOCK = true };
 }
 
-pub(crate) fn tock() {
+pub fn tock() {
     unsafe { CLOCK = false };
 }
 
-pub(crate) fn load_rom(in_: Vec<String>) {
+pub fn load_rom(in_: Vec<String>) {
     for (i, v) in in_.into_iter().enumerate() {
         unsafe {
             ROM32K_MEMORY[i] = u16::from_str_radix(v.as_str(), 2).unwrap();
@@ -49,7 +49,7 @@ pub(crate) fn load_rom(in_: Vec<String>) {
 }
 
 static mut CURRENT_KEY: u16 = 0;
-pub(crate) fn keyboard(in_: u16, load: bool) -> u16 {
+pub fn keyboard(in_: u16, load: bool) -> u16 {
     if load {
         unsafe { CURRENT_KEY = in_ };
         in_
@@ -61,7 +61,7 @@ pub(crate) fn keyboard(in_: u16, load: bool) -> u16 {
 #[wasm_bindgen]
 extern "C" {
     type ImageData;
-    pub(crate) type OffscreenCanvasRenderingContext2d;
+    pub type OffscreenCanvasRenderingContext2d;
 
     #[wasm_bindgen(constructor)]
     fn new_with_uint8_clamped_array_and_width_and_height(
@@ -104,9 +104,9 @@ const GREEN_COLOR_DATA: u32 =
 // every frame (and optimizing in this case doesn't do anything because the actual computer
 // runs on another web worker)
 // Still, this is nice to note for future me.
-pub(crate) static mut CTX: Option<OffscreenCanvasRenderingContext2d> = None;
+pub static mut CTX: Option<OffscreenCanvasRenderingContext2d> = None;
 
-pub(crate) fn render() {
+pub fn render() {
     let mut pixel_data: [u32; SCREEN_WIDTH * SCREEN_HEIGHT] = [0; SCREEN_WIDTH * SCREEN_HEIGHT];
     for (i, &word16) in unsafe { SCREEN_MEMORY.iter().enumerate() } {
         let y = i / (SCREEN_WIDTH / 16) * SCREEN_WIDTH;
@@ -133,6 +133,6 @@ pub(crate) fn render() {
     unsafe {
         CTX.as_ref()
             .unwrap_unchecked()
-            .put_image_data(&image_data, 0, 0)
-    };
+            .put_image_data(&image_data, 0, 0);
+    }
 }

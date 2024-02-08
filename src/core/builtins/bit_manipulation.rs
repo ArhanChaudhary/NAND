@@ -1,12 +1,12 @@
-pub(crate) const fn bool_from_u16(n: u16) -> bool {
+pub const fn bool_from_u16(n: u16) -> bool {
     n != 0
 }
 
-pub(crate) const fn u16_from_bool(b: bool) -> u16 {
+pub const fn u16_from_bool(b: bool) -> u16 {
     b as u16
 }
 
-pub(crate) const fn nbit16(n: u16, i: u8) -> bool {
+pub const fn nbit16(n: u16, i: u8) -> bool {
     bool_from_u16((n >> i) & 1)
 }
 
@@ -15,7 +15,7 @@ const fn placebit16(b: bool, i: u8) -> u16 {
 }
 
 #[allow(clippy::too_many_arguments)]
-pub(crate) const fn word16_16(
+pub const fn word16_16(
     a: bool,
     b: bool,
     c: bool,
@@ -51,14 +51,14 @@ pub(crate) const fn word16_16(
         | placebit16(p, 15)
 }
 
-pub(crate) const fn slice16_0to12(n: u16) -> u16 {
+pub const fn slice16_0to12(n: u16) -> u16 {
     n & 8191
 }
 
-pub(crate) const fn slice16_0to13(n: u16) -> u16 {
+pub const fn slice16_0to13(n: u16) -> u16 {
     n & 16383
 }
 
-pub(crate) const fn slice16_0to14(n: u16) -> u16 {
+pub const fn slice16_0to14(n: u16) -> u16 {
     n & 32767
 }

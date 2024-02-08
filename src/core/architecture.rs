@@ -26,8 +26,8 @@ fn pc(in_: u16, load: bool, reset: bool) -> u16 {
                 0,
                 reset,
             ),
-        )
-    };
+        );
+    }
     unsafe { PC_DFFOUT }
 }
 
@@ -123,14 +123,14 @@ fn computer(reset: bool) {
     );
 }
 
-pub(crate) fn ticktock() {
+pub fn ticktock() {
     tick();
     computer(false);
     tock();
     computer(false);
 }
 
-pub(crate) fn reset() {
+pub fn reset() {
     tick();
     computer(true);
     tock();

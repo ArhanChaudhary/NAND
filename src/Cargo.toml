@@ -2,6 +2,8 @@
 name = "nand-core"
 version = "0.1.0"
 authors = ["Arhan Chaudhary <arhan.ch@gmail.com>"]
+repository = "https://github.com/ArhanChaudhary/NAND"
+readme = "https://github.com/ArhanChaudhary/NAND/blob/main/README.md"
 edition = "2021"
 description = "NAND's computer API"
 license = "MIT"
