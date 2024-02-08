@@ -26,7 +26,7 @@
         type: "module",
       }
     );
-    screenRunner = new Worker(new URL("screen-runtime.ts", import.meta.url), {
+    screenRunner = new Worker(new URL("screen-and-emit-runtime.ts", import.meta.url), {
       type: "module",
     });
   } else {
@@ -36,7 +36,7 @@
         type: "classic",
       }
     );
-    screenRunner = new Worker(new URL("screen-runtime.ts", import.meta.url), {
+    screenRunner = new Worker(new URL("screen-and-emit-runtime.ts", import.meta.url), {
       type: "classic",
     });
   }

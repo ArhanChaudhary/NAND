@@ -1,4 +1,4 @@
-use super::screen::{
+use super::screen_and_emit::{
     EmitInfoMessage, EMIT_INTERVAL_TOTAL, PREV_EMIT, PREV_SEC_TOTALS
 };
 use crate::{
