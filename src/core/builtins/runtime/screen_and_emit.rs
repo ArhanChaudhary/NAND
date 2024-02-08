@@ -1,4 +1,7 @@
-use crate::builtins::hardware::{nand_calls, render, OffscreenCanvasRenderingContext2d, CTX};
+use crate::builtins::hardware::{
+    get_memory, nand_calls, render, OffscreenCanvasRenderingContext2d, CTX,
+};
+use js_sys::Uint16Array;
 use serde::{Deserialize, Serialize};
 use std::{cell::LazyCell, collections::VecDeque};
 use wasm_bindgen::prelude::*;
@@ -25,6 +28,13 @@ impl Default for EmitHardwareInfoMessage {
             nand_calls: 0,
         }
     }
+}
+
+#[derive(Serialize)]
+struct EmitMemoryMessage {
+    action: &'static str,
+    #[serde(with = "serde_wasm_bindgen::preserve")]
+    memory: Uint16Array,
 }
 
 #[derive(Serialize)]
@@ -135,6 +145,7 @@ fn stop_rendering() {
     emit_info();
 }
 
+static mut SEC_COUNT: usize = 0;
 fn emit_info() {
     let current_emit = js_sys::global()
         .dyn_into::<WorkerGlobalScope>()
@@ -161,4 +172,23 @@ fn emit_info() {
             })
             .unwrap(),
         );
+    if unsafe { SEC_COUNT } == 1000 / EMIT_INTERVAL_DELAY {
+        unsafe {
+            SEC_COUNT = 0;
+        }
+
+        let _ = js_sys::global()
+            .unchecked_into::<DedicatedWorkerGlobalScope>()
+            .post_message(
+                &serde_wasm_bindgen::to_value(&EmitMemoryMessage {
+                    action: "emitMemory",
+                    memory: get_memory(),
+                })
+                .unwrap(),
+            );
+    } else {
+        unsafe {
+            SEC_COUNT += 1;
+        }
+    };
 }

@@ -26,9 +26,12 @@
         type: "module",
       }
     );
-    screenRunner = new Worker(new URL("screen-and-emit-runtime.ts", import.meta.url), {
-      type: "module",
-    });
+    screenRunner = new Worker(
+      new URL("screen-and-emit-runtime.ts", import.meta.url),
+      {
+        type: "module",
+      }
+    );
   } else {
     computerRunner = new Worker(
       new URL("computer-runtime.ts", import.meta.url),
@@ -36,9 +39,12 @@
         type: "classic",
       }
     );
-    screenRunner = new Worker(new URL("screen-and-emit-runtime.ts", import.meta.url), {
-      type: "classic",
-    });
+    screenRunner = new Worker(
+      new URL("screen-and-emit-runtime.ts", import.meta.url),
+      {
+        type: "classic",
+      }
+    );
   }
 
   const loadComputerRunner = new Promise<void>((resolve) => {
@@ -156,6 +162,9 @@
         lightStatus = "red";
         screenRunner.postMessage({ action: "stopRendering" });
         break;
+      case "emitMemory":
+        console.log(e.data.memory);
+        break;
     }
   }
 
@@ -227,8 +236,6 @@
       prev = 0;
       computerRunner.postMessage({ action: "keyboard", key: 0 });
     });
-
-    setInterval(() => {}, 10000);
   }
 </script>
 
