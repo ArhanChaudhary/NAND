@@ -1,6 +1,4 @@
-use super::screen_and_emit::{
-    EmitInfoMessage, EMIT_INTERVAL_TOTAL, PREV_EMIT, PREV_SEC_TOTALS
-};
+use super::screen_and_emit::{EmitHardwareInfoMessage, EMIT_INTERVAL_TOTAL, PREV_SEC_TOTALS};
 use crate::{
     architecture::{self, ticktock},
     builtins::hardware::{keyboard, load_rom},
@@ -11,7 +9,7 @@ use wasm_bindgen::prelude::*;
 use web_sys::DedicatedWorkerGlobalScope;
 
 #[derive(Deserialize)]
-struct MessageData {
+struct ReceivedWorkerMessage {
     action: String,
     #[serde(rename = "machineCode")]
     machine_code: Option<Vec<String>>,
@@ -20,33 +18,9 @@ struct MessageData {
     speed_percentage: Option<u16>,
 }
 
-#[wasm_bindgen(js_name = computerHandleMessage)]
-pub fn computer_handle_message(message: JsValue) {
-    let message_data: MessageData = serde_wasm_bindgen::from_value(message).unwrap();
-    match message_data.action.as_str() {
-        "loadROM" => {
-            load_rom(message_data.machine_code.unwrap());
-        }
-        "start" => {
-            start();
-        }
-        "reset" => {
-            reset();
-        }
-        "resetAndStart" => {
-            reset_and_start(message_data.machine_code.unwrap());
-        }
-        "keyboard" => {
-            keyboard(message_data.key.unwrap(), true);
-        }
-        "stop" => {
-            stop();
-        }
-        "speed" => {
-            speed(message_data.speed_percentage.unwrap());
-        }
-        _ => (),
-    }
+#[derive(Serialize)]
+struct StopRuntimeMessage {
+    action: &'static str,
 }
 
 // adjust accordingly
@@ -56,6 +30,36 @@ const FASTEST_STEP: usize = 30_000;
 const SLOWEST_STOP: usize = 1;
 static mut STEP: usize = FASTEST_STEP;
 static mut RUNNER_INTERVAL: Option<i32> = None;
+static mut RUNNER_CLOSURE: LazyCell<Closure<dyn Fn()>> = LazyCell::new(|| Closure::new(runner));
+
+#[wasm_bindgen(js_name = computerHandleMessage)]
+pub fn computer_handle_message(message: JsValue) {
+    let received_worker_message: ReceivedWorkerMessage = serde_wasm_bindgen::from_value(message).unwrap();
+    match received_worker_message.action.as_str() {
+        "loadROM" => {
+            load_rom(received_worker_message.machine_code.unwrap());
+        }
+        "start" => {
+            start();
+        }
+        "reset" => {
+            reset();
+        }
+        "resetAndStart" => {
+            reset_and_start(received_worker_message.machine_code.unwrap());
+        }
+        "keyboard" => {
+            keyboard(received_worker_message.key.unwrap(), true);
+        }
+        "stop" => {
+            stop();
+        }
+        "speed" => {
+            speed(received_worker_message.speed_percentage.unwrap());
+        }
+        _ => (),
+    }
+}
 
 fn runner() {
     // Testing here has shown that a busy loop is actually the exact same speed
@@ -76,28 +80,23 @@ fn runner() {
     }
 }
 
-static mut RUNNER_CLOSURE: LazyCell<Closure<dyn Fn()>> = LazyCell::new(|| Closure::new(runner));
 fn start() {
+    if unsafe { RUNNER_INTERVAL.is_some() } {
+        return;
+    }
+    let runner_interval = js_sys::global()
+        .unchecked_into::<DedicatedWorkerGlobalScope>()
+        .set_interval_with_callback_and_timeout_and_arguments_0(
+            unsafe { RUNNER_CLOSURE.as_ref().unchecked_ref() },
+            0,
+        )
+        .unwrap();
     unsafe {
-        if RUNNER_INTERVAL.is_some() {
-            return;
-        }
-        RUNNER_INTERVAL = Some(
-            js_sys::global()
-                .unchecked_into::<DedicatedWorkerGlobalScope>()
-                .set_interval_with_callback_and_timeout_and_arguments_0(
-                    RUNNER_CLOSURE.as_ref().unchecked_ref(),
-                    0,
-                )
-                .unwrap(),
-        );
+        RUNNER_INTERVAL = Some(runner_interval);
     }
 }
 
 fn reset() {
-    if unsafe { PREV_EMIT.is_none() } {
-        return;
-    }
     if unsafe { RUNNER_INTERVAL.is_some() } {
         js_sys::global()
             .unchecked_into::<DedicatedWorkerGlobalScope>()
@@ -112,27 +111,20 @@ fn reset() {
     }
     let _ = js_sys::global()
         .unchecked_into::<DedicatedWorkerGlobalScope>()
-        .post_message(&serde_wasm_bindgen::to_value(&EmitInfoMessage::default()).unwrap());
+        .post_message(&serde_wasm_bindgen::to_value(&EmitHardwareInfoMessage::default()).unwrap());
 }
 
 fn reset_and_start(machine_code: Vec<String>) {
-    if unsafe { PREV_EMIT.is_some() } {
-        unsafe {
-            EMIT_INTERVAL_TOTAL = 0;
-            PREV_SEC_TOTALS.clear();
-        }
-        architecture::reset();
-        let _ = js_sys::global()
-            .unchecked_into::<DedicatedWorkerGlobalScope>()
-            .post_message(&serde_wasm_bindgen::to_value(&EmitInfoMessage::default()).unwrap());
+    unsafe {
+        EMIT_INTERVAL_TOTAL = 0;
+        PREV_SEC_TOTALS.clear();
     }
+    architecture::reset();
+    let _ = js_sys::global()
+        .unchecked_into::<DedicatedWorkerGlobalScope>()
+        .post_message(&serde_wasm_bindgen::to_value(&EmitHardwareInfoMessage::default()).unwrap());
     load_rom(machine_code);
     start();
-}
-
-#[derive(Serialize)]
-struct StopMessage {
-    action: &'static str,
 }
 
 fn stop() {
@@ -148,7 +140,7 @@ fn stop() {
 
     let _ = js_sys::global()
         .unchecked_into::<DedicatedWorkerGlobalScope>()
-        .post_message(&serde_wasm_bindgen::to_value(&StopMessage { action: "stopping" }).unwrap());
+        .post_message(&serde_wasm_bindgen::to_value(&StopRuntimeMessage { action: "stopping" }).unwrap());
 }
 
 fn speed(speed_percentage: u16) {
