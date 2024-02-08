@@ -1,7 +1,10 @@
 # TODO (NAND)
 * functionality
+  * better naming instead of emitinfomessage
+  * rename screen-runtime to screen-and-emit-runtime
   * viewable ram and rom
   * read abt desynchronized
+  * go through this in DEPTH https://git.srht.taylor.fish/~taylor/binaryen/tree/7075d2e217d67a7a8ec76927817300f801a57b22/test/lit/help/optimization-opts.test
 * example programs
   * make able to re-place obstacles (actually reallocate memory and stuff)
   * a lot more comments and remove comments on example programs

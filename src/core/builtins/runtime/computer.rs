@@ -1,11 +1,14 @@
+use super::screen::{
+    EmitInfoMessage, EMIT_INTERVAL_TOTAL, PREV_EMIT, PREV_SEC_TOTALS
+};
 use crate::{
     architecture::{self, ticktock},
-    builtins::hardware::{keyboard, load_rom, nand_calls},
+    builtins::hardware::{keyboard, load_rom},
 };
 use serde::{Deserialize, Serialize};
-use std::{cell::LazyCell, collections::VecDeque};
+use std::cell::LazyCell;
 use wasm_bindgen::prelude::*;
-use web_sys::{DedicatedWorkerGlobalScope, WorkerGlobalScope};
+use web_sys::DedicatedWorkerGlobalScope;
 
 #[derive(Deserialize)]
 struct MessageData {
@@ -51,32 +54,8 @@ pub fn computer_handle_message(message: JsValue) {
 // we want the lowest so the keyboard is faster
 const FASTEST_STEP: usize = 30_000;
 const SLOWEST_STOP: usize = 1;
-const EMIT_INTERVAL_DELAY: usize = 50;
-const PREV_SEC_TOTAL_AVG_TIME: usize = 1;
 static mut STEP: usize = FASTEST_STEP;
-static mut PREV_SEC_TOTALS: VecDeque<f64> = VecDeque::new();
-static mut PREV_EMIT: Option<f64> = None;
-static mut EMIT_INTERVAL: Option<i32> = None;
 static mut RUNNER_INTERVAL: Option<i32> = None;
-static mut EMIT_INTERVAL_TOTAL: usize = 0;
-
-#[derive(Serialize)]
-struct EmitInfoMessage {
-    action: &'static str,
-    hz: f64,
-    #[serde(rename = "NANDCalls")]
-    nand_calls: u64,
-}
-
-impl Default for EmitInfoMessage {
-    fn default() -> Self {
-        EmitInfoMessage {
-            action: "emitInfo",
-            hz: 0.0,
-            nand_calls: 0,
-        }
-    }
-}
 
 fn runner() {
     // Testing here has shown that a busy loop is actually the exact same speed
@@ -97,23 +76,12 @@ fn runner() {
     }
 }
 
-static mut EMIT_INFO_CLOSURE: LazyCell<Closure<dyn Fn()>> =
-    LazyCell::new(|| Closure::new(emit_info));
 static mut RUNNER_CLOSURE: LazyCell<Closure<dyn Fn()>> = LazyCell::new(|| Closure::new(runner));
 fn start() {
     unsafe {
         if RUNNER_INTERVAL.is_some() {
             return;
         }
-        EMIT_INTERVAL = Some(
-            js_sys::global()
-                .unchecked_into::<DedicatedWorkerGlobalScope>()
-                .set_interval_with_callback_and_timeout_and_arguments_0(
-                    EMIT_INFO_CLOSURE.as_ref().unchecked_ref(),
-                    EMIT_INTERVAL_DELAY as i32,
-                )
-                .unwrap(),
-        );
         RUNNER_INTERVAL = Some(
             js_sys::global()
                 .unchecked_into::<DedicatedWorkerGlobalScope>()
@@ -122,27 +90,6 @@ fn start() {
                     0,
                 )
                 .unwrap(),
-        );
-    }
-    // worker startup is slow and the very first emit will be significantly slower
-    // than the following ones. So, we want to sort of nudge the first emit closer
-    // closer to a higher value. A higher value happens if prevEmit and
-    // currentEmit are closer together, so we first create the interval to make
-    // the comparsion happen sooner and then we define prevEmit as late as
-    // possible
-
-    // we can do this by running runner() twice to balance out the startup time
-    // and defining PREV_EMIT afterwards, and this seems to be consistent somehow
-    runner();
-    runner();
-    unsafe {
-        PREV_EMIT = Some(
-            js_sys::global()
-                .dyn_into::<WorkerGlobalScope>()
-                .unwrap()
-                .performance()
-                .unwrap()
-                .now(),
         );
     }
 }
@@ -157,13 +104,6 @@ fn reset() {
             .clear_interval_with_handle(unsafe { RUNNER_INTERVAL.unwrap() });
         unsafe {
             RUNNER_INTERVAL = None;
-        }
-        js_sys::global()
-            .unchecked_into::<DedicatedWorkerGlobalScope>()
-            .clear_interval_with_handle(unsafe { EMIT_INTERVAL.unwrap() });
-        unsafe {
-            EMIT_INTERVAL = None;
-            EMIT_INTERVAL_TOTAL = 0;
         }
     }
     architecture::reset();
@@ -205,14 +145,7 @@ fn stop() {
     unsafe {
         RUNNER_INTERVAL = None;
     }
-    emit_info();
 
-    js_sys::global()
-        .unchecked_into::<DedicatedWorkerGlobalScope>()
-        .clear_interval_with_handle(unsafe { EMIT_INTERVAL.unwrap() });
-    unsafe {
-        EMIT_INTERVAL = None;
-    }
     let _ = js_sys::global()
         .unchecked_into::<DedicatedWorkerGlobalScope>()
         .post_message(&serde_wasm_bindgen::to_value(&StopMessage { action: "stopping" }).unwrap());
@@ -226,32 +159,4 @@ fn speed(speed_percentage: u16) {
     unsafe {
         STEP = 10.0_f64.powf(log_scaled_value) as usize;
     }
-}
-
-fn emit_info() {
-    let current_emit = js_sys::global()
-        .dyn_into::<WorkerGlobalScope>()
-        .unwrap()
-        .performance()
-        .unwrap()
-        .now();
-    unsafe {
-        let sec_total = EMIT_INTERVAL_TOTAL as f64 / (current_emit - PREV_EMIT.unwrap()) * 1000.0;
-        if PREV_SEC_TOTALS.len() == (1000 * PREV_SEC_TOTAL_AVG_TIME) / EMIT_INTERVAL_DELAY {
-            PREV_SEC_TOTALS.pop_front();
-        }
-        PREV_SEC_TOTALS.push_back(sec_total);
-        PREV_EMIT = Some(current_emit);
-        EMIT_INTERVAL_TOTAL = 0;
-    };
-    let _ = js_sys::global()
-        .unchecked_into::<DedicatedWorkerGlobalScope>()
-        .post_message(
-            &serde_wasm_bindgen::to_value(&EmitInfoMessage {
-                action: "emitInfo",
-                hz: unsafe { PREV_SEC_TOTALS.iter().sum::<f64>() / PREV_SEC_TOTALS.len() as f64 },
-                nand_calls: nand_calls(),
-            })
-            .unwrap(),
-        );
 }

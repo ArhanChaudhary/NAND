@@ -181,6 +181,7 @@
     });
 
     computerRunner.onmessage = messageHandler;
+    screenRunner.onmessage = messageHandler;
 
     let prev: number;
     document.addEventListener("keydown", (e) => {
