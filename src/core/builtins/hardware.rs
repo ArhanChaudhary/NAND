@@ -107,7 +107,8 @@ const GREEN_COLOR_DATA: u32 =
 pub static mut CTX: Option<OffscreenCanvasRenderingContext2d> = None;
 
 pub fn render() {
-    let mut pixel_data: [u32; SCREEN_WIDTH * SCREEN_HEIGHT] = [0; SCREEN_WIDTH * SCREEN_HEIGHT];
+    // https://rust-lang.github.io/rust-clippy/master/index.html#/large_stack_frames (2x speed up)
+    let mut pixel_data = vec![0; SCREEN_WIDTH * SCREEN_HEIGHT].into_boxed_slice();
     for (i, &word16) in unsafe { SCREEN_MEMORY.iter().enumerate() } {
         let y = i / (SCREEN_WIDTH / 16) * SCREEN_WIDTH;
         for j in 0..16 {

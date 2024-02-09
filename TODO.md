@@ -1,8 +1,9 @@
 # TODO (NAND)
 * functionality
-  * see if creating the large buffers in get_memory and render is faster on the heap rather than on the stack
-  * read abt desynchronized
   * go through this in DEPTH https://git.srht.taylor.fish/~taylor/binaryen/tree/7075d2e217d67a7a8ec76927817300f801a57b22/test/lit/help/optimization-opts.test
+  * print out the times and debug why it switches between 7.11 7.14 7.17
+  * read abt desynchronized
+  * pressing multiple keys doesnt work like normal keyboards would
 * example programs
   * make able to re-place obstacles (actually reallocate memory and stuff)
   * a lot more comments and remove comments on example programs

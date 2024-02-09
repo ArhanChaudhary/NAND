@@ -173,7 +173,9 @@
         screenRunner.postMessage({ action: "stopRendering" });
         break;
       case "emitMemory":
-        console.log(e.data.memory);
+        console.log(e.data.ramMemory.slice());
+        console.log(e.data.screenMemory.slice());
+        console.log(e.data.pressedKey);
         break;
     }
   }

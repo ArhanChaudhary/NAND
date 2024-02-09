@@ -38,6 +38,7 @@ struct EmitMemoryMessage {
     ram_memory: Uint16Array,
     #[serde(with = "serde_wasm_bindgen::preserve", rename = "screenMemory")]
     screen_memory: Uint16Array,
+    #[serde(rename = "pressedKey")]
     pressed_key: u16,
 }
 
@@ -60,8 +61,8 @@ static mut EMIT_INFO_CLOSURE: LazyCell<Closure<dyn Fn()>> =
 const EMIT_INTERVAL_DELAY: usize = 50;
 const PREV_SEC_TOTAL_AVG_TIME: usize = 1;
 
-#[wasm_bindgen(js_name = screenHandleMessage)]
-pub fn screen_handle_message(message: JsValue) {
+#[wasm_bindgen(js_name = screenAndEmitHandleMessage)]
+pub fn handle_message(message: JsValue) {
     let received_worker_message: ReceivedWorkerMessage =
         serde_wasm_bindgen::from_value(message).unwrap();
     match received_worker_message.action.as_str() {
@@ -88,6 +89,7 @@ pub fn screen_init(offscreen_canvas: OffscreenCanvas) {
     unsafe { CTX = Some(ctx) };
 }
 
+// static mut DIFFS: Vec<f64> = Vec::new();
 fn renderer() {
     if unsafe { STOP_RENDERING_LOOP } {
         unsafe {
@@ -98,7 +100,24 @@ fn renderer() {
             .unchecked_into::<DedicatedWorkerGlobalScope>()
             .request_animation_frame(unsafe { RENDERER_CLOSURE.as_ref().unchecked_ref() });
     }
+    // let before = js_sys::global()
+    //     .dyn_into::<WorkerGlobalScope>()
+    //     .unwrap()
+    //     .performance()
+    //     .unwrap()
+    //     .now();
     render();
+    // let after = js_sys::global()
+    //     .dyn_into::<WorkerGlobalScope>()
+    //     .unwrap()
+    //     .performance()
+    //     .unwrap()
+    //     .now();
+    // unsafe {
+    //     DIFFS.push(after - before);
+    // }
+    // let avg = unsafe { DIFFS.iter().sum::<f64>() / DIFFS.len() as f64 };
+    // web_sys::console::log_1(&JsValue::from_f64(avg));
 }
 
 fn start_rendering() {
