@@ -6,12 +6,12 @@
     file: string[];
   }[];
   const loadJackOS = Promise.all(
-    Object.entries(import.meta.glob("../os/*.jack", { as: "raw" })).map(
-      async ([OSFilePath, OSFile]) => ({
-        fileName: OSFilePath.replace("../os/", "").replace(".jack", ""),
-        file: ((await OSFile()) as string).split("\n"),
-      })
-    )
+    Object.entries(
+      import.meta.glob("../os/*.jack", { query: "?raw", import: "default" })
+    ).map(async ([OSFilePath, OSFile]) => ({
+      fileName: OSFilePath.replace("../os/", "").replace(".jack", ""),
+      file: ((await OSFile()) as string).split("\n"),
+    }))
   ).then((OSFiles) => {
     JackOS = OSFiles;
   });

@@ -9,13 +9,18 @@
   async function loadExamplePrograms() {
     const exampleProgramPromises = [];
     for (const [exampleProgramPath, exampleProgramFileLoader] of Object.entries(
-      import.meta.glob("../example-programs/**/*.jack", { as: "raw" })
+      import.meta.glob("../example-programs/**/*.jack", {
+        query: "?raw",
+        import: "default",
+      })
     )) {
       const exampleProgramName =
         exampleProgramPath.split("/")[exampleProgramPath.split("/").length - 2];
       exampleProgramPromises.push(
         exampleProgramFileLoader().then((exampleProgramFileRaw) => {
-          const exampleProgramFile = exampleProgramFileRaw.split("\n");
+          const exampleProgramFile = (exampleProgramFileRaw as string).split(
+            "\n"
+          );
           const exampleProgramDatum = examplePrograms.find(
             (exampleProgram) =>
               exampleProgram.exampleProgramName === exampleProgramName
