@@ -163,9 +163,13 @@
         }
         break;
       case "stopping":
-        // stopRendering calls emitInfo one last time so if we set it to
-        // red here it will immediately be set to green afterwards otherwise
+        // stopRendering might call emitInfo one last time so if we set it to
+        // red here it might immediately be set to green afterwards otherwise
+        lightStatus = "red";
         makeRedAfterwards = true;
+        setTimeout(() => {
+          makeRedAfterwards = false;
+        }, 150);
         screenRunner.postMessage({ action: "stopRendering" });
         break;
       case "emitMemory":

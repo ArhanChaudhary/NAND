@@ -135,6 +135,7 @@ fn start_rendering() {
 }
 
 fn stop_rendering() {
+    // see: start_rendering()
     if unsafe { !CURRENTLY_RENDERING } {
         return;
     }

@@ -1,15 +1,13 @@
 # TODO (NAND)
 * functionality
-  * why is emit interval timing weird as it jumps between 7.11 and 7.14
   * see if creating the large buffers in get_memory and render is faster on the heap rather than on the stack
-  * still slow for some reason???
-  * viewable ram and rom
   * read abt desynchronized
   * go through this in DEPTH https://git.srht.taylor.fish/~taylor/binaryen/tree/7075d2e217d67a7a8ec76927817300f801a57b22/test/lit/help/optimization-opts.test
 * example programs
   * make able to re-place obstacles (actually reallocate memory and stuff)
   * a lot more comments and remove comments on example programs
 * ui
+  * viewable ram and rom
   * "about" button
   * touch events for divider on mobile
   * common keybinds like undo etc
