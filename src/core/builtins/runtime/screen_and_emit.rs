@@ -135,14 +135,15 @@ fn start_rendering() {
 }
 
 fn stop_rendering() {
+    if unsafe { !CURRENTLY_RENDERING } {
+        return;
+    }
     js_sys::global()
         .unchecked_into::<DedicatedWorkerGlobalScope>()
         .clear_interval_with_handle(unsafe { EMIT_INTERVAL.unwrap() });
     unsafe {
-        if CURRENTLY_RENDERING {
-            STOP_RENDERING_LOOP = true;
-            CURRENTLY_RENDERING = false;
-        }
+        STOP_RENDERING_LOOP = true;
+        CURRENTLY_RENDERING = false;
         EMIT_INTERVAL = None;
         EMIT_INTERVAL_STEP_TOTAL = 0;
     }
