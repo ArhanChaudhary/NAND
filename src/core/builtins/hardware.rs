@@ -1,8 +1,8 @@
 use super::{
     bit_manipulation::nbit16,
-    memory::{RAM16K_MEMORY, RAM16K_MEMORY_LEN, ROM32K_MEMORY, SCREEN_MEMORY, SCREEN_MEMORY_LEN},
+    memory::{ROM32K_MEMORY, SCREEN_MEMORY},
 };
-use js_sys::{Uint16Array, Uint8ClampedArray, WebAssembly};
+use js_sys::{Uint8ClampedArray, WebAssembly};
 use wasm_bindgen::prelude::*;
 
 // -----------------------------------------------
@@ -48,29 +48,13 @@ pub fn load_rom(in_: Vec<String>) {
     }
 }
 
-static mut CURRENT_KEY: u16 = 0;
+pub static mut PRESSED_KEY: u16 = 0;
 pub fn keyboard(in_: u16, load: bool) -> u16 {
     if load {
-        unsafe { CURRENT_KEY = in_ };
+        unsafe { PRESSED_KEY = in_ };
         in_
     } else {
-        unsafe { CURRENT_KEY }
-    }
-}
-
-pub fn get_memory() -> Uint16Array {
-    let mut out =
-        std::mem::MaybeUninit::<[u16; RAM16K_MEMORY_LEN + SCREEN_MEMORY_LEN + 1]>::uninit();
-    let ptr = out.as_mut_ptr() as *mut u16;
-    unsafe {
-        std::ptr::copy_nonoverlapping(RAM16K_MEMORY.as_ptr(), ptr, RAM16K_MEMORY.len());
-        std::ptr::copy_nonoverlapping(
-            SCREEN_MEMORY.as_ptr(),
-            ptr.add(SCREEN_MEMORY.len()),
-            SCREEN_MEMORY.len(),
-        );
-        *ptr.add(RAM16K_MEMORY_LEN + SCREEN_MEMORY_LEN) = CURRENT_KEY;
-        Uint16Array::view_mut_raw(ptr, RAM16K_MEMORY_LEN + SCREEN_MEMORY_LEN + 1)
+        unsafe { PRESSED_KEY }
     }
 }
 

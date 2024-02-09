@@ -1,7 +1,7 @@
-use super::screen_and_emit::{EmitHardwareInfoMessage, EMIT_INTERVAL_TOTAL, PREV_SEC_TOTALS};
+use super::screen_and_emit::{EmitHardwareInfoMessage, EMIT_INTERVAL_STEP_TOTAL, PREV_SEC_TOTALS};
 use crate::{
     architecture::{self, ticktock},
-    builtins::hardware::{keyboard, load_rom},
+    builtins::hardware::{load_rom, PRESSED_KEY},
 };
 use serde::{Deserialize, Serialize};
 use std::cell::LazyCell;
@@ -26,15 +26,16 @@ struct StopRuntimeMessage {
 // adjust accordingly
 // lowest value until the Hz starts to drop
 // we want the lowest so the keyboard is faster
-const FASTEST_STEP: usize = 30_000;
-const SLOWEST_STOP: usize = 1;
-static mut STEP: usize = FASTEST_STEP;
+const FASTEST_STEP_PER_FRAME: usize = 30_000;
+const SLOWEST_STEP_PER_FRAME: usize = 1;
+static mut STEP_PER_FRAME: usize = FASTEST_STEP_PER_FRAME;
 static mut RUNNER_INTERVAL: Option<i32> = None;
 static mut RUNNER_CLOSURE: LazyCell<Closure<dyn Fn()>> = LazyCell::new(|| Closure::new(runner));
 
 #[wasm_bindgen(js_name = computerHandleMessage)]
 pub fn handle_message(message: JsValue) {
-    let received_worker_message: ReceivedWorkerMessage = serde_wasm_bindgen::from_value(message).unwrap();
+    let received_worker_message: ReceivedWorkerMessage =
+        serde_wasm_bindgen::from_value(message).unwrap();
     match received_worker_message.action.as_str() {
         "loadROM" => {
             load_rom(received_worker_message.machine_code.unwrap());
@@ -48,9 +49,9 @@ pub fn handle_message(message: JsValue) {
         "resetAndStart" => {
             reset_and_start(received_worker_message.machine_code.unwrap());
         }
-        "keyboard" => {
-            keyboard(received_worker_message.key.unwrap(), true);
-        }
+        "keyboard" => unsafe {
+            PRESSED_KEY = received_worker_message.key.unwrap();
+        },
         "stop" => {
             stop();
         }
@@ -68,14 +69,16 @@ fn runner() {
     // this entire web worker ran on a busy loop and state was shared through
     // SharedArrayBuffer. I can't really complain, though, as that probably
     // would have been hell to implement lol
-    for _ in 0..unsafe { STEP } {
+    for _ in 0..unsafe { STEP_PER_FRAME } {
         ticktock();
     }
     unsafe {
-        EMIT_INTERVAL_TOTAL += STEP;
+        EMIT_INTERVAL_STEP_TOTAL += STEP_PER_FRAME;
     }
-    if keyboard(0, false) == 32767 {
-        keyboard(0, true);
+    if unsafe { PRESSED_KEY } == 32767 {
+        unsafe {
+            PRESSED_KEY = 0;
+        }
         stop();
     }
 }
@@ -116,7 +119,7 @@ fn reset() {
 
 fn reset_and_start(machine_code: Vec<String>) {
     unsafe {
-        EMIT_INTERVAL_TOTAL = 0;
+        EMIT_INTERVAL_STEP_TOTAL = 0;
         PREV_SEC_TOTALS.clear();
     }
     architecture::reset();
@@ -140,15 +143,17 @@ fn stop() {
 
     let _ = js_sys::global()
         .unchecked_into::<DedicatedWorkerGlobalScope>()
-        .post_message(&serde_wasm_bindgen::to_value(&StopRuntimeMessage { action: "stopping" }).unwrap());
+        .post_message(
+            &serde_wasm_bindgen::to_value(&StopRuntimeMessage { action: "stopping" }).unwrap(),
+        );
 }
 
 fn speed(speed_percentage: u16) {
-    let min_log_value = (SLOWEST_STOP as f64).log10();
-    let max_log_value = (FASTEST_STEP as f64).log10();
+    let min_log_value = (SLOWEST_STEP_PER_FRAME as f64).log10();
+    let max_log_value = (FASTEST_STEP_PER_FRAME as f64).log10();
     let log_scaled_value =
         min_log_value + (speed_percentage as f64 / 100.0) * (max_log_value - min_log_value);
     unsafe {
-        STEP = 10.0_f64.powf(log_scaled_value) as usize;
+        STEP_PER_FRAME = 10.0_f64.powf(log_scaled_value) as usize;
     }
 }

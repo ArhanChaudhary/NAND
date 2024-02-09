@@ -1,5 +1,6 @@
-use crate::builtins::hardware::{
-    get_memory, nand_calls, render, OffscreenCanvasRenderingContext2d, CTX,
+use crate::builtins::{
+    hardware::{nand_calls, render, OffscreenCanvasRenderingContext2d, CTX, PRESSED_KEY},
+    memory::{RAM16K_MEMORY, SCREEN_MEMORY},
 };
 use js_sys::Uint16Array;
 use serde::{Deserialize, Serialize};
@@ -33,8 +34,11 @@ impl Default for EmitHardwareInfoMessage {
 #[derive(Serialize)]
 struct EmitMemoryMessage {
     action: &'static str,
-    #[serde(with = "serde_wasm_bindgen::preserve")]
-    memory: Uint16Array,
+    #[serde(with = "serde_wasm_bindgen::preserve", rename = "ramMemory")]
+    ram_memory: Uint16Array,
+    #[serde(with = "serde_wasm_bindgen::preserve", rename = "screenMemory")]
+    screen_memory: Uint16Array,
+    pressed_key: u16,
 }
 
 #[derive(Serialize)]
@@ -48,7 +52,7 @@ static mut CURRENTLY_RENDERING: bool = false;
 static mut RENDERER_CLOSURE: LazyCell<Closure<dyn Fn()>> = LazyCell::new(|| Closure::new(renderer));
 
 pub static mut PREV_SEC_TOTALS: VecDeque<f64> = VecDeque::new();
-pub static mut EMIT_INTERVAL_TOTAL: usize = 0;
+pub static mut EMIT_INTERVAL_STEP_TOTAL: usize = 0;
 static mut PREV_EMIT: Option<f64> = None;
 static mut EMIT_INTERVAL: Option<i32> = None;
 static mut EMIT_INFO_CLOSURE: LazyCell<Closure<dyn Fn()>> =
@@ -140,7 +144,7 @@ fn stop_rendering() {
             CURRENTLY_RENDERING = false;
         }
         EMIT_INTERVAL = None;
-        EMIT_INTERVAL_TOTAL = 0;
+        EMIT_INTERVAL_STEP_TOTAL = 0;
     }
     emit_info();
 }
@@ -157,10 +161,11 @@ fn emit_info() {
         if PREV_SEC_TOTALS.len() == (1000 * PREV_SEC_TOTAL_AVG_TIME) / EMIT_INTERVAL_DELAY {
             PREV_SEC_TOTALS.pop_front();
         }
-        PREV_SEC_TOTALS
-            .push_back(EMIT_INTERVAL_TOTAL as f64 / (current_emit - PREV_EMIT.unwrap()) * 1000.0);
+        PREV_SEC_TOTALS.push_back(
+            EMIT_INTERVAL_STEP_TOTAL as f64 / (current_emit - PREV_EMIT.unwrap()) * 1000.0,
+        );
         PREV_EMIT = Some(current_emit);
-        EMIT_INTERVAL_TOTAL = 0;
+        EMIT_INTERVAL_STEP_TOTAL = 0;
     };
     let _ = js_sys::global()
         .unchecked_into::<DedicatedWorkerGlobalScope>()
@@ -176,13 +181,14 @@ fn emit_info() {
         unsafe {
             SEC_COUNT = 0;
         }
-
         let _ = js_sys::global()
             .unchecked_into::<DedicatedWorkerGlobalScope>()
             .post_message(
                 &serde_wasm_bindgen::to_value(&EmitMemoryMessage {
                     action: "emitMemory",
-                    memory: get_memory(),
+                    ram_memory: unsafe { Uint16Array::view(RAM16K_MEMORY.as_slice()) },
+                    screen_memory: unsafe { Uint16Array::view(SCREEN_MEMORY.as_slice()) },
+                    pressed_key: unsafe { PRESSED_KEY },
                 })
                 .unwrap(),
             );
