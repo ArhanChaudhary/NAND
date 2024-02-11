@@ -1,6 +1,5 @@
 # TODO (NAND)
 * functionality
-  * wasm features
   * print out the times and debug why it switches between 7.11 7.14 7.17
   * read abt desynchronized
   * pressing multiple keys doesnt work like normal keyboards would

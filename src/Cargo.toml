@@ -23,13 +23,28 @@ wasm-opt = [
     "--flexible-inline-max-function-size",
     "4294967295",
     "--partial-inlining-ifs",
-    "10000",
+    "2147483647",
 
     #
     # features
     #
+    "--enable-sign-ext",
     "--enable-threads",
+    # "--enable-mutable-globals",
+    # "--enable-nontrapping-float-to-int",
+    "--enable-simd",
     "--enable-bulk-memory",
+    # "--enable-exception-handling",
+    # "--enable-tail-call", not enough support to use
+    "--enable-reference-types",
+    "--enable-multivalue",
+    # "--enable-gc", no point
+    # "--enable-memory64", not enough support to use
+    # "--enable-relaxed-simd", not enough support to use
+    # "--enable-extended-const", not enough support to use
+    "--enable-strings",
+    # "--enable-multimemory" # doesnt compile
+    # "--enable-typed-continuations", # doesnt compile
 
     #
     # optimization passes
@@ -46,7 +61,7 @@ wasm-opt = [
     "--const-hoisting",
     "--cfp",
     "--dce",
-    "--dealign",
+    # "--dealign", breaks safari
     # "--denan",
     "--discard-global-effects",
     "--directize",
@@ -55,7 +70,7 @@ wasm-opt = [
     "--duplicate-function-elimination",
     # "--emit-target-features",
     # "--extract-function-index",
-    "--flatten",    # very fun flag 8)
+    # "--flatten", # makes safari take up 100% cpu
     "--fpcast-emu", # maybe
     # "--func-metrics",
     # "--generate-dyncalls",    # maybe
@@ -155,12 +170,6 @@ wasm-opt = [
     # "--type-ssa",
     # "--untee",
     "--vacuum",
-
-
-    # "--enable-mutable-globals",
-    # "--enable-nontrapping-float-to-int",
-    # "--enable-simd",
-    # "--enable-tail-call",
 ]
 
 [lib]
