@@ -1,6 +1,6 @@
 # TODO (NAND)
 * functionality
-  * go through this in DEPTH https://git.srht.taylor.fish/~taylor/binaryen/tree/7075d2e217d67a7a8ec76927817300f801a57b22/test/lit/help/optimization-opts.test
+  * wasm features
   * print out the times and debug why it switches between 7.11 7.14 7.17
   * read abt desynchronized
   * pressing multiple keys doesnt work like normal keyboards would
