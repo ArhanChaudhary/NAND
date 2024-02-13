@@ -38,25 +38,22 @@ pub fn handle_message(message: JsValue) {
     let received_worker_message: ReceivedWorkerMessage =
         serde_wasm_bindgen::from_value(message).unwrap();
     match received_worker_message.action.as_str() {
-        "loadROM" => {
-            load_rom(received_worker_message.machine_code.unwrap());
-        }
-        "start" => {
+        "computerStart" => {
             start();
         }
-        "reset" => {
+        "computerReset" => {
             reset();
         }
-        "resetAndStart" => {
+        "computerResetAndStart" => {
             reset_and_start(received_worker_message.machine_code.unwrap());
         }
-        "keyboard" => unsafe {
+        "computerKeyboard" => unsafe {
             PRESSED_KEY = received_worker_message.key.unwrap();
         },
-        "stop" => {
+        "computerStop" => {
             stop();
         }
-        "speed" => {
+        "computerSpeed" => {
             speed(received_worker_message.speed_percentage.unwrap());
         }
         _ => unsafe { unreachable_unchecked() },

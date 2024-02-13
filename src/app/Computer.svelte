@@ -86,27 +86,27 @@
 
   await Promise.all([loadJackOS, loadComputerRuntime, loadComputerScreen]);
   export function startComputerRuntime(machineCode: string[]) {
-    computerRunner.postMessage({ action: "start", machineCode });
-    screenRunner.postMessage({ action: "startRendering" });
+    computerRunner.postMessage({ action: "computerStart", machineCode });
+    screenRunner.postMessage({ action: "screenStartRendering" });
   }
 
   export function resetAndStartComputerRuntime(machineCode: string[]) {
-    computerRunner.postMessage({ action: "resetAndStart", machineCode });
-    screenRunner.postMessage({ action: "startRendering" });
+    computerRunner.postMessage({ action: "computerResetAndStart", machineCode });
+    screenRunner.postMessage({ action: "screenStartRendering" });
   }
 
   export function resetComputerRuntime() {
-    computerRunner.postMessage({ action: "reset" });
-    screenRunner.postMessage({ action: "stopRendering" });
+    computerRunner.postMessage({ action: "computerReset" });
+    screenRunner.postMessage({ action: "screenStopRendering" });
   }
 
   export function stopComputerRuntime() {
-    computerRunner.postMessage({ action: "stop" });
-    screenRunner.postMessage({ action: "stopRendering" });
+    computerRunner.postMessage({ action: "computerStop" });
+    screenRunner.postMessage({ action: "screenStopRendering" });
   }
 
   export function speedComputerRuntime(speedPercentage: number) {
-    computerRunner.postMessage({ action: "speed", speedPercentage });
+    computerRunner.postMessage({ action: "computerSpeed", speedPercentage });
   }
 </script>
 
@@ -170,7 +170,7 @@
         setTimeout(() => {
           makeRedAfterwards = false;
         }, 150);
-        screenRunner.postMessage({ action: "stopRendering" });
+        screenRunner.postMessage({ action: "screenStopRendering" });
         break;
       case "emitMemory":
         console.log(e.data.ramMemory.slice());
@@ -241,12 +241,12 @@
         keyValue = 0;
       }
       prev = keyValue;
-      computerRunner.postMessage({ action: "keyboard", key: keyValue });
+      computerRunner.postMessage({ action: "computerKeyboard", key: keyValue });
     });
 
     document.addEventListener("keyup", () => {
       prev = 0;
-      computerRunner.postMessage({ action: "keyboard", key: 0 });
+      computerRunner.postMessage({ action: "computerKeyboard", key: 0 });
     });
   }
 </script>

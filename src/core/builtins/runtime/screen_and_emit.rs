@@ -66,8 +66,8 @@ pub fn handle_message(message: JsValue) {
     let received_worker_message: ReceivedWorkerMessage =
         serde_wasm_bindgen::from_value(message).unwrap();
     match received_worker_message.action.as_str() {
-        "startRendering" => start_rendering(),
-        "stopRendering" => stop_rendering(),
+        "screenStartRendering" => start_rendering(),
+        "screenStopRendering" => stop_rendering(),
         _ => unsafe {
             unreachable_unchecked();
         },
