@@ -63,6 +63,13 @@ pub fn handle_message(message: JsValue) {
     }
 }
 
+// Unfortunately, using a setInterval instead of a setTimeout loop more than
+// *halfs* the speed (~3.25mhz) only on Firefox for some reason :-( (Try it,
+// profile 099c481 before and after). For another unknown reason, a setTimeout
+// loop is disappointing slow (~5.5mhz) on wasm consistently across all
+// browsers even compared to the js implementation prior to 099c481 (but hey,
+// at least it sped up Firefox!). For now, we'll stick with a setInterval loop
+// and just bear with Firefox's poor performance.
 fn runner() {
     // Testing here has shown that a busy loop is actually the exact same speed
     // as setInterval(runner, 0)! This was a bit surprising to me, and I suspect
