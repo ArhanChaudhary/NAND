@@ -1,5 +1,7 @@
 # TODO (NAND)
 * functionality
+  * test the busy loop again
+  * setinterval in firefox is mega slow, see 099c481
   * print out the times and debug why it switches between 7.11 7.14 7.17
   * read abt desynchronized
   * pressing multiple keys doesnt work like normal keyboards would

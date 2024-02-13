@@ -4,7 +4,7 @@ use crate::{
     builtins::hardware::{load_rom, PRESSED_KEY},
 };
 use serde::{Deserialize, Serialize};
-use std::cell::LazyCell;
+use std::{cell::LazyCell, hint::unreachable_unchecked};
 use wasm_bindgen::prelude::*;
 use web_sys::DedicatedWorkerGlobalScope;
 
@@ -28,6 +28,7 @@ struct StopRuntimeMessage {
 // we want the lowest so the keyboard is faster
 const FASTEST_STEP_PER_FRAME: usize = 30_000;
 const SLOWEST_STEP_PER_FRAME: usize = 1;
+
 static mut STEP_PER_FRAME: usize = FASTEST_STEP_PER_FRAME;
 static mut RUNNER_INTERVAL: Option<i32> = None;
 static mut RUNNER_CLOSURE: LazyCell<Closure<dyn Fn()>> = LazyCell::new(|| Closure::new(runner));
@@ -58,7 +59,7 @@ pub fn handle_message(message: JsValue) {
         "speed" => {
             speed(received_worker_message.speed_percentage.unwrap());
         }
-        _ => (),
+        _ => unsafe { unreachable_unchecked() },
     }
 }
 

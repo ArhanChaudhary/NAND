@@ -4,7 +4,7 @@ use crate::builtins::{
 };
 use js_sys::Uint16Array;
 use serde::{Deserialize, Serialize};
-use std::{cell::LazyCell, collections::VecDeque};
+use std::{cell::LazyCell, collections::VecDeque, hint::unreachable_unchecked};
 use wasm_bindgen::prelude::*;
 use web_sys::{DedicatedWorkerGlobalScope, OffscreenCanvas, WorkerGlobalScope};
 
@@ -68,7 +68,9 @@ pub fn handle_message(message: JsValue) {
     match received_worker_message.action.as_str() {
         "startRendering" => start_rendering(),
         "stopRendering" => stop_rendering(),
-        _ => unreachable!(),
+        _ => unsafe {
+            unreachable_unchecked();
+        },
     }
 }
 
@@ -94,6 +96,7 @@ fn renderer() {
     if unsafe { STOP_RENDERING_LOOP } {
         unsafe {
             STOP_RENDERING_LOOP = false;
+            CURRENTLY_RENDERING = false;
         }
     } else {
         let _ = js_sys::global()
@@ -163,7 +166,6 @@ fn stop_rendering() {
         .clear_interval_with_handle(unsafe { EMIT_INTERVAL.unwrap() });
     unsafe {
         STOP_RENDERING_LOOP = true;
-        CURRENTLY_RENDERING = false;
         EMIT_INTERVAL = None;
         EMIT_INTERVAL_STEP_TOTAL = 0;
     }
