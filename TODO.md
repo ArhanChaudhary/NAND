@@ -1,6 +1,7 @@
 # TODO (NAND)
 * functionality
   * busy loop
+  * stop => pause, resetAndStart => reset or 
   * look into asyncify?
   * print out the times and debug why it switches between 7.11 7.14 7.17
   * read abt desynchronized

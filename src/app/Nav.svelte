@@ -152,7 +152,7 @@
     if ($shouldResetAndStart) {
       resetAndStartComputerRuntime(machineCode);
     } else {
-      startComputerRuntime(machineCode);
+      startComputerRuntime();
     }
     $shouldResetAndStart = false;
   }

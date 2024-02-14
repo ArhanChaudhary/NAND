@@ -1,4 +1,6 @@
-use super::screen_and_emit::{EmitHardwareInfoMessage, EMIT_INTERVAL_STEP_TOTAL, PREV_SEC_TOTALS};
+use super::screen_and_emit::{
+    EmitHardwareInfoMessage, EMIT_INTERVAL_STEP_TOTAL, PREV_SEC_TOTALS, STEP_PER_FRAME,
+};
 use crate::{
     architecture::{self, ticktock},
     builtins::hardware::{load_rom, PRESSED_KEY},

@@ -85,8 +85,8 @@
   });
 
   await Promise.all([loadJackOS, loadComputerRuntime, loadComputerScreen]);
-  export function startComputerRuntime(machineCode: string[]) {
-    computerRunner.postMessage({ action: "computerStart", machineCode });
+  export function startComputerRuntime() {
+    computerRunner.postMessage({ action: "computerStart" });
     screenRunner.postMessage({ action: "screenStartRendering" });
   }
 
