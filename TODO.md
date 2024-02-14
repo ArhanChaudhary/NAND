@@ -1,6 +1,7 @@
 # TODO (NAND)
 * functionality
-  * test the busy loop again (stash 41970cf90d96bb96cb77146f90082909ca6c5de5 could possibly be useful)
+  * busy loop
+  * look into asyncify?
   * print out the times and debug why it switches between 7.11 7.14 7.17
   * read abt desynchronized
   * pressing multiple keys doesnt work like normal keyboards would

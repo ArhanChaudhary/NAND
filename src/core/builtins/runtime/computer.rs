@@ -13,9 +13,6 @@ struct ReceivedWorkerMessage {
     action: String,
     #[serde(rename = "machineCode")]
     machine_code: Option<Vec<String>>,
-    key: Option<u16>,
-    #[serde(rename = "speedPercentage")]
-    speed_percentage: Option<u16>,
 }
 
 #[derive(Serialize)]
@@ -23,13 +20,6 @@ struct StopRuntimeMessage {
     action: &'static str,
 }
 
-// adjust accordingly
-// lowest value until the Hz starts to drop
-// we want the lowest so the keyboard is faster
-const FASTEST_STEP_PER_FRAME: usize = 30_000;
-const SLOWEST_STEP_PER_FRAME: usize = 1;
-
-static mut STEP_PER_FRAME: usize = FASTEST_STEP_PER_FRAME;
 static mut RUNNER_INTERVAL: Option<i32> = None;
 static mut RUNNER_CLOSURE: LazyCell<Closure<dyn Fn()>> = LazyCell::new(|| Closure::new(runner));
 
@@ -47,14 +37,8 @@ pub fn handle_message(message: JsValue) {
         "computerResetAndStart" => {
             reset_and_start(received_worker_message.machine_code.unwrap());
         }
-        "computerKeyboard" => unsafe {
-            PRESSED_KEY = received_worker_message.key.unwrap();
-        },
         "computerStop" => {
             stop();
-        }
-        "computerSpeed" => {
-            speed(received_worker_message.speed_percentage.unwrap());
         }
         _ => unsafe { unreachable_unchecked() },
     }
@@ -151,14 +135,4 @@ fn stop() {
         .post_message(
             &serde_wasm_bindgen::to_value(&StopRuntimeMessage { action: "stopping" }).unwrap(),
         );
-}
-
-fn speed(speed_percentage: u16) {
-    let min_log_value = (SLOWEST_STEP_PER_FRAME as f64).log10();
-    let max_log_value = (FASTEST_STEP_PER_FRAME as f64).log10();
-    let log_scaled_value =
-        min_log_value + (speed_percentage as f64 / 100.0) * (max_log_value - min_log_value);
-    unsafe {
-        STEP_PER_FRAME = 10.0_f64.powf(log_scaled_value) as usize;
-    }
 }

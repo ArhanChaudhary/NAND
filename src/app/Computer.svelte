@@ -91,7 +91,10 @@
   }
 
   export function resetAndStartComputerRuntime(machineCode: string[]) {
-    computerRunner.postMessage({ action: "computerResetAndStart", machineCode });
+    computerRunner.postMessage({
+      action: "computerResetAndStart",
+      machineCode,
+    });
     screenRunner.postMessage({ action: "screenStartRendering" });
   }
 
@@ -106,7 +109,7 @@
   }
 
   export function speedComputerRuntime(speedPercentage: number) {
-    computerRunner.postMessage({ action: "computerSpeed", speedPercentage });
+    screenRunner.postMessage({ action: "computerSpeed", speedPercentage });
   }
 </script>
 
@@ -241,12 +244,12 @@
         keyValue = 0;
       }
       prev = keyValue;
-      computerRunner.postMessage({ action: "computerKeyboard", key: keyValue });
+      screenRunner.postMessage({ action: "computerKeyboard", key: keyValue });
     });
 
     document.addEventListener("keyup", () => {
       prev = 0;
-      computerRunner.postMessage({ action: "computerKeyboard", key: 0 });
+      screenRunner.postMessage({ action: "computerKeyboard", key: 0 });
     });
   }
 </script>

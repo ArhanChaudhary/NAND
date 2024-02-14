@@ -11,6 +11,9 @@ use web_sys::{DedicatedWorkerGlobalScope, OffscreenCanvas, WorkerGlobalScope};
 #[derive(Deserialize)]
 struct ReceivedWorkerMessage {
     action: String,
+    #[serde(rename = "speedPercentage")]
+    speed_percentage: Option<u16>,
+    key: Option<u16>,
 }
 
 #[derive(Serialize)]
@@ -66,8 +69,18 @@ pub fn handle_message(message: JsValue) {
     let received_worker_message: ReceivedWorkerMessage =
         serde_wasm_bindgen::from_value(message).unwrap();
     match received_worker_message.action.as_str() {
-        "screenStartRendering" => start_rendering(),
-        "screenStopRendering" => stop_rendering(),
+        "screenStartRendering" => {
+            start_rendering();
+        },
+        "screenStopRendering" => {
+            stop_rendering();
+        },
+        "computerKeyboard" => unsafe {
+            PRESSED_KEY = received_worker_message.key.unwrap();
+        },
+        "computerSpeed" => {
+            computer_speed(received_worker_message.speed_percentage.unwrap());
+        },
         _ => unsafe {
             unreachable_unchecked();
         },
@@ -220,4 +233,22 @@ fn emit_info() {
             SEC_COUNT += 1;
         }
     };
+}
+
+// adjust accordingly
+// lowest value until the Hz starts to drop
+// we want the lowest so the keyboard is faster
+const FASTEST_STEP_PER_FRAME: usize = 30_000;
+const SLOWEST_STEP_PER_FRAME: usize = 1;
+
+pub static mut STEP_PER_FRAME: usize = FASTEST_STEP_PER_FRAME;
+
+fn computer_speed(speed_percentage: u16) {
+    let min_log_value = (SLOWEST_STEP_PER_FRAME as f64).log10();
+    let max_log_value = (FASTEST_STEP_PER_FRAME as f64).log10();
+    let log_scaled_value =
+        min_log_value + (speed_percentage as f64 / 100.0) * (max_log_value - min_log_value);
+    unsafe {
+        STEP_PER_FRAME = 10.0_f64.powf(log_scaled_value) as usize;
+    }
 }
