@@ -17,7 +17,7 @@
   });
 
   let computerRunner: Worker;
-  let screenRunner: Worker;
+  let computerKernal: Worker;
   // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
   if (import.meta.env.DEV) {
     computerRunner = new Worker(
@@ -26,8 +26,8 @@
         type: "module",
       }
     );
-    screenRunner = new Worker(
-      new URL("screen-and-emit-runtime.ts", import.meta.url),
+    computerKernal = new Worker(
+      new URL("computer-kernal.ts", import.meta.url),
       {
         type: "module",
       }
@@ -39,8 +39,8 @@
         type: "classic",
       }
     );
-    screenRunner = new Worker(
-      new URL("screen-and-emit-runtime.ts", import.meta.url),
+    computerKernal = new Worker(
+      new URL("computer-kernal.ts", import.meta.url),
       {
         type: "classic",
       }
@@ -55,8 +55,8 @@
     };
   });
 
-  const loadComputerScreen = new Promise<void>((resolve) => {
-    screenRunner.onmessage = (e) => {
+  const loadComputerKernal = new Promise<void>((resolve) => {
+    computerKernal.onmessage = (e) => {
       if (e.data.action === "loaded") {
         resolve();
       }
@@ -84,30 +84,30 @@
     };
   });
 
-  await Promise.all([loadJackOS, loadComputerRuntime, loadComputerScreen]);
-  export function startComputerRuntime() {
+  await Promise.all([loadJackOS, loadComputerRuntime, loadComputerKernal]);
+  export function startComputer() {
     computerRunner.postMessage(undefined);
-    screenRunner.postMessage({ action: "startRenderingScreen" });
+    computerKernal.postMessage({ action: "partialStart" });
   }
 
-  export function resetAndStartComputerRuntime(machineCode: string[]) {
+  export function resetComputer(machineCode: string[]) {
     computerRunner.postMessage(undefined);
-    screenRunner.postMessage({
-      action: "computerResetAndStart",
+    computerKernal.postMessage({
+      action: "reset",
       machineCode,
     });
   }
 
-  export function resetComputerRuntime() {
-    screenRunner.postMessage({ action: "computerReset" });
+  export function resetAndStopComputer() {
+    computerKernal.postMessage({ action: "resetAndStop" });
   }
 
-  export function stopComputerRuntime() {
-    screenRunner.postMessage({ action: "computerStop" });
+  export function stopComputer() {
+    computerKernal.postMessage({ action: "stop" });
   }
 
-  export function speedComputerRuntime(speedPercentage: number) {
-    screenRunner.postMessage({ action: "computerSpeed", speedPercentage });
+  export function speedComputer(speedPercentage: number) {
+    computerKernal.postMessage({ action: "speed", speedPercentage });
   }
 </script>
 
@@ -130,8 +130,10 @@
   let lightStatus = "";
   let makeRedAfterwards = false;
   function messageHandler(e: { data: any }) {
+    if (e.data.action !== "hardwareInfo")
+      console.log(e.data);
     switch (e.data.action) {
-      case "emitInfo":
+      case "hardwareInfo":
         if (e.data.hz >= 100_000) {
           clockSpeed = (e.data.hz / 1_000_000).toPrecision(3) + " MHz";
         } else if (e.data.hz >= 1_000) {
@@ -163,15 +165,15 @@
           NANDCalls = "0";
         }
         break;
-      case "stopping":
-        // stopRendering might call emitInfo one last time so if we set it to
+      case "stoppedRuntime":
+        // stopRendering might call hardwareInfo one last time so if we set it to
         // red here it might immediately be set to green afterwards otherwise
         lightStatus = "red";
         makeRedAfterwards = true;
         setTimeout(() => {
           makeRedAfterwards = false;
         }, 150);
-        screenRunner.postMessage({ action: "stopRenderingScreen" });
+        computerKernal.postMessage({ action: "partialStop" });
         break;
       case "emitMemory":
         console.log(e.data.ramMemory.slice());
@@ -185,7 +187,7 @@
   onMount(initRunner);
   async function initRunner() {
     const offscreenCanvas = computerScreen.transferControlToOffscreen();
-    screenRunner.postMessage(
+    computerKernal.postMessage(
       {
         offscreenCanvas,
         wasmModule: (runtimeInit as any).__wbindgen_wasm_module,
@@ -195,7 +197,7 @@
     );
 
     await new Promise<void>((resolve) => {
-      screenRunner.onmessage = (e) => {
+      computerKernal.onmessage = (e) => {
         if (e.data.action === "ready") {
           resolve();
         }
@@ -203,7 +205,7 @@
     });
 
     computerRunner.onmessage = messageHandler;
-    screenRunner.onmessage = messageHandler;
+    computerKernal.onmessage = messageHandler;
 
     let prev: number;
     document.addEventListener("keydown", (e) => {
@@ -242,12 +244,12 @@
         keyValue = 0;
       }
       prev = keyValue;
-      screenRunner.postMessage({ action: "computerKeyboard", key: keyValue });
+      computerKernal.postMessage({ action: "keyboard", key: keyValue });
     });
 
     document.addEventListener("keyup", () => {
       prev = 0;
-      screenRunner.postMessage({ action: "computerKeyboard", key: 0 });
+      computerKernal.postMessage({ action: "keyboard", key: 0 });
     });
   }
 </script>
@@ -263,7 +265,7 @@
   >
     <div id="computer-frame">
       <canvas
-        id="screen-runner"
+        id="computer-screen"
         bind:this={computerScreen}
         width="512"
         height="256"
@@ -340,7 +342,7 @@
         padding: var(--frame-padding);
         position: relative;
 
-        #screen-runner {
+        #computer-screen {
           border: calc(var(--px) * 15) solid;
           border-color: hsl(34, 11%, 57%) hsl(34, 15%, 68%) hsl(40, 42%, 87%);
           image-rendering: pixelated;

@@ -1,7 +1,4 @@
-use super::{
-    bit_manipulation::nbit16,
-    memory::{ROM32K_MEMORY, SCREEN_MEMORY},
-};
+use super::{bit_manipulation::nbit16, memory};
 use js_sys::{Uint8ClampedArray, WebAssembly};
 use wasm_bindgen::prelude::*;
 
@@ -45,7 +42,7 @@ pub fn load_rom(machine_code: Vec<u16>) {
     unsafe {
         std::ptr::copy_nonoverlapping(
             machine_code.as_ptr(),
-            ROM32K_MEMORY.as_mut_ptr(),
+            memory::ROM32K_MEMORY.as_mut_ptr(),
             machine_code.len(),
         );
     }
@@ -112,7 +109,7 @@ pub static mut CTX: Option<OffscreenCanvasRenderingContext2d> = None;
 pub fn render() {
     // https://rust-lang.github.io/rust-clippy/master/index.html#/large_stack_frames (2x speed up)
     let mut pixel_data = vec![0; SCREEN_WIDTH * SCREEN_HEIGHT].into_boxed_slice();
-    for (i, &word16) in unsafe { SCREEN_MEMORY.iter().enumerate() } {
+    for (i, &word16) in unsafe { memory::SCREEN_MEMORY.iter().enumerate() } {
         let y = i / (SCREEN_WIDTH / 16) * SCREEN_WIDTH;
         for j in 0..16 {
             if nbit16(word16, j) {

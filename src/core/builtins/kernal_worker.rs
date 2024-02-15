@@ -1,12 +1,12 @@
-use super::runtime_worker::{StopRuntimeMessage, IN_RUNTIME_LOOP};
-use crate::builtins::hardware::PRESSED_KEY;
+use super::runtime_worker;
+use crate::builtins::hardware;
 use serde::Deserialize;
 use std::hint::unreachable_unchecked;
 use wasm_bindgen::prelude::*;
 use web_sys::DedicatedWorkerGlobalScope;
 
-pub mod runtime;
 mod hardware_info;
+mod runtime;
 mod screen;
 
 #[derive(Deserialize)]
@@ -19,51 +19,50 @@ struct ReceivedWorkerMessage {
     machine_code: Option<Vec<String>>,
 }
 
-#[wasm_bindgen(js_name = screenAndEmitHandleMessage)]
+#[wasm_bindgen(js_name = kernalHandleMessage)]
 pub fn handle_message(message: JsValue) {
     let received_worker_message: ReceivedWorkerMessage =
         serde_wasm_bindgen::from_value(message).unwrap();
     match received_worker_message.action.as_str() {
-        "startRenderingScreen" => {
-            screen::start_rendering_screen();
-            hardware_info::start_emitting_info();
+        "partialStart" => {
+            screen::start_rendering();
+            hardware_info::start_emitting();
         }
-        "stopRenderingScreen" => {
-            screen::stop_rendering_screen();
-            hardware_info::stop_emitting_info();
-            hardware_info::emit_info();
+        "partialStop" => {
+            screen::stop_rendering();
+            hardware_info::stop_emitting();
+            hardware_info::emit();
         }
-        "computerResetAndStart" => {
-            runtime::computer_reset_and_start(received_worker_message.machine_code.unwrap());
-            screen::start_rendering_screen();
-            hardware_info::reset_and_start_emitting_info();
-            hardware_info::start_emitting_info();
+        "reset" => {
+            runtime::reset(received_worker_message.machine_code.unwrap());
+            screen::start_rendering();
+            hardware_info::reset();
+            hardware_info::start_emitting();
         }
-        "computerReset" => {
-            runtime::computer_reset();
-            screen::stop_rendering_screen();
-            hardware_info::reset_and_start_emitting_info();
-            hardware_info::stop_emitting_info();
-            hardware_info::emit_info();
+        "resetAndStop" => {
+            runtime::reset_and_stop();
+            screen::stop_rendering();
+            hardware_info::reset();
+            hardware_info::stop_emitting();
+            hardware_info::emit();
         }
-        "computerStop" => {
+        "stop" => {
             runtime::computer_stop();
-            screen::stop_rendering_screen();
-            hardware_info::stop_emitting_info();
-            if unsafe { IN_RUNTIME_LOOP } {
-                hardware_info::emit_info();
+            screen::stop_rendering();
+            hardware_info::stop_emitting();
+            if unsafe { runtime_worker::IN_RUNTIME_LOOP } {
+                hardware_info::emit();
             }
             let _ = js_sys::global()
                 .unchecked_into::<DedicatedWorkerGlobalScope>()
                 .post_message(
-                    &serde_wasm_bindgen::to_value(&StopRuntimeMessage { action: "stopping" })
-                        .unwrap(),
+                    &serde_wasm_bindgen::to_value(&runtime_worker::StopRuntimeMessage {}).unwrap(),
                 );
         }
-        "computerKeyboard" => unsafe {
-            PRESSED_KEY = received_worker_message.key.unwrap();
+        "keyboard" => unsafe {
+            hardware::PRESSED_KEY = received_worker_message.key.unwrap();
         },
-        "computerSpeed" => {
+        "speed" => {
             runtime::computer_speed(received_worker_message.speed_percentage.unwrap());
         }
         _ => unsafe {

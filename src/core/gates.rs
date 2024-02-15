@@ -1,27 +1,27 @@
 use crate::builtins::{
     bit_manipulation::{nbit16, word16_16},
-    hardware::NAND,
+    hardware,
 };
 
 pub fn not(a: bool) -> bool {
-    NAND(a, a)
+    hardware::NAND(a, a)
 }
 
 pub fn and(a: bool, b: bool) -> bool {
-    not(NAND(a, b))
+    not(hardware::NAND(a, b))
 }
 
 pub fn or(a: bool, b: bool) -> bool {
-    NAND(not(a), not(b))
+    hardware::NAND(not(a), not(b))
 }
 
 pub fn xor(a: bool, b: bool) -> bool {
-    let t1 = NAND(a, b);
-    NAND(NAND(a, t1), NAND(b, t1))
+    let t1 = hardware::NAND(a, b);
+    hardware::NAND(hardware::NAND(a, t1), hardware::NAND(b, t1))
 }
 
 fn mux(a: bool, b: bool, sel: bool) -> bool {
-    NAND(NAND(a, not(sel)), NAND(b, sel))
+    hardware::NAND(hardware::NAND(a, not(sel)), hardware::NAND(b, sel))
 }
 
 pub fn not16(in_: u16) -> u16 {

@@ -97,11 +97,11 @@
   import compiler from "../compiler/main";
   import {
     JackOS,
-    startComputerRuntime,
-    resetAndStartComputerRuntime,
-    resetComputerRuntime,
-    stopComputerRuntime,
-    speedComputerRuntime,
+    startComputer,
+    resetComputer,
+    resetAndStopComputer,
+    stopComputer,
+    speedComputer,
   } from "./Computer.svelte";
   import { IDEContext, shouldResetAndStart, activeTabName } from "./stores";
 
@@ -150,15 +150,15 @@
     }
 
     if ($shouldResetAndStart) {
-      resetAndStartComputerRuntime(machineCode);
+      resetComputer(machineCode);
     } else {
-      startComputerRuntime();
+      startComputer();
     }
     $shouldResetAndStart = false;
   }
 
   function _speedComputerRuntime(e: Event) {
-    speedComputerRuntime((e.target as HTMLInputElement).valueAsNumber);
+    speedComputer((e.target as HTMLInputElement).valueAsNumber);
   }
 
   function exampleProgramSelectChange(e: Event) {
@@ -197,8 +197,8 @@
     height="60"
   />
   <button on:click={_startComputerRuntime}> Start </button>
-  <button on:click={stopComputerRuntime}> Stop </button>
-  <button on:click={resetComputerRuntime}> Reset </button>
+  <button on:click={stopComputer}> Stop </button>
+  <button on:click={resetAndStopComputer}> Reset </button>
   <div class="nav-divider"></div>
   <div id="speed-runner-container">
     <input

@@ -1,16 +1,13 @@
 # TODO (NAND)
 * functionality
-  * stopping => stoppedRuntime
-  * resetAndStart => resetButStillRun
-  * emitInfo => hardwareInfo
-  * remove the word "emit" entirely
   * utilize .take() on Option<T>
-  * make the functions non guard claused and give that responsibility to the caller
+  * computerStop doesnt work on HelloWorld when finished
   * resetAndStart: doesnt reset half the time (not putting black box could be the reason why?), NaN from spamming start, random triple digit mhz spikes
   * use a mutex for start_computer_runtime, better naming of blocking functions
   * remove pubs in general and make everything more modular
   * replace onmessage with addEventListener once
 
+  * optimize CPU_DFFOUT
   * is it possible to get rid of the 150ms timeout
   * omit panic_abort from config.toml
   * look into asyncify?

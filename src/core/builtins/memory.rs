@@ -1,9 +1,9 @@
-use super::hardware::CLOCK;
+use super::hardware;
 
 static mut PC_DFFOUT: u16 = 0;
 pub fn pcregister(in_: u16) -> u16 {
     // NOTE: load is always true
-    if unsafe { CLOCK } {
+    if unsafe { hardware::CLOCK } {
         let out = unsafe { PC_DFFOUT };
         unsafe { PC_DFFOUT = in_ };
         // this *should* return in_, but from my experiments thusfar I haven't
@@ -17,7 +17,7 @@ pub fn pcregister(in_: u16) -> u16 {
 
 static mut DREGISTER_DFFOUT: u16 = 0;
 pub fn dregister(in_: u16, load: bool) -> u16 {
-    if load && unsafe { CLOCK } {
+    if load && unsafe { hardware::CLOCK } {
         unsafe { DREGISTER_DFFOUT = in_ };
         in_
     } else {
@@ -27,7 +27,7 @@ pub fn dregister(in_: u16, load: bool) -> u16 {
 
 static mut AREGISTER_DFFOUT: u16 = 0;
 pub fn aregister(in_: u16, load: bool) -> u16 {
-    if load && unsafe { CLOCK } {
+    if load && unsafe { hardware::CLOCK } {
         unsafe { AREGISTER_DFFOUT = in_ };
         in_
     } else {
@@ -38,7 +38,7 @@ pub fn aregister(in_: u16, load: bool) -> u16 {
 pub static mut RAM16K_MEMORY: [u16; 16384] = [0; 16384];
 pub fn ram16k(in_: u16, load: bool, address: u16) -> u16 {
     let out = unsafe { RAM16K_MEMORY[address as usize] };
-    if load && unsafe { CLOCK } {
+    if load && unsafe { hardware::CLOCK } {
         unsafe { RAM16K_MEMORY[address as usize] = in_ };
     }
     out
@@ -52,7 +52,7 @@ pub fn rom32k(address: u16) -> u16 {
 pub static mut SCREEN_MEMORY: [u16; 8192] = [0; 8192];
 pub fn screen(in_: u16, load: bool, address: u16) -> u16 {
     let out = unsafe { SCREEN_MEMORY[address as usize] };
-    if load && unsafe { CLOCK } {
+    if load && unsafe { hardware::CLOCK } {
         unsafe { SCREEN_MEMORY[address as usize] = in_ };
     }
     out

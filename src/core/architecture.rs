@@ -4,8 +4,7 @@ use crate::{
         bit_manipulation::{
             bool_from_u16, nbit16, slice16_0to12, slice16_0to13, slice16_0to14, u16_from_bool,
         },
-        hardware::{keyboard, reset_nand_calls, tick, tock},
-        memory::{aregister, dregister, pcregister, ram16k, rom32k, screen},
+        hardware, memory,
     },
     gates::{and, is_zero, mux16, not, or},
 };
@@ -13,7 +12,7 @@ use crate::{
 static mut PC_DFFOUT: u16 = 0;
 fn pc(in_: u16, load: bool, reset: bool) -> u16 {
     unsafe {
-        PC_DFFOUT = pcregister(
+        PC_DFFOUT = memory::pcregister(
             // reset
             mux16(
                 // load
@@ -35,14 +34,14 @@ static mut CPU_DFFOUT: [u16; 4] = [0; 4];
 fn cpu(in_m: u16, instruction: u16, reset: bool) {
     unsafe { CPU_DFFOUT[1] = u16_from_bool(and(nbit16(instruction, 3), nbit16(instruction, 15))) };
 
-    let aluy1 = aregister(0, false);
+    let aluy1 = memory::aregister(0, false);
 
     unsafe { CPU_DFFOUT[2] = slice16_0to14(aluy1) };
 
     unsafe { CPU_DFFOUT[3] = slice16_0to14(pc(slice16_0to14(aluy1), false, reset)) };
 
     let aluout = alu(
-        dregister(0, false),
+        memory::dregister(0, false),
         mux16(aluy1, in_m, nbit16(instruction, 12)),
         nbit16(instruction, 11),
         nbit16(instruction, 10),
@@ -56,9 +55,9 @@ fn cpu(in_m: u16, instruction: u16, reset: bool) {
 
     let aluoutiszero = is_zero(aluout);
 
-    dregister(aluout, and(nbit16(instruction, 4), nbit16(instruction, 15)));
+    memory::dregister(aluout, and(nbit16(instruction, 4), nbit16(instruction, 15)));
     pc(
-        slice16_0to14(aregister(
+        slice16_0to14(memory::aregister(
             mux16(instruction, aluout, nbit16(instruction, 15)),
             or(not(nbit16(instruction, 15)), nbit16(instruction, 5)),
         )),
@@ -89,18 +88,18 @@ fn memory(in_: u16, load: bool, address: u16) -> u16 {
     // 11 => KEYBOARD
 
     mux16(
-        ram16k(
+        memory::ram16k(
             in_,
             and(not(nbit16(address, 14)), load),
             slice16_0to13(address),
         ),
         mux16(
-            screen(
+            memory::screen(
                 in_,
                 and(and(not(nbit16(address, 13)), nbit16(address, 14)), load),
                 slice16_0to12(address),
             ),
-            keyboard(
+            hardware::keyboard(
                 in_,
                 and(and(nbit16(address, 13), nbit16(address, 14)), load),
             ),
@@ -113,7 +112,7 @@ fn memory(in_: u16, load: bool, address: u16) -> u16 {
 fn computer(reset: bool) {
     cpu(
         memory(0, false, unsafe { CPU_DFFOUT[2] }),
-        rom32k(unsafe { CPU_DFFOUT[3] }),
+        memory::rom32k(unsafe { CPU_DFFOUT[3] }),
         reset,
     );
     memory(
@@ -124,16 +123,16 @@ fn computer(reset: bool) {
 }
 
 pub fn ticktock() {
-    tick();
+    hardware::tick();
     computer(false);
-    tock();
+    hardware::tock();
     computer(false);
 }
 
 pub fn reset() {
-    tick();
+    hardware::tick();
     computer(true);
-    tock();
+    hardware::tock();
     computer(true);
-    reset_nand_calls();
+    hardware::reset_nand_calls();
 }
