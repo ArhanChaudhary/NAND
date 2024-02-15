@@ -40,11 +40,14 @@ pub fn tock() {
     unsafe { CLOCK = false };
 }
 
-pub fn load_rom(in_: Vec<String>) {
-    for (i, v) in in_.into_iter().enumerate() {
-        unsafe {
-            ROM32K_MEMORY[i] = u16::from_str_radix(v.as_str(), 2).unwrap();
-        }
+// needs to be this specific header or else wasm-bindgen doesn't add a memory.copy call to the wasm
+pub fn load_rom(machine_code: Vec<u16>) {
+    unsafe {
+        std::ptr::copy_nonoverlapping(
+            machine_code.as_ptr(),
+            ROM32K_MEMORY.as_mut_ptr(),
+            machine_code.len(),
+        );
     }
 }
 

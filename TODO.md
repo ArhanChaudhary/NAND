@@ -1,7 +1,20 @@
 # TODO (NAND)
 * functionality
-  * busy loop
-  * stop => pause, resetAndStart => reset or 
+  * resetAndStart works half the time for some reason
+  * rename stopping to stoppedRuntime
+  * make the functions non guard claused and give that responsibility to the caller
+  * prefix blocking functions with blocking
+  * remove runtime folder, runtime.rs, kernal.rs
+  * IN_EMIT_INFO_LOOP variable
+  * is it possible to get rid of the 150ms timeout
+  * rename emitInfo to emitHardwareInfo
+  * emitInfo for reset while running just dies
+  * omit panic_abort from config.toml
+  * use a mutex for start_computer_runtime
+  * replace onmessage with addEventListener once
+  * remove the 0.00 mhz display
+  * stop => pause, resetAndStart => reset or
+  * how much faster are builtins
   * look into asyncify?
   * print out the times and debug why it switches between 7.11 7.14 7.17
   * read abt desynchronized

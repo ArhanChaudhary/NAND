@@ -86,26 +86,24 @@
 
   await Promise.all([loadJackOS, loadComputerRuntime, loadComputerScreen]);
   export function startComputerRuntime() {
-    computerRunner.postMessage({ action: "computerStart" });
-    screenRunner.postMessage({ action: "screenStartRendering" });
+    computerRunner.postMessage(undefined);
+    screenRunner.postMessage({ action: "startRenderingScreen" });
   }
 
   export function resetAndStartComputerRuntime(machineCode: string[]) {
-    computerRunner.postMessage({
+    computerRunner.postMessage(undefined);
+    screenRunner.postMessage({
       action: "computerResetAndStart",
       machineCode,
     });
-    screenRunner.postMessage({ action: "screenStartRendering" });
   }
 
   export function resetComputerRuntime() {
-    computerRunner.postMessage({ action: "computerReset" });
-    screenRunner.postMessage({ action: "screenStopRendering" });
+    screenRunner.postMessage({ action: "computerReset" });
   }
 
   export function stopComputerRuntime() {
-    computerRunner.postMessage({ action: "computerStop" });
-    screenRunner.postMessage({ action: "screenStopRendering" });
+    screenRunner.postMessage({ action: "computerStop" });
   }
 
   export function speedComputerRuntime(speedPercentage: number) {
@@ -173,12 +171,12 @@
         setTimeout(() => {
           makeRedAfterwards = false;
         }, 150);
-        screenRunner.postMessage({ action: "screenStopRendering" });
+        screenRunner.postMessage({ action: "stopRenderingScreen" });
         break;
       case "emitMemory":
         console.log(e.data.ramMemory.slice());
-        console.log(e.data.screenMemory.slice());
-        console.log(e.data.pressedKey);
+        // console.log(e.data.screenMemory.slice());
+        // console.log(e.data.pressedKey);
         break;
     }
   }

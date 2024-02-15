@@ -1,6 +1,14 @@
-use crate::builtins::{
-    hardware::{nand_calls, render, OffscreenCanvasRenderingContext2d, CTX, PRESSED_KEY},
-    memory::{RAM16K_MEMORY, SCREEN_MEMORY},
+use super::computer::{
+    StopRuntimeMessage, IN_RUNTIME_LOOP, READY_TO_LOAD_NEW_PROGRAM, STOP_RUNTIME_LOOP,
+};
+use crate::{
+    architecture,
+    builtins::{
+        hardware::{
+            load_rom, nand_calls, render, OffscreenCanvasRenderingContext2d, CTX, PRESSED_KEY,
+        },
+        memory::{RAM16K_MEMORY, SCREEN_MEMORY},
+    },
 };
 use js_sys::Uint16Array;
 use serde::{Deserialize, Serialize};
@@ -14,10 +22,12 @@ struct ReceivedWorkerMessage {
     #[serde(rename = "speedPercentage")]
     speed_percentage: Option<u16>,
     key: Option<u16>,
+    #[serde(rename = "machineCode")]
+    machine_code: Option<Vec<String>>,
 }
 
 #[derive(Serialize)]
-pub struct EmitHardwareInfoMessage {
+struct EmitHardwareInfoMessage {
     action: &'static str,
     hz: f64,
     #[serde(rename = "NANDCalls")]
@@ -51,14 +61,15 @@ struct CanvasContextOptions {
     desynchronized: bool,
 }
 
-static mut STOP_RENDERING_LOOP: bool = false;
-static mut CURRENTLY_RENDERING: bool = false;
-static mut RENDERER_CLOSURE: LazyCell<Closure<dyn Fn()>> = LazyCell::new(|| Closure::new(renderer));
+static mut IN_SCREEN_RENDERING_LOOP: bool = false;
+static mut STOP_SCREEN_RENDERING_LOOP: bool = false;
+static mut SCREEN_RENDERER_CLOSURE: LazyCell<Closure<dyn Fn()>> =
+    LazyCell::new(|| Closure::new(screen_renderer));
 
-pub static mut PREV_SEC_TOTALS: VecDeque<f64> = VecDeque::new();
+static mut PREV_SEC_TOTALS: VecDeque<f64> = VecDeque::new();
 pub static mut EMIT_INTERVAL_STEP_TOTAL: usize = 0;
-static mut PREV_EMIT: Option<f64> = None;
-static mut EMIT_INTERVAL: Option<i32> = None;
+static mut PREV_EMIT_INFO_TIMESTAMP: Option<f64> = None;
+static mut EMIT_INFO_INTERVAL: Option<i32> = None;
 static mut EMIT_INFO_CLOSURE: LazyCell<Closure<dyn Fn()>> =
     LazyCell::new(|| Closure::new(emit_info));
 const EMIT_INTERVAL_DELAY: usize = 50;
@@ -69,18 +80,47 @@ pub fn handle_message(message: JsValue) {
     let received_worker_message: ReceivedWorkerMessage =
         serde_wasm_bindgen::from_value(message).unwrap();
     match received_worker_message.action.as_str() {
-        "screenStartRendering" => {
-            start_rendering();
-        },
-        "screenStopRendering" => {
-            stop_rendering();
-        },
+        "startRenderingScreen" => {
+            start_rendering_screen();
+            start_emitting_info();
+        }
+        "stopRenderingScreen" => {
+            stop_rendering_screen();
+            stop_emitting_info();
+            emit_info();
+        }
+        "computerResetAndStart" => {
+            computer_reset_and_start(received_worker_message.machine_code.unwrap());
+            start_rendering_screen();
+            reset_and_start_emitting_info();
+            start_emitting_info();
+        }
+        "computerReset" => {
+            computer_reset();
+            stop_rendering_screen();
+            stop_emitting_info();
+            emit_info();
+        }
+        "computerStop" => {
+            computer_stop();
+            stop_rendering_screen();
+            stop_emitting_info();
+            if unsafe { IN_RUNTIME_LOOP } {
+                emit_info();
+            }
+            let _ = js_sys::global()
+                .unchecked_into::<DedicatedWorkerGlobalScope>()
+                .post_message(
+                    &serde_wasm_bindgen::to_value(&StopRuntimeMessage { action: "stopping" })
+                        .unwrap(),
+                );
+        }
         "computerKeyboard" => unsafe {
             PRESSED_KEY = received_worker_message.key.unwrap();
         },
         "computerSpeed" => {
             computer_speed(received_worker_message.speed_percentage.unwrap());
-        },
+        }
         _ => unsafe {
             unreachable_unchecked();
         },
@@ -104,48 +144,40 @@ pub fn screen_init(offscreen_canvas: OffscreenCanvas) {
     unsafe { CTX = Some(ctx) };
 }
 
-// static mut DIFFS: Vec<f64> = Vec::new();
-fn renderer() {
-    if unsafe { STOP_RENDERING_LOOP } {
+fn screen_renderer() {
+    if unsafe { STOP_SCREEN_RENDERING_LOOP } {
         unsafe {
-            STOP_RENDERING_LOOP = false;
-            CURRENTLY_RENDERING = false;
+            STOP_SCREEN_RENDERING_LOOP = false;
+            IN_SCREEN_RENDERING_LOOP = false;
         }
     } else {
         let _ = js_sys::global()
             .unchecked_into::<DedicatedWorkerGlobalScope>()
-            .request_animation_frame(unsafe { RENDERER_CLOSURE.as_ref().unchecked_ref() });
+            .request_animation_frame(unsafe { SCREEN_RENDERER_CLOSURE.as_ref().unchecked_ref() });
     }
-    // let before = js_sys::global()
-    //     .dyn_into::<WorkerGlobalScope>()
-    //     .unwrap()
-    //     .performance()
-    //     .unwrap()
-    //     .now();
     render();
-    // let after = js_sys::global()
-    //     .dyn_into::<WorkerGlobalScope>()
-    //     .unwrap()
-    //     .performance()
-    //     .unwrap()
-    //     .now();
-    // unsafe {
-    //     DIFFS.push(after - before);
-    // }
-    // let avg = unsafe { DIFFS.iter().sum::<f64>() / DIFFS.len() as f64 };
-    // web_sys::console::log_1(&JsValue::from_f64(avg));
 }
 
-fn start_rendering() {
-    // We need this sort of locking mechanism because of the case of resetAndStart
-    // *sometimes* we want to start rendering, and sometimes we don't want to do
-    // anything because it's already rendering. So, instead of moving the logic
-    // to prevent double rendering to the app logic, we can just do it here to
-    // make it such that it still works even if multiple startRendering messages
-    // are sent
-    if unsafe { CURRENTLY_RENDERING } {
-        return;
+fn start_rendering_screen() {
+    if unsafe { !IN_SCREEN_RENDERING_LOOP } {
+        unsafe {
+            IN_SCREEN_RENDERING_LOOP = true;
+        }
+        let _ = js_sys::global()
+            .unchecked_into::<DedicatedWorkerGlobalScope>()
+            .request_animation_frame(unsafe { SCREEN_RENDERER_CLOSURE.as_ref().unchecked_ref() });
     }
+}
+
+fn stop_rendering_screen() {
+    unsafe {
+        if IN_SCREEN_RENDERING_LOOP {
+            STOP_SCREEN_RENDERING_LOOP = true;
+        }
+    }
+}
+
+fn start_emitting_info() {
     let emit_interval = js_sys::global()
         .unchecked_into::<DedicatedWorkerGlobalScope>()
         .set_interval_with_callback_and_timeout_and_arguments_0(
@@ -160,29 +192,29 @@ fn start_rendering() {
         .unwrap()
         .now();
     unsafe {
-        CURRENTLY_RENDERING = true;
-        EMIT_INTERVAL = Some(emit_interval);
-        PREV_EMIT = Some(prev_emit);
+        EMIT_INFO_INTERVAL = Some(emit_interval);
+        PREV_EMIT_INFO_TIMESTAMP = Some(prev_emit);
     }
-    let _ = js_sys::global()
-        .unchecked_into::<DedicatedWorkerGlobalScope>()
-        .request_animation_frame(unsafe { RENDERER_CLOSURE.as_ref().unchecked_ref() });
 }
 
-fn stop_rendering() {
-    // see: start_rendering()
-    if unsafe { !CURRENTLY_RENDERING } {
-        return;
+fn reset_and_start_emitting_info() {
+    unsafe {
+        EMIT_INTERVAL_STEP_TOTAL = 0;
+        PREV_SEC_TOTALS.clear();
     }
+}
+
+fn stop_emitting_info() {
+    let Some(emit_info_interval) = (unsafe { EMIT_INFO_INTERVAL }) else {
+        return;
+    };
     js_sys::global()
         .unchecked_into::<DedicatedWorkerGlobalScope>()
-        .clear_interval_with_handle(unsafe { EMIT_INTERVAL.unwrap() });
+        .clear_interval_with_handle(emit_info_interval);
     unsafe {
-        STOP_RENDERING_LOOP = true;
-        EMIT_INTERVAL = None;
+        EMIT_INFO_INTERVAL = None;
         EMIT_INTERVAL_STEP_TOTAL = 0;
     }
-    emit_info();
 }
 
 static mut SEC_COUNT: usize = 0;
@@ -198,9 +230,10 @@ fn emit_info() {
             PREV_SEC_TOTALS.pop_front();
         }
         PREV_SEC_TOTALS.push_back(
-            EMIT_INTERVAL_STEP_TOTAL as f64 / (current_emit - PREV_EMIT.unwrap()) * 1000.0,
+            EMIT_INTERVAL_STEP_TOTAL as f64 / (current_emit - PREV_EMIT_INFO_TIMESTAMP.unwrap())
+                * 1000.0,
         );
-        PREV_EMIT = Some(current_emit);
+        PREV_EMIT_INFO_TIMESTAMP = Some(current_emit);
         EMIT_INTERVAL_STEP_TOTAL = 0;
     };
     let _ = js_sys::global()
@@ -235,20 +268,63 @@ fn emit_info() {
     };
 }
 
+fn computer_reset() {
+    if unsafe { IN_RUNTIME_LOOP } {
+        unsafe {
+            STOP_RUNTIME_LOOP = true;
+        }
+        // TODO: figure out why this needs black_box
+        while std::hint::black_box(unsafe { IN_RUNTIME_LOOP }) {}
+    }
+    unsafe {
+        PREV_SEC_TOTALS.clear();
+    }
+    architecture::reset();
+}
+
+pub static mut LOAD_NEW_PROGRAM: bool = false;
+fn computer_reset_and_start(machine_code: Vec<String>) {
+    let to_load = machine_code
+        .into_iter()
+        .map(|v| u16::from_str_radix(v.as_str(), 2).unwrap())
+        .collect::<Vec<u16>>();
+    unsafe {
+        LOAD_NEW_PROGRAM = true;
+    }
+    while !std::hint::black_box(unsafe { READY_TO_LOAD_NEW_PROGRAM }) {}
+    load_rom(to_load);
+    architecture::reset();
+    unsafe {
+        LOAD_NEW_PROGRAM = false;
+        READY_TO_LOAD_NEW_PROGRAM = false;
+    }
+    let _ = js_sys::global()
+        .unchecked_into::<DedicatedWorkerGlobalScope>()
+        .post_message(&serde_wasm_bindgen::to_value(&EmitHardwareInfoMessage::default()).unwrap());
+}
+
+fn computer_stop() {
+    if unsafe { IN_RUNTIME_LOOP } {
+        unsafe {
+            STOP_RUNTIME_LOOP = true;
+        }
+    }
+}
+
 // adjust accordingly
 // lowest value until the Hz starts to drop
 // we want the lowest so the keyboard is faster
-const FASTEST_STEP_PER_FRAME: usize = 30_000;
-const SLOWEST_STEP_PER_FRAME: usize = 1;
+const MAX_STEPS_PER_LOOP: usize = 30_000;
+const MIN_STEPS_PER_LOOP: usize = 1;
 
-pub static mut STEP_PER_FRAME: usize = FASTEST_STEP_PER_FRAME;
+pub static mut STEPS_PER_LOOP: usize = MAX_STEPS_PER_LOOP;
 
 fn computer_speed(speed_percentage: u16) {
-    let min_log_value = (SLOWEST_STEP_PER_FRAME as f64).log10();
-    let max_log_value = (FASTEST_STEP_PER_FRAME as f64).log10();
+    let min_log_value = (MIN_STEPS_PER_LOOP as f64).log10();
+    let max_log_value = (MAX_STEPS_PER_LOOP as f64).log10();
     let log_scaled_value =
         min_log_value + (speed_percentage as f64 / 100.0) * (max_log_value - min_log_value);
     unsafe {
-        STEP_PER_FRAME = 10.0_f64.powf(log_scaled_value) as usize;
+        STEPS_PER_LOOP = 10.0_f64.powf(log_scaled_value) as usize;
     }
 }

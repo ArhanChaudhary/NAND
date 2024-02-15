@@ -1,7 +1,7 @@
-import runtimeInit, { computerHandleMessage } from "nand-core";
+import runtimeInit, { computerStart } from "nand-core";
 self.postMessage({ action: "loaded" });
 self.onmessage = async (e) => {
   await runtimeInit(e.data.wasmModule, e.data.wasmMemory);
-  self.onmessage = (e) => computerHandleMessage(e.data);
+  self.onmessage = () => computerStart();
   self.postMessage({ action: "ready" });
 };
