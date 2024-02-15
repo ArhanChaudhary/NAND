@@ -1,22 +1,20 @@
 # TODO (NAND)
 * functionality
-  * resetAndStart works half the time for some reason
-  * rename stopping to stoppedRuntime
+  * stopping => stoppedRuntime
+  * resetAndStart => resetButStillRun
+  * emitInfo => hardwareInfo
+  * remove the word "emit" entirely
+  * utilize .take() on Option<T>
   * make the functions non guard claused and give that responsibility to the caller
-  * prefix blocking functions with blocking
-  * remove runtime folder, runtime.rs, kernal.rs
-  * IN_EMIT_INFO_LOOP variable
-  * is it possible to get rid of the 150ms timeout
-  * rename emitInfo to emitHardwareInfo
-  * emitInfo for reset while running just dies
-  * omit panic_abort from config.toml
-  * use a mutex for start_computer_runtime
+  * resetAndStart: doesnt reset half the time (not putting black box could be the reason why?), NaN from spamming start, random triple digit mhz spikes
+  * use a mutex for start_computer_runtime, better naming of blocking functions
+  * remove pubs in general and make everything more modular
   * replace onmessage with addEventListener once
-  * remove the 0.00 mhz display
-  * stop => pause, resetAndStart => reset or
-  * how much faster are builtins
+
+  * is it possible to get rid of the 150ms timeout
+  * omit panic_abort from config.toml
   * look into asyncify?
-  * print out the times and debug why it switches between 7.11 7.14 7.17
+  * how much faster are builtins
   * read abt desynchronized
   * pressing multiple keys doesnt work like normal keyboards would
 * example programs

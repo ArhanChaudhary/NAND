@@ -1,4 +1,4 @@
-use super::screen_and_emit::{EMIT_INTERVAL_STEP_TOTAL, LOAD_NEW_PROGRAM, STEPS_PER_LOOP};
+use super::kernal_worker::runtime::STEPS_PER_LOOP;
 use crate::{architecture::ticktock, builtins::hardware::PRESSED_KEY};
 use serde::Serialize;
 use wasm_bindgen::prelude::*;
@@ -11,7 +11,10 @@ pub struct StopRuntimeMessage {
 
 pub static mut IN_RUNTIME_LOOP: bool = false;
 pub static mut STOP_RUNTIME_LOOP: bool = false;
+pub static mut LOAD_NEW_PROGRAM: bool = false;
 pub static mut READY_TO_LOAD_NEW_PROGRAM: bool = false;
+pub static mut EMIT_INTERVAL_STEP_TOTAL: usize = 0;
+
 #[wasm_bindgen(js_name = computerStart)]
 pub fn start_computer_runtime() {
     unsafe {
