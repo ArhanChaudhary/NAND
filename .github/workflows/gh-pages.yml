@@ -40,7 +40,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-rust-
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          cargo install wasm-pack
       - name: Build NAND
         run: |
           npm run rwbuild
