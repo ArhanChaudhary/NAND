@@ -6,11 +6,11 @@ use super::worker_helpers;
 
 #[derive(Serialize)]
 #[serde(tag = "action", rename = "stoppedRuntime")]
-pub struct StopRuntimeMessage {}
+pub struct StoppedRuntimeMessage {}
 
 pub static mut IN_RUNTIME_LOOP: bool = false;
 pub static mut STOP_RUNTIME_LOOP: bool = false;
-pub static mut LOAD_NEW_PROGRAM: bool = false;
+pub static mut LOADING_NEW_PROGRAM: bool = false;
 pub static mut READY_TO_LOAD_NEW_PROGRAM: bool = false;
 pub static mut EMIT_INTERVAL_STEP_TOTAL: usize = 0;
 
@@ -30,7 +30,7 @@ pub fn start() {
         IN_RUNTIME_LOOP = true;
     }
     loop {
-        if std::hint::black_box(unsafe { LOAD_NEW_PROGRAM }) {
+        if std::hint::black_box(unsafe { LOADING_NEW_PROGRAM }) {
             unsafe {
                 READY_TO_LOAD_NEW_PROGRAM = true;
             }
@@ -43,7 +43,7 @@ pub fn start() {
             EMIT_INTERVAL_STEP_TOTAL += STEPS_PER_LOOP;
             if hardware::PRESSED_KEY == 32767 {
                 hardware::PRESSED_KEY = 0;
-                worker_helpers::post_worker_message(StopRuntimeMessage {});
+                worker_helpers::post_worker_message(StoppedRuntimeMessage {});
                 break;
             }
             if STOP_RUNTIME_LOOP {

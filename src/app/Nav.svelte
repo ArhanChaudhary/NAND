@@ -98,8 +98,8 @@
   import {
     JackOS,
     startComputer,
-    resetComputer,
-    resetAndStopComputer,
+    resetAndStartComputer,
+    stopAndResetComputer,
     stopComputer,
     speedComputer,
   } from "./Computer.svelte";
@@ -150,7 +150,7 @@
     }
 
     if ($shouldResetAndStart) {
-      resetComputer(machineCode);
+      resetAndStartComputer(machineCode);
     } else {
       startComputer();
     }
@@ -198,7 +198,7 @@
   />
   <button on:click={_startComputerRuntime}> Start </button>
   <button on:click={stopComputer}> Stop </button>
-  <button on:click={resetAndStopComputer}> Reset </button>
+  <button on:click={stopAndResetComputer}> Reset </button>
   <div class="nav-divider"></div>
   <div id="speed-runner-container">
     <input

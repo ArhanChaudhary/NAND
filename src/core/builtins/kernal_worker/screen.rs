@@ -11,7 +11,7 @@ static mut STOP_SCREEN_RENDERING_LOOP: bool = false;
 static mut SCREEN_RENDERER_CLOSURE: LazyCell<Closure<dyn Fn()>> =
     LazyCell::new(|| Closure::new(renderer));
 
-#[wasm_bindgen(js_name = kernalScreenInit)]
+#[wasm_bindgen(js_name = screenInit)]
 pub fn init(offscreen_canvas: OffscreenCanvas) {
     let ctx = worker_helpers::get_context_with_context_options(
         offscreen_canvas,

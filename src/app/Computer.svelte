@@ -90,16 +90,16 @@
     computerKernal.postMessage({ action: "partialStart" });
   }
 
-  export function resetComputer(machineCode: string[]) {
+  export function resetAndStartComputer(machineCode: string[]) {
     computerRunner.postMessage(undefined);
     computerKernal.postMessage({
-      action: "reset",
+      action: "resetAndPartialStart",
       machineCode,
     });
   }
 
-  export function resetAndStopComputer() {
-    computerKernal.postMessage({ action: "resetAndStop" });
+  export function stopAndResetComputer() {
+    computerKernal.postMessage({ action: "stopAndReset" });
   }
 
   export function stopComputer() {
@@ -130,8 +130,7 @@
   let lightStatus = "";
   let makeRedAfterwards = false;
   function messageHandler(e: { data: any }) {
-    if (e.data.action !== "hardwareInfo")
-      console.log(e.data);
+    if (e.data.action !== "hardwareInfo") console.log(e.data);
     switch (e.data.action) {
       case "hardwareInfo":
         if (e.data.hz >= 100_000) {

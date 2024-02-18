@@ -1,13 +1,5 @@
 # TODO (NAND)
 * functionality
-  * inspect nav
-  * LOAD_NEW_PROGRAM to LOADING_NEW_PROGRAM
-  * StoppedRuntimeMessage
-  * kernalscreeninit to screenInit
-  * reset to resetAndPartialStart
-  * resetAndStop to stopAndReset
-
-  * hardware::pressedKey thing
   * screenInit kernal message
   * first emit starts of SUPER high for some reason
   * prefix blocking_ to reset and other black_box stuff

@@ -13,19 +13,19 @@ pub fn reset_and_stop() {
     architecture::reset();
 }
 
-pub fn reset(machine_code: Vec<String>) {
+pub fn reset_and_partial_start(machine_code: Vec<String>) {
     let machine_code_buf = machine_code
         .into_iter()
         .map(|v| u16::from_str_radix(v.as_str(), 2).unwrap())
         .collect::<Vec<u16>>();
     unsafe {
-        runtime_worker::LOAD_NEW_PROGRAM = true;
+        runtime_worker::LOADING_NEW_PROGRAM = true;
     }
     while !std::hint::black_box(unsafe { runtime_worker::READY_TO_LOAD_NEW_PROGRAM }) {}
     hardware::load_rom(machine_code_buf);
     architecture::reset();
     unsafe {
-        runtime_worker::LOAD_NEW_PROGRAM = false;
+        runtime_worker::LOADING_NEW_PROGRAM = false;
         runtime_worker::READY_TO_LOAD_NEW_PROGRAM = false;
     }
     // let _ = js_sys::global()
