@@ -1,9 +1,8 @@
-use super::runtime_worker;
+use super::{runtime_worker, worker_helpers};
 use crate::builtins::hardware;
 use serde::Deserialize;
 use std::hint::unreachable_unchecked;
 use wasm_bindgen::prelude::*;
-use web_sys::DedicatedWorkerGlobalScope;
 
 mod hardware_info;
 mod runtime;
@@ -53,11 +52,7 @@ pub fn handle_message(message: JsValue) {
             if unsafe { runtime_worker::IN_RUNTIME_LOOP } {
                 hardware_info::emit();
             }
-            let _ = js_sys::global()
-                .unchecked_into::<DedicatedWorkerGlobalScope>()
-                .post_message(
-                    &serde_wasm_bindgen::to_value(&runtime_worker::StopRuntimeMessage {}).unwrap(),
-                );
+            worker_helpers::post_worker_message(runtime_worker::StopRuntimeMessage {});
         }
         "keyboard" => unsafe {
             hardware::PRESSED_KEY = received_worker_message.key.unwrap();

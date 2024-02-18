@@ -1,7 +1,8 @@
 use crate::{architecture::ticktock, builtins::hardware::PRESSED_KEY};
 use serde::Serialize;
 use wasm_bindgen::prelude::*;
-use web_sys::DedicatedWorkerGlobalScope;
+
+use super::worker_helpers;
 
 #[derive(Serialize)]
 #[serde(tag = "action", rename = "stoppedRuntime")]
@@ -42,9 +43,7 @@ pub fn start() {
             EMIT_INTERVAL_STEP_TOTAL += STEPS_PER_LOOP;
             if PRESSED_KEY == 32767 {
                 PRESSED_KEY = 0;
-                let _ = js_sys::global()
-                    .unchecked_into::<DedicatedWorkerGlobalScope>()
-                    .post_message(&serde_wasm_bindgen::to_value(&StopRuntimeMessage {}).unwrap());
+                worker_helpers::post_worker_message(StopRuntimeMessage {});
                 break;
             }
             if STOP_RUNTIME_LOOP {
