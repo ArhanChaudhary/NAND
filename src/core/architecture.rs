@@ -135,4 +135,5 @@ pub fn reset() {
     hardware::tock();
     computer(true);
     hardware::reset_nand_calls();
+    hardware::keyboard(0, true);
 }
