@@ -1,9 +1,4 @@
-use crate::builtins::{
-    hardware,
-    memory::{RAM16K_MEMORY, SCREEN_MEMORY},
-    runtime_worker::EMIT_INTERVAL_STEP_TOTAL,
-    worker_helpers,
-};
+use crate::builtins::{hardware, memory, runtime_worker, worker_helpers};
 use js_sys::Uint16Array;
 use serde::Serialize;
 use std::{cell::LazyCell, collections::VecDeque};
@@ -13,7 +8,7 @@ static mut EMIT_HARDWARE_INFO_INTERVAL: Option<i32> = None;
 pub static mut EMIT_HARDWARE_INFO_CLOSURE: LazyCell<Closure<dyn Fn()>> =
     LazyCell::new(|| Closure::new(emit));
 
-#[derive(Serialize)]
+#[derive(Serialize, Default)]
 #[serde(tag = "action", rename = "hardwareInfo")]
 struct HardwareInfoMessage {
     hz: f64,
@@ -21,18 +16,9 @@ struct HardwareInfoMessage {
     nand_calls: u64,
 }
 
-impl Default for HardwareInfoMessage {
-    fn default() -> Self {
-        Self {
-            hz: 0.0,
-            nand_calls: 0,
-        }
-    }
-}
-
 #[derive(Serialize)]
+#[serde(tag = "action", rename = "emitMemory")]
 struct MemoryMessage {
-    action: &'static str,
     #[serde(with = "serde_wasm_bindgen::preserve", rename = "ramMemory")]
     ram_memory: Uint16Array,
     #[serde(with = "serde_wasm_bindgen::preserve", rename = "screenMemory")]
@@ -61,7 +47,7 @@ pub fn start_emitting() {
 
 pub fn reset() {
     unsafe {
-        EMIT_INTERVAL_STEP_TOTAL = 0;
+        runtime_worker::EMIT_INTERVAL_STEP_TOTAL = 0;
         PREV_SEC_TOTALS.clear();
     }
 }
@@ -81,12 +67,12 @@ pub fn emit() {
             PREV_SEC_TOTALS.pop_front();
         }
         PREV_SEC_TOTALS.push_back(
-            EMIT_INTERVAL_STEP_TOTAL as f64
+            runtime_worker::EMIT_INTERVAL_STEP_TOTAL as f64
                 / (current_emit - PREV_EMIT_HARDWARE_INFO_TIMESTAMP.unwrap())
                 * 1000.0,
         );
         PREV_EMIT_HARDWARE_INFO_TIMESTAMP = Some(current_emit);
-        EMIT_INTERVAL_STEP_TOTAL = 0;
+        runtime_worker::EMIT_INTERVAL_STEP_TOTAL = 0;
     };
     worker_helpers::post_worker_message(HardwareInfoMessage {
         hz: unsafe { PREV_SEC_TOTALS.iter().sum::<f64>() / PREV_SEC_TOTALS.len() as f64 },
@@ -97,9 +83,8 @@ pub fn emit() {
             EMIT_MEMORY_COUNTER = 0;
         }
         worker_helpers::post_worker_message(MemoryMessage {
-            action: "emitMemory",
-            ram_memory: unsafe { Uint16Array::view(RAM16K_MEMORY.as_slice()) },
-            screen_memory: unsafe { Uint16Array::view(SCREEN_MEMORY.as_slice()) },
+            ram_memory: unsafe { Uint16Array::view(memory::RAM16K_MEMORY.as_slice()) },
+            screen_memory: unsafe { Uint16Array::view(memory::SCREEN_MEMORY.as_slice()) },
             pressed_key: unsafe { hardware::PRESSED_KEY },
         });
     } else {

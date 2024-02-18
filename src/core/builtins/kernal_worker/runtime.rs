@@ -14,7 +14,7 @@ pub fn reset_and_stop() {
 }
 
 pub fn reset(machine_code: Vec<String>) {
-    let to_load = machine_code
+    let machine_code_buf = machine_code
         .into_iter()
         .map(|v| u16::from_str_radix(v.as_str(), 2).unwrap())
         .collect::<Vec<u16>>();
@@ -22,7 +22,7 @@ pub fn reset(machine_code: Vec<String>) {
         runtime_worker::LOAD_NEW_PROGRAM = true;
     }
     while !std::hint::black_box(unsafe { runtime_worker::READY_TO_LOAD_NEW_PROGRAM }) {}
-    hardware::load_rom(to_load);
+    hardware::load_rom(machine_code_buf);
     architecture::reset();
     unsafe {
         runtime_worker::LOAD_NEW_PROGRAM = false;

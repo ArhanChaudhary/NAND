@@ -1,13 +1,21 @@
 # TODO (NAND)
 * functionality
-  * utilize .take() on Option<T>
-  * computerStop doesnt work on HelloWorld when finished
-  * resetAndStart: doesnt reset half the time (not putting black box could be the reason why?), NaN from spamming start, random triple digit mhz spikes
-  * use a mutex for start_computer_runtime, better naming of blocking functions
+  * inspect nav
+  * LOAD_NEW_PROGRAM to LOADING_NEW_PROGRAM
+  * StoppedRuntimeMessage
+  * kernalscreeninit to screenInit
+  * reset to resetAndPartialStart
+  * resetAndStop to stopAndReset
+
+  * hardware::pressedKey thing
+  * screenInit kernal message
+  * first emit starts of SUPER high for some reason
+  * prefix blocking_ to reset and other black_box stuff
+  * recover lost stash which has the todo of to off
   * remove pubs in general and make everything more modular
-  * replace onmessage with addEventListener once
 
   * optimize CPU_DFFOUT
+  * replace onmessage with addEventListener once
   * is it possible to get rid of the 150ms timeout
   * omit panic_abort from config.toml
   * look into asyncify?

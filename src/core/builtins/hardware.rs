@@ -38,12 +38,12 @@ pub fn tock() {
 }
 
 // needs to be this specific header or else wasm-bindgen doesn't add a memory.copy call to the wasm
-pub fn load_rom(machine_code: Vec<u16>) {
+pub fn load_rom(machine_code_buf: Vec<u16>) {
     unsafe {
         std::ptr::copy_nonoverlapping(
-            machine_code.as_ptr(),
+            machine_code_buf.as_ptr(),
             memory::ROM32K_MEMORY.as_mut_ptr(),
-            machine_code.len(),
+            machine_code_buf.len(),
         );
     }
 }
@@ -65,7 +65,7 @@ extern "C" {
 
     #[wasm_bindgen(constructor)]
     fn new_with_uint8_clamped_array_and_width_and_height(
-        data: &Uint8ClampedArray,
+        data: Uint8ClampedArray,
         width: usize,
         height: usize,
     ) -> ImageData;
@@ -73,7 +73,7 @@ extern "C" {
     #[wasm_bindgen(method, js_name = putImageData)]
     fn put_image_data(
         this: &OffscreenCanvasRenderingContext2d,
-        imagedata: &ImageData,
+        imagedata: ImageData,
         dx: usize,
         dy: usize,
     );
@@ -127,13 +127,13 @@ pub fn render() {
     )
     .slice(base, base + len);
     let image_data = ImageData::new_with_uint8_clamped_array_and_width_and_height(
-        &sliced_pixel_data,
+        sliced_pixel_data,
         SCREEN_WIDTH,
         SCREEN_HEIGHT,
     );
     unsafe {
         CTX.as_ref()
             .unwrap_unchecked()
-            .put_image_data(&image_data, 0, 0);
+            .put_image_data(image_data, 0, 0);
     }
 }

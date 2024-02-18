@@ -1,4 +1,4 @@
-use crate::{architecture::ticktock, builtins::hardware::PRESSED_KEY};
+use crate::{architecture, builtins::hardware};
 use serde::Serialize;
 use wasm_bindgen::prelude::*;
 
@@ -37,12 +37,12 @@ pub fn start() {
             continue;
         }
         for _ in 0..unsafe { STEPS_PER_LOOP } {
-            ticktock();
+            architecture::ticktock();
         }
         unsafe {
             EMIT_INTERVAL_STEP_TOTAL += STEPS_PER_LOOP;
-            if PRESSED_KEY == 32767 {
-                PRESSED_KEY = 0;
+            if hardware::PRESSED_KEY == 32767 {
+                hardware::PRESSED_KEY = 0;
                 worker_helpers::post_worker_message(StopRuntimeMessage {});
                 break;
             }
