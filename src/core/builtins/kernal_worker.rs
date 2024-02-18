@@ -1,5 +1,4 @@
-use super::{runtime_worker, worker_helpers};
-use crate::builtins::hardware;
+use super::hardware;
 use serde::Deserialize;
 use std::hint::unreachable_unchecked;
 use wasm_bindgen::prelude::*;
@@ -24,41 +23,39 @@ pub fn handle_message(message: JsValue) {
         serde_wasm_bindgen::from_value(message).unwrap();
     match received_worker_message.action.as_str() {
         "partialStart" => {
-            screen::start_rendering();
-            hardware_info::start_emitting();
+            screen::try_start_rendering();
+            hardware_info::try_start_emitting();
         }
         "partialStop" => {
-            screen::stop_rendering();
-            hardware_info::stop_emitting();
+            screen::try_stop_rendering();
             hardware_info::emit();
+            hardware_info::try_stop_emitting();
         }
         "resetAndPartialStart" => {
-            runtime::reset_and_partial_start(received_worker_message.machine_code.unwrap());
-            screen::start_rendering();
-            hardware_info::reset();
-            hardware_info::start_emitting();
+            runtime::reset_blocking_and_partial_start(
+                received_worker_message.machine_code.unwrap(),
+            );
+            screen::try_start_rendering();
+            hardware_info::try_reset_emitting();
+            hardware_info::try_start_emitting();
         }
         "stopAndReset" => {
-            runtime::reset_and_stop();
-            screen::stop_rendering();
-            hardware_info::reset();
-            hardware_info::stop_emitting();
-            hardware_info::emit();
+            runtime::try_stop_and_reset_blocking();
+            screen::try_stop_rendering();
+            hardware_info::reset_emitting();
+            hardware_info::emit_default();
+            hardware_info::try_stop_emitting();
         }
         "stop" => {
-            runtime::computer_stop();
-            screen::stop_rendering();
-            hardware_info::stop_emitting();
-            if unsafe { runtime_worker::IN_RUNTIME_LOOP } {
-                hardware_info::emit();
-            }
-            worker_helpers::post_worker_message(runtime_worker::StoppedRuntimeMessage {});
+            runtime::try_stop();
+            screen::try_stop_rendering();
+            hardware_info::try_stop_emitting();
         }
-        "keyboard" => unsafe {
-            hardware::PRESSED_KEY = received_worker_message.key.unwrap();
-        },
+        "keyboard" => {
+            hardware::keyboard(received_worker_message.key.unwrap(), true);
+        }
         "speed" => {
-            runtime::computer_speed(received_worker_message.speed_percentage.unwrap());
+            runtime::speed(received_worker_message.speed_percentage.unwrap());
         }
         _ => unsafe {
             unreachable_unchecked();

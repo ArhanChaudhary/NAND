@@ -73,7 +73,7 @@ extern "C" {
     #[wasm_bindgen(method, js_name = putImageData)]
     fn put_image_data(
         this: &OffscreenCanvasRenderingContext2d,
-        imagedata: ImageData,
+        image_data: ImageData,
         dx: usize,
         dy: usize,
     );

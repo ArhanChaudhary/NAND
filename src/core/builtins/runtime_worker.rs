@@ -1,8 +1,8 @@
-use crate::{architecture, builtins::hardware};
+use super::{hardware, worker_helpers};
+use crate::architecture;
 use serde::Serialize;
+use std::cell::LazyCell;
 use wasm_bindgen::prelude::*;
-
-use super::worker_helpers;
 
 #[derive(Serialize)]
 #[serde(tag = "action", rename = "stoppedRuntime")]
@@ -21,8 +21,14 @@ pub const MAX_STEPS_PER_LOOP: usize = 30_000;
 pub const MIN_STEPS_PER_LOOP: usize = 1;
 pub static mut STEPS_PER_LOOP: usize = MAX_STEPS_PER_LOOP;
 
-#[wasm_bindgen(js_name = startRuntime)]
-pub fn start() {
+static mut DELAYED_IN_RUNTIME_LOOP_FALSE: LazyCell<Closure<dyn Fn()>> = LazyCell::new(|| {
+    Closure::new(|| unsafe {
+        IN_RUNTIME_LOOP = false;
+    })
+});
+
+#[wasm_bindgen(js_name = tryStartRuntime)]
+pub fn try_start() {
     unsafe {
         if IN_RUNTIME_LOOP {
             return;
@@ -34,25 +40,35 @@ pub fn start() {
             unsafe {
                 READY_TO_LOAD_NEW_PROGRAM = true;
             }
-            continue;
+            while std::hint::black_box(unsafe { LOADING_NEW_PROGRAM }) {}
         }
         for _ in 0..unsafe { STEPS_PER_LOOP } {
             architecture::ticktock();
         }
         unsafe {
             EMIT_INTERVAL_STEP_TOTAL += STEPS_PER_LOOP;
-            if hardware::PRESSED_KEY == 32767 {
+        }
+        if unsafe { hardware::PRESSED_KEY } == 32767 {
+            unsafe {
                 hardware::PRESSED_KEY = 0;
-                worker_helpers::post_worker_message(StoppedRuntimeMessage {});
-                break;
             }
-            if STOP_RUNTIME_LOOP {
+            worker_helpers::post_worker_message(StoppedRuntimeMessage {});
+            break;
+        }
+        if unsafe { STOP_RUNTIME_LOOP } {
+            unsafe {
                 STOP_RUNTIME_LOOP = false;
-                break;
             }
+            break;
         }
     }
-    unsafe {
-        IN_RUNTIME_LOOP = false;
-    }
+
+    // NEEDED because if another message while this loop is running it won't
+    // actually run immediately and guard clause return and will instead be put
+    // in js's job queue and run AFTER the loop is over!! which will cause the
+    // queued messages to happen after IN_RUNTIME_LOOP is set to false
+    worker_helpers::set_timeout_with_callback_and_timeout(
+        unsafe { DELAYED_IN_RUNTIME_LOOP_FALSE.as_ref().unchecked_ref() },
+        0,
+    );
 }

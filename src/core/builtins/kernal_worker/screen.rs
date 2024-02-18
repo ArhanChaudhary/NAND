@@ -1,7 +1,4 @@
-use crate::builtins::{
-    hardware,
-    worker_helpers::{self, CanvasContextOptions},
-};
+use crate::builtins::{hardware, worker_helpers};
 use std::cell::LazyCell;
 use wasm_bindgen::{closure::Closure, prelude::*};
 use web_sys::OffscreenCanvas;
@@ -16,7 +13,7 @@ pub fn init(offscreen_canvas: OffscreenCanvas) {
     let ctx = worker_helpers::get_context_with_context_options(
         offscreen_canvas,
         "2d",
-        CanvasContextOptions {
+        worker_helpers::CanvasContextOptions {
             alpha: false,
             desynchronized: true,
         },
@@ -38,7 +35,7 @@ fn renderer() {
     hardware::render();
 }
 
-pub fn start_rendering() {
+pub fn try_start_rendering() {
     if unsafe { !IN_SCREEN_RENDERING_LOOP } {
         unsafe {
             IN_SCREEN_RENDERING_LOOP = true;
@@ -49,7 +46,7 @@ pub fn start_rendering() {
     }
 }
 
-pub fn stop_rendering() {
+pub fn try_stop_rendering() {
     unsafe {
         if IN_SCREEN_RENDERING_LOOP {
             STOP_SCREEN_RENDERING_LOOP = true;

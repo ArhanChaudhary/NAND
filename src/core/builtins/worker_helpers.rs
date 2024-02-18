@@ -17,6 +17,13 @@ pub fn set_interval_with_callback_and_timeout(callback: &Function, timeout: i32)
         .unwrap()
 }
 
+pub fn set_timeout_with_callback_and_timeout(callback: &Function, timeout: i32) -> i32 {
+    js_sys::global()
+        .unchecked_into::<DedicatedWorkerGlobalScope>()
+        .set_timeout_with_callback_and_timeout_and_arguments_0(callback, timeout)
+        .unwrap()
+}
+
 pub fn clear_interval_with_handle(handle: i32) {
     js_sys::global()
         .unchecked_into::<DedicatedWorkerGlobalScope>()

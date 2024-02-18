@@ -142,7 +142,7 @@
     }
   }
 
-  function _startComputerRuntime() {
+  function compileAndStartComputer() {
     const machineCode = compileIDEContext();
     if (typeof machineCode === "number") {
       alert(`Program of length ${machineCode} too large to load into memory.`);
@@ -157,7 +157,7 @@
     $shouldResetAndStart = false;
   }
 
-  function _speedComputerRuntime(e: Event) {
+  function _speedComputer(e: Event) {
     speedComputer((e.target as HTMLInputElement).valueAsNumber);
   }
 
@@ -196,7 +196,7 @@
     width="55.94"
     height="60"
   />
-  <button on:click={_startComputerRuntime}> Start </button>
+  <button on:click={compileAndStartComputer}> Start </button>
   <button on:click={stopComputer}> Stop </button>
   <button on:click={stopAndResetComputer}> Reset </button>
   <div class="nav-divider"></div>
@@ -207,7 +207,7 @@
       min="0"
       max="100"
       value="100"
-      on:input={_speedComputerRuntime}
+      on:input={_speedComputer}
     />
     <span>Slow</span>
     <span style="float: right">Fast</span>

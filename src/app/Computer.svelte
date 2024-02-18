@@ -130,7 +130,6 @@
   let lightStatus = "";
   let makeRedAfterwards = false;
   function messageHandler(e: { data: any }) {
-    if (e.data.action !== "hardwareInfo") console.log(e.data);
     switch (e.data.action) {
       case "hardwareInfo":
         if (e.data.hz >= 100_000) {
@@ -174,7 +173,7 @@
         }, 150);
         computerKernal.postMessage({ action: "partialStop" });
         break;
-      case "emitMemory":
+      case "memory":
         console.log(e.data.ramMemory.slice());
         // console.log(e.data.screenMemory.slice());
         // console.log(e.data.pressedKey);

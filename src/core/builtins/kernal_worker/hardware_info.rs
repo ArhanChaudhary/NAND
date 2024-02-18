@@ -17,7 +17,7 @@ struct HardwareInfoMessage {
 }
 
 #[derive(Serialize)]
-#[serde(tag = "action", rename = "emitMemory")]
+#[serde(tag = "action", rename = "memory")]
 struct MemoryMessage {
     #[serde(with = "serde_wasm_bindgen::preserve", rename = "ramMemory")]
     ram_memory: Uint16Array,
@@ -33,29 +33,42 @@ static mut EMIT_MEMORY_COUNTER: usize = 0;
 const EMIT_HARDWARE_INFO_INTERVAL_DELAY: usize = 50;
 const PREV_SEC_TOTAL_AVG_TIME: usize = 1;
 
-pub fn start_emitting() {
+pub fn try_start_emitting() {
+    if unsafe { EMIT_HARDWARE_INFO_INTERVAL.is_some() } {
+        return;
+    }
     let emit_hardware_info_interval = worker_helpers::set_interval_with_callback_and_timeout(
         unsafe { EMIT_HARDWARE_INFO_CLOSURE.as_ref().unchecked_ref() },
         EMIT_HARDWARE_INFO_INTERVAL_DELAY as i32,
     );
-    let prev_emit_hardware_info_timestamp = worker_helpers::performance_now();
+    let performance_now = worker_helpers::performance_now();
     unsafe {
         EMIT_HARDWARE_INFO_INTERVAL = Some(emit_hardware_info_interval);
-        PREV_EMIT_HARDWARE_INFO_TIMESTAMP = Some(prev_emit_hardware_info_timestamp);
+        PREV_EMIT_HARDWARE_INFO_TIMESTAMP = Some(performance_now);
     }
 }
 
-pub fn reset() {
+pub fn try_reset_emitting() {
+    if unsafe { EMIT_HARDWARE_INFO_INTERVAL.is_some() } {
+        reset_emitting();
+    }
+}
+
+pub fn reset_emitting() {
     unsafe {
         runtime_worker::EMIT_INTERVAL_STEP_TOTAL = 0;
         PREV_SEC_TOTALS.clear();
     }
 }
 
-pub fn stop_emitting() {
+pub fn try_stop_emitting() {
     if let Some(emit_info_interval) = unsafe { EMIT_HARDWARE_INFO_INTERVAL.take() } {
         worker_helpers::clear_interval_with_handle(emit_info_interval);
     };
+}
+
+pub fn emit_default() {
+    worker_helpers::post_worker_message(HardwareInfoMessage::default());
 }
 
 pub fn emit() {
