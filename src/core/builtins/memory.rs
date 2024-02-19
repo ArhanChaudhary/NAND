@@ -53,8 +53,8 @@ pub fn ram16k(in_: u16, load: bool, address: u16) -> u16 {
 }
 
 pub static mut ROM32K_MEMORY: [u16; 32768] = [0; 32768];
-pub fn rom32k(address: u16) -> u16 {
-    unsafe { ROM32K_MEMORY[address as usize] }
+pub fn rom32k(pc: u16) -> u16 {
+    unsafe { ROM32K_MEMORY[pc as usize] }
 }
 
 pub static mut SCREEN_MEMORY: [u16; 8192] = [0; 8192];
