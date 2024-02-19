@@ -1,37 +1,37 @@
 use super::hardware;
 
-static mut PC_DFFOUT: u16 = 0;
-pub fn pcregister(in_: u16) -> u16 {
+static mut PC_DFF_OUT: u16 = 0;
+pub fn pc_register(in_: u16) -> u16 {
     // NOTE: load is always true
     if unsafe { hardware::CLOCK } {
-        let out = unsafe { PC_DFFOUT };
-        unsafe { PC_DFFOUT = in_ };
+        let out = unsafe { PC_DFF_OUT };
+        unsafe { PC_DFF_OUT = in_ };
         // this *should* return in_, but from my experiments thusfar I haven't
         // been able to find an implementation that works in a simpler way than
         // what we currently have
         out
     } else {
-        unsafe { PC_DFFOUT }
+        unsafe { PC_DFF_OUT }
     }
 }
 
-static mut DREGISTER_DFFOUT: u16 = 0;
-pub fn dregister(in_: u16, load: bool) -> u16 {
+static mut DREGISTER_DFF_OUT: u16 = 0;
+pub fn d_register(in_: u16, load: bool) -> u16 {
     if load && unsafe { hardware::CLOCK } {
-        unsafe { DREGISTER_DFFOUT = in_ };
+        unsafe { DREGISTER_DFF_OUT = in_ };
         in_
     } else {
-        unsafe { DREGISTER_DFFOUT }
+        unsafe { DREGISTER_DFF_OUT }
     }
 }
 
-static mut AREGISTER_DFFOUT: u16 = 0;
-pub fn aregister(in_: u16, load: bool) -> u16 {
+static mut AREGISTER_DFF_OUT: u16 = 0;
+pub fn a_register(in_: u16, load: bool) -> u16 {
     if load && unsafe { hardware::CLOCK } {
-        unsafe { AREGISTER_DFFOUT = in_ };
+        unsafe { AREGISTER_DFF_OUT = in_ };
         in_
     } else {
-        unsafe { AREGISTER_DFFOUT }
+        unsafe { AREGISTER_DFF_OUT }
     }
 }
 

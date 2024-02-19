@@ -85,8 +85,8 @@ fn add16(a: u16, b: u16) -> u16 {
     )
 }
 
-pub fn inc16(in_: u16) -> u16 {
-    add16(in_, 1)
+pub fn inc16(a: u16) -> u16 {
+    add16(a, 1)
 }
 
 // NOTE: combining all the bools into a single opcode doesn't seem to have any performance impact
