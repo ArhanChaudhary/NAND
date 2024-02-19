@@ -19,7 +19,6 @@ fn add16(a: u16, b: u16) -> u16 {
     let a12 = nbit16(a, 12);
     let a13 = nbit16(a, 13);
     let a14 = nbit16(a, 14);
-    let a15 = nbit16(a, 15);
     let b0 = nbit16(b, 0);
     let b1 = nbit16(b, 1);
     let b2 = nbit16(b, 2);
@@ -35,7 +34,6 @@ fn add16(a: u16, b: u16) -> u16 {
     let b12 = nbit16(b, 12);
     let b13 = nbit16(b, 13);
     let b14 = nbit16(b, 14);
-    let b15 = nbit16(b, 15);
     let carry1 = and(a0, b0);
     let x1 = xor(b1, carry1);
     let carry2 = or(and(b1, carry1), and(a1, x1));
@@ -80,7 +78,10 @@ fn add16(a: u16, b: u16) -> u16 {
         xor(a12, x12),
         xor(a13, x13),
         xor(a14, x14),
-        xor(a15, xor(b15, or(and(b14, carry14), and(a14, x14)))),
+        xor(
+            nbit16(a, 15),
+            xor(nbit16(b, 15), or(and(b14, carry14), and(a14, x14))),
+        ),
     )
 }
 
@@ -90,16 +91,7 @@ pub fn inc16(in_: u16) -> u16 {
 
 // NOTE: combining all the bools into a single opcode doesn't seem to have any performance impact
 #[allow(clippy::too_many_arguments)]
-pub fn alu(
-    x: u16,
-    y: u16,
-    zx: bool,
-    nx: bool,
-    zy: bool,
-    ny: bool,
-    f: bool,
-    no: bool,
-) -> u16 {
+pub fn alu(x: u16, y: u16, zx: bool, nx: bool, zy: bool, ny: bool, f: bool, no: bool) -> u16 {
     // zx
     let x1 = mux16(x, 0, zx);
     // nx

@@ -1,9 +1,7 @@
 use crate::{
     arithmetic::{alu, inc16},
     builtins::{
-        bit_manipulation::{
-            bool_from_u16, nbit16, slice16_0to12, slice16_0to13, slice16_0to14, u16_from_bool,
-        },
+        bit_manipulation::{nbit16, slice16_0to12, slice16_0to13, slice16_0to14},
         hardware, memory,
     },
     gates::{and, is_zero, mux16, not, or},
@@ -30,16 +28,12 @@ fn pc(in_: u16, load: bool, reset: bool) -> u16 {
     unsafe { PC_DFFOUT }
 }
 
-static mut CPU_DFFOUT: [u16; 4] = [0; 4];
-fn cpu(in_m: u16, instruction: u16, reset: bool) {
-    unsafe { CPU_DFFOUT[1] = u16_from_bool(and(nbit16(instruction, 3), nbit16(instruction, 15))) };
-
+static mut ADDRESS_M: u16 = 0;
+static mut PC: u16 = 0;
+fn cpu(in_m: u16, instruction: u16, reset: bool) -> (u16, bool) {
     let aluy1 = memory::aregister(0, false);
-
-    unsafe { CPU_DFFOUT[2] = slice16_0to14(aluy1) };
-
-    unsafe { CPU_DFFOUT[3] = slice16_0to14(pc(slice16_0to14(aluy1), false, reset)) };
-
+    unsafe { ADDRESS_M = slice16_0to14(aluy1) };
+    unsafe { PC = slice16_0to14(pc(slice16_0to14(aluy1), false, reset)) };
     let aluout = alu(
         memory::dregister(0, false),
         mux16(aluy1, in_m, nbit16(instruction, 12)),
@@ -50,8 +44,6 @@ fn cpu(in_m: u16, instruction: u16, reset: bool) {
         nbit16(instruction, 7),
         nbit16(instruction, 6),
     );
-
-    unsafe { CPU_DFFOUT[0] = aluout };
 
     let aluoutiszero = is_zero(aluout);
 
@@ -76,9 +68,10 @@ fn cpu(in_m: u16, instruction: u16, reset: bool) {
         ),
         reset,
     );
+    (aluout, and(nbit16(instruction, 3), nbit16(instruction, 15)))
 }
 
-fn memory(in_: u16, load: bool, address: u16) -> u16 {
+fn memory(in_m: u16, load: bool, address: u16) -> u16 {
     // address[14] == 0 means select RAM
     // address[13] == 0 means select Screen
     // address[13] == 1 and address[14] == 1 means select Keyboard
@@ -89,18 +82,18 @@ fn memory(in_: u16, load: bool, address: u16) -> u16 {
 
     mux16(
         memory::ram16k(
-            in_,
+            in_m,
             and(not(nbit16(address, 14)), load),
             slice16_0to13(address),
         ),
         mux16(
             memory::screen(
-                in_,
+                in_m,
                 and(and(not(nbit16(address, 13)), nbit16(address, 14)), load),
                 slice16_0to12(address),
             ),
             hardware::keyboard(
-                in_,
+                in_m,
                 and(and(nbit16(address, 13), nbit16(address, 14)), load),
             ),
             nbit16(address, 13),
@@ -110,16 +103,12 @@ fn memory(in_: u16, load: bool, address: u16) -> u16 {
 }
 
 fn computer(reset: bool) {
-    cpu(
-        memory(0, false, unsafe { CPU_DFFOUT[2] }),
-        memory::rom32k(unsafe { CPU_DFFOUT[3] }),
+    let (out_m, load_m) = cpu(
+        memory(0, false, unsafe { ADDRESS_M }),
+        memory::rom32k(unsafe { PC }),
         reset,
     );
-    memory(
-        unsafe { CPU_DFFOUT[0] },
-        bool_from_u16(unsafe { CPU_DFFOUT[1] }),
-        unsafe { CPU_DFFOUT[2] },
-    );
+    memory(out_m, load_m, unsafe { ADDRESS_M });
 }
 
 pub fn ticktock() {

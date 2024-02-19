@@ -5,7 +5,6 @@
   * recover lost stash which has the todo of to off
   * remove pubs in general and make everything more modular
   * slow/fast bar doesnt work
-  * optimize CPU_DFFOUT
   * replace onmessage with addEventListener once
   * is it possible to get rid of the 150ms timeout
   * omit panic_abort from config.toml
@@ -13,13 +12,13 @@
   * read abt desynchronized, alpha: false screws me up for some reason
   * pressing multiple keys doesnt work like normal keyboards would
 
-  * redo architecture.rs
+  * redo architecture.rs, optimize CPU_DFFOUT
   * how much faster are builtins
 * example programs
   * make able to re-place obstacles (actually reallocate memory and stuff)
   * a lot more comments and remove comments on example programs
 * ui
-  * viewable ram and rom
+  * viewable ram and rom (view as hex bin, go to line)
   * "about" button
   * touch events for divider on mobile
   * common keybinds like undo etc

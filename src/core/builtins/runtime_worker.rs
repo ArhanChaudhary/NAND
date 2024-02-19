@@ -49,6 +49,7 @@ pub fn try_start() {
             EMIT_INTERVAL_STEP_TOTAL += STEPS_PER_LOOP;
         }
         if unsafe { hardware::PRESSED_KEY } == 32767 {
+            // TODO: remmove?
             unsafe {
                 hardware::PRESSED_KEY = 0;
             }

@@ -1,17 +1,9 @@
-pub const fn bool_from_u16(n: u16) -> bool {
-    n != 0
-}
-
-pub const fn u16_from_bool(b: bool) -> u16 {
-    b as u16
-}
-
 pub const fn nbit16(n: u16, i: u8) -> bool {
-    bool_from_u16((n >> i) & 1)
+    (n >> i) & 1 != 0
 }
 
 const fn placebit16(b: bool, i: u8) -> u16 {
-    u16_from_bool(b) << i
+    (b as u16) << i
 }
 
 #[allow(clippy::too_many_arguments)]
