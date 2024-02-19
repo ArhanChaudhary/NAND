@@ -7,7 +7,9 @@ use wasm_bindgen::prelude::*;
 // NAND + 🦀 + 🕸️ = ❤️
 #[allow(non_snake_case)]
 pub fn NAND(a: bool, b: bool) -> bool {
-    unsafe { NAND_CALLS += 1 };
+    unsafe {
+        NAND_CALLS += 1;
+    }
     !(a && b) // for science!!
 }
 
@@ -25,16 +27,22 @@ pub fn nand_calls() -> u64 {
 }
 
 pub fn reset_nand_calls() {
-    unsafe { NAND_CALLS = 0 };
+    unsafe {
+        NAND_CALLS = 0;
+    }
 }
 
 pub static mut CLOCK: bool = false;
 pub fn tick() {
-    unsafe { CLOCK = true };
+    unsafe {
+        CLOCK = true;
+    }
 }
 
 pub fn tock() {
-    unsafe { CLOCK = false };
+    unsafe {
+        CLOCK = false;
+    }
 }
 
 // needs to be this specific header or else wasm-bindgen doesn't add a memory.copy call to the wasm
@@ -51,7 +59,9 @@ pub fn load_rom(machine_code_buf: Vec<u16>) {
 pub static mut PRESSED_KEY: u16 = 0;
 pub fn keyboard(in_: u16, load: bool) -> u16 {
     if load {
-        unsafe { PRESSED_KEY = in_ };
+        unsafe {
+            PRESSED_KEY = in_;
+        }
         in_
     } else {
         unsafe { PRESSED_KEY }

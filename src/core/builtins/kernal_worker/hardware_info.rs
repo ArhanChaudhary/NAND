@@ -64,7 +64,7 @@ pub fn reset_emitting() {
 pub fn try_stop_emitting() {
     if let Some(emit_info_interval) = unsafe { EMIT_HARDWARE_INFO_INTERVAL.take() } {
         worker_helpers::clear_interval_with_handle(emit_info_interval);
-    };
+    }
 }
 
 pub fn emit_default() {

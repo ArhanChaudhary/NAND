@@ -18,7 +18,9 @@ pub fn init(offscreen_canvas: OffscreenCanvas) {
             desynchronized: true,
         },
     );
-    unsafe { hardware::CTX = Some(ctx) };
+    unsafe {
+        hardware::CTX = Some(ctx);
+    }
 }
 
 fn renderer() {
