@@ -142,8 +142,6 @@ pub fn render() {
         SCREEN_HEIGHT,
     );
     unsafe {
-        CTX.as_ref()
-            .unwrap_unchecked()
-            .put_image_data(image_data, 0, 0);
+        CTX.as_ref().unwrap().put_image_data(image_data, 0, 0);
     }
 }

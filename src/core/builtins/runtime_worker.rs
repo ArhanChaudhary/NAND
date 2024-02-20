@@ -8,6 +8,11 @@ use wasm_bindgen::prelude::*;
 #[serde(tag = "action", rename = "stoppedRuntime")]
 pub struct StoppedRuntimeMessage {}
 
+// I would REALLY like to use atomics here but from profiling
+// i32.atomic instructions are orders of magnitude slower than
+// i32.load and i32.store. For now this will have to do because
+// this module is the most performance critical part of the app.
+// Useful reference: https://stackoverflow.com/a/47722736/12230735
 pub static mut IN_RUNTIME_LOOP: bool = false;
 pub static mut STOP_RUNTIME_LOOP: bool = false;
 pub static mut LOADING_NEW_PROGRAM: bool = false;
