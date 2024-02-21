@@ -1,6 +1,10 @@
 use super::{bit_manipulation::nbit16, memory};
 use js_sys::{Uint8ClampedArray, WebAssembly};
+use std::cell::SyncUnsafeCell;
 use wasm_bindgen::prelude::*;
+
+static NAND_CALLS: SyncUnsafeCell<u64> = SyncUnsafeCell::new(0);
+pub static CLOCK: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
 
 // -----------------------------------------------
 
@@ -8,7 +12,7 @@ use wasm_bindgen::prelude::*;
 #[allow(non_snake_case)]
 pub fn NAND(a: bool, b: bool) -> bool {
     unsafe {
-        NAND_CALLS += 1;
+        *NAND_CALLS.get() += 1;
     }
     !(a && b) // for science!!
 }
@@ -21,27 +25,25 @@ pub fn NAND(a: bool, b: bool) -> bool {
 
 // -----------------------------------------------
 
-static mut NAND_CALLS: u64 = 0;
 pub fn nand_calls() -> u64 {
-    unsafe { NAND_CALLS }
+    unsafe { *NAND_CALLS.get() }
 }
 
 pub fn reset_nand_calls() {
     unsafe {
-        NAND_CALLS = 0;
+        *NAND_CALLS.get() = 0;
     }
 }
 
-pub static mut CLOCK: bool = false;
 pub fn tick() {
     unsafe {
-        CLOCK = true;
+        *CLOCK.get() = true;
     }
 }
 
 pub fn tock() {
     unsafe {
-        CLOCK = false;
+        *CLOCK.get() = false;
     }
 }
 
@@ -50,21 +52,21 @@ pub fn load_rom(machine_code_buf: Vec<u16>) {
     unsafe {
         std::ptr::copy_nonoverlapping(
             machine_code_buf.as_ptr(),
-            memory::ROM32K_MEMORY.as_mut_ptr(),
+            memory::ROM32K_MEMORY.get() as *mut u16,
             machine_code_buf.len(),
         );
     }
 }
 
-pub static mut PRESSED_KEY: u16 = 0;
+pub static PRESSED_KEY: SyncUnsafeCell<u16> = SyncUnsafeCell::new(0);
 pub fn keyboard(in_: u16, load: bool) -> u16 {
     if load {
         unsafe {
-            PRESSED_KEY = in_;
+            *PRESSED_KEY.get() = in_;
         }
         in_
     } else {
-        unsafe { PRESSED_KEY }
+        unsafe { *PRESSED_KEY.get() }
     }
 }
 
@@ -99,6 +101,10 @@ const GREEN_COLOR_B: u8 = 121;
 const GREEN_COLOR_DATA: u32 =
     (GREEN_COLOR_R as u32) | (GREEN_COLOR_G as u32) << 8 | (GREEN_COLOR_B as u32) << 16 | 255 << 24;
 
+unsafe impl Sync for OffscreenCanvasRenderingContext2d {}
+pub static CTX: SyncUnsafeCell<Option<OffscreenCanvasRenderingContext2d>> =
+    SyncUnsafeCell::new(None);
+
 // I've tried out two separate algorithms to render the screen; here's a benchmark between
 // the two algorithms for my future reference.
 
@@ -114,12 +120,10 @@ const GREEN_COLOR_DATA: u32 =
 // every frame (and optimizing in this case doesn't do anything because the actual computer
 // runs on another web worker)
 // Still, this is nice to note for future me.
-pub static mut CTX: Option<OffscreenCanvasRenderingContext2d> = None;
-
 pub fn render() {
     // https://rust-lang.github.io/rust-clippy/master/index.html#/large_stack_frames (2x speed up)
     let mut pixel_data = vec![0; SCREEN_WIDTH * SCREEN_HEIGHT].into_boxed_slice();
-    for (i, &word16) in unsafe { memory::SCREEN_MEMORY.iter().enumerate() } {
+    for (i, &word16) in unsafe { (*memory::SCREEN_MEMORY.get()).iter().enumerate() } {
         let y = i / (SCREEN_WIDTH / 16) * SCREEN_WIDTH;
         for j in 0..16 {
             if nbit16(word16, j) {
@@ -142,6 +146,9 @@ pub fn render() {
         SCREEN_HEIGHT,
     );
     unsafe {
-        CTX.as_ref().unwrap().put_image_data(image_data, 0, 0);
+        (*CTX.get())
+            .as_ref()
+            .unwrap()
+            .put_image_data(image_data, 0, 0);
     }
 }

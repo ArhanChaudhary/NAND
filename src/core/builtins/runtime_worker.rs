@@ -1,7 +1,7 @@
 use super::{hardware, worker_helpers};
 use crate::architecture;
 use serde::Serialize;
-use std::cell::LazyCell;
+use std::cell::{LazyCell, SyncUnsafeCell};
 use wasm_bindgen::prelude::*;
 
 #[derive(Serialize)]
@@ -13,57 +13,55 @@ pub struct StoppedRuntimeMessage {}
 // i32.load and i32.store. For now this will have to do because
 // this module is the most performance critical part of the app.
 // Useful reference: https://stackoverflow.com/a/47722736/12230735
-pub static mut IN_RUNTIME_LOOP: bool = false;
-pub static mut STOP_RUNTIME_LOOP: bool = false;
-pub static mut LOADING_NEW_PROGRAM: bool = false;
-pub static mut READY_TO_LOAD_NEW_PROGRAM: bool = false;
-pub static mut EMIT_INTERVAL_STEP_TOTAL: usize = 0;
+pub static IN_RUNTIME_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
+pub static STOP_RUNTIME_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
+pub static LOADING_NEW_PROGRAM: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
+pub static READY_TO_LOAD_NEW_PROGRAM: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
+pub static EMIT_INTERVAL_STEP_TOTAL: SyncUnsafeCell<usize> = SyncUnsafeCell::new(0);
 
 // adjust accordingly
 // lowest value until the Hz starts to drop
 // we want the lowest so the keyboard is faster
 pub const MAX_STEPS_PER_LOOP: usize = 30_000;
 pub const MIN_STEPS_PER_LOOP: usize = 1;
-pub static mut STEPS_PER_LOOP: usize = MAX_STEPS_PER_LOOP;
+pub static STEPS_PER_LOOP: SyncUnsafeCell<usize> = SyncUnsafeCell::new(MAX_STEPS_PER_LOOP);
 
 static mut DELAYED_IN_RUNTIME_LOOP_FALSE: LazyCell<Closure<dyn Fn()>> = LazyCell::new(|| {
     Closure::new(|| unsafe {
-        IN_RUNTIME_LOOP = false;
+        *IN_RUNTIME_LOOP.get() = false;
     })
 });
 
 #[wasm_bindgen(js_name = tryStartRuntime)]
 pub fn try_start() {
     unsafe {
-        if IN_RUNTIME_LOOP {
+        if *IN_RUNTIME_LOOP.get() {
             return;
         }
-        IN_RUNTIME_LOOP = true;
+        *IN_RUNTIME_LOOP.get() = true;
     }
     loop {
-        if std::hint::black_box(unsafe { LOADING_NEW_PROGRAM }) {
+        if std::hint::black_box(unsafe { *LOADING_NEW_PROGRAM.get() }) {
             unsafe {
-                READY_TO_LOAD_NEW_PROGRAM = true;
+                *READY_TO_LOAD_NEW_PROGRAM.get() = true;
             }
-            while std::hint::black_box(unsafe { LOADING_NEW_PROGRAM }) {}
+            while std::hint::black_box(unsafe { *LOADING_NEW_PROGRAM.get() }) {}
         }
-        for _ in 0..unsafe { STEPS_PER_LOOP } {
+        for _ in 0..unsafe { *STEPS_PER_LOOP.get() } {
             architecture::ticktock();
         }
         unsafe {
-            EMIT_INTERVAL_STEP_TOTAL += STEPS_PER_LOOP;
+            *EMIT_INTERVAL_STEP_TOTAL.get() += *STEPS_PER_LOOP.get();
         }
-        if unsafe { hardware::PRESSED_KEY } == 32767 {
+        if hardware::keyboard(0, false) == 32767 {
             // TODO: remmove?
-            unsafe {
-                hardware::PRESSED_KEY = 0;
-            }
+            hardware::keyboard(0, true);
             worker_helpers::post_worker_message(StoppedRuntimeMessage {});
             break;
         }
-        if unsafe { STOP_RUNTIME_LOOP } {
+        if unsafe { *STOP_RUNTIME_LOOP.get() } {
             unsafe {
-                STOP_RUNTIME_LOOP = false;
+                *STOP_RUNTIME_LOOP.get() = false;
             }
             break;
         }

@@ -1,10 +1,10 @@
 use crate::builtins::{hardware, worker_helpers};
-use std::cell::LazyCell;
+use std::cell::{LazyCell, SyncUnsafeCell};
 use wasm_bindgen::{closure::Closure, prelude::*};
 use web_sys::OffscreenCanvas;
 
-static mut IN_SCREEN_RENDERING_LOOP: bool = false;
-static mut STOP_SCREEN_RENDERING_LOOP: bool = false;
+static IN_SCREEN_RENDERING_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
+static STOP_SCREEN_RENDERING_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
 static mut SCREEN_RENDERER_CLOSURE: LazyCell<Closure<dyn Fn()>> =
     LazyCell::new(|| Closure::new(renderer));
 
@@ -19,15 +19,15 @@ pub fn init(offscreen_canvas: OffscreenCanvas) {
         },
     );
     unsafe {
-        hardware::CTX = Some(ctx);
+        *hardware::CTX.get() = Some(ctx);
     }
 }
 
 fn renderer() {
-    if unsafe { STOP_SCREEN_RENDERING_LOOP } {
+    if unsafe { *STOP_SCREEN_RENDERING_LOOP.get() } {
         unsafe {
-            STOP_SCREEN_RENDERING_LOOP = false;
-            IN_SCREEN_RENDERING_LOOP = false;
+            *STOP_SCREEN_RENDERING_LOOP.get() = false;
+            *IN_SCREEN_RENDERING_LOOP.get() = false;
         }
     } else {
         worker_helpers::request_animation_frame(unsafe {
@@ -38,9 +38,9 @@ fn renderer() {
 }
 
 pub fn try_start_rendering() {
-    if unsafe { !IN_SCREEN_RENDERING_LOOP } {
+    if unsafe { !*IN_SCREEN_RENDERING_LOOP.get() } {
         unsafe {
-            IN_SCREEN_RENDERING_LOOP = true;
+            *IN_SCREEN_RENDERING_LOOP.get() = true;
         }
         worker_helpers::request_animation_frame(unsafe {
             SCREEN_RENDERER_CLOSURE.as_ref().unchecked_ref()
@@ -50,8 +50,8 @@ pub fn try_start_rendering() {
 
 pub fn try_stop_rendering() {
     unsafe {
-        if IN_SCREEN_RENDERING_LOOP {
-            STOP_SCREEN_RENDERING_LOOP = true;
+        if *IN_SCREEN_RENDERING_LOOP.get() {
+            *STOP_SCREEN_RENDERING_LOOP.get() = true;
         }
     }
 }

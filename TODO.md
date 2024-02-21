@@ -1,8 +1,8 @@
 # TODO (NAND)
 * functionality
+  * dregister aregister rename variable
+  * use atomics.wait, otherwise figure out black_box
   * first emit starts of SUPER high for some reason
-  * prefix blocking_ to reset and other black_box stuff
-  * recover lost stash which has the todo of to off
   * remove pubs in general and make everything more modular
   * slow/fast bar doesnt work
   * replace onmessage with addEventListener once

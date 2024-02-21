@@ -1,4 +1,4 @@
-#![feature(lazy_cell)]
+#![feature(lazy_cell, sync_unsafe_cell)]
 
 mod architecture;
 mod arithmetic;
