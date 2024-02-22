@@ -1,5 +1,5 @@
 pub mod hardware;
-pub mod kernal_worker;
 pub mod memory;
-pub mod runtime_worker;
 pub mod utils;
+mod runtime_worker;
+mod kernal_worker;

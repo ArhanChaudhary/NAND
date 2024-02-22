@@ -55,8 +55,6 @@ pub fn try_start() {
             *EMIT_INTERVAL_STEP_TOTAL.get() += *STEPS_PER_LOOP.get();
         }
         if hardware::keyboard(0, false) == 32767 {
-            // TODO: remmove?
-            hardware::keyboard(0, true);
             js_api::post_worker_message(StoppedRuntimeMessage {});
             break;
         }

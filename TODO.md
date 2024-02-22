@@ -1,7 +1,7 @@
 # TODO (NAND)
 * functionality
-  * dregister aregister rename variable
   * use atomics.wait, otherwise figure out black_box
+
   * first emit starts of SUPER high for some reason
   * remove pubs in general and make everything more modular
   * slow/fast bar doesnt work
@@ -11,9 +11,6 @@
   * look into asyncify?
   * read abt desynchronized, alpha: false screws me up for some reason
   * pressing multiple keys doesnt work like normal keyboards would
-
-  * redo architecture.rs, optimize CPU_DFFOUT
-  * how much faster are builtins
 * example programs
   * make able to re-place obstacles (actually reallocate memory and stuff)
   * a lot more comments and remove comments on example programs
