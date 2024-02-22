@@ -1,8 +1,8 @@
 use crate::{
     arithmetic::{alu, inc16},
     builtins::{
-        bit_manipulation::{nbit16, slice16_0to12, slice16_0to13, slice16_0to14},
         hardware, memory,
+        utils::bit_manipulation::{nbit16, slice16_0to12, slice16_0to13, slice16_0to14},
     },
     gates::{and, is_zero, mux16, not, or},
 };

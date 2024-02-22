@@ -1,4 +1,4 @@
-use super::{hardware, js_helpers};
+use super::{hardware, utils::js_api};
 use crate::architecture;
 use serde::Serialize;
 use std::cell::SyncUnsafeCell;
@@ -26,8 +26,8 @@ pub const MAX_STEPS_PER_LOOP: usize = 30_000;
 pub const MIN_STEPS_PER_LOOP: usize = 1;
 pub static STEPS_PER_LOOP: SyncUnsafeCell<usize> = SyncUnsafeCell::new(MAX_STEPS_PER_LOOP);
 
-static DELAYED_IN_RUNTIME_LOOP_FALSE: js_helpers::SyncLazyCell<Closure<dyn Fn()>> =
-    js_helpers::SyncLazyCell::new(|| {
+static DELAYED_IN_RUNTIME_LOOP_FALSE: js_api::SyncLazyCell<Closure<dyn Fn()>> =
+    js_api::SyncLazyCell::new(|| {
         Closure::new(|| unsafe {
             *IN_RUNTIME_LOOP.get() = false;
         })
@@ -57,7 +57,7 @@ pub fn try_start() {
         if hardware::keyboard(0, false) == 32767 {
             // TODO: remmove?
             hardware::keyboard(0, true);
-            js_helpers::post_worker_message(StoppedRuntimeMessage {});
+            js_api::post_worker_message(StoppedRuntimeMessage {});
             break;
         }
         if unsafe { *STOP_RUNTIME_LOOP.get() } {
@@ -72,7 +72,7 @@ pub fn try_start() {
     // actually run immediately and guard clause return and will instead be put
     // in js's job queue and run AFTER the loop is over!! which will cause the
     // queued messages to happen after IN_RUNTIME_LOOP is set to false
-    js_helpers::set_timeout_with_callback_and_timeout(
+    js_api::set_timeout_with_callback_and_timeout(
         DELAYED_IN_RUNTIME_LOOP_FALSE.as_ref().unchecked_ref(),
         0,
     );

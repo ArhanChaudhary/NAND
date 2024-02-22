@@ -1,6 +1,6 @@
 use crate::builtins::{
-    bit_manipulation::{nbit16, word16_16},
     hardware,
+    utils::bit_manipulation::{nbit16, word16_16},
 };
 
 pub fn not(a: bool) -> bool {

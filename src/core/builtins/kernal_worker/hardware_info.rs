@@ -1,12 +1,12 @@
-use crate::builtins::{hardware, js_helpers, memory, runtime_worker};
+use crate::builtins::{hardware, memory, runtime_worker, utils::js_api};
 use js_sys::Uint16Array;
 use serde::Serialize;
 use std::{cell::SyncUnsafeCell, collections::VecDeque};
 use wasm_bindgen::{closure::Closure, JsCast};
 
 static EMIT_HARDWARE_INFO_INTERVAL: SyncUnsafeCell<Option<i32>> = SyncUnsafeCell::new(None);
-static EMIT_HARDWARE_INFO_CLOSURE: js_helpers::SyncLazyCell<Closure<dyn Fn()>> =
-    js_helpers::SyncLazyCell::new(|| Closure::new(emit));
+static EMIT_HARDWARE_INFO_CLOSURE: js_api::SyncLazyCell<Closure<dyn Fn()>> =
+    js_api::SyncLazyCell::new(|| Closure::new(emit));
 
 #[derive(Serialize, Default)]
 #[serde(tag = "action", rename = "hardwareInfo")]
@@ -37,11 +37,11 @@ pub fn try_start_emitting() {
     if unsafe { (*EMIT_HARDWARE_INFO_INTERVAL.get()).is_some() } {
         return;
     }
-    let emit_hardware_info_interval = js_helpers::set_interval_with_callback_and_timeout(
+    let emit_hardware_info_interval = js_api::set_interval_with_callback_and_timeout(
         EMIT_HARDWARE_INFO_CLOSURE.as_ref().unchecked_ref(),
         EMIT_HARDWARE_INFO_INTERVAL_DELAY as i32,
     );
-    let performance_now = js_helpers::performance_now();
+    let performance_now = js_api::performance_now();
     unsafe {
         *EMIT_HARDWARE_INFO_INTERVAL.get() = Some(emit_hardware_info_interval);
         *PREV_EMIT_HARDWARE_INFO_TIMESTAMP.get() = Some(performance_now);
@@ -63,16 +63,16 @@ pub fn reset_emitting() {
 
 pub fn try_stop_emitting() {
     if let Some(emit_info_interval) = unsafe { (*EMIT_HARDWARE_INFO_INTERVAL.get()).take() } {
-        js_helpers::clear_interval_with_handle(emit_info_interval);
+        js_api::clear_interval_with_handle(emit_info_interval);
     }
 }
 
 pub fn emit_default() {
-    js_helpers::post_worker_message(HardwareInfoMessage::default());
+    js_api::post_worker_message(HardwareInfoMessage::default());
 }
 
 pub fn emit() {
-    let current_emit = js_helpers::performance_now();
+    let current_emit = js_api::performance_now();
     unsafe {
         if (*PREV_SEC_TOTALS.get()).len()
             == (1000 * PREV_SEC_TOTAL_AVG_TIME) / EMIT_HARDWARE_INFO_INTERVAL_DELAY
@@ -87,7 +87,7 @@ pub fn emit() {
         *PREV_EMIT_HARDWARE_INFO_TIMESTAMP.get() = Some(current_emit);
         *runtime_worker::EMIT_INTERVAL_STEP_TOTAL.get() = 0;
     };
-    js_helpers::post_worker_message(HardwareInfoMessage {
+    js_api::post_worker_message(HardwareInfoMessage {
         hz: unsafe {
             (*PREV_SEC_TOTALS.get()).iter().sum::<f64>() / (*PREV_SEC_TOTALS.get()).len() as f64
         },
@@ -97,7 +97,7 @@ pub fn emit() {
         unsafe {
             *EMIT_MEMORY_COUNTER.get() = 0;
         }
-        js_helpers::post_worker_message(MemoryMessage {
+        js_api::post_worker_message(MemoryMessage {
             ram_memory: unsafe { Uint16Array::view((*memory::RAM16K_MEMORY.get()).as_slice()) },
             screen_memory: unsafe { Uint16Array::view((*memory::SCREEN_MEMORY.get()).as_slice()) },
             pressed_key: unsafe { *hardware::PRESSED_KEY.get() },

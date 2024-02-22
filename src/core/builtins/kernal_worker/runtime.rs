@@ -1,6 +1,6 @@
 use crate::{
     architecture,
-    builtins::{hardware, js_helpers, runtime_worker},
+    builtins::{hardware, runtime_worker, utils::js_api},
 };
 
 pub fn try_stop_and_reset_blocking() {
@@ -35,7 +35,7 @@ pub fn try_stop() {
         unsafe {
             *runtime_worker::STOP_RUNTIME_LOOP.get() = true;
         }
-        js_helpers::post_worker_message(runtime_worker::StoppedRuntimeMessage {});
+        js_api::post_worker_message(runtime_worker::StoppedRuntimeMessage {});
     }
 }
 

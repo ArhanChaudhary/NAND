@@ -1,4 +1,4 @@
-use super::hardware::OffscreenCanvasRenderingContext2d;
+use crate::builtins::hardware::OffscreenCanvasRenderingContext2d;
 use js_sys::Function;
 use serde::Serialize;
 use std::{cell::LazyCell, ops::Deref};
