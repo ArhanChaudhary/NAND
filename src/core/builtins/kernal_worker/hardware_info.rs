@@ -1,4 +1,4 @@
-use crate::builtins::{hardware, memory, runtime_worker, worker_helpers};
+use crate::builtins::{hardware, js_helpers, memory, runtime_worker};
 use js_sys::Uint16Array;
 use serde::Serialize;
 use std::{
@@ -40,11 +40,11 @@ pub fn try_start_emitting() {
     if unsafe { (*EMIT_HARDWARE_INFO_INTERVAL.get()).is_some() } {
         return;
     }
-    let emit_hardware_info_interval = worker_helpers::set_interval_with_callback_and_timeout(
+    let emit_hardware_info_interval = js_helpers::set_interval_with_callback_and_timeout(
         unsafe { EMIT_HARDWARE_INFO_CLOSURE.as_ref().unchecked_ref() },
         EMIT_HARDWARE_INFO_INTERVAL_DELAY as i32,
     );
-    let performance_now = worker_helpers::performance_now();
+    let performance_now = js_helpers::performance_now();
     unsafe {
         *EMIT_HARDWARE_INFO_INTERVAL.get() = Some(emit_hardware_info_interval);
         *PREV_EMIT_HARDWARE_INFO_TIMESTAMP.get() = Some(performance_now);
@@ -66,16 +66,16 @@ pub fn reset_emitting() {
 
 pub fn try_stop_emitting() {
     if let Some(emit_info_interval) = unsafe { (*EMIT_HARDWARE_INFO_INTERVAL.get()).take() } {
-        worker_helpers::clear_interval_with_handle(emit_info_interval);
+        js_helpers::clear_interval_with_handle(emit_info_interval);
     }
 }
 
 pub fn emit_default() {
-    worker_helpers::post_worker_message(HardwareInfoMessage::default());
+    js_helpers::post_worker_message(HardwareInfoMessage::default());
 }
 
 pub fn emit() {
-    let current_emit = worker_helpers::performance_now();
+    let current_emit = js_helpers::performance_now();
     unsafe {
         if (*PREV_SEC_TOTALS.get()).len()
             == (1000 * PREV_SEC_TOTAL_AVG_TIME) / EMIT_HARDWARE_INFO_INTERVAL_DELAY
@@ -90,7 +90,7 @@ pub fn emit() {
         *PREV_EMIT_HARDWARE_INFO_TIMESTAMP.get() = Some(current_emit);
         *runtime_worker::EMIT_INTERVAL_STEP_TOTAL.get() = 0;
     };
-    worker_helpers::post_worker_message(HardwareInfoMessage {
+    js_helpers::post_worker_message(HardwareInfoMessage {
         hz: unsafe {
             (*PREV_SEC_TOTALS.get()).iter().sum::<f64>() / (*PREV_SEC_TOTALS.get()).len() as f64
         },
@@ -100,7 +100,7 @@ pub fn emit() {
         unsafe {
             *EMIT_MEMORY_COUNTER.get() = 0;
         }
-        worker_helpers::post_worker_message(MemoryMessage {
+        js_helpers::post_worker_message(MemoryMessage {
             ram_memory: unsafe { Uint16Array::view((*memory::RAM16K_MEMORY.get()).as_slice()) },
             screen_memory: unsafe { Uint16Array::view((*memory::SCREEN_MEMORY.get()).as_slice()) },
             pressed_key: unsafe { *hardware::PRESSED_KEY.get() },

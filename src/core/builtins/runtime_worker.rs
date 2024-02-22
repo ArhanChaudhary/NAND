@@ -1,4 +1,4 @@
-use super::{hardware, worker_helpers};
+use super::{hardware, js_helpers};
 use crate::architecture;
 use serde::Serialize;
 use std::cell::{LazyCell, SyncUnsafeCell};
@@ -56,7 +56,7 @@ pub fn try_start() {
         if hardware::keyboard(0, false) == 32767 {
             // TODO: remmove?
             hardware::keyboard(0, true);
-            worker_helpers::post_worker_message(StoppedRuntimeMessage {});
+            js_helpers::post_worker_message(StoppedRuntimeMessage {});
             break;
         }
         if unsafe { *STOP_RUNTIME_LOOP.get() } {
@@ -71,7 +71,7 @@ pub fn try_start() {
     // actually run immediately and guard clause return and will instead be put
     // in js's job queue and run AFTER the loop is over!! which will cause the
     // queued messages to happen after IN_RUNTIME_LOOP is set to false
-    worker_helpers::set_timeout_with_callback_and_timeout(
+    js_helpers::set_timeout_with_callback_and_timeout(
         unsafe { DELAYED_IN_RUNTIME_LOOP_FALSE.as_ref().unchecked_ref() },
         0,
     );
