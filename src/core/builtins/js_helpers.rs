@@ -1,8 +1,24 @@
 use super::hardware::OffscreenCanvasRenderingContext2d;
 use js_sys::Function;
 use serde::Serialize;
+use std::{cell::LazyCell, ops::Deref};
 use wasm_bindgen::JsCast;
 use web_sys::{DedicatedWorkerGlobalScope, OffscreenCanvas, WorkerGlobalScope};
+
+pub struct SyncLazyCell<T>(LazyCell<T>);
+impl<T> SyncLazyCell<T> {
+    pub const fn new(callback: fn() -> T) -> Self {
+        Self(LazyCell::new(callback))
+    }
+}
+impl<T> Deref for SyncLazyCell<T> {
+    type Target = T;
+    fn deref(&self) -> &T {
+        self.0.deref()
+    }
+}
+unsafe impl<T> Sync for SyncLazyCell<T> {}
+unsafe impl<T> Send for SyncLazyCell<T> {}
 
 pub fn post_worker_message(rust: impl Serialize) {
     let _ = js_sys::global()

@@ -1,15 +1,12 @@
 use crate::builtins::{hardware, js_helpers, memory, runtime_worker};
 use js_sys::Uint16Array;
 use serde::Serialize;
-use std::{
-    cell::{LazyCell, SyncUnsafeCell},
-    collections::VecDeque,
-};
+use std::{cell::SyncUnsafeCell, collections::VecDeque};
 use wasm_bindgen::{closure::Closure, JsCast};
 
 static EMIT_HARDWARE_INFO_INTERVAL: SyncUnsafeCell<Option<i32>> = SyncUnsafeCell::new(None);
-pub static mut EMIT_HARDWARE_INFO_CLOSURE: LazyCell<Closure<dyn Fn()>> =
-    LazyCell::new(|| Closure::new(emit));
+static EMIT_HARDWARE_INFO_CLOSURE: js_helpers::SyncLazyCell<Closure<dyn Fn()>> =
+    js_helpers::SyncLazyCell::new(|| Closure::new(emit));
 
 #[derive(Serialize, Default)]
 #[serde(tag = "action", rename = "hardwareInfo")]
@@ -41,7 +38,7 @@ pub fn try_start_emitting() {
         return;
     }
     let emit_hardware_info_interval = js_helpers::set_interval_with_callback_and_timeout(
-        unsafe { EMIT_HARDWARE_INFO_CLOSURE.as_ref().unchecked_ref() },
+        EMIT_HARDWARE_INFO_CLOSURE.as_ref().unchecked_ref(),
         EMIT_HARDWARE_INFO_INTERVAL_DELAY as i32,
     );
     let performance_now = js_helpers::performance_now();

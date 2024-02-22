@@ -1,7 +1,7 @@
 use super::{hardware, js_helpers};
 use crate::architecture;
 use serde::Serialize;
-use std::cell::{LazyCell, SyncUnsafeCell};
+use std::cell::SyncUnsafeCell;
 use wasm_bindgen::prelude::*;
 
 #[derive(Serialize)]
@@ -26,11 +26,12 @@ pub const MAX_STEPS_PER_LOOP: usize = 30_000;
 pub const MIN_STEPS_PER_LOOP: usize = 1;
 pub static STEPS_PER_LOOP: SyncUnsafeCell<usize> = SyncUnsafeCell::new(MAX_STEPS_PER_LOOP);
 
-static mut DELAYED_IN_RUNTIME_LOOP_FALSE: LazyCell<Closure<dyn Fn()>> = LazyCell::new(|| {
-    Closure::new(|| unsafe {
-        *IN_RUNTIME_LOOP.get() = false;
-    })
-});
+static DELAYED_IN_RUNTIME_LOOP_FALSE: js_helpers::SyncLazyCell<Closure<dyn Fn()>> =
+    js_helpers::SyncLazyCell::new(|| {
+        Closure::new(|| unsafe {
+            *IN_RUNTIME_LOOP.get() = false;
+        })
+    });
 
 #[wasm_bindgen(js_name = tryStartRuntime)]
 pub fn try_start() {
@@ -72,7 +73,7 @@ pub fn try_start() {
     // in js's job queue and run AFTER the loop is over!! which will cause the
     // queued messages to happen after IN_RUNTIME_LOOP is set to false
     js_helpers::set_timeout_with_callback_and_timeout(
-        unsafe { DELAYED_IN_RUNTIME_LOOP_FALSE.as_ref().unchecked_ref() },
+        DELAYED_IN_RUNTIME_LOOP_FALSE.as_ref().unchecked_ref(),
         0,
     );
 }
