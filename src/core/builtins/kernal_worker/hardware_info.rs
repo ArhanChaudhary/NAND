@@ -31,8 +31,7 @@ struct MemoryMessage {
 }
 
 static PREV_SEC_TOTALS: SyncUnsafeCell<VecDeque<f64>> = SyncUnsafeCell::new(VecDeque::new());
-// use maybeuninit
-static PREV_EMIT_HARDWARE_INFO_TIMESTAMP: SyncUnsafeCell<Option<f64>> = SyncUnsafeCell::new(None);
+static PREV_EMIT_HARDWARE_INFO_TIMESTAMP: SyncUnsafeCell<f64> = SyncUnsafeCell::new(0.0); // could have used MaybeUninit but didnt want to
 static EMIT_MEMORY_COUNTER: SyncUnsafeCell<usize> = SyncUnsafeCell::new(0);
 const EMIT_HARDWARE_INFO_INTERVAL_DELAY: usize = 50;
 const PREV_SEC_TOTAL_AVG_TIME: usize = 1;
@@ -48,7 +47,7 @@ pub fn try_start_emitting() {
     let performance_now = js_api::performance_now();
     unsafe {
         *EMIT_HARDWARE_INFO_INTERVAL.get() = Some(emit_hardware_info_interval);
-        *PREV_EMIT_HARDWARE_INFO_TIMESTAMP.get() = Some(performance_now);
+        *PREV_EMIT_HARDWARE_INFO_TIMESTAMP.get() = performance_now;
     }
 }
 
@@ -85,10 +84,10 @@ pub fn emit() {
         }
         (*PREV_SEC_TOTALS.get()).push_back(
             *runtime_worker::EMIT_INTERVAL_STEP_TOTAL.get() as f64
-                / (current_emit - (*PREV_EMIT_HARDWARE_INFO_TIMESTAMP.get()).unwrap())
+                / (current_emit - *PREV_EMIT_HARDWARE_INFO_TIMESTAMP.get())
                 * 1000.0,
         );
-        *PREV_EMIT_HARDWARE_INFO_TIMESTAMP.get() = Some(current_emit);
+        *PREV_EMIT_HARDWARE_INFO_TIMESTAMP.get() = current_emit;
         *runtime_worker::EMIT_INTERVAL_STEP_TOTAL.get() = 0;
     };
     js_api::post_worker_message(HardwareInfoMessage {
