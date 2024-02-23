@@ -142,7 +142,7 @@
         if (makeRedAfterwards) {
           lightStatus = "red";
           makeRedAfterwards = false;
-        } else if (e.data.NANDCalls > 45_000_000_000) {
+        } else if (e.data.NANDCalls > 47_300_000_000) {
           lightStatus = "green";
         } else if (e.data.NANDCalls === 0) {
           lightStatus = "";

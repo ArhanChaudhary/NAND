@@ -16,8 +16,10 @@ pub fn or(a: bool, b: bool) -> bool {
 }
 
 pub fn xor(a: bool, b: bool) -> bool {
-    let t1 = hardware::NAND(a, b);
-    hardware::NAND(hardware::NAND(a, t1), hardware::NAND(b, t1))
+    hardware::NAND(
+        hardware::NAND(a, hardware::NAND(a, b)),
+        hardware::NAND(b, hardware::NAND(a, b)),
+    )
 }
 
 fn mux(a: bool, b: bool, sel: bool) -> bool {
