@@ -1,4 +1,7 @@
-use super::{hardware, utils::js_api};
+use super::{
+    hardware,
+    utils::{js_api, sync_cell},
+};
 use crate::architecture;
 use serde::Serialize;
 use std::{cell::SyncUnsafeCell, ptr};
@@ -26,8 +29,8 @@ pub const MAX_STEPS_PER_LOOP: usize = 30_000;
 pub const MIN_STEPS_PER_LOOP: usize = 1;
 pub static STEPS_PER_LOOP: SyncUnsafeCell<usize> = SyncUnsafeCell::new(MAX_STEPS_PER_LOOP);
 
-static DELAYED_IN_RUNTIME_LOOP_FALSE: js_api::SyncLazyCell<Closure<dyn Fn()>> =
-    js_api::SyncLazyCell::new(|| {
+static DELAYED_IN_RUNTIME_LOOP_FALSE: sync_cell::SyncLazyCell<Closure<dyn Fn()>> =
+    sync_cell::SyncLazyCell::new(|| {
         Closure::new(|| unsafe {
             *IN_RUNTIME_LOOP.get() = false;
         })

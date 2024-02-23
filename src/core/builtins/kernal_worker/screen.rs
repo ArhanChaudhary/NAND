@@ -1,12 +1,15 @@
-use crate::builtins::{hardware, utils::js_api};
+use crate::builtins::{
+    hardware,
+    utils::{js_api, sync_cell},
+};
 use std::cell::SyncUnsafeCell;
 use wasm_bindgen::prelude::*;
 use web_sys::OffscreenCanvas;
 
 static IN_SCREEN_RENDERING_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
 static STOP_SCREEN_RENDERING_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
-static SCREEN_RENDERER_CLOSURE: js_api::SyncLazyCell<Closure<dyn Fn()>> =
-    js_api::SyncLazyCell::new(|| Closure::new(renderer));
+static SCREEN_RENDERER_CLOSURE: sync_cell::SyncLazyCell<Closure<dyn Fn()>> =
+    sync_cell::SyncLazyCell::new(|| Closure::new(renderer));
 
 #[wasm_bindgen(js_name = screenInit)]
 pub fn init(offscreen_canvas: OffscreenCanvas) {
