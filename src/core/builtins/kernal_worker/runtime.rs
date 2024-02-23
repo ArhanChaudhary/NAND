@@ -2,13 +2,14 @@ use crate::{
     architecture,
     builtins::{hardware, runtime_worker, utils::js_api},
 };
+use std::ptr;
 
 pub fn try_stop_and_reset_blocking() {
     if unsafe { *runtime_worker::IN_RUNTIME_LOOP.get() } {
         unsafe {
             *runtime_worker::STOP_RUNTIME_LOOP.get() = true;
         }
-        while std::hint::black_box(unsafe { *runtime_worker::IN_RUNTIME_LOOP.get() }) {}
+        while unsafe { ptr::read_volatile(runtime_worker::IN_RUNTIME_LOOP.get()) } {}
     }
     architecture::reset();
 }
@@ -21,7 +22,9 @@ pub fn reset_blocking_and_partial_start(machine_code: Vec<String>) {
     unsafe {
         *runtime_worker::LOADING_NEW_PROGRAM.get() = true;
     }
-    while std::hint::black_box(unsafe { !*runtime_worker::READY_TO_LOAD_NEW_PROGRAM.get() }) {}
+    // read_volatile is absolutely needed here to prevent the compiler from optimizing the loop away
+    // see https://godbolt.org/z/xq7P8PEj4 for the full story
+    while unsafe { !ptr::read_volatile(runtime_worker::READY_TO_LOAD_NEW_PROGRAM.get()) } {}
     hardware::load_rom(machine_code_buf);
     architecture::reset();
     unsafe {

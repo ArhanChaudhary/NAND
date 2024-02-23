@@ -1,6 +1,6 @@
 # TODO (NAND)
 * functionality
-  * use atomics.wait, otherwise figure out black_box
+  * https://github.com/Speykious/cve-rs and https://docs.rs/plutonium/latest/plutonium/macro.optimize.html
 
   * first emit starts of SUPER high for some reason
   * remove pubs in general and make everything more modular

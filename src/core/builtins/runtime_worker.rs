@@ -1,7 +1,7 @@
 use super::{hardware, utils::js_api};
 use crate::architecture;
 use serde::Serialize;
-use std::cell::SyncUnsafeCell;
+use std::{cell::SyncUnsafeCell, ptr};
 use wasm_bindgen::prelude::*;
 
 #[derive(Serialize)]
@@ -42,11 +42,11 @@ pub fn try_start() {
         *IN_RUNTIME_LOOP.get() = true;
     }
     loop {
-        if std::hint::black_box(unsafe { *LOADING_NEW_PROGRAM.get() }) {
+        if unsafe { *LOADING_NEW_PROGRAM.get() } {
             unsafe {
                 *READY_TO_LOAD_NEW_PROGRAM.get() = true;
             }
-            while std::hint::black_box(unsafe { *LOADING_NEW_PROGRAM.get() }) {}
+            while unsafe { ptr::read_volatile(LOADING_NEW_PROGRAM.get()) } {}
         }
         for _ in 0..unsafe { *STEPS_PER_LOOP.get() } {
             architecture::ticktock();
