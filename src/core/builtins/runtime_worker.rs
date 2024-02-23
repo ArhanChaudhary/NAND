@@ -55,6 +55,9 @@ pub fn try_start() {
             *EMIT_INTERVAL_STEP_TOTAL.get() += *STEPS_PER_LOOP.get();
         }
         if hardware::keyboard(0, false) == 32767 {
+            // This is still needed even though present in architecture::reset
+            // or else pressing start again doesn't work because it wasnt reset.
+            hardware::keyboard(0, true);
             js_api::post_worker_message(StoppedRuntimeMessage {});
             break;
         }
