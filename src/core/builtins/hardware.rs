@@ -1,7 +1,6 @@
-use super::{
-    memory,
-    utils::{bit_manipulation::nbit16, sync_cell},
-};
+use super::memory;
+use super::utils::bit_manipulation::nbit16;
+use super::utils::sync_cell;
 use js_sys::{Uint8ClampedArray, WebAssembly};
 use std::cell::SyncUnsafeCell;
 use wasm_bindgen::prelude::*;

@@ -1,7 +1,5 @@
-use crate::builtins::{
-    hardware,
-    utils::bit_manipulation::{nbit16, word16_16},
-};
+use crate::builtins::hardware;
+use crate::builtins::utils::bit_manipulation::{nbit16, word16_16};
 
 pub fn not(a: bool) -> bool {
     hardware::NAND(a, a)

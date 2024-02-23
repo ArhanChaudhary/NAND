@@ -1,10 +1,9 @@
-use super::{
-    hardware,
-    utils::{js_api, sync_cell},
-};
+use super::hardware;
+use super::utils::{js_api, sync_cell};
 use crate::architecture;
 use serde::Serialize;
-use std::{cell::SyncUnsafeCell, ptr};
+use std::cell::SyncUnsafeCell;
+use std::ptr;
 use wasm_bindgen::prelude::*;
 
 #[derive(Serialize)]

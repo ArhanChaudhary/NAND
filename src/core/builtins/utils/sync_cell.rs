@@ -1,7 +1,5 @@
-use std::{
-    cell::{LazyCell, OnceCell},
-    ops::Deref,
-};
+use std::cell::{LazyCell, OnceCell};
+use std::ops::Deref;
 
 // I chose to have my own newtypes instead of using LazyLock
 // and OnceLock because they have other threading and atomic

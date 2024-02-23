@@ -1,7 +1,6 @@
-use crate::{
-    architecture,
-    builtins::{hardware, runtime_worker, utils::js_api},
-};
+use crate::architecture;
+use crate::builtins::utils::js_api;
+use crate::builtins::{hardware, runtime_worker};
 use std::ptr;
 
 pub fn try_stop_and_reset_blocking() {

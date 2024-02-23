@@ -1,7 +1,5 @@
-use crate::{
-    builtins::utils::bit_manipulation::{nbit16, word16_16},
-    gates::{and, and16, mux16, not16, or, xor},
-};
+use crate::builtins::utils::bit_manipulation::{nbit16, word16_16};
+use crate::gates::{and, and16, mux16, not16, or, xor};
 
 fn add16(a: u16, b: u16) -> u16 {
     let a0 = nbit16(a, 0);

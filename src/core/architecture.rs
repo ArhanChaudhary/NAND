@@ -1,11 +1,9 @@
-use crate::{
-    arithmetic::{alu, inc16},
-    builtins::{
-        hardware, memory,
-        utils::bit_manipulation::{nbit16, slice16_0to12, slice16_0to13, slice16_0to14},
-    },
-    gates::{and, is_zero, mux16, not, or},
+use crate::arithmetic::{alu, inc16};
+use crate::builtins::utils::bit_manipulation::{
+    nbit16, slice16_0to12, slice16_0to13, slice16_0to14,
 };
+use crate::builtins::{hardware, memory};
+use crate::gates::{and, is_zero, mux16, not, or};
 use std::cell::SyncUnsafeCell;
 
 static PC: SyncUnsafeCell<u16> = SyncUnsafeCell::new(0);

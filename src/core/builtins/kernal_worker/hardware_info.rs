@@ -1,11 +1,11 @@
-use crate::builtins::{
-    hardware, memory, runtime_worker,
-    utils::{js_api, sync_cell},
-};
+use crate::builtins::utils::{js_api, sync_cell};
+use crate::builtins::{hardware, memory, runtime_worker};
 use js_sys::Uint16Array;
 use serde::Serialize;
-use std::{cell::SyncUnsafeCell, collections::VecDeque};
-use wasm_bindgen::{closure::Closure, JsCast};
+use std::cell::SyncUnsafeCell;
+use std::collections::VecDeque;
+use wasm_bindgen::closure::Closure;
+use wasm_bindgen::JsCast;
 
 static EMIT_HARDWARE_INFO_INTERVAL: SyncUnsafeCell<Option<i32>> = SyncUnsafeCell::new(None);
 static EMIT_HARDWARE_INFO_CLOSURE: sync_cell::SyncLazyCell<Closure<dyn Fn()>> =

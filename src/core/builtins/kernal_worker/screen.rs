@@ -1,7 +1,5 @@
-use crate::builtins::{
-    hardware,
-    utils::{js_api, sync_cell},
-};
+use crate::builtins::hardware;
+use crate::builtins::utils::{js_api, sync_cell};
 use std::cell::SyncUnsafeCell;
 use wasm_bindgen::prelude::*;
 use web_sys::OffscreenCanvas;

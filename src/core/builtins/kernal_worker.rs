@@ -1,6 +1,5 @@
 use super::hardware;
 use serde::Deserialize;
-use std::hint::unreachable_unchecked;
 use wasm_bindgen::prelude::*;
 
 mod hardware_info;
@@ -57,8 +56,8 @@ pub fn handle_message(message: JsValue) {
         "speed" => {
             runtime::speed(received_worker_message.speed_percentage.unwrap());
         }
-        _ => unsafe {
-            unreachable_unchecked();
-        },
+        _ => {
+            unreachable!()
+        }
     }
 }

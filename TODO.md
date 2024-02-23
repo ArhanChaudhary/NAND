@@ -1,10 +1,9 @@
 # TODO (NAND)
 * functionality
-  * https://github.com/Speykious/cve-rs and https://docs.rs/plutonium/latest/plutonium/macro.optimize.html
+  * message deserialization
+  * slow/fast bar doesnt work
 
   * first emit starts of SUPER high for some reason
-  * remove pubs in general and make everything more modular
-  * slow/fast bar doesnt work
   * replace onmessage with addEventListener once
   * is it possible to get rid of the 150ms timeout
   * omit panic_abort from config.toml
