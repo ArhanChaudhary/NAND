@@ -31,6 +31,7 @@ struct MemoryMessage {
 }
 
 static PREV_SEC_TOTALS: SyncUnsafeCell<VecDeque<f64>> = SyncUnsafeCell::new(VecDeque::new());
+// use maybeuninit
 static PREV_EMIT_HARDWARE_INFO_TIMESTAMP: SyncUnsafeCell<Option<f64>> = SyncUnsafeCell::new(None);
 static EMIT_MEMORY_COUNTER: SyncUnsafeCell<usize> = SyncUnsafeCell::new(0);
 const EMIT_HARDWARE_INFO_INTERVAL_DELAY: usize = 50;

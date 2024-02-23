@@ -1,4 +1,7 @@
-use super::{memory, utils::bit_manipulation::nbit16};
+use super::{
+    memory,
+    utils::{bit_manipulation::nbit16, sync_cell},
+};
 use js_sys::{Uint8ClampedArray, WebAssembly};
 use std::cell::SyncUnsafeCell;
 use wasm_bindgen::prelude::*;
@@ -101,9 +104,8 @@ const GREEN_COLOR_B: u8 = 121;
 const GREEN_COLOR_DATA: u32 =
     (GREEN_COLOR_R as u32) | (GREEN_COLOR_G as u32) << 8 | (GREEN_COLOR_B as u32) << 16 | 255 << 24;
 
-unsafe impl Sync for OffscreenCanvasRenderingContext2d {}
-pub static CTX: SyncUnsafeCell<Option<OffscreenCanvasRenderingContext2d>> =
-    SyncUnsafeCell::new(None);
+pub static CTX: sync_cell::SyncOnceCell<OffscreenCanvasRenderingContext2d> =
+    sync_cell::SyncOnceCell::new();
 
 // I've tried out two separate algorithms to render the screen; here's a benchmark between
 // the two algorithms for my future reference.
@@ -145,10 +147,5 @@ pub fn render() {
         SCREEN_WIDTH,
         SCREEN_HEIGHT,
     );
-    unsafe {
-        (*CTX.get())
-            .as_ref()
-            .unwrap()
-            .put_image_data(image_data, 0, 0);
-    }
+    CTX.get().unwrap().put_image_data(image_data, 0, 0);
 }
