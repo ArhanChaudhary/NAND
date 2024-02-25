@@ -1,11 +1,12 @@
 # TODO (NAND)
 * functionality
-  * slow/fast bar doesnt work
   * first emit starts of SUPER high for some reason
-  * replace onmessage with addEventListener once
-  * is it possible to get rid of the 150ms timeout
   * omit panic_abort from config.toml
   * look into asyncify?
+
+  * slow/fast bar doesnt work
+  * replace onmessage with addEventListener once
+  * is it possible to get rid of the 150ms timeout
   * read abt desynchronized, alpha: false screws me up for some reason
   * pressing multiple keys doesnt work like normal keyboards would
 * example programs

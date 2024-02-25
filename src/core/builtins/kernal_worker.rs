@@ -77,7 +77,7 @@ impl<'de> Visitor<'de> for ReceivedWorkerMessageVisitor {
     {
         map.next_key::<String>()?.unwrap();
         let action: String = map.next_value()?;
-        map.next_key::<String>()?.unwrap();
+        let _ = map.next_key::<String>();
         Ok(match action.as_str() {
             "screenInit" => ReceivedWorkerMessage::ScreenInit(ScreenInitMessage {
                 offscreen_canvas: map.next_value()?,
