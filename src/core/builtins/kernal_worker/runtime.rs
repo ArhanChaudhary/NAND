@@ -28,7 +28,7 @@ pub fn reset_blocking_and_partial_start(
     // read_volatile is absolutely needed here to prevent the compiler from optimizing the loop away
     // see https://godbolt.org/z/xq7P8PEj4 for the full story
     while unsafe { !ptr::read_volatile(runtime_worker::READY_TO_LOAD_NEW_PROGRAM.get()) } {}
-    hardware::load_rom(machine_code_buf);
+    hardware::load_rom(machine_code_buf.as_slice());
     architecture::reset();
     unsafe {
         *runtime_worker::LOADING_NEW_PROGRAM.get() = false;

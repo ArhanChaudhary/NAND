@@ -50,7 +50,8 @@ pub fn tock() {
 }
 
 // needs to be this specific header or else wasm-bindgen doesn't add a memory.copy call to the wasm
-pub fn load_rom(machine_code_buf: Vec<u16>) {
+#[wasm_bindgen]
+pub fn load_rom(machine_code_buf: &[u16]) {
     unsafe {
         std::ptr::copy_nonoverlapping(
             machine_code_buf.as_ptr(),
