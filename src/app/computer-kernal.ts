@@ -1,8 +1,8 @@
-import runtimeInit, { kernalHandleMessage, screenInit } from "nand-core";
+import runtimeInit, { kernalHandleMessage } from "nand-core";
 self.postMessage({ action: "loaded" });
 self.onmessage = async (e) => {
   await runtimeInit(e.data.wasmModule, e.data.wasmMemory);
-  screenInit(e.data.offscreenCanvas);
+  kernalHandleMessage(e.data);
   self.onmessage = (e) => kernalHandleMessage(e.data);
   self.postMessage({ action: "ready" });
 };

@@ -187,6 +187,7 @@
     const offscreenCanvas = computerScreen.transferControlToOffscreen();
     computerKernal.postMessage(
       {
+        action: "screenInit",
         offscreenCanvas,
         wasmModule: (runtimeInit as any).__wbindgen_wasm_module,
         wasmMemory,

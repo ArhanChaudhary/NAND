@@ -1,8 +1,6 @@
 # TODO (NAND)
 * functionality
-  * message deserialization
   * slow/fast bar doesnt work
-
   * first emit starts of SUPER high for some reason
   * replace onmessage with addEventListener once
   * is it possible to get rid of the 150ms timeout
