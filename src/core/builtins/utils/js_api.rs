@@ -1,6 +1,6 @@
 use crate::builtins::hardware::OffscreenCanvasRenderingContext2d;
 use js_sys::Function;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::JsCast;
 use web_sys::{DedicatedWorkerGlobalScope, OffscreenCanvas, WorkerGlobalScope};
 
@@ -44,23 +44,30 @@ pub fn performance_now() -> f64 {
         .now()
 }
 
+#[derive(Deserialize)]
+pub struct DeserializeableOffscreenCanvas(
+    #[serde(with = "serde_wasm_bindgen::preserve", rename = "offscreenCanvas")] OffscreenCanvas,
+);
+
+impl DeserializeableOffscreenCanvas {
+    pub fn get_context_with_context_options(
+        self,
+        context_type: &str,
+        context_options: CanvasContextOptions,
+    ) -> OffscreenCanvasRenderingContext2d {
+        self.0
+            .get_context_with_context_options(
+                context_type,
+                &serde_wasm_bindgen::to_value(&context_options).unwrap(),
+            )
+            .unwrap()
+            .unwrap()
+            .unchecked_into()
+    }
+}
+
 #[derive(Serialize)]
 pub struct CanvasContextOptions {
     pub alpha: bool,
     pub desynchronized: bool,
-}
-
-pub fn get_context_with_context_options(
-    offscreen_canvas: OffscreenCanvas,
-    context_id: &str,
-    context_options: CanvasContextOptions,
-) -> OffscreenCanvasRenderingContext2d {
-    offscreen_canvas
-        .get_context_with_context_options(
-            context_id,
-            &serde_wasm_bindgen::to_value(&context_options).unwrap(),
-        )
-        .unwrap()
-        .unwrap()
-        .unchecked_into()
 }

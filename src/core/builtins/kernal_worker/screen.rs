@@ -10,15 +10,16 @@ static SCREEN_RENDERER_CLOSURE: sync_cell::SyncLazyCell<Closure<dyn Fn()>> =
     sync_cell::SyncLazyCell::new(|| Closure::new(renderer));
 
 pub fn init(screen_init_message: ScreenInitMessage) {
-    let ctx = js_api::get_context_with_context_options(
-        screen_init_message.offscreen_canvas.0,
-        "2d",
-        js_api::CanvasContextOptions {
-            alpha: false,
-            desynchronized: true,
-        },
-    );
-    hardware::CTX.get_or_init(|| ctx);
+    hardware::CTX.get_or_init(|| {
+        js_api::DeserializeableOffscreenCanvas::get_context_with_context_options(
+            screen_init_message.offscreen_canvas,
+            "2d",
+            js_api::CanvasContextOptions {
+                alpha: false,
+                desynchronized: true,
+            },
+        )
+    });
 }
 
 fn renderer() {

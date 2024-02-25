@@ -18,7 +18,7 @@ impl<T> Deref for SyncLazyCell<T> {
     type Target = T;
 
     fn deref(&self) -> &T {
-        self.0.deref()
+        &self.0
     }
 }
 unsafe impl<T> Sync for SyncLazyCell<T> {}

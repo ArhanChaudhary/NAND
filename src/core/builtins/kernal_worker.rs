@@ -1,8 +1,8 @@
+use super::utils::js_api::DeserializeableOffscreenCanvas;
 use serde::de::{MapAccess, Visitor};
 use serde::{Deserialize, Deserializer};
 use std::fmt;
 use wasm_bindgen::prelude::*;
-use web_sys::OffscreenCanvas;
 
 mod hardware_info;
 mod runtime;
@@ -78,27 +78,27 @@ impl<'de> Visitor<'de> for ReceivedWorkerMessageVisitor {
         map.next_key::<String>()?.unwrap();
         let action: String = map.next_value()?;
         map.next_key::<String>()?.unwrap();
-        match action.as_str() {
-            "screenInit" => Ok(ReceivedWorkerMessage::ScreenInit(ScreenInitMessage {
+        Ok(match action.as_str() {
+            "screenInit" => ReceivedWorkerMessage::ScreenInit(ScreenInitMessage {
                 offscreen_canvas: map.next_value()?,
-            })),
-            "partialStart" => Ok(ReceivedWorkerMessage::PartialStart),
-            "partialStop" => Ok(ReceivedWorkerMessage::PartialStop),
-            "resetAndPartialStart" => Ok(ReceivedWorkerMessage::ResetAndPartialStart(
-                ResetAndPartialStartMessage {
+            }),
+            "partialStart" => ReceivedWorkerMessage::PartialStart,
+            "partialStop" => ReceivedWorkerMessage::PartialStop,
+            "resetAndPartialStart" => {
+                ReceivedWorkerMessage::ResetAndPartialStart(ResetAndPartialStartMessage {
                     machine_code: map.next_value()?,
-                },
-            )),
-            "stopAndReset" => Ok(ReceivedWorkerMessage::StopAndReset),
-            "stop" => Ok(ReceivedWorkerMessage::Stop),
-            "keyboard" => Ok(ReceivedWorkerMessage::Keyboard(KeyboardMessage {
+                })
+            }
+            "stopAndReset" => ReceivedWorkerMessage::StopAndReset,
+            "stop" => ReceivedWorkerMessage::Stop,
+            "keyboard" => ReceivedWorkerMessage::Keyboard(KeyboardMessage {
                 key: map.next_value()?,
-            })),
-            "speed" => Ok(ReceivedWorkerMessage::Speed(SpeedMessage {
+            }),
+            "speed" => ReceivedWorkerMessage::Speed(SpeedMessage {
                 speed_percentage: map.next_value()?,
-            })),
+            }),
             _ => unreachable!(),
-        }
+        })
     }
 }
 
@@ -110,11 +110,6 @@ impl<'de> Deserialize<'de> for ReceivedWorkerMessage {
         deserializer.deserialize_map(ReceivedWorkerMessageVisitor)
     }
 }
-
-#[derive(Debug, Deserialize)]
-struct DeserializeableOffscreenCanvas(
-    #[serde(with = "serde_wasm_bindgen::preserve", rename = "offscreenCanvas")] OffscreenCanvas,
-);
 
 pub struct ScreenInitMessage {
     offscreen_canvas: DeserializeableOffscreenCanvas,
