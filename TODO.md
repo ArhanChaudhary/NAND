@@ -1,8 +1,6 @@
 # TODO (NAND)
 * functionality
   * first emit starts of SUPER high for some reason
-  * omit panic_abort from config.toml
-  * look into asyncify?
 
   * slow/fast bar doesnt work
   * replace onmessage with addEventListener once

@@ -125,7 +125,7 @@
       computerWrapper.clientWidth / computerWrapper.clientHeight || null;
   }
 
-  let clockSpeed = "0";
+  let clockSpeed = "0.00 Hz";
   let NANDCalls = "0";
   let lightStatus = "";
   let makeRedAfterwards = false;
