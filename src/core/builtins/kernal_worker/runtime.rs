@@ -5,11 +5,11 @@ use crate::builtins::{hardware, runtime_worker};
 use std::ptr;
 
 pub fn try_stop_and_reset_blocking() {
-    if unsafe { *runtime_worker::IN_RUNTIME_LOOP.get() } {
+    if runtime_worker::in_runtime_loop() {
         unsafe {
             *runtime_worker::STOP_RUNTIME_LOOP.get() = true;
         }
-        while unsafe { ptr::read_volatile(runtime_worker::IN_RUNTIME_LOOP.get()) } {}
+        while runtime_worker::in_runtime_loop_volatile() {}
     }
     architecture::reset();
 }
@@ -17,7 +17,7 @@ pub fn try_stop_and_reset_blocking() {
 pub fn reset_blocking_and_partial_start(
     reset_and_partial_start_message: ResetAndPartialStartMessage,
 ) {
-    let machine_code_buf = reset_and_partial_start_message
+    let machine_code = reset_and_partial_start_message
         .machine_code
         .into_iter()
         .map(|v| u16::from_str_radix(v.as_str(), 2).unwrap())
@@ -28,7 +28,7 @@ pub fn reset_blocking_and_partial_start(
     // read_volatile is absolutely needed here to prevent the compiler from optimizing the loop away
     // see https://godbolt.org/z/xq7P8PEj4 for the full story
     while unsafe { !ptr::read_volatile(runtime_worker::READY_TO_LOAD_NEW_PROGRAM.get()) } {}
-    hardware::load_rom(machine_code_buf.as_slice());
+    hardware::load_rom(machine_code.as_slice());
     architecture::reset();
     unsafe {
         *runtime_worker::LOADING_NEW_PROGRAM.get() = false;
@@ -37,7 +37,7 @@ pub fn reset_blocking_and_partial_start(
 }
 
 pub fn try_stop() {
-    if unsafe { *runtime_worker::IN_RUNTIME_LOOP.get() } {
+    if runtime_worker::in_runtime_loop() {
         unsafe {
             *runtime_worker::STOP_RUNTIME_LOOP.get() = true;
         }

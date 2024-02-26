@@ -32,6 +32,7 @@ static EMIT_HARDWARE_INFO_CLOSURE: sync_cell::SyncLazyCell<Closure<dyn Fn()>> =
 
 static PREV_SEC_TOTALS: SyncUnsafeCell<VecDeque<f64>> = SyncUnsafeCell::new(VecDeque::new());
 static EMIT_MEMORY_COUNTER: SyncUnsafeCell<usize> = SyncUnsafeCell::new(0);
+static PREV_EMIT_INTERVAL_STEP_TOTAL: SyncUnsafeCell<usize> = SyncUnsafeCell::new(0);
 const EMIT_HARDWARE_INFO_INTERVAL_DELAY: usize = 50;
 const PREV_SEC_TOTAL_AVG_TIME: usize = 1;
 
@@ -43,10 +44,8 @@ pub fn try_start_emitting() {
         EMIT_HARDWARE_INFO_CLOSURE.as_ref().unchecked_ref(),
         EMIT_HARDWARE_INFO_INTERVAL_DELAY as i32,
     );
-    let performance_now = js_api::performance_now();
     unsafe {
         *EMIT_HARDWARE_INFO_INTERVAL.get() = Some(emit_hardware_info_interval);
-        *PREV_EMIT_HARDWARE_INFO_TIMESTAMP.get() = performance_now;
     }
 }
 
@@ -58,7 +57,7 @@ pub fn try_reset_emitting() {
 
 pub fn reset_emitting() {
     unsafe {
-        *runtime_worker::EMIT_INTERVAL_STEP_TOTAL.get() = 0;
+        *PREV_EMIT_INTERVAL_STEP_TOTAL.get() = runtime_worker::emit_interval_step_total();
         (*PREV_SEC_TOTALS.get()).clear();
     }
 }
@@ -74,7 +73,7 @@ pub fn emit_default() {
 }
 
 pub fn emit() {
-    let current_emit = js_api::performance_now();
+    let emit_interval_step_total = runtime_worker::emit_interval_step_total();
     unsafe {
         if (*PREV_SEC_TOTALS.get()).len()
             == (1000 * PREV_SEC_TOTAL_AVG_TIME) / EMIT_HARDWARE_INFO_INTERVAL_DELAY
@@ -82,12 +81,11 @@ pub fn emit() {
             (*PREV_SEC_TOTALS.get()).pop_front();
         }
         (*PREV_SEC_TOTALS.get()).push_back(
-            *runtime_worker::EMIT_INTERVAL_STEP_TOTAL.get() as f64
-                / (current_emit - *PREV_EMIT_HARDWARE_INFO_TIMESTAMP.get())
+            (emit_interval_step_total - *PREV_EMIT_INTERVAL_STEP_TOTAL.get()) as f64
+                / EMIT_HARDWARE_INFO_INTERVAL_DELAY as f64
                 * 1000.0,
         );
-        *PREV_EMIT_HARDWARE_INFO_TIMESTAMP.get() = current_emit;
-        *runtime_worker::EMIT_INTERVAL_STEP_TOTAL.get() = 0;
+        *PREV_EMIT_INTERVAL_STEP_TOTAL.get() = emit_interval_step_total;
     };
     js_api::post_worker_message(HardwareInfoMessage {
         hz: unsafe {

@@ -7,18 +7,32 @@ use std::ptr;
 use wasm_bindgen::prelude::*;
 
 static IN_RUNTIME_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
+static DELAYED_IN_RUNTIME_LOOP_FALSE: sync_cell::SyncLazyCell<Closure<dyn Fn()>> =
+    sync_cell::SyncLazyCell::new(|| {
+        Closure::new(|| unsafe {
+            *IN_RUNTIME_LOOP.get() = false;
+        })
+    });
+pub fn in_runtime_loop() -> bool {
+    unsafe { *IN_RUNTIME_LOOP.get() }
+}
+pub fn in_runtime_loop_volatile() -> bool {
+    unsafe { ptr::read_volatile(IN_RUNTIME_LOOP.get()) }
+}
+
 static EMIT_INTERVAL_STEP_TOTAL: SyncUnsafeCell<usize> = SyncUnsafeCell::new(0);
+pub fn emit_interval_step_total() -> usize {
+    unsafe { *EMIT_INTERVAL_STEP_TOTAL.get() }
+}
 
 // I would REALLY like to use atomics here but profiling has shown
 // i32.atomic instructions are orders of magnitude slower than
 // i32.load and i32.store. For now this will have to do because
 // this module is the most performance critical part of the app.
 // Useful reference: https://stackoverflow.com/a/47722736/12230735
-pub static IN_RUNTIME_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
 pub static STOP_RUNTIME_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
 pub static LOADING_NEW_PROGRAM: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
 pub static READY_TO_LOAD_NEW_PROGRAM: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
-pub static EMIT_INTERVAL_STEP_TOTAL: SyncUnsafeCell<usize> = SyncUnsafeCell::new(0);
 
 // adjust accordingly
 // lowest value until the Hz starts to drop

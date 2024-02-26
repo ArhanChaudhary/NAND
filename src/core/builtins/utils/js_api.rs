@@ -2,7 +2,7 @@ use crate::builtins::hardware::OffscreenCanvasRenderingContext2d;
 use js_sys::Function;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::JsCast;
-use web_sys::{DedicatedWorkerGlobalScope, OffscreenCanvas, WorkerGlobalScope};
+use web_sys::{DedicatedWorkerGlobalScope, OffscreenCanvas};
 
 pub fn post_worker_message(rust: impl Serialize) {
     let _ = js_sys::global()
@@ -34,14 +34,6 @@ pub fn request_animation_frame(callback: &Function) {
     let _ = js_sys::global()
         .unchecked_into::<DedicatedWorkerGlobalScope>()
         .request_animation_frame(callback);
-}
-
-pub fn performance_now() -> f64 {
-    js_sys::global()
-        .unchecked_into::<WorkerGlobalScope>()
-        .performance()
-        .unwrap()
-        .now()
 }
 
 #[derive(Deserialize)]
