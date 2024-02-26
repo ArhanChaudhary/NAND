@@ -9,36 +9,35 @@ pub fn pc_register(in_: u16) -> u16 {
         unsafe {
             *PC_DFF_OUT.get() = in_;
         }
-        // this *should* return in_, but from my experiments thusfar I haven't
-        // been able to find an implementation that works in a simpler way than
-        // what we currently have
+        // TODO: this *should* return in_, but for some reason it just doesn't
+        // work
         out
     } else {
         unsafe { *PC_DFF_OUT.get() }
     }
 }
 
-static DREGISTER_DFF_OUT: SyncUnsafeCell<u16> = SyncUnsafeCell::new(0);
+static D_REGISTER_DFF_OUT: SyncUnsafeCell<u16> = SyncUnsafeCell::new(0);
 pub fn d_register(in_: u16, load: bool) -> u16 {
     if load && unsafe { *hardware::CLOCK.get() } {
         unsafe {
-            *DREGISTER_DFF_OUT.get() = in_;
+            *D_REGISTER_DFF_OUT.get() = in_;
         }
         in_
     } else {
-        unsafe { *DREGISTER_DFF_OUT.get() }
+        unsafe { *D_REGISTER_DFF_OUT.get() }
     }
 }
 
-static AREGISTER_DFF_OUT: SyncUnsafeCell<u16> = SyncUnsafeCell::new(0);
+static A_REGISTER_DFF_OUT: SyncUnsafeCell<u16> = SyncUnsafeCell::new(0);
 pub fn a_register(in_: u16, load: bool) -> u16 {
     if load && unsafe { *hardware::CLOCK.get() } {
         unsafe {
-            *AREGISTER_DFF_OUT.get() = in_;
+            *A_REGISTER_DFF_OUT.get() = in_;
         }
         in_
     } else {
-        unsafe { *AREGISTER_DFF_OUT.get() }
+        unsafe { *A_REGISTER_DFF_OUT.get() }
     }
 }
 

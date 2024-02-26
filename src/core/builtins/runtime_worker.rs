@@ -25,11 +25,23 @@ pub fn emit_interval_step_total() -> usize {
     unsafe { *EMIT_INTERVAL_STEP_TOTAL.get() }
 }
 
-// I would REALLY like to use atomics here but profiling has shown
-// i32.atomic instructions are orders of magnitude slower than
-// i32.load and i32.store. For now this will have to do because
-// this module is the most performance critical part of the app.
-// Useful reference: https://stackoverflow.com/a/47722736/12230735
+// TODO: I would REALLY like to use atomics or a better form of synchronization
+// here but I am hesitant because I don't want to a open a worms not worth
+// opening because of the cutting edge nature of wasm32-unknown-unknown.
+
+// It's clear that this is possible, but with how much overhead, and is this even
+// faster enough to matter at all? I don't know, and it's frankly a bit overwhelming.
+// So, I've opted to take the easy way out with a spin loop. I'm not happy about
+// it, but I know in the back of my head that this probably doesn't make a difference
+// at the end of the day.
+
+// References for the future:
+// https://github.com/rust-lang/rust/commit/72958acd57fb32e0f8027c0d7e76c9a0c7f155d2
+// https://github.com/WebAssembly/threads/blob/main/proposals/threads/Overview.md
+// https://docs.rs/crossbeam/0.8.0/crossbeam/
+// https://docs.rs/parking_lot/0.11.1/parking_lot/
+// https://rustwasm.github.io/wasm-bindgen/reference/js-promises-and-rust-futures.html
+// https://github.com/wasm-rs/shared-channel/blob/master/src/spsc.rs
 pub static STOP_RUNTIME_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
 pub static LOADING_NEW_PROGRAM: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
 pub static READY_TO_LOAD_NEW_PROGRAM: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
