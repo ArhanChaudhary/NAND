@@ -75,27 +75,25 @@ impl<'de> Visitor<'de> for ReceivedWorkerMessageVisitor {
     where
         M: MapAccess<'de>,
     {
-        map.next_key::<String>()?.unwrap();
-        let action: String = map.next_value()?;
-        let _ = map.next_key::<String>();
+        let action = map.next_entry::<String, String>()?.unwrap().1;
         Ok(match action.as_str() {
             "screenInit" => ReceivedWorkerMessage::ScreenInit(ScreenInitMessage {
-                offscreen_canvas: map.next_value()?,
+                offscreen_canvas: map.next_entry::<String, _>()?.unwrap().1,
             }),
             "partialStart" => ReceivedWorkerMessage::PartialStart,
             "partialStop" => ReceivedWorkerMessage::PartialStop,
             "resetAndPartialStart" => {
                 ReceivedWorkerMessage::ResetAndPartialStart(ResetAndPartialStartMessage {
-                    machine_code: map.next_value()?,
+                    machine_code: map.next_entry::<String, _>()?.unwrap().1,
                 })
             }
             "stopAndReset" => ReceivedWorkerMessage::StopAndReset,
             "stop" => ReceivedWorkerMessage::Stop,
             "keyboard" => ReceivedWorkerMessage::Keyboard(KeyboardMessage {
-                key: map.next_value()?,
+                key: map.next_entry::<String, _>()?.unwrap().1,
             }),
             "speed" => ReceivedWorkerMessage::Speed(SpeedMessage {
-                speed_percentage: map.next_value()?,
+                speed_percentage: map.next_entry::<String, _>()?.unwrap().1,
             }),
             _ => unreachable!(),
         })

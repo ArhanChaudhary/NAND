@@ -109,6 +109,10 @@
   export function speedComputer(speedPercentage: number) {
     computerKernal.postMessage({ action: "speed", speedPercentage });
   }
+
+  function keyboardComputer(keyValue: number) {
+    computerKernal.postMessage({ action: "keyboard", keyValue });
+  }
 </script>
 
 <script lang="ts">
@@ -243,12 +247,12 @@
         keyValue = 0;
       }
       prev = keyValue;
-      computerKernal.postMessage({ action: "keyboard", key: keyValue });
+      keyboardComputer(keyValue);
     });
 
     document.addEventListener("keyup", () => {
       prev = 0;
-      computerKernal.postMessage({ action: "keyboard", key: 0 });
+      keyboardComputer(0);
     });
   }
 </script>

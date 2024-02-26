@@ -7,10 +7,6 @@ use std::collections::VecDeque;
 use wasm_bindgen::closure::Closure;
 use wasm_bindgen::JsCast;
 
-static EMIT_HARDWARE_INFO_INTERVAL: SyncUnsafeCell<Option<i32>> = SyncUnsafeCell::new(None);
-static EMIT_HARDWARE_INFO_CLOSURE: sync_cell::SyncLazyCell<Closure<dyn Fn()>> =
-    sync_cell::SyncLazyCell::new(|| Closure::new(emit));
-
 #[derive(Serialize, Default)]
 #[serde(tag = "action", rename = "hardwareInfo")]
 struct HardwareInfoMessage {
@@ -30,8 +26,11 @@ struct MemoryMessage {
     pressed_key: u16,
 }
 
+static EMIT_HARDWARE_INFO_INTERVAL: SyncUnsafeCell<Option<i32>> = SyncUnsafeCell::new(None);
+static EMIT_HARDWARE_INFO_CLOSURE: sync_cell::SyncLazyCell<Closure<dyn Fn()>> =
+    sync_cell::SyncLazyCell::new(|| Closure::new(emit));
+
 static PREV_SEC_TOTALS: SyncUnsafeCell<VecDeque<f64>> = SyncUnsafeCell::new(VecDeque::new());
-static PREV_EMIT_HARDWARE_INFO_TIMESTAMP: SyncUnsafeCell<f64> = SyncUnsafeCell::new(0.0); // could have used MaybeUninit but didnt want to
 static EMIT_MEMORY_COUNTER: SyncUnsafeCell<usize> = SyncUnsafeCell::new(0);
 const EMIT_HARDWARE_INFO_INTERVAL_DELAY: usize = 50;
 const PREV_SEC_TOTAL_AVG_TIME: usize = 1;

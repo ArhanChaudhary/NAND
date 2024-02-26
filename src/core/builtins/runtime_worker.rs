@@ -6,11 +6,10 @@ use std::cell::SyncUnsafeCell;
 use std::ptr;
 use wasm_bindgen::prelude::*;
 
-#[derive(Serialize)]
-#[serde(tag = "action", rename = "stoppedRuntime")]
-pub struct StoppedRuntimeMessage {}
+static IN_RUNTIME_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
+static EMIT_INTERVAL_STEP_TOTAL: SyncUnsafeCell<usize> = SyncUnsafeCell::new(0);
 
-// I would REALLY like to use atomics here but from profiling
+// I would REALLY like to use atomics here but profiling has shown
 // i32.atomic instructions are orders of magnitude slower than
 // i32.load and i32.store. For now this will have to do because
 // this module is the most performance critical part of the app.
@@ -28,12 +27,9 @@ pub const MAX_STEPS_PER_LOOP: usize = 30_000;
 pub const MIN_STEPS_PER_LOOP: usize = 1;
 pub static STEPS_PER_LOOP: SyncUnsafeCell<usize> = SyncUnsafeCell::new(MAX_STEPS_PER_LOOP);
 
-static DELAYED_IN_RUNTIME_LOOP_FALSE: sync_cell::SyncLazyCell<Closure<dyn Fn()>> =
-    sync_cell::SyncLazyCell::new(|| {
-        Closure::new(|| unsafe {
-            *IN_RUNTIME_LOOP.get() = false;
-        })
-    });
+#[derive(Serialize)]
+#[serde(tag = "action", rename = "stoppedRuntime")]
+pub struct StoppedRuntimeMessage {}
 
 #[wasm_bindgen(js_name = tryStartRuntime)]
 pub fn try_start() {
@@ -44,11 +40,11 @@ pub fn try_start() {
         *IN_RUNTIME_LOOP.get() = true;
     }
     loop {
-        if unsafe { *LOADING_NEW_PROGRAM.get() } {
             unsafe {
+            if *LOADING_NEW_PROGRAM.get() {
                 *READY_TO_LOAD_NEW_PROGRAM.get() = true;
             }
-            while unsafe { ptr::read_volatile(LOADING_NEW_PROGRAM.get()) } {}
+            while ptr::read_volatile(LOADING_NEW_PROGRAM.get()) {}
         }
         for _ in 0..unsafe { *STEPS_PER_LOOP.get() } {
             architecture::ticktock();
@@ -63,11 +59,11 @@ pub fn try_start() {
             js_api::post_worker_message(StoppedRuntimeMessage {});
             break;
         }
-        if unsafe { *STOP_RUNTIME_LOOP.get() } {
             unsafe {
+            if *STOP_RUNTIME_LOOP.get() {
                 *STOP_RUNTIME_LOOP.get() = false;
+                break;
             }
-            break;
         }
     }
 
