@@ -11,11 +11,11 @@ class Main {
         do Output.printInt(Memory.peek(0));
         let b = 0;
         while (b > 0) {
-            let b = b - 1;
-            let c = (4563 - 52) + c + c - (c + c);
+            let b = b * c;
+            let c = b * c * c;
         }
         while (b < 10) {
-            let b = b + 1;
+            let b = b - 1500;
         }
     }
 }
