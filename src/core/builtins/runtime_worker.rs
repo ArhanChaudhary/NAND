@@ -3,7 +3,7 @@ use super::utils::{js_api, sync_cell};
 use crate::architecture;
 use serde::Serialize;
 use std::cell::SyncUnsafeCell;
-use std::ptr;
+use std::{ptr, thread};
 use wasm_bindgen::prelude::*;
 
 static IN_RUNTIME_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
@@ -66,17 +66,23 @@ pub fn try_start() {
         *IN_RUNTIME_LOOP.get() = true;
     }
     loop {
-            unsafe {
+        let steps_per_loop = unsafe { *STEPS_PER_LOOP.get() };
+        unsafe {
             if *LOADING_NEW_PROGRAM.get() {
                 *READY_TO_LOAD_NEW_PROGRAM.get() = true;
+                while ptr::read_volatile(LOADING_NEW_PROGRAM.get()) {}
             }
-            while ptr::read_volatile(LOADING_NEW_PROGRAM.get()) {}
         }
-        for _ in 0..unsafe { *STEPS_PER_LOOP.get() } {
+        for _ in 0..steps_per_loop {
             architecture::ticktock();
         }
         unsafe {
-            *EMIT_INTERVAL_STEP_TOTAL.get() += *STEPS_PER_LOOP.get();
+            *EMIT_INTERVAL_STEP_TOTAL.get() += steps_per_loop;
+        }
+        if MAX_STEPS_PER_LOOP != steps_per_loop {
+            thread::sleep(std::time::Duration::from_micros(
+                ((MAX_STEPS_PER_LOOP - steps_per_loop) / 10) as u64,
+            ));
         }
         if hardware::keyboard(0, false) == 32767 {
             // This is still needed even though present in architecture::reset
@@ -85,7 +91,7 @@ pub fn try_start() {
             js_api::post_worker_message(StoppedRuntimeMessage {});
             break;
         }
-            unsafe {
+        unsafe {
             if *STOP_RUNTIME_LOOP.get() {
                 *STOP_RUNTIME_LOOP.get() = false;
                 break;

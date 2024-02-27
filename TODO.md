@@ -1,6 +1,5 @@
 # TODO (NAND)
 * functionality
-  * slow/fast bar doesnt work
   * replace onmessage with addEventListener once
   * is it possible to get rid of the 150ms timeout
   * read abt desynchronized, alpha: false screws me up for some reason
