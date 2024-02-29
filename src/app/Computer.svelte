@@ -148,36 +148,46 @@
   let makeRedAfterwards = false;
   function messageHandler(e: { data: any }) {
     switch (e.data.action) {
-      case "hardwareInfo":
-        if (e.data.hz >= 100_000) {
-          clockSpeed = (e.data.hz / 1_000_000).toPrecision(3) + " MHz";
-        } else if (e.data.hz >= 1_000) {
-          clockSpeed = (e.data.hz / 1_000).toPrecision(3) + " KHz";
+      case "infoMessage":
+        const hardwareInfoMessage = e.data.hardwareInfo;
+        if (hardwareInfoMessage.hz >= 100_000) {
+          clockSpeed =
+            (hardwareInfoMessage.hz / 1_000_000).toPrecision(3) + " MHz";
+        } else if (hardwareInfoMessage.hz >= 1_000) {
+          clockSpeed = (hardwareInfoMessage.hz / 1_000).toPrecision(3) + " KHz";
         } else {
-          clockSpeed = e.data.hz.toPrecision(3) + " Hz";
+          clockSpeed = Math.round(hardwareInfoMessage.hz) + " Hz";
         }
         if (makeRedAfterwards) {
           lightStatus = "red";
           makeRedAfterwards = false;
-        } else if (e.data.NANDCalls > 47_300_000_000) {
+        } else if (hardwareInfoMessage.NANDCalls > 47_300_000_000) {
           lightStatus = "green";
-        } else if (e.data.NANDCalls === 0) {
+        } else if (hardwareInfoMessage.NANDCalls === 0) {
           lightStatus = "";
         } else {
           lightStatus = "loading";
         }
-        if (e.data.NANDCalls >= 1_000_000_000_000) {
+        if (hardwareInfoMessage.NANDCalls >= 1_000_000_000_000) {
           NANDCalls =
-            Math.round((e.data.NANDCalls * 1000) / 1_000_000_000_000) / 1000 +
+            Math.round(
+              (hardwareInfoMessage.NANDCalls * 1000) / 1_000_000_000_000
+            ) /
+              1000 +
             " trillion";
-        } else if (e.data.NANDCalls >= 1_000_000_000) {
+        } else if (hardwareInfoMessage.NANDCalls >= 1_000_000_000) {
           NANDCalls =
-            Math.round((e.data.NANDCalls * 10) / 1_000_000_000) / 10 +
+            Math.round((hardwareInfoMessage.NANDCalls * 10) / 1_000_000_000) /
+              10 +
             " billion";
-        } else if (e.data.NANDCalls >= 1_000_000) {
-          NANDCalls = Math.round(e.data.NANDCalls / 1_000_000) + " million";
+        } else if (hardwareInfoMessage.NANDCalls >= 1_000_000) {
+          NANDCalls =
+            Math.round(hardwareInfoMessage.NANDCalls / 1_000_000) + " million";
         } else {
           NANDCalls = "0";
+        }
+        if (e.data.memoryInfo) {
+          $computerMemory = e.data.memoryInfo;
         }
         break;
       case "stoppedRuntime":
@@ -189,9 +199,6 @@
           makeRedAfterwards = false;
         }, 50);
         computerKernal.postMessage({ action: "partialStop" });
-        break;
-      case "memoryInfo":
-        $computerMemory = e.data;
         break;
     }
   }

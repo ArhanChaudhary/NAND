@@ -8,7 +8,6 @@ use wasm_bindgen::closure::Closure;
 use wasm_bindgen::JsCast;
 
 #[derive(Serialize, Default)]
-#[serde(tag = "action", rename = "hardwareInfo")]
 struct HardwareInfoMessage {
     hz: f64,
     #[serde(rename = "NANDCalls")]
@@ -16,8 +15,7 @@ struct HardwareInfoMessage {
 }
 
 #[derive(Serialize)]
-#[serde(tag = "action", rename = "memory")]
-struct MemoryMessage {
+struct MemoryInfoMessage {
     #[serde(with = "serde_wasm_bindgen::preserve", rename = "ramMemory")]
     ram_memory: Uint16Array,
     #[serde(with = "serde_wasm_bindgen::preserve", rename = "screenMemory")]
@@ -26,12 +24,20 @@ struct MemoryMessage {
     pressed_key: u16,
 }
 
+#[derive(Serialize)]
+#[serde(tag = "action", rename = "infoMessage")]
+struct InfoMessage {
+    #[serde(rename = "hardwareInfo")]
+    hardware_info: HardwareInfoMessage,
+    #[serde(rename = "memoryInfo")]
+    memory_info: Option<MemoryInfoMessage>,
+}
+
 static EMIT_HARDWARE_INFO_INTERVAL: SyncUnsafeCell<Option<i32>> = SyncUnsafeCell::new(None);
 static EMIT_HARDWARE_INFO_CLOSURE: sync_cell::SyncLazyCell<Closure<dyn Fn()>> =
     sync_cell::SyncLazyCell::new(|| Closure::new(emit));
 
 static PREV_SEC_TOTALS: SyncUnsafeCell<VecDeque<f64>> = SyncUnsafeCell::new(VecDeque::new());
-static EMIT_MEMORY_COUNTER: SyncUnsafeCell<usize> = SyncUnsafeCell::new(0);
 static PREV_EMIT_INTERVAL_STEP_TOTAL: SyncUnsafeCell<usize> = SyncUnsafeCell::new(0);
 const EMIT_HARDWARE_INFO_INTERVAL_DELAY: usize = 50;
 const PREV_SEC_TOTAL_AVG_TIME: usize = 1;
@@ -69,7 +75,10 @@ pub fn try_stop_emitting() {
 }
 
 pub fn emit_default() {
-    js_api::post_worker_message(HardwareInfoMessage::default());
+    js_api::post_worker_message(InfoMessage {
+        hardware_info: HardwareInfoMessage::default(),
+        memory_info: None,
+    });
 }
 
 pub fn emit() {
@@ -87,24 +96,17 @@ pub fn emit() {
         );
         *PREV_EMIT_INTERVAL_STEP_TOTAL.get() = emit_interval_step_total;
     };
-    js_api::post_worker_message(HardwareInfoMessage {
-        hz: unsafe {
-            (*PREV_SEC_TOTALS.get()).iter().sum::<f64>() / (*PREV_SEC_TOTALS.get()).len() as f64
+    js_api::post_worker_message(InfoMessage {
+        hardware_info: HardwareInfoMessage {
+            hz: unsafe {
+                (*PREV_SEC_TOTALS.get()).iter().sum::<f64>() / (*PREV_SEC_TOTALS.get()).len() as f64
+            },
+            nand_calls: hardware::nand_calls(),
         },
-        nand_calls: hardware::nand_calls(),
-    });
-    if unsafe { *EMIT_MEMORY_COUNTER.get() } == 1000 / EMIT_HARDWARE_INFO_INTERVAL_DELAY {
-        unsafe {
-            *EMIT_MEMORY_COUNTER.get() = 0;
-        }
-        js_api::post_worker_message(MemoryInfoMessage {
+        memory_info: Some(MemoryInfoMessage {
             ram_memory: unsafe { Uint16Array::view((*memory::RAM16K_MEMORY.get()).as_slice()) },
             screen_memory: unsafe { Uint16Array::view((*memory::SCREEN_MEMORY.get()).as_slice()) },
             pressed_key: unsafe { *hardware::PRESSED_KEY.get() },
-        });
-    } else {
-        unsafe {
-            *EMIT_MEMORY_COUNTER.get() += 1;
-        }
-    };
+        })
+    });
 }
