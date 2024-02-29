@@ -129,6 +129,7 @@
 
 <script lang="ts">
   import { onMount } from "svelte";
+  import { computerMemory } from "./stores";
   export let computer_vw: Number;
 
   let computerWrapper: HTMLDivElement;
@@ -190,9 +191,7 @@
         computerKernal.postMessage({ action: "partialStop" });
         break;
       case "memory":
-        console.log(e.data.ramMemory.slice());
-        // console.log(e.data.screenMemory.slice());
-        // console.log(e.data.pressedKey);
+        $computerMemory = e.data;
         break;
     }
   }
@@ -275,7 +274,7 @@
 
 <div
   id="computer-container"
-  style="--computer-container-width: {computer_vw}vw;"
+  style="--computer-container-width: calc({computer_vw}vw - var(--memory-view-width));"
 >
   <div
     id="computer-runner"

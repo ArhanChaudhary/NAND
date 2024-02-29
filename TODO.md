@@ -1,10 +1,4 @@
 # TODO (NAND)
-* functionality
-  * read abt desynchronized, alpha: false screws me up for some reason
-  * pressing multiple keys doesnt work like normal keyboards would
-* example programs
-  * make able to re-place obstacles (actually reallocate memory and stuff)
-  * a lot more comments and remove comments on example programs
 * ui
   * viewable ram and rom (view as hex bin, go to line)
   * "about" button
@@ -22,6 +16,7 @@
   * syntax highlighter (other types)
   * compilererror stash, too many static error
 * readme
+  * a lot more comments and remove comments on example programs
   * Writing programs in NAND
     * jack tutorial, base off https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf and https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf
     * if and else doesn't require bracket
@@ -43,6 +38,7 @@
     * GeneticAlgorithm (will not reallocate)
 
 # TODO (genetic algorithm)
+* make able to re-place obstacles (actually reallocate memory and stuff)
 * random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
 * should acceleration vectors mutate in consecutive pairs as it is or individually?
 * determine optimal dynamicMutationRate constant (current is 1530)

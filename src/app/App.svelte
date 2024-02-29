@@ -2,6 +2,7 @@
   import Computer from "./Computer.svelte";
   import Nav from "./Nav.svelte";
   import IDE from "./IDE.svelte";
+  import MemoryView from "./MemoryView.svelte";
 
   let computer_vw = 40;
   let computer_width = (computer_vw * window.innerWidth) / 100;
@@ -38,6 +39,7 @@
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div id="divider" on:mousedown={dividerMouseDown}></div>
   <Computer {computer_vw} />
+  <MemoryView />
 </main>
 
 <style global lang="scss">
@@ -57,6 +59,7 @@
     overflow: hidden;
     display: flex;
     --main-height: calc(100dvh - var(--nav-height));
+    --memory-view-width: 60px;
     height: var(--main-height);
 
     #divider {
