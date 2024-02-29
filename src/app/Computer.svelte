@@ -48,19 +48,27 @@
   }
 
   const loadComputerRunner = new Promise<void>((resolve) => {
-    computerRunner.onmessage = (e) => {
-      if (e.data.action === "loaded") {
-        resolve();
-      }
-    };
+    computerRunner.addEventListener(
+      "message",
+      (e) => {
+        if (e.data.action === "loaded") {
+          resolve();
+        }
+      },
+      { once: true }
+    );
   });
 
   const loadComputerKernal = new Promise<void>((resolve) => {
-    computerKernal.onmessage = (e) => {
-      if (e.data.action === "loaded") {
-        resolve();
-      }
-    };
+    computerKernal.addEventListener(
+      "message",
+      (e) => {
+        if (e.data.action === "loaded") {
+          resolve();
+        }
+      },
+      { once: true }
+    );
   });
 
   let wasmMemory: WebAssembly.Memory;
@@ -77,11 +85,15 @@
       wasmMemory,
     });
 
-    computerRunner.onmessage = (e) => {
-      if (e.data.action === "ready") {
-        resolve();
-      }
-    };
+    computerRunner.addEventListener(
+      "message",
+      (e) => {
+        if (e.data.action === "ready") {
+          resolve();
+        }
+      },
+      { once: true }
+    );
   });
 
   await Promise.all([loadJackOS, loadComputerRuntime, loadComputerKernal]);
@@ -200,15 +212,19 @@
     );
 
     await new Promise<void>((resolve) => {
-      computerKernal.onmessage = (e) => {
-        if (e.data.action === "ready") {
-          resolve();
-        }
-      };
+      computerKernal.addEventListener(
+        "message",
+        (e) => {
+          if (e.data.action === "ready") {
+            resolve();
+          }
+        },
+        { once: true }
+      );
     });
 
-    computerRunner.onmessage = messageHandler;
-    computerKernal.onmessage = messageHandler;
+    computerRunner.addEventListener("message", messageHandler);
+    computerKernal.addEventListener("message", messageHandler);
 
     let prev: number;
     document.addEventListener("keydown", (e) => {
