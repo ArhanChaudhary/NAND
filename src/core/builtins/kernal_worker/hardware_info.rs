@@ -97,7 +97,7 @@ pub fn emit() {
         unsafe {
             *EMIT_MEMORY_COUNTER.get() = 0;
         }
-        js_api::post_worker_message(MemoryMessage {
+        js_api::post_worker_message(MemoryInfoMessage {
             ram_memory: unsafe { Uint16Array::view((*memory::RAM16K_MEMORY.get()).as_slice()) },
             screen_memory: unsafe { Uint16Array::view((*memory::SCREEN_MEMORY.get()).as_slice()) },
             pressed_key: unsafe { *hardware::PRESSED_KEY.get() },

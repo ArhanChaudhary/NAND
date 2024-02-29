@@ -190,7 +190,7 @@
         }, 50);
         computerKernal.postMessage({ action: "partialStop" });
         break;
-      case "memory":
+      case "memoryInfo":
         $computerMemory = e.data;
         break;
     }
