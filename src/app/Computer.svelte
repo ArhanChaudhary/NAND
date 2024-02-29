@@ -186,7 +186,7 @@
         makeRedAfterwards = true;
         setTimeout(() => {
           makeRedAfterwards = false;
-        }, 150);
+        }, 50);
         computerKernal.postMessage({ action: "partialStop" });
         break;
       case "memory":
