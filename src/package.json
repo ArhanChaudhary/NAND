@@ -13,13 +13,14 @@
     "esm-node": "node --experimental-specifier-resolution=node --loader ts-node/esm"
   },
   "dependencies": {
-    "nand-core": "file:./pkg",
     "cssnano": "^6.0.5",
     "detect-browser": "^5.3.0",
     "html-escaper": "^3.0.3",
+    "nand-core": "file:./pkg",
     "normalize.css": "^8.0.1",
     "postcss-load-config": "^5.0.3",
     "postcss-preset-env": "^9.4.0",
+    "svelte-tiny-virtual-list": "^2.0.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
     "vite-plugin-top-level-await": "^1.4.1"

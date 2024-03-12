@@ -130,12 +130,12 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { computerMemory } from "./stores";
-  export let computer_vw: Number;
+  export let computerVW: Number;
 
   let computerWrapper: HTMLDivElement;
   let computerWrapperAspectRatio: number | null = null;
   let waitForOnMount = new Promise<void>(onMount);
-  $: computer_vw, safelyUpdateComputerWrapperAspectRatio();
+  $: computerVW, safelyUpdateComputerWrapperAspectRatio();
   async function safelyUpdateComputerWrapperAspectRatio() {
     await waitForOnMount;
     computerWrapperAspectRatio =
@@ -281,7 +281,7 @@
 
 <div
   id="computer-container"
-  style="--computer-container-width: calc({computer_vw}vw - var(--memory-view-width));"
+  style="--computer-container-width: {computerVW}vw;"
 >
   <div
     id="computer-runner"

@@ -4,41 +4,43 @@
   import IDE from "./IDE.svelte";
   import MemoryView from "./MemoryView.svelte";
 
-  let computer_vw = 40;
-  let computer_width = (computer_vw * window.innerWidth) / 100;
-  computer_width = Math.min(
-    Math.max(0, window.innerWidth - 300),
-    Math.max(700, computer_width)
+  let computerVW = 40;
+  let memoryViewWidth = 110;
+  let computerAndIDEWidth = window.innerWidth - memoryViewWidth;
+  let computerWidth = (computerVW * computerAndIDEWidth) / 100;
+  computerWidth = Math.min(
+    Math.max(0, computerAndIDEWidth - 300),
+    Math.max(700, computerWidth)
   );
-  computer_vw = (computer_width / window.innerWidth) * 100;
+  computerVW = (computerWidth / computerAndIDEWidth) * 100;
 
-  let mouse_is_down = false;
+  let mouseIsDown = false;
   function dividerMouseDown() {
-    mouse_is_down = true;
+    mouseIsDown = true;
   }
 
   document.addEventListener("mousemove", (e) => {
-    if (!mouse_is_down) return;
-    let ratio = e.clientX / window.innerWidth;
+    if (!mouseIsDown) return;
+    let ratio = (e.clientX + memoryViewWidth) / window.innerWidth;
     if (ratio < 0.1) {
       ratio = 0;
     } else if (ratio > 0.9) {
       ratio = 1;
     }
-    computer_vw = (1 - ratio) * 100;
+    computerVW = (1 - ratio) * 100;
   });
 
   document.addEventListener("mouseup", () => {
-    mouse_is_down = false;
+    mouseIsDown = false;
   });
 </script>
 
 <Nav />
-<main>
+<main style="--memory-view-width: {memoryViewWidth}px">
   <IDE />
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div id="divider" on:mousedown={dividerMouseDown}></div>
-  <Computer {computer_vw} />
+  <Computer {computerVW} />
   <MemoryView />
 </main>
 
@@ -59,7 +61,6 @@
     overflow: hidden;
     display: flex;
     --main-height: calc(100dvh - var(--nav-height));
-    --memory-view-width: 60px;
     height: var(--main-height);
 
     #divider {
