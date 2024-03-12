@@ -36,12 +36,12 @@
 </script>
 
 <Nav />
-<main style="--memory-view-width: {memoryViewWidth}px">
+<main>
   <IDE />
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div id="divider" on:mousedown={dividerMouseDown}></div>
   <Computer {computerVW} />
-  <MemoryView />
+  <MemoryView bind:memoryViewWidth={memoryViewWidth} />
 </main>
 
 <style global lang="scss">

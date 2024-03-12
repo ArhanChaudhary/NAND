@@ -1,6 +1,6 @@
 # TODO (NAND)
 * ui
-  * viewable ram and rom (view as hex bin, go to line)
+  * viewable ram (collapse)
   * "about" button
   * touch events for divider on mobile
   * common keybinds like undo etc

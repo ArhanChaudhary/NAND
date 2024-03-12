@@ -1,24 +1,19 @@
-<script lang="ts" context="module">
-  function toDisplay(n: number) {
-    return n;
-    return n.toString(16).toUpperCase().padStart(4, "0");
-  }
-</script>
-
 <script lang="ts">
   import VirtualList from "svelte-tiny-virtual-list";
   import { computerMemory } from "./stores";
   import { onMount } from "svelte";
 
+  export let memoryViewWidth: number;
   const ramMemoryLength = $computerMemory.ramMemory.length;
   const screenMemoryLength = $computerMemory.screenMemory.length;
   const itemCount = ramMemoryLength + screenMemoryLength + 1;
   let memoryView: HTMLDivElement;
+  let memoryViewHeader: HTMLDivElement;
   let height: number;
   onMount(() => {
-    height = memoryView.clientHeight - 25;
+    height = memoryView.clientHeight - memoryViewHeader.offsetHeight;
     window.addEventListener("resize", () => {
-      height = memoryView.clientHeight - 25;
+      height = memoryView.clientHeight - memoryViewHeader.offsetHeight;
     });
   });
 
@@ -56,14 +51,46 @@
       scrollToIndex = value;
     }
   }
+
+  let toDisplaySelect: string;
+  function toDisplay(n: number) {
+    switch (toDisplaySelect) {
+      case "dec":
+        return n;
+      case "hex":
+        return n.toString(16).toUpperCase().padStart(4, "0");
+      case "bin":
+        return n.toString(2).padStart(16, "0");
+    }
+  }
+  $: {
+    if (toDisplaySelect === "bin") {
+      memoryViewWidth = 200;
+    } else {
+      memoryViewWidth = 110;
+    }
+  }
 </script>
 
-<div id="memory-view" bind:this={memoryView}>
-  <div id="memory-view-header">
-    RAM <input
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div
+  id="memory-view"
+  bind:this={memoryView}
+  on:keydown|stopPropagation
+  style="width: {memoryViewWidth}px"
+>
+  <div id="memory-view-header" bind:this={memoryViewHeader}>
+    RAM
+    <select id="memory-select-display" bind:value={toDisplaySelect}>
+      <option value="dec">Dec</option>
+      <option value="hex">Hex</option>
+      <option value="bin">Bin</option>
+    </select>
+    <input
       id="goto-input"
       type="number"
       placeholder="Goto:"
+      min="0"
       on:input={gotoInput}
     />
   </div>
@@ -101,8 +128,10 @@
         <span class="memory-section">Pressed key</span>
       {/if}
       <span class="memory-list-index">{index}</span>
-      {#key $computerMemory}
-        <span>{toDisplay(getMemory(index))}</span>
+      {#key toDisplaySelect}
+        {#key $computerMemory}
+          <span>{toDisplay(getMemory(index))}</span>
+        {/key}
       {/key}
     </div>
   </VirtualList>
@@ -110,7 +139,6 @@
 
 <style lang="scss">
   #memory-view {
-    width: var(--memory-view-width);
     flex-shrink: 0;
     text-align: right;
     font-size: 20px;
@@ -118,15 +146,36 @@
 
     #memory-view-header {
       background-color: hsl(0, 0%, 0%);
-      font-size: 15px;
-      height: 25px;
-      line-height: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      line-height: 30px;
+      font-size: 16px;
+      border: 5px solid black;
+      text-align: left;
+
+      #memory-select-display {
+        background-color: black;
+        border-radius: 3px;
+        border: 1px solid hsl(0, 0%, 80%);
+        background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='7' fill='white'><path d='M0 0 7 7 14 0 12 0 7 5 2 0'/></svg>")
+          no-repeat;
+        background-position: right 3px top 55%;
+        background-repeat: no-repeat;
+        background-size: 10px;
+        -webkit-appearance: none;
+        appearance: none;
+        cursor: pointer;
+        padding: 2px 16px 2px 4px !important;
+      }
 
       #goto-input {
-        width: calc(100% - 3ch - 20px);
+        width: 100%;
         background-color: hsl(198, 2%, 20%);
-        height: 25px;
+        height: 31px;
         border: none;
+        margin-top: 3px;
       }
     }
 
@@ -161,12 +210,12 @@
     &.c1,
     &.c3,
     &.c5 {
-      background-color: hsl(198, 18%, 8%);
+      background-color: hsl(198, 8%, 13%);
     }
     &.c2,
     &.c4,
     &.c6 {
-      background-color: hsl(198, 18%, 2%);
+      background-color: hsl(198, 18%, 8%);
     }
   }
 </style>
