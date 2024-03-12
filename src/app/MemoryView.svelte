@@ -14,12 +14,11 @@
   const screenMemoryLength = $computerMemory.screenMemory.length;
   const itemCount = ramMemoryLength + screenMemoryLength + 1;
   let memoryView: HTMLDivElement;
-  let scrollToIndex: number;
   let height: number;
   onMount(() => {
-    height = memoryView.clientHeight;
+    height = memoryView.clientHeight - 25;
     window.addEventListener("resize", () => {
-      height = window.innerHeight - 50;
+      height = memoryView.clientHeight - 25;
     });
   });
 
@@ -32,10 +31,50 @@
       return $computerMemory.pressedKey;
     }
   }
+
+  function itemSize(index: number) {
+    if (
+      [
+        16,
+        256,
+        2048,
+        ramMemoryLength,
+        ramMemoryLength + screenMemoryLength,
+      ].includes(index)
+    ) {
+      return 40;
+    } else {
+      return 20;
+    }
+  }
+
+  let scrollToIndex: number;
+  function gotoInput(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const value = parseInt(input.value);
+    if (value >= 0 && value < itemCount) {
+      scrollToIndex = value;
+    }
+  }
 </script>
 
 <div id="memory-view" bind:this={memoryView}>
-  <VirtualList width="100%" {height} {itemCount} itemSize={20}>
+  <div id="memory-view-header">
+    RAM <input
+      id="goto-input"
+      type="number"
+      placeholder="Goto:"
+      on:input={gotoInput}
+    />
+  </div>
+  <VirtualList
+    width="100%"
+    {height}
+    {itemCount}
+    {itemSize}
+    {scrollToIndex}
+    scrollToAlignment="start"
+  >
     <div
       slot="item"
       let:index
@@ -50,6 +89,17 @@
         index < ramMemoryLength + screenMemoryLength}
       class:c6={index === ramMemoryLength + screenMemoryLength}
     >
+      {#if index === 16}
+        <span class="memory-section">Static vars</span>
+      {:else if index === 256}
+        <span class="memory-section">Stack memory</span>
+      {:else if index === 2048}
+        <span class="memory-section">Heap memory</span>
+      {:else if index === ramMemoryLength}
+        <span class="memory-section">Screen memory</span>
+      {:else if index === ramMemoryLength + screenMemoryLength}
+        <span class="memory-section">Pressed key</span>
+      {/if}
       <span class="memory-list-index">{index}</span>
       {#key $computerMemory}
         <span>{toDisplay(getMemory(index))}</span>
@@ -65,45 +115,58 @@
     text-align: right;
     font-size: 20px;
     background-color: black;
-  }
 
-  #memory-view :global(.virtual-list-wrapper) {
-    scrollbar-width: none;
+    #memory-view-header {
+      background-color: hsl(0, 0%, 0%);
+      font-size: 15px;
+      height: 25px;
+      line-height: 25px;
 
-    &::-webkit-scrollbar {
-      display: none;
+      #goto-input {
+        width: calc(100% - 3ch - 20px);
+        background-color: hsl(198, 2%, 20%);
+        height: 25px;
+        border: none;
+      }
+    }
+
+    :global(.virtual-list-wrapper) {
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
   }
 
   .memory-list-slot {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     line-height: 20px;
     padding-left: 5px;
     padding-right: 8px;
+
+    .memory-section {
+      width: 100%;
+      text-align: center;
+      white-space: nowrap;
+    }
 
     .memory-list-index {
       width: 5ch;
       text-align: center;
     }
 
-    // &.c1 {
-    //   background-color: hsl(198, 36%, 9%);
-    // }
-    // &.c2 {
-    //   background-color: hsl(173, 58%, 13%);
-    // }
-    // &.c3 {
-    //   background-color: hsl(43, 73%, 25%);
-    // }
-    // &.c4 {
-    //   background-color: hsl(27, 88%, 25%);
-    // }
-    // &.c5 {
-    //   background-color: hsl(12, 76%, 23%);
-    // }
-    // &.c6 {
-    //   background-color: black;
-    // }
+    &.c1,
+    &.c3,
+    &.c5 {
+      background-color: hsl(198, 18%, 8%);
+    }
+    &.c2,
+    &.c4,
+    &.c6 {
+      background-color: hsl(198, 18%, 2%);
+    }
   }
 </style>
