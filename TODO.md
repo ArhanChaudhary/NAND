@@ -1,7 +1,6 @@
 # TODO (NAND)
 * ide
   * dont scroll to focused tab on drag
-  * better ui for new program (new template)?
 * compiler
   * optimize or -1 instruction
   * make sure class name is valid

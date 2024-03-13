@@ -47,7 +47,7 @@
     }
     await Promise.all(exampleProgramPromises);
     const exampleProgramsOrder = [
-      "HelloWorld",
+      "New Program",
       "Average",
       "Pong",
       "Square",
@@ -107,8 +107,8 @@
 
   $: $IDEContext, ($shouldResetAndStart = true);
   exampleProgramLoader.then(() => {
-    if (shouldAutoLoad("HelloWorld")) {
-      loadExampleProgram("HelloWorld");
+    if (shouldAutoLoad("New Program")) {
+      loadExampleProgram("New Program");
     } else {
       $activeTabName = "Main";
     }
@@ -117,7 +117,7 @@
   function shouldAutoLoad(exampleProgramName: string) {
     if (
       !localStorage.getItem("IDEContext") &&
-      exampleProgramName === "HelloWorld"
+      exampleProgramName === "New Program"
     ) {
       return true;
     } else {
