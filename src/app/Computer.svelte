@@ -134,10 +134,10 @@
 
   let computerWrapper: HTMLDivElement;
   let computerWrapperAspectRatio: number | null = null;
-  let waitForOnMount = new Promise<void>(onMount);
-  $: computerVW, safelyUpdateComputerWrapperAspectRatio();
-  async function safelyUpdateComputerWrapperAspectRatio() {
-    await waitForOnMount;
+  let onMountAsync = new Promise<void>(onMount);
+  $: computerVW, updateAspectRatio();
+  async function updateAspectRatio() {
+    await onMountAsync;
     computerWrapperAspectRatio =
       computerWrapper.clientWidth / computerWrapper.clientHeight || null;
   }

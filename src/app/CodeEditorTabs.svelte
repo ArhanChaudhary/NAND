@@ -1,20 +1,18 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { IDEContext, activeTabName } from "./stores";
   import { flip } from "svelte/animate";
   let componentRoot: HTMLDivElement;
-  function tabShouldBeActive(tabName: string, activeTabName: string | null) {
-    let ret = tabName === activeTabName;
-    if (ret) {
-      setTimeout(() => {
-        let activeTab = componentRoot.querySelector(".tab.active");
-        if (activeTab) {
-          activeTab.scrollIntoView({
-            behavior: "instant",
-          });
-        }
+  let onMountAsync = new Promise<void>(onMount);
+  $: $activeTabName, scrollActiveIntoView();
+  async function scrollActiveIntoView() {
+    await onMountAsync;
+    let activeTab = componentRoot.querySelector(".tab.active");
+    if (activeTab) {
+      activeTab.scrollIntoView({
+        behavior: "instant",
       });
     }
-    return ret;
   }
   function tabClick(tabName: string) {
     $activeTabName = tabName;
@@ -85,7 +83,7 @@
   {#each $IDEContext.map((file) => file.fileName) as tabName (tabName)}
     <span
       class="tab"
-      class:active={tabShouldBeActive(tabName, $activeTabName)}
+      class:active={tabName === $activeTabName}
       on:click|self={() => tabClick(tabName)}
       role="button"
       tabindex="0"

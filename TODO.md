@@ -1,6 +1,4 @@
 # TODO (NAND)
-* ide
-  * dont scroll to focused tab on drag
 * compiler
   * optimize or -1 instruction
   * make sure class name is valid
