@@ -7,14 +7,12 @@
   import About from "./About.svelte";
 
   let computerVW = 40;
-  let memoryViewWidth = 130;
-  let computerAndIDEWidth = window.innerWidth - memoryViewWidth;
-  let computerWidth = (computerVW * computerAndIDEWidth) / 100;
+  let computerWidth = (computerVW * window.innerWidth) / 100;
   computerWidth = Math.min(
-    Math.max(0, computerAndIDEWidth - 300),
+    Math.max(0, window.innerWidth - 300),
     Math.max(700, computerWidth)
   );
-  computerVW = (computerWidth / computerAndIDEWidth) * 100;
+  computerVW = (computerWidth / window.innerWidth) * 100;
 
   let mouseIsDown = false;
   function dividerMouseDown() {
@@ -23,7 +21,7 @@
 
   document.addEventListener("mousemove", (e) => {
     if (!mouseIsDown) return;
-    let ratio = (e.clientX + memoryViewWidth) / window.innerWidth;
+    let ratio = e.clientX / (window.innerWidth - memoryViewWidth);
     if (ratio < 0.1) {
       ratio = 0;
     } else if (ratio > 0.9) {
@@ -36,6 +34,7 @@
     mouseIsDown = false;
   });
 
+  let memoryViewWidth: number;
   let showAbout = false;
 </script>
 
@@ -43,7 +42,7 @@
   <About bind:showAbout />
 {/if}
 <Nav />
-<main>
+<main style="--memory-view-width: {memoryViewWidth}px">
   <IDE />
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div id="divider" on:mousedown={dividerMouseDown}></div>
@@ -51,7 +50,12 @@
   <MemoryView bind:memoryViewWidth />
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div id="about" on:click={() => {showAbout = true}}>
+  <div
+    id="about"
+    on:click={() => {
+      showAbout = true;
+    }}
+  >
     {@html questionMarkIcon}
   </div>
 </main>

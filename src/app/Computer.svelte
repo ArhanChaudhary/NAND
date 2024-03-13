@@ -281,7 +281,7 @@
 
 <div
   id="computer-container"
-  style="--computer-container-width: {computerVW}vw;"
+  style="--computer-container-width: calc({computerVW} / 100 * (100vw - var(--memory-view-width)));"
 >
   <div
     id="computer-runner"

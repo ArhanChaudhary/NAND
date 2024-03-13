@@ -90,7 +90,6 @@
   bind:this={memoryView}
   on:keydown|stopPropagation
   on:keyup|stopPropagation
-  style="width: {memoryViewWidth}px"
 >
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <div id="memory-view-collapse" on:click={toggleCollapse} class:collapsed>
@@ -163,6 +162,7 @@
     font-size: 20px;
     background-color: black;
     position: relative;
+    width: var(--memory-view-width);
 
     #memory-view-collapse {
       cursor: pointer;
@@ -171,6 +171,7 @@
       position: absolute;
       top: 0;
       right: 100%;
+      z-index: 1;
       background-color: black;
       display: flex;
       align-items: center;
@@ -236,6 +237,10 @@
         height: 31px;
         border: none;
         margin-top: 3px;
+
+        &::placeholder {
+          color: hsl(0, 0%, 70%);
+        }
       }
     }
 

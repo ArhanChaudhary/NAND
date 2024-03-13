@@ -1,5 +1,6 @@
 # TODO (NAND)
 * ui
+  * stores can be css styles on parent?
   * touch events for divider on mobile
   * common keybinds like undo etc
   * dont scroll to focused tab on drag
