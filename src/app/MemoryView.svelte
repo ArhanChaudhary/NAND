@@ -59,14 +59,16 @@
       case "dec":
         return n;
       case "hex":
-        return n.toString(16).toUpperCase().padStart(4, "0");
+        let hex = n.toString(16).toUpperCase().padStart(4, "0");
+        return hex.slice(0, 2) + " " + hex.slice(2);
       case "bin":
-        return n.toString(2).padStart(16, "0");
+        let bin = n.toString(2).padStart(16, "0");
+        return bin.slice(0, 8) + " " + bin.slice(8);
     }
   }
   $: {
     if (toDisplaySelect === "bin") {
-      memoryViewWidth = 200;
+      memoryViewWidth = 210;
     } else {
       memoryViewWidth = 130;
     }

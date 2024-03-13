@@ -33,10 +33,13 @@
   }
 
   document.addEventListener("mousemove", (e) => {
+    // necessary so the contenteditable doesn't randomly start moving while dragging the divider
+    e.preventDefault();
     dividerMouseMove(e.clientX);
   });
 
   document.addEventListener("touchmove", (e) => {
+    e.preventDefault();
     dividerMouseMove(e.touches[0].clientX);
   });
 

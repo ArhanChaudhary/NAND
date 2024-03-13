@@ -69,6 +69,7 @@
   import { escape } from "html-escaper";
   import { tick } from "svelte";
 
+  export let wrap: boolean;
   let codeEditor: HTMLDivElement;
   let initialCodeEditorContent: string[] = [];
   $: $activeTabName, onSwitchTab();
@@ -219,6 +220,7 @@
     on:keydown|stopPropagation={editorKeydown}
     on:keyup|stopPropagation
     bind:this={codeEditor}
+    class:wrap
   >
     {#key initialCodeEditorContent}
       {#each initialCodeEditorContent as line}
@@ -241,7 +243,12 @@
     overflow-y: scroll;
     scrollbar-width: none;
     counter-reset: line;
-    white-space: pre-wrap;
+    position: relative;
+    white-space: pre;
+
+    &.wrap {
+      white-space: pre-wrap;
+    }
 
     * {
       color: hsl(0deg 0% 78%);

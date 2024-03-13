@@ -162,7 +162,8 @@ class Main {
             while (key = 0) {
                 let key = Keyboard.keyPressed();
             }
-            // this if statement is here so it renders properly if an obstacle is on the initial position
+            // this if statement is here so it renders properly if an obstacle
+            // is on the initial position
             if (~(prevPositionX = 0)) {
                 do Main.drawObstacle(
                     Main.getGridIndex(

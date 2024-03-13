@@ -1,9 +1,7 @@
 # TODO (NAND)
 * ide
-  * common keybinds like undo etc
   * dont scroll to focused tab on drag
-  * copy pasting code with new lines messes things up (see "fix weirdness")
-  * code not starting after edit ide
+  * better ui for new program (new template)?
 * compiler
   * optimize or -1 instruction
   * make sure class name is valid
