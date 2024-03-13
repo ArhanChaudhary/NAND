@@ -70,6 +70,18 @@
       memoryViewWidth = 110;
     }
   }
+
+  let collapsed = false;
+  let oldMemoryViewWidth: number;
+  function toggleCollapse() {
+    if (collapsed) {
+      memoryViewWidth = oldMemoryViewWidth;
+    } else {
+      oldMemoryViewWidth = memoryViewWidth;
+      memoryViewWidth = 0;
+    }
+    collapsed = !collapsed;
+  }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -77,8 +89,14 @@
   id="memory-view"
   bind:this={memoryView}
   on:keydown|stopPropagation
+  on:keyup|stopPropagation
   style="width: {memoryViewWidth}px"
 >
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <div id="memory-view-collapse" on:click={toggleCollapse} class:collapsed>
+    <div id="arrow-1"></div>
+    <div id="arrow-2"></div>
+  </div>
   <div id="memory-view-header" bind:this={memoryViewHeader}>
     RAM
     <select id="memory-select-display" bind:value={toDisplaySelect}>
@@ -143,6 +161,47 @@
     text-align: right;
     font-size: 20px;
     background-color: black;
+    position: relative;
+
+    #memory-view-collapse {
+      cursor: pointer;
+      width: 37px;
+      aspect-ratio: 1;
+      position: absolute;
+      top: 0;
+      right: 100%;
+      background-color: black;
+      display: flex;
+      align-items: center;
+      flex-flow: column;
+      justify-content: center;
+      gap: 7px;
+      box-shadow: 0 0 4px -1px black;
+
+      div {
+        width: 15px;
+        height: 2px;
+        background-color: hsl(198, 2%, 85%);
+      }
+
+      #arrow-1 {
+        transform: rotate(45deg);
+      }
+
+      #arrow-2 {
+        transform: rotate(-45deg);
+      }
+
+      &.collapsed {
+        #arrow-1 {
+          transform: rotate(-45deg);
+        }
+
+        #arrow-2 {
+          transform: rotate(45deg);
+        }
+      }
+    }
 
     #memory-view-header {
       background-color: hsl(0, 0%, 0%);

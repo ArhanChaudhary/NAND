@@ -1,6 +1,5 @@
 # TODO (NAND)
 * ui
-  * viewable ram (collapse)
   * "about" button
   * touch events for divider on mobile
   * common keybinds like undo etc
