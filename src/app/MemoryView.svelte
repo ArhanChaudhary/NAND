@@ -67,7 +67,7 @@
     if (toDisplaySelect === "bin") {
       memoryViewWidth = 200;
     } else {
-      memoryViewWidth = 110;
+      memoryViewWidth = 130;
     }
   }
 
@@ -109,6 +109,7 @@
       type="number"
       placeholder="Goto:"
       min="0"
+      max="24576"
       on:input={gotoInput}
     />
   </div>

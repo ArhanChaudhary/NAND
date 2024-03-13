@@ -3,9 +3,11 @@
   import Nav from "./Nav.svelte";
   import IDE from "./IDE.svelte";
   import MemoryView from "./MemoryView.svelte";
+  import questionMarkIcon from "/question-mark.svg?raw";
+  import About from "./About.svelte";
 
   let computerVW = 40;
-  let memoryViewWidth = 110;
+  let memoryViewWidth = 130;
   let computerAndIDEWidth = window.innerWidth - memoryViewWidth;
   let computerWidth = (computerVW * computerAndIDEWidth) / 100;
   computerWidth = Math.min(
@@ -33,15 +35,25 @@
   document.addEventListener("mouseup", () => {
     mouseIsDown = false;
   });
+
+  let showAbout = false;
 </script>
 
+{#if showAbout}
+  <About bind:showAbout />
+{/if}
 <Nav />
 <main>
   <IDE />
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div id="divider" on:mousedown={dividerMouseDown}></div>
   <Computer {computerVW} />
-  <MemoryView bind:memoryViewWidth={memoryViewWidth} />
+  <MemoryView bind:memoryViewWidth />
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div id="about" on:click={() => {showAbout = true}}>
+    {@html questionMarkIcon}
+  </div>
 </main>
 
 <style global lang="scss">
@@ -86,6 +98,21 @@
       &:active {
         background-color: hsl(222, 75%, 60%);
       }
+    }
+
+    #about {
+      cursor: pointer;
+      position: absolute;
+      border-radius: 50%;
+      aspect-ratio: 1;
+      width: 40px;
+      left: 10px;
+      bottom: 10px;
+      background-color: hsl(198, 17%, 9%);
+      color: red;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 </style>

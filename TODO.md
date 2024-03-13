@@ -1,6 +1,5 @@
 # TODO (NAND)
 * ui
-  * "about" button
   * touch events for divider on mobile
   * common keybinds like undo etc
   * dont scroll to focused tab on drag
