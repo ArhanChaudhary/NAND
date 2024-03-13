@@ -1,11 +1,9 @@
 # TODO (NAND)
-* ui
-  * touch events for divider on mobile
+* ide
   * common keybinds like undo etc
   * dont scroll to focused tab on drag
   * copy pasting code with new lines messes things up (see "fix weirdness")
   * code not starting after edit ide
-  * no support for safari <= 16.2 which becomes <= 16.7 if i support webgl
 * compiler
   * optimize or -1 instruction
   * make sure class name is valid

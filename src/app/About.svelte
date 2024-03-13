@@ -37,8 +37,8 @@
     </p>
 
     <p>
-      To run Jack, load an example program or write your own and then click
-      "Start".
+      To run a NAND program, load an example program or write your own and then
+      click "Start".
     </p>
 
     <!-- svelte-ignore a11y-click-events-have-key-events -->

@@ -19,9 +19,9 @@
     mouseIsDown = true;
   }
 
-  document.addEventListener("mousemove", (e) => {
+  function dividerMouseMove(clientX: number) {
     if (!mouseIsDown) return;
-    let ratio = e.clientX / (window.innerWidth - memoryViewWidth);
+    let ratio = clientX / (window.innerWidth - memoryViewWidth);
     showMemoryView = true;
     if (ratio < 0.1) {
       ratio = 0;
@@ -30,9 +30,21 @@
       showMemoryView = false;
     }
     computerVW = (1 - ratio) * 100;
+  }
+
+  document.addEventListener("mousemove", (e) => {
+    dividerMouseMove(e.clientX);
+  });
+
+  document.addEventListener("touchmove", (e) => {
+    dividerMouseMove(e.touches[0].clientX);
   });
 
   document.addEventListener("mouseup", () => {
+    mouseIsDown = false;
+  });
+
+  document.addEventListener("touchend", () => {
     mouseIsDown = false;
   });
 
@@ -48,7 +60,11 @@
 <main style="--memory-view-width: {memoryViewWidth}px">
   <IDE />
   <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div id="divider" on:mousedown={dividerMouseDown}></div>
+  <div
+    id="divider"
+    on:mousedown={dividerMouseDown}
+    on:touchstart={dividerMouseDown}
+  ></div>
   <Computer {computerVW} />
   <!-- do it this way to preserve its state and not unmount it -->
   <MemoryView bind:memoryViewWidth show={showMemoryView} />
@@ -90,6 +106,7 @@
       background-color: hsl(222, 12%, 45%);
       transition: background-color 0.15s linear;
       cursor: col-resize;
+      touch-action: none;
       box-shadow: 0 0 8px 2px black;
 
       &::after {
