@@ -20,7 +20,6 @@
   }
 
   function dividerMouseMove(clientX: number) {
-    if (!mouseIsDown) return;
     let ratio = clientX / (window.innerWidth - memoryViewWidth);
     showMemoryView = true;
     if (ratio < 0.1) {
@@ -33,12 +32,14 @@
   }
 
   document.addEventListener("mousemove", (e) => {
+    if (!mouseIsDown) return;
     // necessary so the contenteditable doesn't randomly start moving while dragging the divider
     e.preventDefault();
     dividerMouseMove(e.clientX);
   });
 
   document.addEventListener("touchmove", (e) => {
+    if (!mouseIsDown) return;
     e.preventDefault();
     dividerMouseMove(e.touches[0].clientX);
   });
