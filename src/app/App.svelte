@@ -22,10 +22,12 @@
   document.addEventListener("mousemove", (e) => {
     if (!mouseIsDown) return;
     let ratio = e.clientX / (window.innerWidth - memoryViewWidth);
+    showMemoryView = true;
     if (ratio < 0.1) {
       ratio = 0;
     } else if (ratio > 0.9) {
       ratio = 1;
+      showMemoryView = false;
     }
     computerVW = (1 - ratio) * 100;
   });
@@ -36,6 +38,7 @@
 
   let memoryViewWidth: number;
   let showAbout = false;
+  let showMemoryView = true;
 </script>
 
 {#if showAbout}
@@ -47,7 +50,8 @@
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div id="divider" on:mousedown={dividerMouseDown}></div>
   <Computer {computerVW} />
-  <MemoryView bind:memoryViewWidth />
+  <!-- do it this way to preserve its state and not unmount it -->
+  <MemoryView bind:memoryViewWidth show={showMemoryView} />
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div

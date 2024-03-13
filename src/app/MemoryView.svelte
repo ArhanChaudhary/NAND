@@ -3,6 +3,7 @@
   import { computerMemory } from "./stores";
   import { onMount } from "svelte";
 
+  export let show: boolean;
   export let memoryViewWidth: number;
   const ramMemoryLength = $computerMemory.ramMemory.length;
   const screenMemoryLength = $computerMemory.screenMemory.length;
@@ -85,75 +86,77 @@
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div
-  id="memory-view"
-  bind:this={memoryView}
-  on:keydown|stopPropagation
-  on:keyup|stopPropagation
->
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <div id="memory-view-collapse" on:click={toggleCollapse} class:collapsed>
-    <div id="arrow-1"></div>
-    <div id="arrow-2"></div>
-  </div>
-  <div id="memory-view-header" bind:this={memoryViewHeader}>
-    RAM
-    <select id="memory-select-display" bind:value={toDisplaySelect}>
-      <option value="dec">Dec</option>
-      <option value="hex">Hex</option>
-      <option value="bin">Bin</option>
-    </select>
-    <input
-      id="goto-input"
-      type="number"
-      placeholder="Goto:"
-      min="0"
-      max="24576"
-      on:input={gotoInput}
-    />
-  </div>
-  <VirtualList
-    width="100%"
-    {height}
-    {itemCount}
-    {itemSize}
-    {scrollToIndex}
-    scrollToAlignment="start"
+{#if show}
+  <div
+    id="memory-view"
+    bind:this={memoryView}
+    on:keydown|stopPropagation
+    on:keyup|stopPropagation
   >
-    <div
-      slot="item"
-      let:index
-      let:style
-      {style}
-      class="memory-list-slot"
-      class:c1={index < 16}
-      class:c2={16 <= index && index < 256}
-      class:c3={256 <= index && index < 2048}
-      class:c4={2048 <= index && index < ramMemoryLength}
-      class:c5={ramMemoryLength <= index &&
-        index < ramMemoryLength + screenMemoryLength}
-      class:c6={index === ramMemoryLength + screenMemoryLength}
-    >
-      {#if index === 16}
-        <span class="memory-section">Static vars</span>
-      {:else if index === 256}
-        <span class="memory-section">Stack memory</span>
-      {:else if index === 2048}
-        <span class="memory-section">Heap memory</span>
-      {:else if index === ramMemoryLength}
-        <span class="memory-section">Screen memory</span>
-      {:else if index === ramMemoryLength + screenMemoryLength}
-        <span class="memory-section">Pressed key</span>
-      {/if}
-      <span class="memory-list-index">{index}</span>
-      {#key toDisplaySelect}
-        {#key $computerMemory}
-          <span>{toDisplay(getMemory(index))}</span>
-        {/key}
-      {/key}
+    <!-- svelte-ignore a11y-click-events-have-key-events -->
+    <div id="memory-view-collapse" on:click={toggleCollapse} class:collapsed>
+      <div id="arrow-1"></div>
+      <div id="arrow-2"></div>
     </div>
-  </VirtualList>
-</div>
+    <div id="memory-view-header" bind:this={memoryViewHeader}>
+      RAM
+      <select id="memory-select-display" bind:value={toDisplaySelect}>
+        <option value="dec">Dec</option>
+        <option value="hex">Hex</option>
+        <option value="bin">Bin</option>
+      </select>
+      <input
+        id="goto-input"
+        type="number"
+        placeholder="Goto:"
+        min="0"
+        max="24576"
+        on:input={gotoInput}
+      />
+    </div>
+    <VirtualList
+      width="100%"
+      {height}
+      {itemCount}
+      {itemSize}
+      {scrollToIndex}
+      scrollToAlignment="start"
+    >
+      <div
+        slot="item"
+        let:index
+        let:style
+        {style}
+        class="memory-list-slot"
+        class:c1={index < 16}
+        class:c2={16 <= index && index < 256}
+        class:c3={256 <= index && index < 2048}
+        class:c4={2048 <= index && index < ramMemoryLength}
+        class:c5={ramMemoryLength <= index &&
+          index < ramMemoryLength + screenMemoryLength}
+        class:c6={index === ramMemoryLength + screenMemoryLength}
+      >
+        {#if index === 16}
+          <span class="memory-section">Static vars</span>
+        {:else if index === 256}
+          <span class="memory-section">Stack memory</span>
+        {:else if index === 2048}
+          <span class="memory-section">Heap memory</span>
+        {:else if index === ramMemoryLength}
+          <span class="memory-section">Screen memory</span>
+        {:else if index === ramMemoryLength + screenMemoryLength}
+          <span class="memory-section">Pressed key</span>
+        {/if}
+        <span class="memory-list-index">{index}</span>
+        {#key toDisplaySelect}
+          {#key $computerMemory}
+            <span>{toDisplay(getMemory(index))}</span>
+          {/key}
+        {/key}
+      </div>
+    </VirtualList>
+  </div>
+{/if}
 
 <style lang="scss">
   #memory-view {
