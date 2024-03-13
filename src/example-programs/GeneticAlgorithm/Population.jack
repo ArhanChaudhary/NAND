@@ -16,7 +16,8 @@ class Population {
         let escapeString = "Hold escape in the simulation to open the menu.";
     }
 
-    function void config(int _brainSize, boolean _onlyBest, int initialBestDotFitness) {
+    function void config(int _brainSize, boolean _onlyBest,
+                         int initialBestDotFitness) {
         var int i;
         var Dot dot;
         var Brain brain;
@@ -81,7 +82,10 @@ class Population {
         // remaining space
         = remainingExtendedHeap
 
-        populationCount + 2 + populationCount * diff + populationCount + 2 + (populationCount - 1) + 2 + (populationCount - 1) * (brainSize + 3) = remainingExtendedHeap
+        populationCount + 2 + populationCount * diff + populationCount + 2 +
+        (populationCount - 1) + 2 + (populationCount - 1) * (brainSize + 3) =
+        remainingExtendedHeap
+
         p + 2 + pd + p + 2 + p - 1 + 2 + (p - 1) * (b + 3) = remainingExtendedHeap
         p + 2 + pd + p + 2 + p - 1 + 2 + pb + 3p - b - 3 = remainingExtendedHeap
 
@@ -102,7 +106,9 @@ class Population {
         // remaining space
         = remainingHeap
 
-        populationCount + 2 + populationCount * diff + populationCount + 2 + (populationCount - 1) + 2 = remainingHeap
+        populationCount + 2 + populationCount * diff + populationCount + 2 +
+        (populationCount - 1) + 2 = remainingHeap
+
         p + 2 + pd + p + 2 + p - 1 + 2 = remainingHeap
         p + pd + p + p = remainingHeap - 5
         p(1 + d + 1 + 1) = remainingHeap - 5
@@ -197,7 +203,8 @@ class Population {
         var int minStep;
         var int dotMinStepCache;
 
-        // safe to set as 1 because 1) calcualteFitness return >= 1 and 2) bestDot can never be null after this loop
+        // safe to set as 1 because 1) calcualteFitness return >= 1 and 2)
+        // bestDot can never be null after this loop
         let bestDotFitness = 1;
         while (i < populationCount) {
             let dot = dots[i];
@@ -209,7 +216,8 @@ class Population {
             // ensures brain and bestDotBrain is only defined when necessary
             } else if (dotFitness = bestDotFitness) {
                 let brain = dot.getBrain();
-                let bestDotBrain = bestDot.getBrain(); // doesnt run when bestDot is null
+                let bestDotBrain = bestDot.getBrain(); // doesnt run when
+                                                       // bestDot is null
                 if (brain.getStep() < bestDotBrain.getStep()) {
                     let bestDot = dot;
                 }
@@ -262,7 +270,9 @@ class Population {
                     let selectionSum = selectionSum + ~32767;
                     let selectionSumCoef = selectionSumCoef + 1;
                 }
-                if ((selectionSumCoef > randFitnessCoef) | ((selectionSumCoef = randFitnessCoef) & (selectionSum > randFitness))) {
+                if ((selectionSumCoef > randFitnessCoef) |
+                    ((selectionSumCoef = randFitnessCoef) &
+                     (selectionSum > randFitness))) {
                     let dot = dots[j];
                     let j = populationCount;
                 }
@@ -297,7 +307,8 @@ class Population {
             if (~mutated) {
                 let scaleCache = 32767 / minStep;
                 let randToMinStep = minStep;
-                // randToMinStep can be negative Math.abs does not guarantee positive (-32768)
+                // randToMinStep can be negative Math.abs does not guarantee
+                // positive (-32768)
                 while (~((randToMinStep > -1) & (randToMinStep < minStep))) {
                     let randToMinStep = Math.abs(Util.random()) / scaleCache;
                 }

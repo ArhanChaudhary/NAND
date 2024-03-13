@@ -244,7 +244,8 @@ class Output {
         do Output.create(19819,4096,0,0);
     }
 
-    //reates the character map array of the given character index, using the given values.
+    // creates the character map array of the given character index, using the
+    // given values.
     function void create(int abc, int cde, int fgh, int hij) {
         var Array map, shiftedMap;
         var int i;

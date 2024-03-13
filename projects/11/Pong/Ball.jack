@@ -4,30 +4,31 @@
 // File name: projects/11/Pong/Ball.jack
 
 /**
- * A graphical ball. Characterized by a screen location and distance of 
+ * A graphical ball. Characterized by a screen location and distance of
  * last destination. Has methods for drawing, erasing and moving on the screen.
- * The ball is displayed as a filled, 6-by-6 pixles rectangle. 
+ * The ball is displayed as a filled, 6-by-6 pixles rectangle.
  */
 class Ball {
 
     field int x, y;               // the ball's screen location (in pixels)
     field int lengthx, lengthy;   // distance of last destination (in pixels)
 
-    field int d, straightD, diagonalD;            // used for straight line movement computation
+    field int d, straightD, diagonalD;            // used for straight line
+                                                  // movement computation
     field boolean invert, positivex, positivey;   // (same)
-   
+
     field int leftWall, rightWall, topWall, bottomWall;  // wall locations
-   
+
     field int wall;   // last wall that the ball was bounced off of
 
     /** Constructs a new ball with the given initial location and wall locations. */
-    constructor Ball new(int Ax, int Ay,
-                         int AleftWall, int ArightWall, int AtopWall, int AbottomWall) {    	
-	    let x = Ax;		
+    constructor Ball new(int Ax, int Ay, int AleftWall,
+                         int ArightWall, int AtopWall, int AbottomWall) {
+	    let x = Ax;
 	    let y = Ay;
 	    let leftWall = AleftWall;
 	    let rightWall = ArightWall - 6;    // -6 for ball size
-	    let topWall = AtopWall; 
+	    let topWall = AtopWall;
 	    let bottomWall = AbottomWall - 6;  // -6 for ball size
 	    let wall = 0;
         do show();
@@ -132,19 +133,19 @@ class Ball {
 	    }
 
 	    if (~(x > leftWall)) {
-	        let wall = 1;    
+	        let wall = 1;
 	        let x = leftWall;
 	    }
         if (~(x < rightWall)) {
-	        let wall = 2;    
+	        let wall = 2;
 	        let x = rightWall;
 	    }
         if (~(y > topWall)) {
-            let wall = 3;    
+            let wall = 3;
 	        let y = topWall;
         }
         if (~(y < bottomWall)) {
-            let wall = 4;    
+            let wall = 4;
 	        let y = bottomWall;
         }
 
@@ -166,7 +167,8 @@ class Ball {
         let divLengthy = lengthy / 10;
 	    if (bouncingDirection = 0) { let factor = 10; }
 	    else {
-	        if (((~(lengthx < 0)) & (bouncingDirection = 1)) | ((lengthx < 0) & (bouncingDirection = (-1)))) {
+	        if (((~(lengthx < 0)) & (bouncingDirection = 1)) |
+                ((lengthx < 0) & (bouncingDirection = (-1)))) {
                 let factor = 20; // bounce direction is in ball direction
             }
 	        else { let factor = 5; } // bounce direction is against ball direction

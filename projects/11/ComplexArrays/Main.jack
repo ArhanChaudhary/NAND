@@ -12,11 +12,11 @@ class Main {
 
     function void main() {
         var Array a, b, c;
-        
+
         let a = Array.new(10);
         let b = Array.new(5);
         let c = Array.new(1);
-        
+
         let a[3] = 2;
         let a[4] = 8;
         let a[5] = 4;
@@ -24,7 +24,7 @@ class Main {
         let a[b[a[3]]] = a[a[5]] * b[((7 - a[3]) - Main.double(2)) + 1];  // a[5] = 8 * 5 = 40
         let c[0] = null;
         let c = c[0];
-        
+
         do Output.printString("Test 1: expected result: 5; actual result: ");
         do Output.printInt(b[2]);
         do Output.println();
@@ -34,7 +34,7 @@ class Main {
         do Output.printString("Test 3: expected result: 0; actual result: ");
         do Output.printInt(c);
         do Output.println();
-        
+
         let c = null;
 
         if (c = null) {
@@ -55,11 +55,11 @@ class Main {
         do Output.println();
         return;
     }
-    
+
     function int double(int a) {
     	return a * 2;
     }
-    
+
     function void fill(Array a, int size) {
         while (size > 0) {
             let size = size - 1;

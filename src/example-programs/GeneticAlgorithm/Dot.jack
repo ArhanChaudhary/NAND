@@ -151,21 +151,34 @@ class Dot {
             let posX = posX + velX;
             let posY = posY + velY;
 
-            if ((posX < 2) | (posY < 2) | (posX > 510) | (posY > 254) | (obstacles[Main.getGridIndex(posX, posY)] = true)) {
+            if ((posX < 2) | (posY < 2) | (posX > 510) | (posY > 254) |
+                (obstacles[Main.getGridIndex(posX, posY)] = true)) {
                 let dead = true;
             } else {
-                if (~((Math.abs(posX - goalX) > 3) | (Math.abs(posY - goalY) > 3))) {
+                if (~((Math.abs(posX - goalX) > 3) |
+                    (Math.abs(posY - goalY) > 3))) {
                     let reachedGoal = true;
                     let dead = true;
                 }
                 if (andShow) {
-                    // needs to be here since calculateFitness uses prevX and prevY
+                    // needs to be here since calculateFitness uses
+                    // prevX and prevY
                     do Screen.setColor(false);
-                    do Screen.drawRectangle(prevX - 1, prevY - 1, prevX + 1, prevY + 1);
+                    do Screen.drawRectangle(
+                        prevX - 1,
+                        prevY - 1,
+                        prevX + 1,
+                        prevY + 1
+                    );
                     do Screen.setColor(true);
                     let prevX = posX;
                     let prevY = posY;
-                    do Screen.drawRectangle(prevX - 1, prevY - 1, prevX + 1, prevY + 1);
+                    do Screen.drawRectangle(
+                        prevX - 1,
+                        prevY - 1,
+                        prevX + 1,
+                        prevY + 1
+                    );
                 } else {
                     let prevX = posX;
                     let prevY = posY;
@@ -178,10 +191,12 @@ class Dot {
         if (reachedGoal) {
             return Math.max(10000, 32767 - (stepWeight * brain.getStep()));
         }
-        // needed if goal is blocked off completely and the current grid index hasnt been flooded (is 0)
-        // for example if this was 0 then during the natural selection process no dot would be selected
-        // because everything is 0 and it would all just evolve off of one random dot which makes no sense
-        // it's also not easily possible to set it to 1 in flood itself because of ROM concerns
+        // needed if goal is blocked off completely and the current grid index
+        // hasnt been flooded (is 0) for example if this was 0 then during the
+        // natural selection process no dot would be selected because everything
+        // is 0 and it would all just evolve off of one random dot which makes
+        // no sense it's also not easily possible to set it to 1 in flood itself
+        // because of ROM concerns
         return Math.max(1, obstacles[Main.getGridIndex(prevX, prevY)]);
     }
 }

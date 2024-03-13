@@ -4,20 +4,21 @@
 // File name: projects/11/Pong/Bat.jack
 
 /**
- * A graphical Pong bat. 
- * Displayed as a filled horizontal rectangle that has 
+ * A graphical Pong bat.
+ * Displayed as a filled horizontal rectangle that has
  * a screen location, a width and a height.
- * Has methods for drawing, erasing, moving left and right, 
+ * Has methods for drawing, erasing, moving left and right,
  * and changing its width (to make the hitting action more challenging).
- * This class should have been called "paddle", following the 
+ * This class should have been called "paddle", following the
  * standard Pong terminology. But, unaware of this terminology,
- * we called it "bat", and then decided to stick to it. 
+ * we called it "bat", and then decided to stick to it.
  */
 class Bat {
 
     field int x, y;           // the bat's screen location
     field int width, height;  // the bat's width and height
-    field int direction;      // direction of the bat's movement (1 = left, 2 = right)
+    field int direction;      // direction of the bat's movement (1 = left,
+                              // 2 = right)
 
     /** Constructs a new bat with the given location and width. */
     constructor Bat new(int Ax, int Ay, int Awidth, int Aheight) {
@@ -86,7 +87,12 @@ class Bat {
             let x = x - 4;
             if (x < 0) { let x = 0; }
             do Screen.setColor(false);
-            do Screen.drawRectangle((x + width) + 1, y, (x + width) + 4, y + height);
+            do Screen.drawRectangle(
+                x + width + 1,
+                y,
+                x + width + 4,
+                y + height
+            );
             do Screen.setColor(true);
             do Screen.drawRectangle(x, y, x + 3, y + height);
         }

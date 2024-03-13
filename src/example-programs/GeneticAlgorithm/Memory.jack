@@ -8,7 +8,7 @@
  * memory (RAM), and allocation and recycling of memory blocks. The Hack RAM
  * consists of 32,768 words, each holding a 16-bit binary number.
  */
- class Memory {
+class Memory {
     static Array ptr;
 
     /** Initializes the class. */
@@ -84,9 +84,11 @@
     //         }
     //         let nextSegment = segment[1];
     //     }
-    //     // assumes the next memory list (aka the screen) is completely free and goes until the very end
+    //     // assumes the next memory list (aka the screen) is completely free
+    //     // and goes until the very end
     //     // ie segment[0] is the screen length and segment[1] is 24576
-    //     // this assumption is necessary because theres no linked list information present on the screen memory
+    //     // this assumption is necessary because theres no linked list
+    //     // information present on the screen memory
     //     if (~(segment[0] = 0)) {
     //         let segment[0] = 24574 - segment;
     //         let segment[1] = 24576;

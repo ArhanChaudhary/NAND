@@ -164,10 +164,30 @@ class Main {
             }
             // this if statement is here so it renders properly if an obstacle is on the initial position
             if (~(prevPositionX = 0)) {
-                do Main.drawObstacle(Main.getGridIndex(prevPositionX - halfSideLength, prevPositionY - halfSideLength));
-                do Main.drawObstacle(Main.getGridIndex(prevPositionX - halfSideLength, prevPositionY + halfSideLength));
-                do Main.drawObstacle(Main.getGridIndex(prevPositionX + halfSideLength, prevPositionY - halfSideLength));
-                do Main.drawObstacle(Main.getGridIndex(prevPositionX + halfSideLength, prevPositionY + halfSideLength));
+                do Main.drawObstacle(
+                    Main.getGridIndex(
+                        prevPositionX - halfSideLength,
+                        prevPositionY - halfSideLength
+                    )
+                );
+                do Main.drawObstacle(
+                    Main.getGridIndex(
+                        prevPositionX - halfSideLength,
+                        prevPositionY + halfSideLength
+                    )
+                );
+                do Main.drawObstacle(
+                    Main.getGridIndex(
+                        prevPositionX + halfSideLength,
+                        prevPositionY - halfSideLength
+                    )
+                );
+                do Main.drawObstacle(
+                    Main.getGridIndex(
+                        prevPositionX + halfSideLength,
+                        prevPositionY + halfSideLength
+                    )
+                );
             }
             let prevPositionX = positionX;
             let prevPositionY = positionY;
@@ -196,7 +216,12 @@ class Main {
                     let positionY = positionY + sideLength;
                 }
             }
-            do Screen.drawRectangle(positionX - halfSideLength, positionY - halfSideLength, positionX + halfSideLength, positionY + halfSideLength);
+            do Screen.drawRectangle(
+                positionX - halfSideLength,
+                positionY - halfSideLength,
+                positionX + halfSideLength,
+                positionY + halfSideLength
+            );
             if (key = 1) {
                 if (setInitialDot) {
                     do Output.moveCursor(3, 8);
@@ -223,7 +248,12 @@ class Main {
                         do Main.drawGoal();
                     }
                 } else {
-                    do Screen.drawRectangle(initialX - 1, initialY - 1, initialX + 1, initialY + 1);
+                    do Screen.drawRectangle(
+                        initialX - 1,
+                        initialY - 1,
+                        initialX + 1,
+                        initialY + 1
+                    );
                 }
                 do Sys.wait(moveDelay);
             }
@@ -264,12 +294,22 @@ class Main {
             }
 
             do Screen.setColor(obstacles[selectorIndex] = -1);
-            do Screen.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
+            do Screen.drawRectangle(
+                selectorX,
+                selectorY,
+                selectorX + 15,
+                selectorY + 15
+            );
             do Screen.setColor(true);
 
             if (~(key = 140)) {
                 do Main.drawGoal();
-                do Screen.drawRectangle(initialX - 1, initialY - 1, initialX + 1, initialY + 1);
+                do Screen.drawRectangle(
+                    initialX - 1,
+                    initialY - 1,
+                    initialX + 1,
+                    initialY + 1
+                );
                 if (key = 130) {
                     if (~(selectorX = 0)) {
                         let selectorX = selectorX - 16;
@@ -291,11 +331,26 @@ class Main {
                         let selectorIndex = selectorIndex + 32;
                     }
                 }
-                do Screen.drawRectangle(selectorX, selectorY, selectorX + 15, selectorY + 15);
+                do Screen.drawRectangle(
+                    selectorX,
+                    selectorY,
+                    selectorX + 15,
+                    selectorY + 15
+                );
                 do Screen.setColor(false);
-                do Screen.drawRectangle(selectorX + 1, selectorY + 1, selectorX + 14, selectorY + 14);
+                do Screen.drawRectangle(
+                    selectorX + 1,
+                    selectorY + 1,
+                    selectorX + 14,
+                    selectorY + 14
+                );
                 do Screen.setColor(true);
-                do Screen.drawRectangle(selectorX + 2, selectorY + 2, selectorX + 13, selectorY + 13);
+                do Screen.drawRectangle(
+                    selectorX + 2,
+                    selectorY + 2,
+                    selectorX + 13,
+                    selectorY + 13
+                );
                 if ((key = 128) | (key = 129)) {
                     let drag = ~(drag & (draggingEnter = (key = 128)));
                     let draggingEnter = key = 128;
@@ -434,15 +489,21 @@ class Main {
             let topRight = bottomRight - rightIndex;
 
             let penalty = Math.min(
-                (Main.floodIndexOutOfBounds(i, bottomLeft) | (obstacles[bottomLeft] = -1)) +
-                (Main.floodIndexOutOfBounds(i, bottomRight) | (obstacles[bottomRight] = -1)),
-                (Main.floodIndexOutOfBounds(i, topLeft) | (obstacles[topLeft] = -1)) +
-                (Main.floodIndexOutOfBounds(i, topRight) | (obstacles[topRight] = -1))
+                (Main.floodIndexOutOfBounds(i, bottomLeft) |
+                (obstacles[bottomLeft] = -1)) +
+                (Main.floodIndexOutOfBounds(i, bottomRight) |
+                (obstacles[bottomRight] = -1)),
+                (Main.floodIndexOutOfBounds(i, topLeft) |
+                (obstacles[topLeft] = -1)) +
+                (Main.floodIndexOutOfBounds(i, topRight) |
+                (obstacles[topRight] = -1))
             );
             let i = i - rightIndex;
         } else {
-            let rightIndex = Main.floodIndexOutOfBounds(i, i + rightIndex) | (obstacles[i + rightIndex] = -1);
-            let leftIndex = Main.floodIndexOutOfBounds(i, i + leftIndex) | (obstacles[i + leftIndex] = -1);
+            let rightIndex = Main.floodIndexOutOfBounds(i, i + rightIndex) |
+                            (obstacles[i + rightIndex] = -1);
+            let leftIndex = Main.floodIndexOutOfBounds(i, i + leftIndex) |
+                            (obstacles[i + leftIndex] = -1);
             let penalty = leftIndex + rightIndex;
         }
 
@@ -507,7 +568,12 @@ class Main {
             let obstacleX = obstacleX + obstacleX;
             let obstacleX = obstacleX + obstacleX;
             let obstacleX = obstacleX + obstacleX;
-            do Screen.drawRectangle(obstacleX, obstacleY, obstacleX + 15, obstacleY + 15);
+            do Screen.drawRectangle(
+                obstacleX,
+                obstacleY,
+                obstacleX + 15,
+                obstacleY + 15
+            );
         }
     }
 
@@ -577,7 +643,8 @@ class Main {
         do Output.moveCursor(13, 19);
         while (~(Keyboard.keyPressed() = 0)) {}
         let selected = Keyboard.readInt(optionSelect);
-        // for GUIs and exit (so precomputeFitness/refreshDisplay runs with an already cleared screen)
+        // for GUIs and exit (so precomputeFitness/refreshDisplay runs with an
+        // already cleared screen)
         if ((selected = 1) | (selected = 2) | (selected = 3) | (selected = 5)) {
             do Screen.setColor(false);
             do Screen.drawRectangle(143, 68, 379, 165);

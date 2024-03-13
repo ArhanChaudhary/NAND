@@ -117,9 +117,12 @@ class PongGame {
             if (wall = 4) {
                 let exit = (batLeft > ballRight) | (batRight < ballLeft);
                 if (~exit) {
-                    if (ballRight < (batLeft + 10)) { let bouncingDirection = -1; }
-                    else {
-                        if (ballLeft > (batRight - 10)) { let bouncingDirection = 1; }
+                    if (ballRight < (batLeft + 10)) {
+                        let bouncingDirection = -1;
+                    } else {
+                        if (ballLeft > (batRight - 10)) {
+                            let bouncingDirection = 1;
+                        }
                     }
 
                     let batWidth = batWidth - 2;

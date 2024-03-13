@@ -5,10 +5,10 @@
 
 /**
  * Unpacks a 16-bit number into its binary representation:
- * Takes the 16-bit number stored in RAM[8000] and stores its individual 
+ * Takes the 16-bit number stored in RAM[8000] and stores its individual
  * bits in RAM[8001..8016] (each location will contain 0 or 1).
  * Before the conversion, RAM[8001]..RAM[8016] are initialized to -1.
- * 
+ *
  * The program should be tested as follows:
  * 1) Load the program into the supplied VM emulator
  * 2) Put some value in RAM[8000]
@@ -19,7 +19,7 @@
  *    that none of these memory locations contains -1.
  */
 class Main {
-    
+
     /**
      * Initializes RAM[8001]..RAM[8016] to -1,
      * and converts the value in RAM[8000] to binary.
@@ -31,26 +31,26 @@ class Main {
         do Main.convert(value);           // performs the conversion
         return;
     }
-    
-    /** Converts the given decimal value to binary, and puts 
+
+    /** Converts the given decimal value to binary, and puts
      *  the resulting bits in RAM[8001]..RAM[8016]. */
     function void convert(int value) {
     	var int mask, position;
     	var boolean loop;
-    	
+
     	let loop = true;
     	while (loop) {
     	    let position = position + 1;
     	    let mask = Main.nextMask(mask);
-    	
+
     	    if (~(position > 16)) {
-    	
+
     	        if (~((value & mask) = 0)) {
     	            do Memory.poke(8000 + position, 1);
        	        }
     	        else {
     	            do Memory.poke(8000 + position, 0);
-      	        }    
+      	        }
     	    }
     	    else {
     	        let loop = false;
@@ -58,7 +58,7 @@ class Main {
     	}
     	return;
     }
- 
+
     /** Returns the next mask (the mask that should follow the given mask). */
     function int nextMask(int mask) {
     	if (mask = 0) {
@@ -68,7 +68,7 @@ class Main {
 	    return mask * 2;
     	}
     }
-    
+
     /** Fills 'length' consecutive memory locations with 'value',
       * starting at 'startAddress'. */
     function void fillMemory(int startAddress, int length, int value) {

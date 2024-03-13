@@ -205,7 +205,9 @@ class _2048 {
         }
         let nextPositionValue = getPosition(nextPosition);
         if (~(nextPositionValue = 0)) {
-            if ((~(position = combinedPosition)) & (~(nextPosition = combinedPosition)) & (positionValue = nextPositionValue)) {
+            if ((~(position = combinedPosition)) &
+                (~(nextPosition = combinedPosition)) &
+                (positionValue = nextPositionValue)) {
                 let validDirection = true;
                 let combinedPosition = nextPosition;
                 do setPosition(nextPosition, positionValue * 2, false);
@@ -291,7 +293,8 @@ class _2048 {
 
         let lcg = Math.abs((473 * lcg) + 12534);
         let lcg = lcg - ((lcg / 1638) * 1638);
-        let chosenPosition = available[lcg - ((lcg / availableCount) * availableCount)];
+        let chosenPosition = available[lcg - ((lcg / availableCount) *
+                                              availableCount)];
 
         do available.dispose();
 

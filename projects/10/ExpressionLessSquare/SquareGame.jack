@@ -6,8 +6,8 @@
 /** Expressionless version of projects/10/Square/SquareGame.jack. */
 
 class SquareGame {
-   field Square square; 
-   field int direction; 
+   field Square square;
+   field int direction;
 
    constructor SquareGame new() {
       let square = square;
@@ -33,7 +33,7 @@ class SquareGame {
    method void run() {
       var char key;
       var boolean exit;
-      
+
       let exit = key;
       while (exit) {
          while (key) {

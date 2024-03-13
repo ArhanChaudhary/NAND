@@ -22,7 +22,12 @@ class AccelerationVectorPair {
                         let l = -2;
                         while (l < 3) {
                             if ((Math.abs(k) + Math.abs(l)) < 3) {
-                                let cache[c] = AccelerationVectorPair.new(i, j, k, l);
+                                let cache[c] = AccelerationVectorPair.new(
+                                    i,
+                                    j,
+                                    k,
+                                    l
+                                );
                                 let c = c + 1;
                             }
                             let l = l + 1;
