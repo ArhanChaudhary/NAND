@@ -103,9 +103,17 @@
     stopComputer,
     speedComputer,
   } from "./Computer.svelte";
-  import { IDEContext, shouldResetAndStart, activeTabName } from "./stores";
+  import {
+    IDEContext,
+    shouldResetAndStart,
+    activeTabName,
+    ROM,
+  } from "./stores";
 
-  $: $IDEContext, ($shouldResetAndStart = true);
+  $: {
+    $IDEContext;
+    $shouldResetAndStart = true;
+  }
   exampleProgramLoader.then(() => {
     if (shouldAutoLoad("New Program")) {
       loadExampleProgram("New Program");
@@ -138,6 +146,9 @@
     if (machineCode.length >= 32768) {
       return machineCode.length;
     } else {
+      $ROM.VMCode = VMCode;
+      $ROM.assembly = assembly;
+      $ROM.machineCode = machineCode;
       return machineCode;
     }
   }

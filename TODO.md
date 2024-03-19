@@ -1,4 +1,6 @@
 # TODO (NAND)
+* fix the windows canvas rendering bug
+* ROM viewer
 * compiler
   * optimize or -1 instruction
   * make sure class name is valid
