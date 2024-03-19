@@ -1,6 +1,7 @@
 # TODO (NAND)
+* show A D and PC registers in RAM
+* checkbox for "Show corresponding VM"
 * fix the windows canvas rendering bug
-* ROM viewer
 * compiler
   * optimize or -1 instruction
   * make sure class name is valid

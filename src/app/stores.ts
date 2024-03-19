@@ -12,9 +12,9 @@ export const computerMemory = writable({
 export const ROM = writable<{
   machineCode: string[];
   assembly: string[];
-  VMCode: { fileName: string; VMCode: string[] }[];
+  VMCodes: { fileName: string; VMCode: string[] }[];
 }>({
   machineCode: new Array(32768).fill("00000000 00000000"),
   assembly: new Array(32768).fill("@0"),
-  VMCode: [],
+  VMCodes: [],
 });

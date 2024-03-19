@@ -11,9 +11,12 @@
   let itemCount: number;
   let memoryView: HTMLDivElement;
   let memoryViewHeader: HTMLDivElement;
+  let virtualList: VirtualList;
   let height: number;
   let memoryDisplay: string;
   let memoryDisplayType: string;
+  let scrollToIndex: number;
+  let VMCodeStarts: number[];
 
   let onMountAsync = new Promise<void>(onMount);
   onMountAsync.then(() => {
@@ -52,24 +55,45 @@
             return ret.slice(0, 8) + " " + ret.slice(8);
           case "asm":
             return $ROM.assembly[i];
-          // case "vm":
-          //   itemCount = $ROM.VMCode.length;
-          //   return $ROM.VMCode[i];
+          case "vm":
+            let foundIndex = indexOfVMCodeStarts(i);
+            return $ROM.VMCodes[foundIndex].VMCode[
+              i - VMCodeStarts[foundIndex]
+            ];
         }
         break;
     }
   }
 
+  function indexOfVMCodeStarts(index: number) {
+    let foundIndex = 0;
+    let left = 0;
+    let right = VMCodeStarts.length - 1;
+    while (left <= right) {
+      let mid = Math.floor((left + right) / 2);
+      if (VMCodeStarts[mid] <= index) {
+        foundIndex = mid;
+        left = mid + 1;
+      } else {
+        right = mid - 1;
+      }
+    }
+    return foundIndex;
+  }
+
   function itemSize(index: number) {
     if (
-      memoryDisplayType !== "rom" &&
-      [
-        16,
-        256,
-        2048,
-        ramMemoryLength,
-        ramMemoryLength + screenMemoryLength,
-      ].includes(index)
+      (memoryDisplayType === "ram" &&
+        [
+          16,
+          256,
+          2048,
+          ramMemoryLength,
+          ramMemoryLength + screenMemoryLength,
+        ].includes(index)) ||
+      (memoryDisplayType === "rom" &&
+        memoryDisplay === "vm" &&
+        VMCodeStarts.includes(index))
     ) {
       return 40;
     } else {
@@ -77,34 +101,52 @@
     }
   }
 
-  let scrollToIndex: number;
   function gotoInput(e: Event) {
-    const input = e.target as HTMLInputElement;
-    const value = parseInt(input.value);
+    const value = (e.target as HTMLInputElement).valueAsNumber;
     if (value >= 0) {
       scrollToIndex = Math.min(itemCount - 1, value);
     }
   }
 
-  let virtualList: VirtualList;
   $: memoryDisplayType, memoryDisplayTypeChanged();
   function memoryDisplayTypeChanged() {
-    memoryDisplay = "bin";
+    switch (memoryDisplayType) {
+      case "ram":
+        memoryDisplay = "dec";
+        break;
+      case "rom":
+        memoryDisplay = "bin";
+        break;
+    }
     onMountAsync.then(() => virtualList.recomputeSizes());
   }
 
   $: {
     switch (memoryDisplay) {
       case "asm":
-        memoryViewWidth = 300;
+        memoryViewWidth = 330;
+        break;
+      case "vm":
+        memoryViewWidth = 270;
         break;
       case "bin":
-      case "vm":
         memoryViewWidth = 210;
         break;
       default:
-        memoryViewWidth = 130;
+        memoryViewWidth = 150;
     }
+  }
+
+  $: {
+    if ($ROM.VMCodes.length) {
+      VMCodeStarts = $ROM.VMCodes.slice(0, -1).reduce(
+        (acc, VMCode) => [...acc, acc[acc.length - 1] + VMCode.VMCode.length],
+        [0]
+      );
+    }
+  }
+
+  $: {
     switch (memoryDisplayType) {
       case "rom":
         switch (memoryDisplay) {
@@ -114,9 +156,11 @@
           case "asm":
             itemCount = $ROM.assembly.length;
             break;
-          // case "vm":
-          //  itemCount = $ROM.VMCode.length;
-          //   return $ROM.VMCode[i];
+          case "vm":
+            itemCount = $ROM.VMCodes.map(
+              (VMCode) => VMCode.VMCode.length
+            ).reduce((a, b) => a + b, 0);
+            break;
         }
         break;
       case "ram":
@@ -193,15 +237,24 @@
         let:style
         {style}
         class="memory-list-slot"
-        class:c1={(memoryDisplayType !== "rom" && index < 16) ||
-          (256 <= index && index < 2048) ||
-          (ramMemoryLength <= index &&
-            index < ramMemoryLength + screenMemoryLength)}
-        class:c2={memoryDisplayType === "rom" ||
-          (16 <= index && index < 256) ||
-          (2048 <= index && index < ramMemoryLength) ||
-          index === ramMemoryLength + screenMemoryLength}
-        class:wrap={memoryDisplayType !== "rom" &&
+        class:c1={(memoryDisplayType === "ram" &&
+          (index < 16 ||
+            (256 <= index && index < 2048) ||
+            (ramMemoryLength <= index &&
+              index < ramMemoryLength + screenMemoryLength))) ||
+          (memoryDisplayType === "rom" &&
+            (["asm", "bin"].includes(memoryDisplay) ||
+              (memoryDisplay === "vm" &&
+                indexOfVMCodeStarts(index) % 2 === 0)))}
+        class:c2={(memoryDisplayType === "ram" &&
+          ((16 <= index && index < 256) ||
+            (2048 <= index && index < ramMemoryLength) ||
+            index === ramMemoryLength + screenMemoryLength)) ||
+          (memoryDisplayType === "rom" &&
+            (["asm", "bin"].includes(memoryDisplay) ||
+              (memoryDisplay === "vm" &&
+                indexOfVMCodeStarts(index) % 2 === 1)))}
+        class:wrap={memoryDisplayType === "ram" &&
           [
             16,
             256,
@@ -211,31 +264,36 @@
           ].includes(index)}
         class:align-left={["asm", "vm"].includes(memoryDisplay)}
       >
-        {#if memoryDisplayType !== "rom"}
+        {#if memoryDisplayType === "ram"}
           {#if index === 16}
-            <span class="memory-section">Static vars</span>
+            <div class="memory-section">Static vars</div>
           {:else if index === 256}
-            <span class="memory-section">Stack memory</span>
+            <div class="memory-section">Stack memory</div>
           {:else if index === 2048}
-            <span class="memory-section">Heap memory</span>
+            <div class="memory-section">Heap memory</div>
           {:else if index === ramMemoryLength}
-            <span class="memory-section">Screen memory</span>
+            <div class="memory-section">Screen memory</div>
           {:else if index === ramMemoryLength + screenMemoryLength}
-            <span class="memory-section">Pressed key</span>
+            <div class="memory-section">Pressed key</div>
           {/if}
+        {:else if memoryDisplayType === "rom" && memoryDisplay === "vm" && VMCodeStarts.includes(index)}
+          <div class="memory-section">
+            {$ROM.VMCodes[VMCodeStarts.indexOf(index)].fileName}
+          </div>
         {/if}
-        <span class="memory-list-index">{index}</span>
-        {#key memoryDisplay}
-          {#if memoryDisplayType === "ram"}
-            {#key $computerMemory}
-              <span>{memoryToDisplay(index)}</span>
-            {/key}
-          {:else}
-            {#key $ROM}
-              <span>{memoryToDisplay(index)}</span>
-            {/key}
-          {/if}
-        {/key}
+        <span class="memory-list-index">{index}</span><span>
+          {#key memoryDisplay}
+            {#if memoryDisplayType === "ram"}
+              {#key $computerMemory}
+                {memoryToDisplay(index)}
+              {/key}
+            {:else}
+              {#key $ROM}
+                {memoryToDisplay(index)}
+              {/key}
+            {/if}
+          {/key}
+        </span>
       </div>
     </VirtualList>
   </div>
@@ -378,6 +436,7 @@
     .memory-list-index {
       width: 5ch;
       text-align: center;
+      margin-right: 2ch;
     }
 
     &.c1 {

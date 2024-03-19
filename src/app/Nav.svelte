@@ -140,13 +140,13 @@
       if (a.fileName > b.fileName) return 1;
       return 0;
     });
-    const VMCode = compiler(program);
-    const assembly = VMTranslator(VMCode);
+    const VMCodes = compiler(program);
+    const assembly = VMTranslator(VMCodes);
     const machineCode = assembler(assembly);
     if (machineCode.length >= 32768) {
       return machineCode.length;
     } else {
-      $ROM.VMCode = VMCode;
+      $ROM.VMCodes = VMCodes;
       $ROM.assembly = assembly;
       $ROM.machineCode = machineCode;
       return machineCode;

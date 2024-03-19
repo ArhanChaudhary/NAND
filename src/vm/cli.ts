@@ -3,10 +3,10 @@ import fs from "fs";
 
 let path = process.argv[process.argv.length - 1].replace(/\/$/, "");
 
-let inputFiles: Array<{ fileName: string; VMCode: string[] }>;
+let VMCodes: Array<{ fileName: string; VMCode: string[] }>;
 let outputFile: string;
 if (path.endsWith(".vm")) {
-  inputFiles = [
+  VMCodes = [
     {
       fileName: path.split("/").pop()!.replace(/\.vm$/, ""),
       VMCode: fs.readFileSync(path, "utf-8").split("\n"),
@@ -17,12 +17,12 @@ if (path.endsWith(".vm")) {
   const files = fs
     .readdirSync(path)
     .filter((fileName: string) => fileName.endsWith(".vm"));
-  inputFiles = files.map((fileName: string) => ({
+  VMCodes = files.map((fileName: string) => ({
     fileName: fileName.replace(/\.vm$/, ""),
     VMCode: fs.readFileSync(`${path}/${fileName}`, "utf-8").split("\n"),
   }));
   outputFile = `${path}/${path.split("/").pop()}.asm`;
 }
 
-const out = VMTranslator(inputFiles);
+const out = VMTranslator(VMCodes);
 fs.writeFileSync(outputFile, out.join("\n"));
