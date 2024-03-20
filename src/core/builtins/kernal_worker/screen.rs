@@ -11,14 +11,20 @@ static SCREEN_RENDERER_CLOSURE: sync_cell::SyncLazyCell<Closure<dyn Fn()>> =
 
 pub fn init(screen_init_message: ScreenInitMessage) {
     hardware::CTX.get_or_init(|| {
-        js_api::DeserializeableOffscreenCanvas::get_context_with_context_options(
-            screen_init_message.offscreen_canvas,
-            "2d",
-            js_api::CanvasContextOptions {
-                alpha: false,
-                desynchronized: true,
-            },
-        )
+        screen_init_message
+            .offscreen_canvas
+            // .get_context_with_context_options(
+            //     "2d",
+            //     js_api::CanvasContextOptions {
+            //         alpha: false,
+            //         desynchronized: true,
+            //     },
+            // )
+            .0
+            .get_context("2d")
+            .unwrap()
+            .unwrap()
+            .unchecked_into()
     });
 }
 
