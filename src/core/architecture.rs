@@ -6,7 +6,7 @@ use crate::builtins::{hardware, memory};
 use crate::gates::{and, is_zero, mux16, not, or};
 use std::cell::SyncUnsafeCell;
 
-static PC: SyncUnsafeCell<u16> = SyncUnsafeCell::new(0);
+pub static PC: SyncUnsafeCell<u16> = SyncUnsafeCell::new(0);
 static ADDRESS_M: SyncUnsafeCell<u16> = SyncUnsafeCell::new(0);
 
 fn pc(in_: u16, load: bool, reset: bool) {

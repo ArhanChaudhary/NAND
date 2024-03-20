@@ -61,7 +61,7 @@ pub fn load_rom(machine_code_buf: &[u16]) {
     }
 }
 
-pub static PRESSED_KEY: SyncUnsafeCell<u16> = SyncUnsafeCell::new(0);
+static PRESSED_KEY: SyncUnsafeCell<u16> = SyncUnsafeCell::new(0);
 pub fn keyboard(in_: u16, load: bool) -> u16 {
     if load {
         unsafe {

@@ -8,6 +8,9 @@ export const computerMemory = writable({
   ramMemory: new Uint16Array(16384),
   screenMemory: new Uint16Array(8192),
   pressedKey: 0,
+  pcRegister: 0,
+  aRegister: 0,
+  dRegister: 0,
 });
 export const ROM = writable<{
   machineCode: string[];

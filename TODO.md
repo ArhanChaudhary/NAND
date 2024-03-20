@@ -1,6 +1,6 @@
 # TODO (NAND)
-* show A D and PC registers in RAM
 * checkbox for "Show corresponding VM"
+* highlight which part of the ROM the computer is at
 * fix the windows canvas rendering bug
 * compiler
   * optimize or -1 instruction

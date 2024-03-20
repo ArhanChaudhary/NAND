@@ -1,3 +1,4 @@
+use crate::architecture;
 use crate::builtins::utils::{js_api, sync_cell};
 use crate::builtins::{hardware, memory, runtime_worker};
 use js_sys::Uint16Array;
@@ -22,6 +23,12 @@ struct MemoryInfoMessage {
     screen_memory: Uint16Array,
     #[serde(rename = "pressedKey")]
     pressed_key: u16,
+    #[serde(rename = "pcRegister")]
+    pc_register: u16,
+    #[serde(rename = "aRegister")]
+    a_register: u16,
+    #[serde(rename = "dRegister")]
+    d_register: u16,
 }
 
 #[derive(Serialize)]
@@ -106,7 +113,10 @@ pub fn emit() {
         memory_info: Some(MemoryInfoMessage {
             ram_memory: unsafe { Uint16Array::view((*memory::RAM16K_MEMORY.get()).as_slice()) },
             screen_memory: unsafe { Uint16Array::view((*memory::SCREEN_MEMORY.get()).as_slice()) },
-            pressed_key: unsafe { *hardware::PRESSED_KEY.get() },
+            pressed_key: hardware::keyboard(0, false),
+            a_register: memory::a_register(0, false),
+            d_register: memory::d_register(0, false),
+            pc_register: unsafe { *architecture::PC.get() },
         })
     });
 }

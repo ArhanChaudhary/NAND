@@ -26,28 +26,31 @@
     });
   });
 
-  function memoryToDisplay(i: number) {
+  function RAMToDisplay(mem: number) {
+    switch (memoryDisplay) {
+      case "dec":
+        return mem;
+      case "hex":
+        let hex = mem.toString(16).toUpperCase().padStart(4, "0");
+        return hex.slice(0, 2) + " " + hex.slice(2);
+      case "bin":
+        let bin = mem.toString(2).padStart(16, "0");
+        return bin.slice(0, 8) + " " + bin.slice(8);
+    }
+  }
+
+  function memoryIndexToDisplay(i: number) {
     switch (memoryDisplayType) {
       case "ram":
-        let ret: number;
+        let mem: number;
         if (i < ramMemoryLength) {
-          ret = $computerMemory.ramMemory[i];
+          mem = $computerMemory.ramMemory[i];
         } else if (i < ramMemoryLength + screenMemoryLength) {
-          ret = $computerMemory.screenMemory[i - ramMemoryLength];
+          mem = $computerMemory.screenMemory[i - ramMemoryLength];
         } else {
-          ret = $computerMemory.pressedKey;
+          mem = $computerMemory.pressedKey;
         }
-        switch (memoryDisplay) {
-          case "dec":
-            return ret;
-          case "hex":
-            let hex = ret.toString(16).toUpperCase().padStart(4, "0");
-            return hex.slice(0, 2) + " " + hex.slice(2);
-          case "bin":
-            let bin = ret.toString(2).padStart(16, "0");
-            return bin.slice(0, 8) + " " + bin.slice(8);
-        }
-        break;
+        return RAMToDisplay(mem);
       case "rom":
         switch (memoryDisplay) {
           case "bin":
@@ -65,13 +68,13 @@
     }
   }
 
-  function indexOfVMCodeStarts(index: number) {
+  function indexOfVMCodeStarts(i: number) {
     let foundIndex = 0;
     let left = 0;
     let right = VMCodeStarts.length - 1;
     while (left <= right) {
       let mid = Math.floor((left + right) / 2);
-      if (VMCodeStarts[mid] <= index) {
+      if (VMCodeStarts[mid] <= i) {
         foundIndex = mid;
         left = mid + 1;
       } else {
@@ -81,23 +84,25 @@
     return foundIndex;
   }
 
-  function itemSize(index: number) {
-    if (
-      (memoryDisplayType === "ram" &&
-        [
-          16,
-          256,
-          2048,
-          ramMemoryLength,
-          ramMemoryLength + screenMemoryLength,
-        ].includes(index)) ||
-      (memoryDisplayType === "rom" &&
-        memoryDisplay === "vm" &&
-        VMCodeStarts.includes(index))
-    ) {
-      return 40;
-    } else {
-      return 20;
+  function itemSize(i: number) {
+    switch (memoryDisplayType) {
+      case "ram":
+        switch (i) {
+          case 0:
+            return 80;
+          case 16:
+          case 256:
+          case 2048:
+          case ramMemoryLength:
+          case ramMemoryLength + screenMemoryLength:
+            return 40;
+          default:
+            return 20;
+        }
+      case "rom":
+        if (memoryDisplay === "vm" && VMCodeStarts.includes(i)) return 40;
+      default:
+        return 20;
     }
   }
 
@@ -281,6 +286,7 @@
                 indexOfVMCodeStarts(index) % 2 === 1)))}
         class:wrap={memoryDisplayType === "ram" &&
           [
+            0,
             16,
             256,
             2048,
@@ -290,7 +296,22 @@
         class:align-left={["asm", "vm"].includes(memoryDisplay)}
       >
         {#if memoryDisplayType === "ram"}
-          {#if index === 16}
+          {#if index === 0}
+            {#key memoryDisplay}
+              <div class="cpu-register">
+                <span class="memory-list-index">PC</span>
+                <span>{RAMToDisplay($computerMemory.pcRegister)}</span>
+              </div>
+              <div class="cpu-register">
+                <span class="memory-list-index">A</span>
+                <span>{RAMToDisplay($computerMemory.aRegister)}</span>
+              </div>
+              <div class="cpu-register">
+                <span class="memory-list-index">D</span>
+                <span>{RAMToDisplay($computerMemory.dRegister)}</span>
+              </div>
+            {/key}
+          {:else if index === 16}
             <div class="memory-section">Static vars</div>
           {:else if index === 256}
             <div class="memory-section">Stack memory</div>
@@ -310,11 +331,11 @@
           {#key memoryDisplay}
             {#if memoryDisplayType === "ram"}
               {#key $computerMemory}
-                {memoryToDisplay(index)}
+                {memoryIndexToDisplay(index)}
               {/key}
             {:else}
               {#key $ROM}
-                {memoryToDisplay(index)}
+                {memoryIndexToDisplay(index)}
               {/key}
             {/if}
           {/key}
@@ -450,6 +471,12 @@
 
     &.wrap {
       flex-wrap: wrap;
+    }
+
+    .cpu-register {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
     }
 
     .memory-section {
