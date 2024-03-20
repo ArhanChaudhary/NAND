@@ -15,7 +15,7 @@
   let height: number;
   let memoryDisplay: string;
   let memoryDisplayType: string;
-  let scrollToIndex: number;
+  let scrollToIndex: number | undefined;
   let VMCodeStarts: number[];
 
   let onMountAsync = new Promise<void>(onMount);
@@ -102,9 +102,32 @@
   }
 
   function gotoInput(e: Event) {
-    const value = (e.target as HTMLInputElement).valueAsNumber;
-    if (value >= 0) {
-      scrollToIndex = Math.min(itemCount - 1, value);
+    const value = (e.target as HTMLInputElement).value.toLowerCase();
+    let valueAsNumber = Number(value);
+    if (!Number.isNaN(valueAsNumber)) {
+      scrollToIndex = valueAsNumber;
+    } else if (memoryDisplayType === "rom" && memoryDisplay === "vm") {
+      let foundIndex = $ROM.VMCodes.findIndex((VMCode) =>
+        VMCode.fileName.toLowerCase().startsWith(value)
+      );
+      if (foundIndex !== -1) {
+        scrollToIndex = VMCodeStarts[foundIndex];
+      }
+    }
+  }
+
+  $: {
+    if (
+      memoryDisplayType === "rom" &&
+      memoryDisplay === "vm" &&
+      !$ROM.VMCodes.length
+    ) {
+      scrollToIndex = undefined;
+    } else if (
+      typeof itemCount === "number" &&
+      typeof scrollToIndex === "number"
+    ) {
+      scrollToIndex = Math.max(0, Math.min(itemCount - 1, scrollToIndex));
     }
   }
 
@@ -215,7 +238,9 @@
       </div>
       <input
         id="goto-input"
-        type="number"
+        type={memoryDisplayType === "rom" && memoryDisplay === "vm"
+          ? "text"
+          : "number"}
         placeholder="Goto:"
         min="0"
         max={itemCount - 1}
