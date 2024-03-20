@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-export const IDEContext = writable<Array<{ fileName: string; file: string[] }>>(
+export const IDEContext = writable<{ fileName: string; file: string[] }[]>(
   JSON.parse(localStorage.getItem("IDEContext") as string) || []
 );
 export const shouldResetAndStart = writable(true);

@@ -134,7 +134,7 @@
       position: absolute;
       border-radius: 50%;
       aspect-ratio: 1;
-      width: 40px;
+      width: 50px;
       left: 10px;
       bottom: 10px;
       background-color: hsl(198, 17%, 9%);

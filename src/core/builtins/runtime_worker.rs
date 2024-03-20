@@ -26,7 +26,7 @@ pub fn emit_interval_step_total() -> usize {
 }
 
 // TODO: I would REALLY like to use atomics or a better form of synchronization
-// here but I am hesitant because I don't want to a open a worms not worth
+// here but I am hesitant because I don't want to a open a can of worms not worth
 // opening because of the cutting edge nature of wasm32-unknown-unknown.
 
 // It's clear that this is possible, but with how much overhead, and is this even
@@ -47,8 +47,6 @@ pub static LOADING_NEW_PROGRAM: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false
 pub static READY_TO_LOAD_NEW_PROGRAM: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
 
 // adjust accordingly
-// lowest value until the Hz starts to drop
-// we want the lowest so the keyboard is faster
 pub const MAX_STEPS_PER_LOOP: usize = 30_000;
 pub const MIN_STEPS_PER_LOOP: usize = 1;
 pub static STEPS_PER_LOOP: SyncUnsafeCell<usize> = SyncUnsafeCell::new(MAX_STEPS_PER_LOOP);
