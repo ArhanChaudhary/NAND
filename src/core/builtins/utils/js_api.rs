@@ -38,7 +38,7 @@ pub fn request_animation_frame(callback: &Function) {
 
 #[derive(Deserialize)]
 pub struct DeserializeableOffscreenCanvas(
-    #[serde(with = "serde_wasm_bindgen::preserve", rename = "offscreenCanvas")] pub OffscreenCanvas,
+    #[serde(with = "serde_wasm_bindgen::preserve", rename = "offscreenCanvas")] OffscreenCanvas,
 );
 
 impl DeserializeableOffscreenCanvas {
@@ -61,5 +61,4 @@ impl DeserializeableOffscreenCanvas {
 #[derive(Serialize)]
 pub struct CanvasContextOptions {
     pub alpha: bool,
-    pub desynchronized: bool,
 }
