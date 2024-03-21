@@ -16,7 +16,7 @@ pub fn init(screen_init_message: ScreenInitMessage) {
             .get_context_with_context_options(
                 "2d",
                 js_api::CanvasContextOptions {
-                    alpha: false,
+                    desynchronized: false,
                 },
             )
     });

@@ -60,5 +60,5 @@ impl DeserializeableOffscreenCanvas {
 
 #[derive(Serialize)]
 pub struct CanvasContextOptions {
-    pub alpha: bool,
+    pub desynchronized: bool,
 }
