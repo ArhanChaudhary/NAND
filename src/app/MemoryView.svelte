@@ -17,7 +17,6 @@
   let memoryDisplayType: string;
   let scrollToIndex: number | undefined;
   let VMCodeStarts: number[];
-  let showCorrespondingVM = false;
 
   let onMountAsync = new Promise<void>(onMount);
   onMountAsync.then(() => {
@@ -54,17 +53,15 @@
         return RAMToDisplay(mem);
       case "rom":
         switch (memoryDisplay) {
-          case "bin":
+          case "bin": {
             let ret = $ROM.machineCode[i];
             return ret.slice(0, 8) + " " + ret.slice(8);
-          case "asm":
-            if (showCorrespondingVM) {
-              return $ROM.assembly[i];
-            } else {
-              let ret = $ROM.assembly[i];
-              let commentIndex = ret.indexOf("//");
-              return commentIndex === -1 ? ret : ret.slice(0, commentIndex);
-            }
+          }
+          case "asm": {
+            let ret = $ROM.assembly[i];
+            let commentIndex = ret.indexOf("//");
+            return commentIndex === -1 ? ret : ret.slice(0, commentIndex);
+          }
           case "vm":
             let foundIndex = indexOfVMCodeStarts(i);
             return $ROM.VMCodes[foundIndex].VMCode[
@@ -109,13 +106,8 @@
       case "rom":
         switch (memoryDisplay) {
           case "bin":
-            return 20;
           case "asm":
-            if (i === 0) {
-              return 40;
-            } else {
-              return 20;
-            }
+            return 20;
           case "vm":
             if (VMCodeStarts.includes(i)) {
               return 40;
@@ -140,6 +132,10 @@
         scrollToIndex = VMCodeStarts[foundIndex];
       }
     }
+  }
+
+  $: if (memoryDisplayType === "rom" && memoryDisplay === "bin") {
+    scrollToIndex = $computerMemory.pcRegister;
   }
 
   $: {
@@ -167,24 +163,17 @@
         memoryDisplay = "bin";
         break;
     }
-    // I don't need this to run on memoryDisplay change for some reason
     onMountAsync.then(() => virtualList.recomputeSizes());
   }
 
   $: {
     switch (memoryDisplay) {
-      case "asm":
-        if (showCorrespondingVM) {
-          memoryViewWidth = 330;
-        } else {
-          memoryViewWidth = 270;
-        }
-        break;
-      case "vm":
-        memoryViewWidth = 270;
-        break;
       case "bin":
         memoryViewWidth = 210;
+        break;
+      case "asm":
+      case "vm":
+        memoryViewWidth = 270;
         break;
       default:
         memoryViewWidth = 150;
@@ -348,35 +337,22 @@
           {:else if index === ramMemoryLength + screenMemoryLength}
             <div class="memory-section">Pressed key</div>
           {/if}
-        {:else if memoryDisplayType === "rom"}
-          {#if memoryDisplay === "asm" && index === 0}
-            <div id="show-vm">
-              <input
-                type="checkbox"
-                class="memory-list-index"
-                id="show-vm-input"
-                bind:checked={showCorrespondingVM}
-              /><label for="show-vm-input">Show corresponding VM</label>
-            </div>
-          {:else if memoryDisplay === "vm" && VMCodeStarts.includes(index)}
-            <div class="memory-section">
-              {$ROM.VMCodes[VMCodeStarts.indexOf(index)].fileName}
-            </div>
-          {/if}
+        {:else if memoryDisplayType === "rom" && memoryDisplay === "vm" && VMCodeStarts.includes(index)}
+          <div class="memory-section">
+            {$ROM.VMCodes[VMCodeStarts.indexOf(index)].fileName}
+          </div>
         {/if}
         <span class="memory-list-index">{index}</span><span>
-          {#key showCorrespondingVM}
-            {#key memoryDisplay}
-              {#if memoryDisplayType === "ram"}
-                {#key $computerMemory}
-                  {memoryIndexToDisplay(index)}
-                {/key}
-              {:else}
-                {#key $ROM}
-                  {memoryIndexToDisplay(index)}
-                {/key}
-              {/if}
-            {/key}
+          {#key memoryDisplay}
+            {#if memoryDisplayType === "ram"}
+              {#key $computerMemory}
+                {memoryIndexToDisplay(index)}
+              {/key}
+            {:else}
+              {#key $ROM}
+                {memoryIndexToDisplay(index)}
+              {/key}
+            {/if}
           {/key}
         </span>
       </div>

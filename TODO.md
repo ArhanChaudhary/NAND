@@ -1,7 +1,7 @@
 # TODO (NAND)
 * highlight which part of the ROM the computer is at
 * compiler
-  * optimize or -1 instruction
+  * optimize or -1 instruction stash
   * cannot set variable names to keywords in compiler
   * ensure all subroutines and classes are defined at compile time
   * syntax highlighter for other types
