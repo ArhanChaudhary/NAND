@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { IDEContext, activeTabName } from "./stores";
   import { flip } from "svelte/animate";
+  import Tokenizer from "../compiler/tokenizer";
   let componentRoot: HTMLDivElement;
   let onMountAsync = new Promise<void>(onMount);
   $: $activeTabName, scrollActiveIntoView();
@@ -20,11 +21,15 @@
   function tabAdd() {
     let fileName: string;
     while (true) {
-      fileName = prompt("Enter file name")!;
-      if (!fileName) {
-      } else if ($IDEContext.some((file) => file.fileName === fileName)) {
-        alert("File name already exists");
+      let promptInput = prompt("Enter new file name:");
+      if (promptInput === null) {
+        return;
+      } else if (promptInput == "" || !Tokenizer.isLetter(promptInput[0])) {
+        alert("Invalid file name!");
+      } else if ($IDEContext.some((file) => file.fileName === promptInput)) {
+        alert("File already exists!");
       } else {
+        fileName = promptInput;
         break;
       }
     }
@@ -173,7 +178,7 @@
 
     #tab-add {
       color: white;
-      background-color: hsl(222, 19%, 52%);
+      background-color: hsl(222, 21%, 10%);
       margin-right: 5px;
     }
   }
