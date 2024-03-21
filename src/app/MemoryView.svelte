@@ -17,6 +17,7 @@
   let memoryDisplayType: string;
   let scrollToIndex: number | undefined;
   let VMCodeStarts: number[];
+  let showCorrespondingVM = false;
 
   let onMountAsync = new Promise<void>(onMount);
   onMountAsync.then(() => {
@@ -57,7 +58,13 @@
             let ret = $ROM.machineCode[i];
             return ret.slice(0, 8) + " " + ret.slice(8);
           case "asm":
-            return $ROM.assembly[i];
+            if (showCorrespondingVM) {
+              return $ROM.assembly[i];
+            } else {
+              let ret = $ROM.assembly[i];
+              let commentIndex = ret.indexOf("//");
+              return commentIndex === -1 ? ret : ret.slice(0, commentIndex);
+            }
           case "vm":
             let foundIndex = indexOfVMCodeStarts(i);
             return $ROM.VMCodes[foundIndex].VMCode[
@@ -100,10 +107,24 @@
             return 20;
         }
       case "rom":
-        if (memoryDisplay === "vm" && VMCodeStarts.includes(i)) return 40;
-      default:
-        return 20;
+        switch (memoryDisplay) {
+          case "bin":
+            return 20;
+          case "asm":
+            if (i === 0) {
+              return 40;
+            } else {
+              return 20;
+            }
+          case "vm":
+            if (VMCodeStarts.includes(i)) {
+              return 40;
+            } else {
+              return 20;
+            }
+        }
     }
+    return 0;
   }
 
   function gotoInput(e: Event) {
@@ -146,13 +167,18 @@
         memoryDisplay = "bin";
         break;
     }
+    // I don't need this to run on memoryDisplay change for some reason
     onMountAsync.then(() => virtualList.recomputeSizes());
   }
 
   $: {
     switch (memoryDisplay) {
       case "asm":
-        memoryViewWidth = 330;
+        if (showCorrespondingVM) {
+          memoryViewWidth = 330;
+        } else {
+          memoryViewWidth = 270;
+        }
         break;
       case "vm":
         memoryViewWidth = 270;
@@ -322,22 +348,35 @@
           {:else if index === ramMemoryLength + screenMemoryLength}
             <div class="memory-section">Pressed key</div>
           {/if}
-        {:else if memoryDisplayType === "rom" && memoryDisplay === "vm" && VMCodeStarts.includes(index)}
-          <div class="memory-section">
-            {$ROM.VMCodes[VMCodeStarts.indexOf(index)].fileName}
-          </div>
+        {:else if memoryDisplayType === "rom"}
+          {#if memoryDisplay === "asm" && index === 0}
+            <div id="show-vm">
+              <input
+                type="checkbox"
+                class="memory-list-index"
+                id="show-vm-input"
+                bind:checked={showCorrespondingVM}
+              /><label for="show-vm-input">Show corresponding VM</label>
+            </div>
+          {:else if memoryDisplay === "vm" && VMCodeStarts.includes(index)}
+            <div class="memory-section">
+              {$ROM.VMCodes[VMCodeStarts.indexOf(index)].fileName}
+            </div>
+          {/if}
         {/if}
         <span class="memory-list-index">{index}</span><span>
-          {#key memoryDisplay}
-            {#if memoryDisplayType === "ram"}
-              {#key $computerMemory}
-                {memoryIndexToDisplay(index)}
-              {/key}
-            {:else}
-              {#key $ROM}
-                {memoryIndexToDisplay(index)}
-              {/key}
-            {/if}
+          {#key showCorrespondingVM}
+            {#key memoryDisplay}
+              {#if memoryDisplayType === "ram"}
+                {#key $computerMemory}
+                  {memoryIndexToDisplay(index)}
+                {/key}
+              {:else}
+                {#key $ROM}
+                  {memoryIndexToDisplay(index)}
+                {/key}
+              {/if}
+            {/key}
           {/key}
         </span>
       </div>

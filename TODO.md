@@ -1,14 +1,12 @@
 # TODO (NAND)
-* checkbox for "Show corresponding VM"
 * highlight which part of the ROM the computer is at
-* fix the windows canvas rendering bug
 * compiler
   * optimize or -1 instruction
-  * make sure class name is valid
   * cannot set variable names to keywords in compiler
   * ensure all subroutines and classes are defined at compile time
-  * syntax highlighter (other types)
+  * syntax highlighter for other types
   * compilererror stash, too many static error
+* personal website
 * readme
   * a lot more comments and remove comments on example programs
   * Writing programs in NAND
