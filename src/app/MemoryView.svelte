@@ -17,6 +17,7 @@
   let memoryDisplayType: string;
   let scrollToIndex: number | undefined;
   let VMCodeStarts: number[];
+  let followPC = false;
 
   let onMountAsync = new Promise<void>(onMount);
   onMountAsync.then(() => {
@@ -134,7 +135,7 @@
     }
   }
 
-  $: if (memoryDisplayType === "rom" && memoryDisplay === "bin") {
+  $: if (memoryDisplayType === "rom" && memoryDisplay === "bin" && followPC) {
     scrollToIndex = $computerMemory.pcRegister;
   }
 
@@ -256,6 +257,12 @@
           {/if}
         </select>
       </div>
+      {#if memoryDisplayType === "rom"}
+        <div id="goto-pc-wrapper">
+          <input type="checkbox" id="goto-pc" bind:checked={followPC} />
+          <label for="goto-pc">Follow PC</label>
+        </div>
+      {/if}
       <input
         id="goto-input"
         type={memoryDisplayType === "rom" && memoryDisplay === "vm"
@@ -273,7 +280,11 @@
       {itemCount}
       {itemSize}
       {scrollToIndex}
-      scrollToAlignment="start"
+      scrollToAlignment={memoryDisplayType === "rom" &&
+      memoryDisplay === "bin" &&
+      followPC
+        ? "center"
+        : "start"}
       bind:this={virtualList}
     >
       <div
@@ -309,6 +320,10 @@
             ramMemoryLength + screenMemoryLength,
           ].includes(index)}
         class:align-left={["asm", "vm"].includes(memoryDisplay)}
+        class:highlight={memoryDisplayType === "rom" &&
+          memoryDisplay === "bin" &&
+          followPC &&
+          index === $computerMemory.pcRegister}
       >
         {#if memoryDisplayType === "ram"}
           {#if index === 0}
@@ -412,8 +427,7 @@
 
     #memory-view-header {
       background-color: hsl(0, 0%, 0%);
-      border: 5px solid black;
-      border-top: none;
+      padding: 0 5px 5px 5px;
 
       #memory-selects {
         display: flex;
@@ -447,6 +461,16 @@
 
         &::placeholder {
           color: hsl(0, 0%, 70%);
+        }
+      }
+
+      #goto-pc-wrapper {
+        display: flex;
+        gap: 9px;
+        align-items: center;
+        height: 30px;
+        label {
+          font-size: 16px;
         }
       }
     }
@@ -512,6 +536,10 @@
 
     &.c2 {
       background-color: hsl(198, 18%, 8%);
+    }
+
+    &.highlight {
+      background-color: hsl(198, 9%, 39%);
     }
   }
 </style>
