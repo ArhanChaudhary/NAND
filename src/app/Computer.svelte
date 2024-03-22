@@ -1,5 +1,6 @@
 <script lang="ts" context="module">
   import runtimeInit from "nand-core";
+  import { computerIsRunning } from "./stores";
 
   export let JackOS: {
     fileName: string;
@@ -98,11 +99,13 @@
 
   await Promise.all([loadJackOS, loadComputerRuntime, loadComputerKernal]);
   export function startComputer() {
+    computerIsRunning.set(true);
     computerRunner.postMessage(undefined);
     computerKernal.postMessage({ action: "partialStart" });
   }
 
   export function resetAndStartComputer(machineCode: string[]) {
+    computerIsRunning.set(true);
     computerRunner.postMessage(undefined);
     computerKernal.postMessage({
       action: "resetAndPartialStart",
@@ -111,10 +114,12 @@
   }
 
   export function stopAndResetComputer() {
+    computerIsRunning.set(false);
     computerKernal.postMessage({ action: "stopAndReset" });
   }
 
   export function stopComputer() {
+    computerIsRunning.set(false);
     computerKernal.postMessage({ action: "stop" });
   }
 

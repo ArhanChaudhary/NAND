@@ -2,6 +2,7 @@ import { writable } from "svelte/store";
 export const IDEContext = writable<{ fileName: string; file: string[] }[]>(
   JSON.parse(localStorage.getItem("IDEContext") as string) || []
 );
+export const computerIsRunning = writable(false);
 export const shouldResetAndStart = writable(true);
 export const activeTabName = writable<null | string>(null);
 export const computerMemory = writable({

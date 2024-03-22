@@ -1,6 +1,6 @@
 <script lang="ts">
-  import VirtualList from "svelte-tiny-virtual-list";
-  import { ROM, computerMemory } from "./stores";
+  import VirtualList, { type Alignment } from "svelte-tiny-virtual-list";
+  import { ROM, computerIsRunning, computerMemory } from "./stores";
   import { onMount } from "svelte";
 
   export let show: boolean;
@@ -17,6 +17,7 @@
   let memoryDisplayType: string;
   let scrollToIndex: number | undefined;
   let VMCodeStarts: number[];
+  let scrollToAlignment: Alignment;
   let followPC = false;
 
   let onMountAsync = new Promise<void>(onMount);
@@ -135,6 +136,16 @@
     }
   }
 
+  $: {
+    scrollToAlignment =
+      memoryDisplayType === "rom" &&
+      memoryDisplay === "bin" &&
+      followPC &&
+      $computerIsRunning
+        ? "center"
+        : "start";
+  }
+
   $: if (memoryDisplayType === "rom" && memoryDisplay === "bin" && followPC) {
     scrollToIndex = $computerMemory.pcRegister;
   }
@@ -164,7 +175,7 @@
         memoryDisplay = "bin";
         break;
     }
-    onMountAsync.then(() => virtualList.recomputeSizes());
+    onMountAsync.then(() => virtualList.recomputeSizes(0));
   }
 
   $: {
@@ -280,11 +291,7 @@
       {itemCount}
       {itemSize}
       {scrollToIndex}
-      scrollToAlignment={memoryDisplayType === "rom" &&
-      memoryDisplay === "bin" &&
-      followPC
-        ? "center"
-        : "start"}
+      {scrollToAlignment}
       bind:this={virtualList}
     >
       <div
