@@ -2,7 +2,7 @@ export default class CodeWriter {
   private out: string[] = [];
   private fileName = "";
   private currentFunction = "";
-  static labelCount = 0;
+  private labelCount = 0;
 
   // needed for segregating a static segment for each vm file
   public setFileName(file: string) {
@@ -260,11 +260,11 @@ export default class CodeWriter {
     out.push(
       ...[
         // do call
-        "@CALL_RETURN_ADDR" + CodeWriter.labelCount,
+        "@CALL_RETURN_ADDR" + this.labelCount,
         "D=A",
         "@DO_CALL",
         "0;JMP",
-        `(CALL_RETURN_ADDR${CodeWriter.labelCount++})`,
+        `(CALL_RETURN_ADDR${this.labelCount++})`,
       ]
     );
     this.write(out);
@@ -329,11 +329,11 @@ export default class CodeWriter {
       case "gt":
       case "lt":
         out = [
-          `@AFTER_DO_${command.toUpperCase()}${CodeWriter.labelCount}`,
+          `@AFTER_DO_${command.toUpperCase()}${this.labelCount}`,
           "D=A",
           "@DO_" + command.toUpperCase(),
           "0;JMP",
-          `(AFTER_DO_${command.toUpperCase()}${CodeWriter.labelCount++})`,
+          `(AFTER_DO_${command.toUpperCase()}${this.labelCount++})`,
         ];
         break;
       case "and":
