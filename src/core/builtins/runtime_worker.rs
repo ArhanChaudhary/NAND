@@ -78,8 +78,8 @@ pub fn try_start() {
             *EMIT_INTERVAL_STEP_TOTAL.get() += steps_per_loop;
         }
         if MAX_STEPS_PER_LOOP != steps_per_loop {
-            thread::sleep(std::time::Duration::from_nanos(
-                ((MAX_STEPS_PER_LOOP - steps_per_loop) * 300) as u64,
+            thread::sleep(std::time::Duration::from_micros(
+                (MAX_STEPS_PER_LOOP - steps_per_loop) as u64,
             ));
         }
         if hardware::keyboard(0, false) == 32767 {
