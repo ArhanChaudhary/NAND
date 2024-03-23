@@ -16,7 +16,7 @@
   let memoryDisplay: string;
   let memoryDisplayType: string;
   let scrollToIndex: number | undefined;
-  let VMCodeStarts: number[];
+  let VMCodeStarts: number[] = [];
   let scrollToAlignment: Alignment;
   let followPC = false;
 
@@ -170,7 +170,8 @@
         memoryDisplay = "dec";
         break;
       case "rom":
-        memoryDisplay = "bin";
+        // make sure to change the itemCount thing if this is changed
+        memoryDisplay = "vm";
         break;
     }
     onMountAsync.then(() => virtualList.recomputeSizes(0));
@@ -210,6 +211,7 @@
             itemCount = $ROM.assembly.length;
             break;
           case "vm":
+          default:
             itemCount = $ROM.VMCodes.map(
               (VMCode) => VMCode.VMCode.length
             ).reduce((a, b) => a + b, 0);
@@ -261,10 +263,12 @@
             <option value="dec">Dec</option>
             <option value="hex">Hex</option>
           {/if}
+          {#if memoryDisplayType === "rom"}
+            <option value="vm">VM</option>
+          {/if}
           <option value="bin">Bin</option>
           {#if memoryDisplayType === "rom"}
             <option value="asm">Asm</option>
-            <option value="vm">VM</option>
           {/if}
         </select>
       </div>
