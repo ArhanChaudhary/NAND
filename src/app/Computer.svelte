@@ -210,6 +210,7 @@
 
   let computerScreen: HTMLCanvasElement;
   onMount(initRunner);
+  let hasInitRunner = false;
   async function initRunner() {
     const offscreenCanvas = computerScreen.transferControlToOffscreen();
     computerKernal.postMessage(
@@ -236,54 +237,58 @@
 
     computerRunner.addEventListener("message", messageHandler);
     computerKernal.addEventListener("message", messageHandler);
+    hasInitRunner = true;
+  }
 
-    let prev: number;
-    document.addEventListener("keydown", (e) => {
-      let keyValue: number | undefined = {
-        Enter: 128,
-        Backspace: 129,
-        ArrowLeft: 130,
-        ArrowUp: 131,
-        ArrowRight: 132,
-        ArrowDown: 133,
-        Home: 134,
-        End: 135,
-        PageUp: 136,
-        PageDown: 137,
-        Insert: 138,
-        Delete: 139,
-        Escape: 140,
-        F1: 141,
-        F2: 142,
-        F3: 143,
-        F4: 144,
-        F5: 145,
-        F6: 146,
-        F7: 147,
-        F8: 148,
-        F9: 149,
-        F10: 150,
-        F11: 151,
-        F12: 152,
-      }[e.key];
-      if (keyValue === undefined) {
-        if (e.key.length !== 1) return;
-        keyValue = e.key.charCodeAt(0);
-      }
-      if (keyValue !== prev && prev !== 0) {
-        keyValue = 0;
-      }
-      prev = keyValue;
-      keyboardComputer(keyValue);
-    });
+  let prev: number;
+  function keydown(e: KeyboardEvent) {
+    if (!hasInitRunner) return;
+    let keyValue: number | undefined = {
+      Enter: 128,
+      Backspace: 129,
+      ArrowLeft: 130,
+      ArrowUp: 131,
+      ArrowRight: 132,
+      ArrowDown: 133,
+      Home: 134,
+      End: 135,
+      PageUp: 136,
+      PageDown: 137,
+      Insert: 138,
+      Delete: 139,
+      Escape: 140,
+      F1: 141,
+      F2: 142,
+      F3: 143,
+      F4: 144,
+      F5: 145,
+      F6: 146,
+      F7: 147,
+      F8: 148,
+      F9: 149,
+      F10: 150,
+      F11: 151,
+      F12: 152,
+    }[e.key];
+    if (keyValue === undefined) {
+      if (e.key.length !== 1) return;
+      keyValue = e.key.charCodeAt(0);
+    }
+    if (keyValue !== prev && prev !== 0) {
+      keyValue = 0;
+    }
+    prev = keyValue;
+    keyboardComputer(keyValue);
+  }
 
-    document.addEventListener("keyup", () => {
-      prev = 0;
-      keyboardComputer(0);
-    });
+  function keyup() {
+    if (!hasInitRunner) return;
+    prev = 0;
+    keyboardComputer(0);
   }
 </script>
 
+<svelte:document on:keyup={keyup} on:keydown={keydown} />
 <div
   id="computer-container"
   style="--computer-container-width: calc({computerVW} / 100 * (100vw - var(--memory-view-width) - 2px));"

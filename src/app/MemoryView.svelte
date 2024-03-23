@@ -21,12 +21,10 @@
   let followPC = false;
 
   let onMountAsync = new Promise<void>(onMount);
-  onMountAsync.then(() => {
+  function windowResize() {
     height = memoryView.clientHeight - memoryViewHeader.offsetHeight;
-    window.addEventListener("resize", () => {
-      height = memoryView.clientHeight - memoryViewHeader.offsetHeight;
-    });
-  });
+  }
+  onMountAsync.then(windowResize);
 
   function RAMToDisplay(mem: number) {
     switch (memoryDisplay) {

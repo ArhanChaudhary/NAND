@@ -204,11 +204,12 @@
       }
     );
   }
-  window.addEventListener("beforeunload", () => {
+  function saveIDEContext() {
     localStorage.setItem("IDEContext", JSON.stringify($IDEContext));
-  });
+  }
 </script>
 
+<svelte:window on:beforeunload={saveIDEContext} />
 {#key $activeTabName}
   <!-- svelte-ignore missing-declaration -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->

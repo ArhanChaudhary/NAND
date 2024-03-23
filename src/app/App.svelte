@@ -31,32 +31,38 @@
     computerVW = (1 - ratio) * 100;
   }
 
-  document.addEventListener("mousemove", (e) => {
+  function mousemove(e: MouseEvent) {
     if (!mouseIsDown) return;
     // necessary so the contenteditable doesn't randomly start moving while dragging the divider
     e.preventDefault();
     dividerMouseMove(e.clientX);
-  });
+  }
 
-  document.addEventListener("touchmove", (e) => {
+  function touchmove(e: TouchEvent) {
     if (!mouseIsDown) return;
     e.preventDefault();
     dividerMouseMove(e.touches[0].clientX);
-  });
+  }
 
-  document.addEventListener("mouseup", () => {
+  function mouseup() {
     mouseIsDown = false;
-  });
+  }
 
-  document.addEventListener("touchend", () => {
+  function touchend() {
     mouseIsDown = false;
-  });
+  }
 
   let memoryViewWidth: number;
   let showAbout = false;
   let showMemoryView = true;
 </script>
 
+<svelte:document
+  on:mousemove={mousemove}
+  on:mouseup={mouseup}
+  on:touchmove={touchmove}
+  on:touchend={touchend}
+/>
 {#if showAbout}
   <About bind:showAbout />
 {/if}
