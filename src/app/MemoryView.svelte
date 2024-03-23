@@ -198,17 +198,12 @@
   }
 
   $: {
-    if (
-      memoryDisplayType === "rom" &&
-      memoryDisplay === "vm" &&
-      !$ROM.VMCodes.length
-    ) {
-      scrollToIndex = undefined;
-    } else if (
-      typeof itemCount === "number" &&
-      typeof scrollToIndex === "number"
-    ) {
-      scrollToIndex = Math.max(0, Math.min(itemCount - 1, scrollToIndex));
+    if (typeof scrollToIndex === "number") {
+      if (itemCount === 0) {
+        scrollToIndex = undefined;
+      } else {
+        scrollToIndex = Math.max(0, Math.min(itemCount - 1, scrollToIndex));
+      }
     }
   }
 

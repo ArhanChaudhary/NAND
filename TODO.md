@@ -1,5 +1,4 @@
 # TODO (NAND)
-* highlight which part of the ROM the computer is at
 * compiler
   * optimize or -1 instruction stash
   * cannot set variable names to keywords in compiler
