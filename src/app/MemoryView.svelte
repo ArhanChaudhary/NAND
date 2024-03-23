@@ -21,15 +21,16 @@
   let followPC = false;
 
   let onMountAsync = new Promise<void>(onMount);
-  function windowResize() {
+  async function windowResize() {
+    await onMountAsync;
     height = memoryView.clientHeight - memoryViewHeader.offsetHeight;
   }
-  onMountAsync.then(windowResize);
+  $: memoryDisplayType, windowResize();
 
   function RAMToDisplay(mem: number) {
     switch (memoryDisplay) {
       case "dec":
-        return mem;
+        return mem.toString();
       case "hex":
         let hex = mem.toString(16).toUpperCase().padStart(4, "0");
         return hex.slice(0, 2) + " " + hex.slice(2);
