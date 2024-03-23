@@ -18,7 +18,7 @@ export default function VMTranslator(
           codeWriter.writePop(parser.arg1(), parser.arg2());
           break;
         case CommandType.C_PUSH:
-          codeWriter.writePush(parser.arg1(), parser.arg2());
+          codeWriter.writePush(parser.arg1(), parser.arg2(), true);
           break;
         case CommandType.C_LABEL:
           codeWriter.writeLabel(parser.arg1());
@@ -36,7 +36,7 @@ export default function VMTranslator(
           codeWriter.writeReturn();
           break;
         case CommandType.C_CALL:
-          codeWriter.writeCall(parser.arg1(), parser.arg2());
+          codeWriter.writeCall(parser.arg1(), parser.arg2(), true);
           break;
       }
     }

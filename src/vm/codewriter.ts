@@ -23,14 +23,14 @@ export default class CodeWriter {
 
   public writeInit(): void {
     this.write([
-      "@256 // init",
+      "@256",
       "D=A",
       "@SP",
       "M=D",
       "@AFTER_SETUP",
       "0;JMP",
 
-      "(DO_RETURN) // return",
+      "(DO_RETURN)",
       // store LCL-1 (where the stored THAT is) in R14
       "@LCL",
       "D=M-1",
@@ -93,7 +93,7 @@ export default class CodeWriter {
       "A=M",
       "0;JMP",
 
-      "(DO_CALL) // push state and goto functionName",
+      "(DO_CALL)",
       // push return address
       "@SP",
       "AM=M+1",
@@ -154,7 +154,7 @@ export default class CodeWriter {
       "A=M",
       "0;JMP",
 
-      "(DO_LT) // lt",
+      "(DO_LT)",
       "@R15",
       "M=D",
       // lt logic
@@ -176,7 +176,7 @@ export default class CodeWriter {
       "A=M",
       "0;JMP",
 
-      "(DO_EQ) // eq",
+      "(DO_EQ)",
       "@R15",
       "M=D",
       // eq logic
@@ -198,7 +198,7 @@ export default class CodeWriter {
       "A=M",
       "0;JMP",
 
-      "(DO_GT) // gt",
+      "(DO_GT)",
       "@R15",
       "M=D",
       // gt logic
@@ -222,7 +222,7 @@ export default class CodeWriter {
 
       "(AFTER_SETUP)",
     ]);
-    this.writeCall("Sys.init", 0);
+    this.writeCall("Sys.init", 0, false);
   }
 
   public writeLabel(label: string): void {
@@ -243,10 +243,16 @@ export default class CodeWriter {
     ]);
   }
 
-  public writeCall(functionName: string, numArgs: number): void {
+  public writeCall(
+    functionName: string,
+    numArgs: number,
+    debugInfo: boolean
+  ): void {
     const out = [
       // save functionName rom address in R13
-      `@${functionName} // call ${functionName} ${numArgs}`,
+      `@${functionName}${
+        debugInfo ? ` // call ${functionName} ${numArgs}` : ""
+      }`,
       "D=A",
       "@R13",
       "M=D",
@@ -287,7 +293,7 @@ export default class CodeWriter {
     if (numLocals) {
       if (numLocals === 1) {
         this.write(out);
-        this.writePush("constant", 0);
+        this.writePush("constant", 0, false);
         return;
       } else if (numLocals === 2) {
         out.push(
@@ -361,7 +367,7 @@ export default class CodeWriter {
     temp: 5,
   };
 
-  public writePush(segment: string, index: number): void {
+  public writePush(segment: string, index: number, debugInfo: boolean): void {
     let out: string[];
     switch (segment) {
       // sets D to the value that needs to be pushed
@@ -411,7 +417,7 @@ export default class CodeWriter {
     } else {
       out.push("M=D");
     }
-    out[0] += ` // push ${segment} ${index}`;
+    if (debugInfo) out[0] += ` // push ${segment} ${index}`;
     this.write(out);
   }
 

@@ -123,29 +123,78 @@
     const value = (e.target as HTMLInputElement).value.toLowerCase();
     let valueAsNumber = Number(value);
     if (!Number.isNaN(valueAsNumber)) {
+      scrollToAlignment = "start";
       scrollToIndex = valueAsNumber;
     } else if (memoryDisplayType === "rom" && memoryDisplay === "vm") {
       let foundIndex = $ROM.VMCodes.findIndex((VMCode) =>
         VMCode.fileName.toLowerCase().startsWith(value)
       );
       if (foundIndex !== -1) {
+        scrollToAlignment = "start";
         scrollToIndex = VMCodeStarts[foundIndex];
       }
     }
   }
 
+  let pcToAssembly: number[];
+  let assemblyToVMCode: (number | null)[];
   $: {
-    scrollToAlignment =
-      memoryDisplayType === "rom" &&
-      memoryDisplay === "bin" &&
-      followPC &&
-      $computerIsRunning
-        ? "center"
-        : "start";
+    pcToAssembly = $ROM.assembly.reduce((acc, assembly, index) => {
+      if (!assembly.startsWith("(")) {
+        acc.push(index);
+      }
+      return acc;
+    }, [] as number[]);
+    assemblyToVMCode = $ROM.assembly.reduce(
+      (acc, assembly) => {
+        if (assembly.indexOf("//") === -1) {
+          if (acc.length) {
+            acc.push(acc[acc.length - 1]);
+          } else {
+            acc.push(null);
+          }
+        } else {
+          if (acc[acc.length - 1] === null) {
+            acc.push(0);
+          } else {
+            acc.push((acc[acc.length - 1] as number) + 1);
+          }
+        }
+        return acc;
+      },
+      [] as (number | null)[]
+    );
   }
 
-  $: if (memoryDisplayType === "rom" && memoryDisplay === "bin" && followPC) {
-    scrollToIndex = $computerMemory.pcRegister;
+  function toMemoryIndex(pc: number) {
+    switch (memoryDisplay) {
+      case "bin":
+        return pc;
+      case "asm":
+        return pcToAssembly[pc];
+      case "vm":
+        let ret = assemblyToVMCode[pcToAssembly[pc]];
+        if (ret === null) {
+          if (followPC) {
+            return scrollToIndex;
+          } else {
+            return undefined;
+          }
+        } else {
+          return ret;
+        }
+    }
+    return 0;
+  }
+
+  $: {
+    scrollToAlignment;
+    if (memoryDisplayType === "rom" && followPC && $computerIsRunning)
+      scrollToAlignment = "center";
+  }
+
+  $: if (memoryDisplayType === "rom" && followPC) {
+    scrollToIndex = toMemoryIndex($computerMemory.pcRegister);
   }
 
   $: {
@@ -332,9 +381,7 @@
           ].includes(index)}
         class:align-left={["asm", "vm"].includes(memoryDisplay)}
         class:highlight={memoryDisplayType === "rom" &&
-          memoryDisplay === "bin" &&
-          followPC &&
-          index === $computerMemory.pcRegister}
+          index === toMemoryIndex($computerMemory.pcRegister)}
       >
         {#if memoryDisplayType === "ram"}
           {#if index === 0}
