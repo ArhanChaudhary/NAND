@@ -16,6 +16,7 @@
   let memoryDisplay: string;
   let memoryDisplayType: string;
   let scrollToIndex: number | undefined;
+  let highlightIndex: number;
   let VMCodeStarts: number[] = [];
   let scrollToAlignment: Alignment;
   let followPC = false;
@@ -167,35 +168,27 @@
     );
   }
 
-  function toMemoryIndex(pc: number) {
-    switch (memoryDisplay) {
-      case "bin":
-        return pc;
-      case "asm":
-        return pcToAssembly[pc];
-      case "vm":
-        let ret = assemblyToVMCode[pcToAssembly[pc]];
-        if (ret === null) {
-          if (followPC) {
-            return scrollToIndex;
-          } else {
-            return undefined;
-          }
-        } else {
-          return ret;
-        }
-    }
-    return 0;
-  }
-
   $: {
     scrollToAlignment;
     if (memoryDisplayType === "rom" && followPC && $computerIsRunning)
       scrollToAlignment = "center";
   }
 
-  $: if (memoryDisplayType === "rom" && followPC) {
-    scrollToIndex = toMemoryIndex($computerMemory.pcRegister);
+  $: if (memoryDisplayType === "rom") {
+    switch (memoryDisplay) {
+      case "bin":
+        highlightIndex = $computerMemory.pcRegister;
+      case "asm":
+        highlightIndex = pcToAssembly[$computerMemory.pcRegister];
+      case "vm":
+        let ret = assemblyToVMCode[pcToAssembly[$computerMemory.pcRegister]];
+        if (ret !== null) {
+          highlightIndex = ret;
+        }
+    }
+    if (followPC) {
+      scrollToIndex = highlightIndex;
+    }
   }
 
   $: {
@@ -377,7 +370,7 @@
           ].includes(index)}
         class:align-left={["asm", "vm"].includes(memoryDisplay)}
         class:highlight={memoryDisplayType === "rom" &&
-          index === toMemoryIndex($computerMemory.pcRegister)}
+          index === highlightIndex}
       >
         {#if memoryDisplayType === "ram"}
           {#if index === 0}
@@ -531,6 +524,7 @@
 
     :global(.virtual-list-wrapper) {
       scrollbar-width: none;
+      background-color: hsl(197, 10%, 6%);
 
       &::-webkit-scrollbar {
         display: none;
