@@ -1,6 +1,6 @@
 {
   "name": "nand",
-  "description": "NAND is a full logic simulator suite made entirely from NAND gates, featuring its own machine code, assembler, VM translator, compiler, and IDE.",
+  "description": "NAND is a logic simulator suite made entirely from NAND gates, featuring its own machine code, assembler, VM translator, compiler, and IDE.",
   "private": true,
   "version": "0.0.0",
   "type": "module",
