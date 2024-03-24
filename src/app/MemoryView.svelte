@@ -31,6 +31,9 @@
   function RAMToDisplay(mem: number) {
     switch (memoryDisplay) {
       case "dec":
+        if (mem >= 32768) {
+          mem -= 65536;
+        }
         return mem.toString();
       case "hex":
         let hex = mem.toString(16).toUpperCase().padStart(4, "0");
