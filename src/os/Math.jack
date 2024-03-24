@@ -82,6 +82,9 @@ class Math {
         let shifted[0] = divisor;
         while (~((i > 14) | breaker)) {
             let quotient = shifted[i];
+            // I've really tried to optimize this, but this code segement
+            // is so delicate that the way this works is still a foretold
+            // mystery
             let breaker = (32767 - (quotient - 1)) < (quotient - 1);
             if (~breaker) {
                 let shifted[i + 1] = quotient + quotient;
