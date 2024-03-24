@@ -16,6 +16,10 @@ pop temp 0
 push constant 0
 return
 function Sys.halt 0
+push constant 24576
+push constant 32767
+call Memory.poke 2
+pop temp 0
 label WHILE_ITER0
 push constant 0
 if-goto WHILE_BREAKER1
@@ -25,8 +29,9 @@ push constant 0
 return
 function Sys.wait 1
 push argument 0
-push constant -1
-gt
+push constant 0
+lt
+not
 if-goto FALSE_CASE2
 push constant 1
 call Sys.error 1

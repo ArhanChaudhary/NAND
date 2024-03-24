@@ -230,8 +230,9 @@ push local 1
 return
 function Math.sqrt 4
 push argument 0
-push constant -1
-gt
+push constant 0
+lt
+not
 if-goto FALSE_CASE17
 push constant 4
 call Sys.error 1

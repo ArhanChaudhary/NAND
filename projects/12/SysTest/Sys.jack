@@ -21,13 +21,14 @@ class Sys {
 
     /** Halts the program execution. */
     function void halt() {
+        do Memory.poke(24576, 32767);
         while (~false) {}
     }
 
     /** Waits approximately duration milliseconds and returns.  */
     function void wait(int duration) {
         var int durationCounter;
-        if (~(duration > -1)) {
+        if (duration < 0) {
             do Sys.error(1);
         }
         let durationCounter = 50;

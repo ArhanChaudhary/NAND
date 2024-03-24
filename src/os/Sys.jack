@@ -28,7 +28,7 @@ class Sys {
     /** Waits approximately duration milliseconds and returns.  */
     function void wait(int duration) {
         var int durationCounter;
-        if (~(duration > -1)) {
+        if (duration < 0) {
             do Sys.error(1);
         }
         let durationCounter = 50;
