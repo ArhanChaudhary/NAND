@@ -51,7 +51,6 @@
       "Average",
       "Pong",
       "Square",
-      "Static",
       "Overflow",
       "2048",
       "GeneticAlgorithm",
