@@ -1,4 +1,5 @@
 # TODO (NAND)
+* video of NAND
 * compiler
   * optimize or -1 instruction stash
   * cannot set variable names to keywords in compiler

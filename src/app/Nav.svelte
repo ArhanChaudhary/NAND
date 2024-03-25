@@ -49,8 +49,8 @@
     const exampleProgramsOrder = [
       "New Program",
       "Average",
-      "Pong",
       "Square",
+      "Pong",
       "Overflow",
       "2048",
       "GeneticAlgorithm",
