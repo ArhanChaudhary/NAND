@@ -1,12 +1,12 @@
 # TODO (NAND)
+* eff fadd
 * video of NAND
+* bug screenshot
 * compiler
-  * optimize or -1 instruction stash
   * cannot set variable names to keywords in compiler
   * ensure all subroutines and classes are defined at compile time
   * syntax highlighter for other types
   * compilererror stash, too many static error
-* personal website
 * readme
   * a lot more comments and remove comments on example programs
   * Writing programs in NAND
@@ -20,7 +20,6 @@
     * start will automatically reset on IDE input
     * document key register 32767 to stop
   * NAND's example programs
-    * HelloWorld
     * Average
     * Pong
     * Square
@@ -55,6 +54,7 @@
 * vm escape bug
 
 # TODO (for later)
+* breakpoints
 * graphing calculator in jack
 * nand in nand
 * lisp interpreter
