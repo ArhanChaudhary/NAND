@@ -13,13 +13,6 @@ pub fn or(a: bool, b: bool) -> bool {
     hardware::NAND(not(a), not(b))
 }
 
-pub fn xor(a: bool, b: bool) -> bool {
-    hardware::NAND(
-        hardware::NAND(a, hardware::NAND(a, b)),
-        hardware::NAND(b, hardware::NAND(a, b)),
-    )
-}
-
 fn mux(a: bool, b: bool, sel: bool) -> bool {
     hardware::NAND(hardware::NAND(a, not(sel)), hardware::NAND(b, sel))
 }

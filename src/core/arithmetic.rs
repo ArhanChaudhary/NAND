@@ -1,85 +1,51 @@
+use crate::builtins::hardware;
 use crate::builtins::utils::bit_manipulation::{nbit16, word16_16};
-use crate::gates::{and, and16, mux16, not16, or, xor};
+use crate::gates::{and16, mux16, not, not16};
+
+fn half_adder(a: bool, b: bool) -> (bool, bool) {
+    let cache1 = hardware::NAND(a, b);
+    let cache2 = hardware::NAND(a, cache1);
+    let cache3 = hardware::NAND(cache1, b);
+    (hardware::NAND(cache2, cache3), not(cache1))
+}
+
+fn partial_full_adder(a: bool, b: bool, c: bool) -> bool {
+    let cache1 = hardware::NAND(a, b);
+    let cache2 = hardware::NAND(hardware::NAND(cache1, a), hardware::NAND(cache1, b));
+    let cache3 = hardware::NAND(cache2, c);
+    hardware::NAND(hardware::NAND(cache2, cache3), hardware::NAND(cache3, c))
+}
+
+fn full_adder(a: bool, b: bool, c: bool) -> (bool, bool) {
+    let cache1 = hardware::NAND(a, b);
+    let cache2 = hardware::NAND(hardware::NAND(cache1, a), hardware::NAND(cache1, b));
+    let cache3 = hardware::NAND(cache2, c);
+    (
+        hardware::NAND(hardware::NAND(cache2, cache3), hardware::NAND(cache3, c)),
+        hardware::NAND(cache1, cache3),
+    )
+}
 
 fn add16(a: u16, b: u16) -> u16 {
-    let a0 = nbit16(a, 0);
-    let a1 = nbit16(a, 1);
-    let a2 = nbit16(a, 2);
-    let a3 = nbit16(a, 3);
-    let a4 = nbit16(a, 4);
-    let a5 = nbit16(a, 5);
-    let a6 = nbit16(a, 6);
-    let a7 = nbit16(a, 7);
-    let a8 = nbit16(a, 8);
-    let a9 = nbit16(a, 9);
-    let a10 = nbit16(a, 10);
-    let a11 = nbit16(a, 11);
-    let a12 = nbit16(a, 12);
-    let a13 = nbit16(a, 13);
-    let a14 = nbit16(a, 14);
-    let b0 = nbit16(b, 0);
-    let b1 = nbit16(b, 1);
-    let b2 = nbit16(b, 2);
-    let b3 = nbit16(b, 3);
-    let b4 = nbit16(b, 4);
-    let b5 = nbit16(b, 5);
-    let b6 = nbit16(b, 6);
-    let b7 = nbit16(b, 7);
-    let b8 = nbit16(b, 8);
-    let b9 = nbit16(b, 9);
-    let b10 = nbit16(b, 10);
-    let b11 = nbit16(b, 11);
-    let b12 = nbit16(b, 12);
-    let b13 = nbit16(b, 13);
-    let b14 = nbit16(b, 14);
-    let carry1 = and(a0, b0);
-    let x1 = xor(b1, carry1);
-    let carry2 = or(and(b1, carry1), and(a1, x1));
-    let x2 = xor(b2, carry2);
-    let carry3 = or(and(b2, carry2), and(a2, x2));
-    let x3 = xor(b3, carry3);
-    let carry4 = or(and(b3, carry3), and(a3, x3));
-    let x4 = xor(b4, carry4);
-    let carry5 = or(and(b4, carry4), and(a4, x4));
-    let x5 = xor(b5, carry5);
-    let carry6 = or(and(b5, carry5), and(a5, x5));
-    let x6 = xor(b6, carry6);
-    let carry7 = or(and(b6, carry6), and(a6, x6));
-    let x7 = xor(b7, carry7);
-    let carry8 = or(and(b7, carry7), and(a7, x7));
-    let x8 = xor(b8, carry8);
-    let carry9 = or(and(b8, carry8), and(a8, x8));
-    let x9 = xor(b9, carry9);
-    let carry10 = or(and(b9, carry9), and(a9, x9));
-    let x10 = xor(b10, carry10);
-    let carry11 = or(and(b10, carry10), and(a10, x10));
-    let x11 = xor(b11, carry11);
-    let carry12 = or(and(b11, carry11), and(a11, x11));
-    let x12 = xor(b12, carry12);
-    let carry13 = or(and(b12, carry12), and(a12, x12));
-    let x13 = xor(b13, carry13);
-    let carry14 = or(and(b13, carry13), and(a13, x13));
-    let x14 = xor(b14, carry14);
+    let (sum0, carry0) = half_adder(nbit16(a, 0), nbit16(b, 0));
+    let (sum1, carry1) = full_adder(nbit16(a, 1), nbit16(b, 1), carry0);
+    let (sum2, carry2) = full_adder(nbit16(a, 2), nbit16(b, 2), carry1);
+    let (sum3, carry3) = full_adder(nbit16(a, 3), nbit16(b, 3), carry2);
+    let (sum4, carry4) = full_adder(nbit16(a, 4), nbit16(b, 4), carry3);
+    let (sum5, carry5) = full_adder(nbit16(a, 5), nbit16(b, 5), carry4);
+    let (sum6, carry6) = full_adder(nbit16(a, 6), nbit16(b, 6), carry5);
+    let (sum7, carry7) = full_adder(nbit16(a, 7), nbit16(b, 7), carry6);
+    let (sum8, carry8) = full_adder(nbit16(a, 8), nbit16(b, 8), carry7);
+    let (sum9, carry9) = full_adder(nbit16(a, 9), nbit16(b, 9), carry8);
+    let (sum10, carry10) = full_adder(nbit16(a, 10), nbit16(b, 10), carry9);
+    let (sum11, carry11) = full_adder(nbit16(a, 11), nbit16(b, 11), carry10);
+    let (sum12, carry12) = full_adder(nbit16(a, 12), nbit16(b, 12), carry11);
+    let (sum13, carry13) = full_adder(nbit16(a, 13), nbit16(b, 13), carry12);
+    let (sum14, carry14) = full_adder(nbit16(a, 14), nbit16(b, 14), carry13);
+    let sum15 = partial_full_adder(nbit16(a, 15), nbit16(b, 15), carry14);
     word16_16(
-        xor(a0, b0),
-        xor(a1, x1),
-        xor(a2, x2),
-        xor(a3, x3),
-        xor(a4, x4),
-        xor(a5, x5),
-        xor(a6, x6),
-        xor(a7, x7),
-        xor(a8, x8),
-        xor(a9, x9),
-        xor(a10, x10),
-        xor(a11, x11),
-        xor(a12, x12),
-        xor(a13, x13),
-        xor(a14, x14),
-        xor(
-            nbit16(a, 15),
-            xor(nbit16(b, 15), or(and(b14, carry14), and(a14, x14))),
-        ),
+        sum0, sum1, sum2, sum3, sum4, sum5, sum6, sum7, sum8, sum9, sum10, sum11, sum12, sum13,
+        sum14, sum15,
     )
 }
 
