@@ -1,6 +1,4 @@
 # TODO (NAND)
-* video of NAND
-* bug screenshot
 * compiler
   * cannot set variable names to keywords in compiler
   * ensure all subroutines and classes are defined at compile time

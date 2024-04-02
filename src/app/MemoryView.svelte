@@ -144,6 +144,12 @@
   let pcToAssembly: number[];
   let assemblyToVMCode: (number | null)[];
   $: {
+    if ($ROM.VMCodes.length) {
+      VMCodeStarts = $ROM.VMCodes.slice(0, -1).reduce(
+        (acc, VMCode) => [...acc, acc[acc.length - 1] + VMCode.VMCode.length],
+        [0]
+      );
+    }
     pcToAssembly = $ROM.assembly.reduce((acc, assembly, index) => {
       if (!assembly.startsWith("(")) {
         acc.push(index);
@@ -152,17 +158,29 @@
     }, [] as number[]);
     assemblyToVMCode = $ROM.assembly.reduce(
       (acc, assembly) => {
-        if (assembly.indexOf("//") === -1) {
+        let commentIndex = assembly.indexOf("//");
+        if (commentIndex === -1) {
           if (acc.length) {
             acc.push(acc[acc.length - 1]);
           } else {
             acc.push(null);
           }
         } else {
+          let expectedVMCodeIndex: number;
           if (acc[acc.length - 1] === null) {
-            acc.push(0);
+            expectedVMCodeIndex = 0;
           } else {
-            acc.push((acc[acc.length - 1] as number) + 1);
+            expectedVMCodeIndex = (acc[acc.length - 1] as number) + 1;
+          }
+          acc.push(expectedVMCodeIndex);
+          let actualVMCodeIndex = indexOfVMCodeStarts(expectedVMCodeIndex);
+          if (
+            assembly.slice(commentIndex + 3) !==
+            $ROM.VMCodes[actualVMCodeIndex].VMCode[
+              expectedVMCodeIndex - VMCodeStarts[actualVMCodeIndex]
+            ]
+          ) {
+            throw new Error("mismatched VM command");
           }
         }
         return acc;
@@ -205,7 +223,7 @@
   }
 
   $: memoryDisplayType, memoryDisplayTypeChanged();
-  function memoryDisplayTypeChanged() {
+  async function memoryDisplayTypeChanged() {
     switch (memoryDisplayType) {
       case "ram":
         memoryDisplay = "dec";
@@ -215,7 +233,8 @@
         memoryDisplay = "vm";
         break;
     }
-    onMountAsync.then(() => virtualList.recomputeSizes(0));
+    await onMountAsync;
+    virtualList.recomputeSizes(0);
   }
 
   $: {
@@ -229,15 +248,6 @@
         break;
       default:
         memoryViewWidth = 150;
-    }
-  }
-
-  $: {
-    if ($ROM.VMCodes.length) {
-      VMCodeStarts = $ROM.VMCodes.slice(0, -1).reduce(
-        (acc, VMCode) => [...acc, acc[acc.length - 1] + VMCode.VMCode.length],
-        [0]
-      );
     }
   }
 
