@@ -10,6 +10,8 @@
 \
 is a turing equivalent computer made entirely from a [clock](https://en.wikipedia.org/wiki/Clock_rate) and [NAND gates](https://en.wikipedia.org/wiki/NAND_gate). NAND features its own machine code language, assembly language, assembler, VM language, VM translator, programming language, compiler, and IDE. NAND is based on the Jack-VM-Hack platform specified in the [Nand to Tetris course](https://www.nand2tetris.org).
 
+https://github.com/ArhanChaudhary/NAND/assets/57512390/e7b02a70-d11e-4932-a7f7-b47d92f8ac70
+
 # Example programs
 
 ### Average
