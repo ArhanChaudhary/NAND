@@ -67,7 +67,7 @@ class PongGame {
                 let key = Keyboard.keyPressed();
                 do bat.move();
                 do moveBall();
-                do Sys.wait(50);
+                do Sys.wait(150);
             }
 
             if (key = 130) { do bat.setDirection(1); }
@@ -83,7 +83,7 @@ class PongGame {
                 let key = Keyboard.keyPressed();
                 do bat.move();
                 do moveBall();
-                do Sys.wait(50);
+                do Sys.wait(150);
             }
         }
 

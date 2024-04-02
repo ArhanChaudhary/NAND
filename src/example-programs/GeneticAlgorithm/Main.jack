@@ -146,7 +146,7 @@ class Main {
             let positionY = initialY;
             let boundX = 508;
             let boundY = 253;
-            let moveDelay = 20;
+            let moveDelay = 30;
         } else {
             let sideLength = 5;
             let halfSideLength = 2;
@@ -154,7 +154,7 @@ class Main {
             let positionY = goalY;
             let boundX = 507;
             let boundY = 252;
-            let moveDelay = 35;
+            let moveDelay = 50;
         }
 
         let key = 1;
@@ -377,7 +377,7 @@ class Main {
                 } else {
                     let key = 0;
                 }
-                do Sys.wait(125);
+                do Sys.wait(225);
             }
         }
     }

@@ -1,5 +1,4 @@
 # TODO (NAND)
-* eff fadd
 * video of NAND
 * bug screenshot
 * compiler

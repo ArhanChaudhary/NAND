@@ -280,8 +280,8 @@
 
 <svelte:window on:resize={windowResize} />
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
 {#if show}
+  <!-- svelte-ignore a11y-no-static-element-interactions -->,
   <div
     id="memory-view"
     bind:this={memoryView}

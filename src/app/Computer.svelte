@@ -135,7 +135,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { computerMemory } from "./stores";
-  export let computerVW: Number;
+  export let computerVW: number;
 
   let computerWrapper: HTMLDivElement;
   let computerWrapperAspectRatio: number | null = null;
@@ -166,7 +166,7 @@
         if (makeRedAfterwards) {
           lightStatus = "red";
           makeRedAfterwards = false;
-        } else if (hardwareInfoMessage.NANDCalls > 47_300_000_000) {
+        } else if (hardwareInfoMessage.NANDCalls > 38_800_000_000) {
           lightStatus = "green";
         } else if (hardwareInfoMessage.NANDCalls === 0) {
           lightStatus = "";
