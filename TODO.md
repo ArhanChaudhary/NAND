@@ -1,8 +1,7 @@
 # TODO (NAND)
 * compiler
-  * cannot set variable names to keywords in compiler
+  * expected token "2" should be "identifier" and etc
   * ensure all subroutines and classes are defined at compile time
-  * syntax highlighter for other types
   * compilererror stash, too many static error
 * readme
   * a lot more comments and remove comments on example programs

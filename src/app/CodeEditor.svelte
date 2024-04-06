@@ -2,7 +2,6 @@
   import { KeywordToken, SymbolToken } from "../compiler/tokenizer";
   const escapeInRegex = ["(", ")", "[", "]", ".", "+", "*", "/", "|"];
   const TypeTokens = escapeRegexList([
-    KeywordToken.CLASS,
     KeywordToken.INT,
     KeywordToken.BOOLEAN,
     KeywordToken.CHAR,
@@ -171,7 +170,9 @@
       new RegExp(
         String.raw`(\/\*[\s\S]*?\*\/)|(\/\/.*)|(?<!\w)(\d+)(?!\w)|(".*?")|(${SymbolTokens.join(
           "|"
-        )})|\b(${TypeTokens.join("|")})\b|\b(${KeywordTokens.join("|")})\b`,
+        )})|\b(${TypeTokens.concat(
+          escapeRegexList($IDEContext.map((file) => file.fileName))
+        ).join("|")})\b|\b(${KeywordTokens.join("|")})\b`,
         "g"
       ),
       (_, p0, p1, p2, p3, p4, p5, p6) => {
