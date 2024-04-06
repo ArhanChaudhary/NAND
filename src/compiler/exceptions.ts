@@ -58,7 +58,7 @@ export class SyntaxError extends CompilerError {
     } else if (Array.isArray(this.expectedToken)) {
       return this.expectedToken.map((i) => `'${i}'`).join(", ");
     } else if (this.expectedToken in TokenType) {
-      return `'${this.expectedToken}'`;
+      return `'${TokenType[this.expectedToken]}'`;
     }
     return "''";
   }
