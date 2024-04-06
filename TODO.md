@@ -1,8 +1,8 @@
 # TODO (NAND)
 * compiler
-  * expected token "2" should be "identifier" and etc
   * ensure all subroutines and classes are defined at compile time
-  * compilererror stash, too many static error
+  * too many static error
+  * compilererror stash
 * readme
   * a lot more comments and remove comments on example programs
   * Writing programs in NAND
