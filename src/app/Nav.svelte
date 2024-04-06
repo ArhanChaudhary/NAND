@@ -132,7 +132,7 @@
     }
   }
 
-  function compileIDEContext() {
+  function compileAndStartComputer() {
     const program = [...$IDEContext];
     program.sort((a, b) => {
       if (a.fileName < b.fileName) return -1;
@@ -140,24 +140,19 @@
       return 0;
     });
     const VMCodes = compiler(program);
+    if (typeof VMCodes === "string") {
+      alert(VMCodes);
+      return;
+    }
     const assembly = VMTranslator(VMCodes);
     const machineCode = assembler(assembly);
     if (machineCode.length >= 32768) {
-      return machineCode.length;
-    } else {
-      $ROM.VMCodes = VMCodes;
-      $ROM.assembly = assembly;
-      $ROM.machineCode = machineCode;
-      return machineCode;
-    }
-  }
-
-  function compileAndStartComputer() {
-    const machineCode = compileIDEContext();
-    if (typeof machineCode === "number") {
       alert(`Program of length ${machineCode} too large to load into memory.`);
       return;
     }
+    $ROM.VMCodes = VMCodes;
+    $ROM.assembly = assembly;
+    $ROM.machineCode = machineCode;
 
     if ($shouldResetAndStart) {
       resetAndStartComputer(machineCode);
