@@ -1,5 +1,6 @@
 # TODO (NAND)
 * compiler
+  * green syntax highlight for subroutines
   * ensure all subroutines and classes are defined at compile time
   * too many static error
   * compilererror stash

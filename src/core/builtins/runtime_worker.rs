@@ -1,4 +1,5 @@
 use super::hardware;
+use super::kernal_worker::runtime::ALL_STEPS_PER_LOOP;
 use super::utils::{js_api, sync_cell};
 use crate::architecture;
 use serde::Serialize;
@@ -46,10 +47,8 @@ pub static STOP_RUNTIME_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
 pub static LOADING_NEW_PROGRAM: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
 pub static READY_TO_LOAD_NEW_PROGRAM: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
 
-// adjust accordingly
-pub const MAX_STEPS_PER_LOOP: usize = 30_000;
-pub const MIN_STEPS_PER_LOOP: usize = 1;
-pub static STEPS_PER_LOOP: SyncUnsafeCell<usize> = SyncUnsafeCell::new(MAX_STEPS_PER_LOOP);
+pub static STEPS_PER_LOOP: SyncUnsafeCell<usize> =
+    SyncUnsafeCell::new(ALL_STEPS_PER_LOOP[ALL_STEPS_PER_LOOP.len() - 1]);
 
 #[derive(Serialize)]
 #[serde(tag = "action", rename = "stoppedRuntime")]
@@ -77,9 +76,9 @@ pub fn try_start() {
         unsafe {
             *EMIT_INTERVAL_STEP_TOTAL.get() += steps_per_loop;
         }
-        if MAX_STEPS_PER_LOOP != steps_per_loop {
+        if ALL_STEPS_PER_LOOP[ALL_STEPS_PER_LOOP.len() - 1] != steps_per_loop {
             thread::sleep(std::time::Duration::from_micros(
-                (MAX_STEPS_PER_LOOP - steps_per_loop) as u64,
+                (ALL_STEPS_PER_LOOP[ALL_STEPS_PER_LOOP.len() - 1] - steps_per_loop) as u64,
             ));
         }
         if hardware::keyboard(0, false) == 32767 {

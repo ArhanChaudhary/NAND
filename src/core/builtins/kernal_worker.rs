@@ -5,7 +5,7 @@ use std::fmt;
 use wasm_bindgen::prelude::*;
 
 mod hardware_info;
-mod runtime;
+pub mod runtime;
 mod screen;
 
 #[wasm_bindgen(js_name = kernalHandleMessage)]

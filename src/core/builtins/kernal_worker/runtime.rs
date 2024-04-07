@@ -45,15 +45,25 @@ pub fn try_stop() {
     }
 }
 
+pub const ALL_STEPS_PER_LOOP: [usize; 11] =
+    [1, 10, 50, 200, 500, 2500, 7500, 15000, 22500, 27500, 30000];
+
 pub fn speed(speed_message: SpeedMessage) {
     let speed_percentage = speed_message.speed_percentage;
-    let min_log_value = (runtime_worker::MIN_STEPS_PER_LOOP as f64).log10();
-    let max_log_value = (runtime_worker::MAX_STEPS_PER_LOOP as f64).log10();
-    let log_scaled_value =
-        min_log_value + (speed_percentage as f64 / 100.0) * (max_log_value - min_log_value);
-    unsafe {
-        *runtime_worker::STEPS_PER_LOOP.get() = 10.0_f64.powf(log_scaled_value) as usize;
-    }
+    let div = (speed_percentage as usize) / 10;
+    if div == 10 {
+        unsafe {
+            *runtime_worker::STEPS_PER_LOOP.get() = ALL_STEPS_PER_LOOP[10];
+        }
+    } else {
+        let div_speed = ALL_STEPS_PER_LOOP[div];
+        let next_div_speed = ALL_STEPS_PER_LOOP[div + 1];
+        let lerp = (speed_percentage as usize) % 10;
+        unsafe {
+            *runtime_worker::STEPS_PER_LOOP.get() =
+                div_speed + ((next_div_speed - div_speed) * lerp) / 10;
+        }
+    };
 }
 
 pub fn keyboard(keyboard_message: KeyboardMessage) {
