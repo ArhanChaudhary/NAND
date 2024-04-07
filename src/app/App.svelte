@@ -5,6 +5,7 @@
   import MemoryView from "./MemoryView.svelte";
   import questionMarkIcon from "/question-mark.svg?raw";
   import About from "./About.svelte";
+  import CompilerError from "./CompilerError.svelte";
 
   let computerVW = 40;
   let computerWidth = (computerVW * window.innerWidth) / 100;
@@ -54,6 +55,8 @@
 
   let memoryViewWidth: number;
   let showAbout = false;
+  let showCompilerError = false;
+  let compilerError = "";
   let showMemoryView = true;
 </script>
 
@@ -66,7 +69,10 @@
 {#if showAbout}
   <About bind:showAbout />
 {/if}
-<Nav />
+{#if showCompilerError}
+  <CompilerError bind:showCompilerError {compilerError} />
+{/if}
+<Nav bind:showCompilerError bind:compilerError />
 <main style="--memory-view-width: {memoryViewWidth}px">
   <IDE />
   <!-- svelte-ignore a11y-no-static-element-interactions -->

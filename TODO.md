@@ -1,8 +1,9 @@
 # TODO (NAND)
 * compiler
+  * custom alert component
   * green syntax highlight for subroutines
-  * ensure all subroutines and classes are defined at compile time
   * too many static error
+  * ensure all subroutines and classes are defined at compile time
   * compilererror stash
 * readme
   * a lot more comments and remove comments on example programs

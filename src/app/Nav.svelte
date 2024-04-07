@@ -109,6 +109,9 @@
     ROM,
   } from "./stores";
 
+  export let showCompilerError: boolean;
+  export let compilerError: string;
+
   $: {
     $IDEContext;
     $shouldResetAndStart = true;
@@ -141,7 +144,8 @@
     });
     const VMCodes = compiler(program);
     if (typeof VMCodes === "string") {
-      alert(VMCodes);
+      compilerError = VMCodes;
+      showCompilerError = true;
       return;
     }
     const assembly = VMTranslator(VMCodes);
