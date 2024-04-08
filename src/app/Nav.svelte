@@ -196,6 +196,7 @@
           )
       ),
     ]);
+    $compilerError = null;
     $activeTabName = "";
     $activeTabName = "Main";
   }

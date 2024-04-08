@@ -1,9 +1,8 @@
 # TODO (NAND)
 * compiler
-  * green syntax highlight for subroutines
   * too many static error
+  * green syntax highlight for subroutines
   * ensure all subroutines and classes are defined at compile time
-  * compilererror stash
 * readme
   * a lot more comments and remove comments on example programs
   * Writing programs in NAND

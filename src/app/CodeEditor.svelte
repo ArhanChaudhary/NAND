@@ -88,7 +88,7 @@
   }
   let updateContextTimeout: NodeJS.Timeout;
   function queueUpdateContext(e: any) {
-    $compilerError = null;
+    $compilerError = null; // note that $IDEContext isnt reactively updated in updateContext
     clearTimeout(updateContextTimeout);
     updateContextTimeout = setTimeout(() => {
       requestAnimationFrame(() => {
