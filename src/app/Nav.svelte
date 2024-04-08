@@ -94,6 +94,7 @@
   import assembler from "../assembler/main";
   import VMTranslator from "../vm/main";
   import compiler from "../compiler/main";
+  import { CompilerError } from "../compiler/exceptions";
   import {
     JackOS,
     startComputer,
@@ -107,10 +108,9 @@
     shouldResetAndStart,
     activeTabName,
     ROM,
+    compilerError,
   } from "./stores";
-
-  export let showCompilerError: boolean;
-  export let compilerError: string;
+  import { tick } from "svelte";
 
   $: {
     $IDEContext;
@@ -143,9 +143,14 @@
       return 0;
     });
     const VMCodes = compiler(program);
-    if (typeof VMCodes === "string") {
-      compilerError = VMCodes;
-      showCompilerError = true;
+    if (VMCodes instanceof CompilerError) {
+      $compilerError = VMCodes;
+      $activeTabName = $compilerError.getFileName();
+      tick().then(() => {
+        document.querySelector(".line.compilerErrorLine")!.scrollIntoView({
+          block: "center",
+        });
+      });
       return;
     }
     const assembly = VMTranslator(VMCodes);

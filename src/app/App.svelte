@@ -55,8 +55,6 @@
 
   let memoryViewWidth: number;
   let showAbout = false;
-  let showCompilerError = false;
-  let compilerError = "";
   let showMemoryView = true;
 </script>
 
@@ -69,10 +67,8 @@
 {#if showAbout}
   <About bind:showAbout />
 {/if}
-{#if showCompilerError}
-  <CompilerError bind:showCompilerError {compilerError} />
-{/if}
-<Nav bind:showCompilerError bind:compilerError />
+<CompilerError />
+<Nav />
 <main style="--memory-view-width: {memoryViewWidth}px">
   <IDE />
   <!-- svelte-ignore a11y-no-static-element-interactions -->

@@ -1,14 +1,22 @@
 <script lang="ts">
   import Alert from "./Alert.svelte";
+  import { compilerError } from "./stores";
 
-  export let showCompilerError: boolean;
-  export let compilerError: string;
+  let showCompilerError = false;
+  $: $compilerError, updateShowCompilerError();
+  function updateShowCompilerError() {
+    showCompilerError = $compilerError !== null;
+  }
 </script>
 
-<Alert bind:showAlert={showCompilerError}>
-  <h1>Unexpected compilation error:</h1>
-  <pre>{compilerError}</pre>
-</Alert>
+{#if showCompilerError}
+  <Alert bind:showAlert={showCompilerError}>
+    <h1>Unexpected compilation error:</h1>
+    {#if $compilerError}
+      <pre>{$compilerError.toString()}</pre>
+    {/if}
+  </Alert>
+{/if}
 
 <style lang="scss">
   :not(h1) {

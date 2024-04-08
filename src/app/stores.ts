@@ -1,4 +1,5 @@
 import { writable } from "svelte/store";
+import { CompilerError } from "../compiler/exceptions";
 export const IDEContext = writable<{ fileName: string; file: string[] }[]>(
   JSON.parse(localStorage.getItem("IDEContext") as string) || []
 );
@@ -22,3 +23,4 @@ export const ROM = writable<{
   assembly: new Array(32768).fill("@0"),
   VMCodes: [],
 });
+export const compilerError = writable<null | CompilerError>(null);

@@ -67,6 +67,7 @@
   import { IDEContext, activeTabName, shouldResetAndStart } from "./stores";
   import { escape } from "html-escaper";
   import { tick } from "svelte";
+  import { compilerError } from "./stores";
 
   export let wrap: boolean;
   let codeEditor: HTMLDivElement;
@@ -87,6 +88,7 @@
   }
   let updateContextTimeout: NodeJS.Timeout;
   function queueUpdateContext(e: any) {
+    $compilerError = null;
     clearTimeout(updateContextTimeout);
     updateContextTimeout = setTimeout(() => {
       requestAnimationFrame(() => {
@@ -225,10 +227,14 @@
     class:wrap
   >
     {#key initialCodeEditorContent}
-      {#each initialCodeEditorContent as line}
+      {#each initialCodeEditorContent as line, index}
         <!-- needed or some line breaks dont render properly -->
         <!-- prettier-ignore -->
-        <div class="line">{#if line == ""}<br />{:else}{@html line}{/if}</div>
+        <div class="line" class:compilerErrorLine={
+          $compilerError !== null &&
+            $activeTabName === $compilerError.getFileName() &&
+            index === $compilerError.getLineNumber() - 1
+        }>{#if line == ""}<br />{:else}{@html line}{/if}</div>
       {/each}
     {/key}
   </div>
@@ -264,6 +270,20 @@
     .line {
       line-height: 20px;
       position: relative;
+
+      &.compilerErrorLine {
+        background-color: hsla(0, 83%, 61%, 0.25);
+
+        &::after {
+          content: "";
+          background-color: inherit;
+          height: 100%;
+          top: 0;
+          left: 100%;
+          width: 100%;
+          position: absolute;
+        }
+      }
 
       &::before {
         content: counter(line);

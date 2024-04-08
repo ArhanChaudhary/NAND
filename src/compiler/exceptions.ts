@@ -1,19 +1,19 @@
 import { TokenType } from "./tokenizer";
 
-abstract class CompilerError {
-  protected file: string;
+export abstract class CompilerError {
+  protected fileName: string;
   protected line: string;
   protected lineNumber: number;
   protected lineIndex: number;
   protected message!: string;
 
   constructor(
-    file: string,
+    fileName: string,
     line: string,
     lineNumber: number,
     lineIndex: number
   ) {
-    this.file = file;
+    this.fileName = fileName;
     this.line = line;
     this.lineNumber = lineNumber;
     this.lineIndex = lineIndex;
@@ -24,8 +24,16 @@ abstract class CompilerError {
   ${this.line}
   ${" ".repeat(this.lineIndex - 1)}^
 ${this.constructor.name}: ${this.message}
-  at ${this.file}.jack:${this.lineNumber}:${this.lineIndex}
+  at ${this.fileName}.jack:${this.lineNumber}:${this.lineIndex}
 `;
+  }
+
+  public getLineNumber() {
+    return this.lineNumber;
+  }
+
+  public getFileName() {
+    return this.fileName;
   }
 }
 

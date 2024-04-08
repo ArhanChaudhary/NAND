@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import CodeEditor from "./CodeEditor.svelte";
   import CodeEditorTabs from "./CodeEditorTabs.svelte";
   import wrapIcon from "/wrap.svg?raw";
