@@ -1,6 +1,5 @@
 # TODO (NAND)
 * compiler
-  * reject program with stuff after }
   * green syntax highlight for subroutines
   * too many static error
   * ensure all subroutines and classes are defined at compile time

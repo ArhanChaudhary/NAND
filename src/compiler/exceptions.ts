@@ -38,37 +38,41 @@ ${this.constructor.name}: ${this.message}
 }
 
 export class SyntaxError extends CompilerError {
-  private expectedToken: string | TokenType | (string | TokenType)[];
-
   constructor(
     file: string,
     line: string,
     lineNumber: number,
     lineIndex: number,
-    expectedToken: string | TokenType | (string | TokenType)[],
+    expectedToken: null | string | TokenType | (string | TokenType)[],
     info?: string
   ) {
     super(file, line, lineNumber, lineIndex);
-    this.expectedToken = expectedToken;
-    if (this.expectedToken === "") {
+    if (expectedToken === null) {
       this.message = "expected token";
+    } else if (expectedToken === "") {
+      this.message = "expected end of file";
     } else {
-      this.message = `expected token ${this.expectedTokenToEnglish()}`;
+      this.message = `expected token ${this.expectedTokenToEnglish(
+        expectedToken
+      )}`;
     }
     if (info) {
       this.message += ` (${info})`;
     }
   }
 
-  private expectedTokenToEnglish(): string {
-    if (typeof this.expectedToken === "string") {
-      return `'${this.expectedToken}'`;
-    } else if (Array.isArray(this.expectedToken)) {
-      return this.expectedToken.map((i) => `'${i}'`).join(", ");
-    } else if (this.expectedToken in TokenType) {
-      return `'${TokenType[this.expectedToken]}'`;
+  private expectedTokenToEnglish(
+    expectedToken: string | TokenType | (string | TokenType)[]
+  ): string {
+    if (typeof expectedToken === "string") {
+      return `'${expectedToken}'`;
+    } else if (Array.isArray(expectedToken)) {
+      return expectedToken.map((i) => `'${i}'`).join(", ");
+    } else if (expectedToken in TokenType) {
+      return `'${TokenType[expectedToken]}'`;
+    } else {
+      return "''";
     }
-    return "''";
   }
 }
 

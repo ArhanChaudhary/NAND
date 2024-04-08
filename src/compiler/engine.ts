@@ -53,7 +53,7 @@ export default class Engine {
   }
 
   private syntaxError(
-    expectedToken: string | TokenType | (string | TokenType)[],
+    expectedToken: null | string | TokenType | (string | TokenType)[],
     info?: string
   ): SyntaxError {
     return new SyntaxError(
@@ -168,6 +168,7 @@ export default class Engine {
     }
 
     this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
+    this.assertToken("");
     for (const call of this.subroutineCalls) {
       if (!this.subroutineNames.includes(call.name)) {
       }
@@ -397,7 +398,10 @@ export default class Engine {
         );
         break;
       default:
-        throw this.syntaxError([SymbolToken.OPENING_PARENTHESIS, SymbolToken.PERIOD]);
+        throw this.syntaxError([
+          SymbolToken.OPENING_PARENTHESIS,
+          SymbolToken.PERIOD,
+        ]);
     }
   }
 
@@ -486,7 +490,7 @@ export default class Engine {
     if (this.tokenizer.token() === SymbolToken.SEMICOLON) {
       if (this.subroutineReturnType !== KeywordToken.VOID)
         throw this.syntaxError(
-          "",
+          null,
           `subroutine must return type '${this.subroutineReturnType}'`
         );
       this.tokenizer.advance();
@@ -565,7 +569,10 @@ export default class Engine {
     switch (this.tokenizer.tokenType()) {
       case TokenType.INT_CONST:
         if (Number(this.tokenizer.token()) >= 32768) {
-          throw this.syntaxError("32767 or less", "integer literal is too large");
+          throw this.syntaxError(
+            "32767 or less",
+            "integer literal is too large"
+          );
         }
         this.vmwriter.writePush("constant", this.tokenizer.token());
         this.assertToken(TokenType.INT_CONST);
