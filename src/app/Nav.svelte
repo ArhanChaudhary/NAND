@@ -152,6 +152,11 @@
         });
       });
       return;
+    } else if (VMCodes instanceof Error) {
+      alert(`the compiler unexpectedly crashed with an internal error:
+
+      ${VMCodes.toString()}`);
+      return;
     }
     const assembly = VMTranslator(VMCodes);
     const machineCode = assembler(assembly);
