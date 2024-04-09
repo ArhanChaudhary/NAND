@@ -197,10 +197,7 @@ export default class Tokenizer {
         } else if (Tokenizer.isNumber(char)) {
           this.currentTokenType = TokenType.INT_CONST;
         } else {
-          throw new Error(
-            "Unrecognized token: " +
-              this.currentLine.substring(start, this.currentLineIndex)
-          );
+          throw this.syntaxError("", "Invalid unicode character");
         }
         continue;
       }
