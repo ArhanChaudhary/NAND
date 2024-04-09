@@ -185,8 +185,6 @@ export default class Engine {
       case KeywordToken.STATIC:
         kind = "static";
         break;
-      default:
-        throw this.syntaxError([KeywordToken.FIELD, KeywordToken.STATIC]);
     }
     this.tokenizer.advance();
     const type = this.tokenizer.token();
@@ -212,7 +210,6 @@ export default class Engine {
       KeywordToken.METHOD,
     ]);
     this.subroutineReturnType = this.tokenizer.token();
-    this.assertToken([KeywordToken.VOID, ...VarType]);
     if (
       this.subroutineType === KeywordToken.CONSTRUCTOR &&
       this.subroutineReturnType !== this.className
@@ -221,6 +218,7 @@ export default class Engine {
         this.className,
         "constructor return type must be its class"
       );
+    this.assertToken([KeywordToken.VOID, ...VarType]);
     this.subroutineName = this.tokenizer.token();
     this.assertToken(TokenType.IDENTIFIER);
     if (this.subroutineNames.includes(this.subroutineName))
@@ -629,6 +627,7 @@ export default class Engine {
               KeywordToken.FALSE,
               KeywordToken.NULL,
               KeywordToken.THIS,
+              KeywordToken.ARGUMENTS,
             ]);
         }
         break;

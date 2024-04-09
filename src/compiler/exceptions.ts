@@ -1,4 +1,40 @@
-import { TokenType } from "./tokenizer";
+import { KeywordToken, TokenType, SymbolToken } from "./tokenizer";
+
+function tokenStringToType(tokenString: string): string {
+  if (Object.values<string>(KeywordToken).includes(tokenString)) {
+    return tokenTypeToString(TokenType.KEYWORD);
+  } else if (Object.values<string>(SymbolToken).includes(tokenString)) {
+    return tokenTypeToString(TokenType.SYMBOL);
+  }
+  throw new Error("Invalid token string");
+}
+
+function tokenTypeToString(tokenType: TokenType): string {
+  switch (tokenType) {
+    case TokenType.KEYWORD:
+      return "keyword";
+    case TokenType.SYMBOL:
+      return "symbol";
+    case TokenType.IDENTIFIER:
+      return "identifier";
+    case TokenType.INT_CONST:
+      return "integer constant";
+    case TokenType.STRING_CONST:
+      return "string constant";
+    default:
+      throw new Error("Invalid token type");
+  }
+}
+
+function joinWithOr(arr: string[]): string {
+  if (arr.length === 0) {
+    return "";
+  } else if (arr.length === 1) {
+    return arr[0];
+  } else {
+    return `${arr.slice(0, -1).join(", ")} or ${arr.slice(-1)}`;
+  }
+}
 
 export abstract class CompilerError {
   protected fileName: string;
@@ -52,9 +88,7 @@ export class SyntaxError extends CompilerError {
     } else if (expectedToken === "") {
       this.message = "expected end of file";
     } else {
-      this.message = `expected token ${this.expectedTokenToEnglish(
-        expectedToken
-      )}`;
+      this.message = `expected ${this.expectedTokenToEnglish(expectedToken)}`;
     }
     if (info) {
       this.message += ` (${info})`;
@@ -65,14 +99,14 @@ export class SyntaxError extends CompilerError {
     expectedToken: string | TokenType | (string | TokenType)[]
   ): string {
     if (typeof expectedToken === "string") {
-      return `'${expectedToken}'`;
+      return `${tokenStringToType(expectedToken)} '${expectedToken}'`;
     } else if (Array.isArray(expectedToken)) {
-      return expectedToken.map((i) => `'${i}'`).join(", ");
+      return `token ${joinWithOr(expectedToken.map((i) => `'${i}'`))}`;
     } else if (expectedToken in TokenType) {
-      return `'${TokenType[expectedToken]}'`;
-    } else {
-      return "''";
+      const ret = tokenTypeToString(expectedToken);
+      return "aeiou".includes(ret[0].toLowerCase()) ? `an ${ret}` : `a ${ret}`;
     }
+    throw new Error("Invalid expected token");
   }
 }
 
@@ -86,7 +120,7 @@ export class NameError extends CompilerError {
     message: string
   ) {
     super(file, line, lineNumber, lineIndex);
-    this.message = `${message} (expected identifier ${expectedName})`;
+    this.message = `${message} (expected identifier '${expectedName}')`;
   }
 }
 
