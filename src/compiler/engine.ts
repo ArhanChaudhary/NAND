@@ -172,11 +172,7 @@ export default class Engine {
     this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
     if (this.tokenizer.token() !== "")
       throw this.syntaxError("", "file must end after program declaration");
-    for (const call of this.subroutineCalls) {
-      if (!this.subroutineNames.includes(call.name)) {
-      }
-      // throw new SyntaxError();
-    }
+    console.log("Compilation successful! :D");
   }
 
   private compileClassVarDec(): void {
@@ -230,12 +226,12 @@ export default class Engine {
       );
     this.assertToken([KeywordToken.VOID, ...VarType]);
     this.subroutineName = this.tokenizer.token();
-    this.assertToken(TokenType.IDENTIFIER);
     if (this.subroutineNames.includes(this.subroutineName))
       throw this.referenceError(
         `subroutine '${this.subroutineName}' can only be declared once`
       );
     this.subroutineNames.push(this.subroutineName);
+    this.assertToken(TokenType.IDENTIFIER);
     this.assertToken(SymbolToken.OPENING_PARENTHESIS);
     this.compileParameterList();
     this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
@@ -302,7 +298,6 @@ export default class Engine {
   private compileVarDec(): void {
     this.assertToken(KeywordToken.VAR);
     const type = this.tokenizer.token();
-    // TODO: check if identifier type is a class
     this.assertToken(VarType);
     this.define(type, "local");
     this.assertToken(TokenType.IDENTIFIER);
@@ -370,20 +365,19 @@ export default class Engine {
     let subroutineMethod: string;
     switch (this.tokenizer.token()) {
       case SymbolToken.OPENING_PARENTHESIS:
-        this.subroutineCalls.push({ name: prevToken });
-        this.tokenizer.advance();
         if (this.subroutineType === KeywordToken.FUNCTION)
           throw this.syntaxError(
             SymbolToken.PERIOD,
             "class functions cannot call instance methods"
           );
+        this.subroutineCalls.push({ name: prevToken });
+        this.tokenizer.advance();
         this.vmwriter.writePush("pointer", 0);
         nArgs = this.compileExpressionList();
         this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
         this.vmwriter.writeCall(`${this.className}.${prevToken}`, nArgs + 1);
         break;
       case SymbolToken.PERIOD:
-        // TODO: check if class has subroutine
         if (prevTokenType !== null) {
           this.validateVar(prevToken, line, lineNumber, lineIndex);
           subroutineClass = prevTokenType;
@@ -406,10 +400,7 @@ export default class Engine {
         );
         break;
       default:
-        throw this.syntaxError([
-          SymbolToken.OPENING_PARENTHESIS,
-          SymbolToken.PERIOD,
-        ]);
+        throw this.syntaxError("", "subroutine call must be followed by '(' or '.'");
     }
   }
 
@@ -632,13 +623,7 @@ export default class Engine {
             }
             break;
           default:
-            throw this.syntaxError([
-              KeywordToken.TRUE,
-              KeywordToken.FALSE,
-              KeywordToken.NULL,
-              KeywordToken.THIS,
-              KeywordToken.ARGUMENTS,
-            ]);
+            throw this.syntaxError("", "keyword cannot be used here");
         }
         break;
       case TokenType.IDENTIFIER:
@@ -706,11 +691,7 @@ export default class Engine {
             this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
             break;
           default:
-            throw this.syntaxError([
-              SymbolToken.NOT,
-              SymbolToken.SUBTRACT,
-              SymbolToken.OPENING_PARENTHESIS,
-            ]);
+            throw this.syntaxError("", "symbol cannot be used here");
         }
         break;
     }

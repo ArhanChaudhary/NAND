@@ -31,8 +31,10 @@ function joinWithOr(arr: string[]): string {
     return "";
   } else if (arr.length === 1) {
     return arr[0];
+  } else if (arr.length === 2) {
+    return `${arr[0]} or ${arr[1]}`;
   } else {
-    return `${arr.slice(0, -1).join(", ")} or ${arr.slice(-1)}`;
+    return `${arr.slice(0, -1).join(", ")}, or ${arr.slice(-1)[0]}`;
   }
 }
 

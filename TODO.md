@@ -1,6 +1,6 @@
 # TODO (NAND)
 * compiler
-  * duplicate subroutine names
+  * empty file compiler error
   * replace prompt and alert
   * green syntax highlight for subroutines
   * ensure all subroutines and classes are defined at compile time

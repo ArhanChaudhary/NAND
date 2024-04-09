@@ -11,6 +11,7 @@ export default function compiler(
       engine.compileClass();
       out.push(engine.getOut());
     } catch (err: any) {
+      console.log("Compilation unsuccessful :(");
       Engine.cleanup();
       return err as CompilerError;
     }
