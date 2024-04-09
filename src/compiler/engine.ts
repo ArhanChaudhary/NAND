@@ -41,7 +41,7 @@ export default class Engine {
 
   constructor(fileData: { fileName: string; file: string[] }) {
     this.fileName = fileData.fileName;
-    this.tokenizer = new Tokenizer(fileData.file);
+    this.tokenizer = new Tokenizer(fileData);
     this.vmwriter = new VMWriter();
     this.symbolTable = new SymbolTable();
     this.tokenizer.advance();
@@ -54,49 +54,9 @@ export default class Engine {
     };
   }
 
-  private syntaxError(
-    expectedToken: null | string | TokenType | (string | TokenType)[],
-    info?: string
-  ): SyntaxError {
-    return new SyntaxError(
-      this.fileName,
-      this.tokenizer.line(),
-      this.tokenizer.lineNumber(),
-      this.tokenizer.lineIndex(),
-      expectedToken,
-      info
-    );
-  }
-
-  private nameError(expectedToken: string, message: string): NameError {
-    return new NameError(
-      this.fileName,
-      this.tokenizer.line(),
-      this.tokenizer.lineNumber(),
-      this.tokenizer.lineIndex(),
-      expectedToken,
-      message
-    );
-  }
-
-  private referenceError(
-    message: string,
-    line?: string,
-    lineNumber?: number,
-    lineIndex?: number
-  ): ReferenceError {
-    return new ReferenceError(
-      this.fileName,
-      line || this.tokenizer.line(),
-      lineNumber || this.tokenizer.lineNumber(),
-      lineIndex || this.tokenizer.lineIndex(),
-      message
-    );
-  }
-
   private define(type: string, kind: string): void {
     if (!this.symbolTable.define(this.tokenizer.token(), type, kind))
-      throw this.referenceError(
+      throw this.tokenizer.referenceError(
         `variable '${this.tokenizer.token()}' can only be declared once`
       );
   }
@@ -109,14 +69,14 @@ export default class Engine {
   ): void {
     const kind = this.symbolTable.kindOf(token) as string;
     if (kind === null)
-      throw this.referenceError(
+      throw this.tokenizer.referenceError(
         `variable '${token}' was never declared`,
         line,
         lineNumber,
         lineIndex
       );
     if (kind === "this" && this.subroutineType === KeywordToken.FUNCTION)
-      throw this.referenceError(
+      throw this.tokenizer.referenceError(
         `field variable '${token}' cannot be used in a function`,
         line,
         lineNumber,
@@ -129,16 +89,16 @@ export default class Engine {
   ): void {
     if (typeof expectedToken === "string") {
       if (this.tokenizer.token() !== expectedToken)
-        throw this.syntaxError(expectedToken);
+        throw this.tokenizer.syntaxError(expectedToken);
     } else if (Array.isArray(expectedToken)) {
       if (
         !expectedToken.includes(this.tokenizer.token()) &&
         !expectedToken.includes(this.tokenizer.tokenType())
       )
-        throw this.syntaxError(expectedToken);
+        throw this.tokenizer.syntaxError(expectedToken);
     } else if (expectedToken in TokenType) {
       if (this.tokenizer.tokenType() !== expectedToken)
-        throw this.syntaxError(expectedToken);
+        throw this.tokenizer.syntaxError(expectedToken);
     }
     this.tokenizer.advance();
   }
@@ -147,7 +107,10 @@ export default class Engine {
     this.assertToken(KeywordToken.CLASS);
     this.className = this.tokenizer.token();
     if (this.className !== this.fileName)
-      throw this.nameError(this.fileName, "class name must match file name");
+      throw this.tokenizer.nameError(
+        this.fileName,
+        "class name must match file name"
+      );
     this.assertToken(TokenType.IDENTIFIER);
     this.assertToken(SymbolToken.OPENING_CURLY_BRACKET);
 
@@ -171,7 +134,10 @@ export default class Engine {
 
     this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
     if (this.tokenizer.token() !== "")
-      throw this.syntaxError("", "file must end after program declaration");
+      throw this.tokenizer.syntaxError(
+        "",
+        "file must end after program declaration"
+      );
     console.log("Compilation successful! :D");
   }
 
@@ -185,7 +151,7 @@ export default class Engine {
         kind = "static";
         Engine.staticCount++;
         if (Engine.staticCount > maxStaticCount) {
-          throw this.syntaxError(
+          throw this.tokenizer.syntaxError(
             "",
             `too many static variables (>${maxStaticCount})`
           );
@@ -220,14 +186,14 @@ export default class Engine {
       this.subroutineType === KeywordToken.CONSTRUCTOR &&
       this.subroutineReturnType !== this.className
     )
-      throw this.nameError(
+      throw this.tokenizer.nameError(
         this.className,
         "constructor return type must be its class"
       );
     this.assertToken([KeywordToken.VOID, ...VarType]);
     this.subroutineName = this.tokenizer.token();
     if (this.subroutineNames.includes(this.subroutineName))
-      throw this.referenceError(
+      throw this.tokenizer.referenceError(
         `subroutine '${this.subroutineName}' can only be declared once`
       );
     this.subroutineNames.push(this.subroutineName);
@@ -243,7 +209,7 @@ export default class Engine {
         this.vmwriter.writePush("pointer", 0);
       } else {
         if (this.subroutineReturnType !== KeywordToken.VOID)
-          throw this.syntaxError(KeywordToken.RETURN);
+          throw this.tokenizer.syntaxError(KeywordToken.RETURN);
         this.vmwriter.writePush("constant", 0);
       }
       this.vmwriter.writeReturn();
@@ -322,7 +288,7 @@ export default class Engine {
       case KeywordToken.WHILE:
       case KeywordToken.DO:
         if (this.lastStatementIsReturn)
-          throw this.syntaxError(
+          throw this.tokenizer.syntaxError(
             SymbolToken.CLOSING_CURLY_BRACKET,
             "return must be the last statement in a subroutine"
           );
@@ -366,7 +332,7 @@ export default class Engine {
     switch (this.tokenizer.token()) {
       case SymbolToken.OPENING_PARENTHESIS:
         if (this.subroutineType === KeywordToken.FUNCTION)
-          throw this.syntaxError(
+          throw this.tokenizer.syntaxError(
             SymbolToken.PERIOD,
             "class functions cannot call instance methods"
           );
@@ -400,7 +366,10 @@ export default class Engine {
         );
         break;
       default:
-        throw this.syntaxError("", "subroutine call must be followed by '(' or '.'");
+        throw this.tokenizer.syntaxError(
+          "",
+          "subroutine call must be followed by '(' or '.'"
+        );
     }
   }
 
@@ -488,7 +457,7 @@ export default class Engine {
     this.assertToken(KeywordToken.RETURN);
     if (this.tokenizer.token() === SymbolToken.SEMICOLON) {
       if (this.subroutineReturnType !== KeywordToken.VOID)
-        throw this.syntaxError(
+        throw this.tokenizer.syntaxError(
           null,
           `subroutine must return type '${this.subroutineReturnType}'`
         );
@@ -496,13 +465,13 @@ export default class Engine {
       this.vmwriter.writePush("constant", 0);
     } else {
       if (this.subroutineReturnType === KeywordToken.VOID)
-        throw this.syntaxError(
+        throw this.tokenizer.syntaxError(
           SymbolToken.SEMICOLON,
           "void subroutine cannot have a return value"
         );
       if (this.subroutineType === KeywordToken.CONSTRUCTOR) {
         if (this.tokenizer.token() !== KeywordToken.THIS)
-          throw this.syntaxError(
+          throw this.tokenizer.syntaxError(
             KeywordToken.THIS,
             "constructors can only return 'this'"
           );
@@ -568,7 +537,7 @@ export default class Engine {
     switch (this.tokenizer.tokenType()) {
       case TokenType.INT_CONST:
         if (Number(this.tokenizer.token()) >= 32768) {
-          throw this.syntaxError(
+          throw this.tokenizer.syntaxError(
             "32767 or less",
             "integer literal is too large"
           );
@@ -605,7 +574,9 @@ export default class Engine {
             break;
           case KeywordToken.THIS:
             if (this.subroutineType === KeywordToken.FUNCTION)
-              throw this.referenceError("functions cannot reference 'this'");
+              throw this.tokenizer.referenceError(
+                "functions cannot reference 'this'"
+              );
             this.vmwriter.writePush("pointer", 0);
             this.tokenizer.advance();
             break;
@@ -623,7 +594,7 @@ export default class Engine {
             }
             break;
           default:
-            throw this.syntaxError("", "keyword cannot be used here");
+            throw this.tokenizer.syntaxError("", "keyword cannot be used here");
         }
         break;
       case TokenType.IDENTIFIER:
@@ -691,7 +662,7 @@ export default class Engine {
             this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
             break;
           default:
-            throw this.syntaxError("", "symbol cannot be used here");
+            throw this.tokenizer.syntaxError("", "symbol cannot be used here");
         }
         break;
     }

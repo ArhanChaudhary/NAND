@@ -1,3 +1,5 @@
+import { NameError, SyntaxError, ReferenceError } from "./exceptions";
+
 export enum TokenType {
   KEYWORD,
   SYMBOL,
@@ -54,7 +56,7 @@ export enum KeywordToken {
 }
 
 export default class Tokenizer {
-  constructor(private inputStream: string[]) {}
+  constructor(private fileData: { fileName: string; file: string[] }) {}
   private inputStreamIndex = 0;
   private currentLine = "";
   private prevLineIndex = 0;
@@ -62,6 +64,49 @@ export default class Tokenizer {
   private currentToken: string | null = null;
   private currentTokenType: TokenType | null = null;
   private inComment = false;
+
+  public syntaxError(
+    expectedToken: null | string | TokenType | (string | TokenType)[],
+    info?: string
+  ): SyntaxError {
+    return new SyntaxError(
+      this.fileData.fileName,
+      this.line(),
+      this.lineNumber(),
+      this.lineIndex(),
+      expectedToken,
+      info
+    );
+  }
+
+  public nameError(
+    expectedToken: string,
+    message: string
+  ): NameError {
+    return new NameError(
+      this.fileData.fileName,
+      this.line(),
+      this.lineNumber(),
+      this.lineIndex(),
+      expectedToken,
+      message
+    );
+  }
+
+  public referenceError(
+    message: string,
+    line?: string,
+    lineNumber?: number,
+    lineIndex?: number
+  ): ReferenceError {
+    return new ReferenceError(
+      this.fileData.fileName,
+      line || this.line(),
+      lineNumber || this.lineNumber(),
+      lineIndex || this.lineIndex(),
+      message
+    );
+  }
 
   static isLetter(char: string): boolean {
     return /[a-z]/i.test(char) || char === "_";
@@ -111,7 +156,7 @@ export default class Tokenizer {
   public advance(): boolean {
     let line: string | undefined;
     if (this.currentLine.length === this.currentLineIndex) {
-      line = this.inputStream[this.inputStreamIndex++];
+      line = this.fileData.file[this.inputStreamIndex++];
       if (line === undefined) {
         // without this tokens stay as their own value
         this.currentToken = "";
