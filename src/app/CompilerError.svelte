@@ -10,7 +10,7 @@
 </script>
 
 {#if showCompilerError}
-  <Alert bind:showAlert={showCompilerError}>
+  <Alert bind:showAlert={showCompilerError} alignTop={true}>
     <h1>Unexpected compilation error:</h1>
     {#if $compilerError}
       <pre>{$compilerError.toString()}</pre>

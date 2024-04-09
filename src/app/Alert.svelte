@@ -1,8 +1,9 @@
 <script lang="ts">
   export let showAlert: boolean;
+  export let alignTop: boolean = false;
 </script>
 
-<div id="overlay">
+<div id="overlay" class:alignTop>
   <div id="wrapper">
     <slot />
 
@@ -24,6 +25,11 @@
     justify-content: center;
     align-items: center;
     z-index: 100;
+
+    &.alignTop {
+      align-items: flex-start;
+      padding-top: 40px;
+    }
 
     #wrapper {
       position: relative;
