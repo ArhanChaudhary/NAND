@@ -120,7 +120,9 @@
     if (shouldAutoLoad("New Program")) {
       loadExampleProgram("New Program");
     } else {
-      $activeTabName = "Main";
+      $activeTabName = $IDEContext.find((file) => file.fileName === $activeTabName)
+        ? $activeTabName
+        : $IDEContext[0]?.fileName;
     }
   });
 
