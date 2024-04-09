@@ -22,6 +22,7 @@ const OPS = [
   SymbolToken.EQUAL,
 ];
 
+const maxStaticCount = 256 - 16;
 export default class Engine {
   private vmwriter: VMWriter;
   private tokenizer: Tokenizer;
@@ -36,6 +37,7 @@ export default class Engine {
   private subroutineReturnType = "";
   private lastStatementIsReturn = false;
   private labelCounter = 0;
+  static staticCount = 0;
 
   constructor(fileData: { fileName: string; file: string[] }) {
     this.fileName = fileData.fileName;
@@ -168,7 +170,8 @@ export default class Engine {
     }
 
     this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
-    this.assertToken("");
+    if (this.tokenizer.token() !== "")
+      throw this.syntaxError("", "file must end after program declaration");
     for (const call of this.subroutineCalls) {
       if (!this.subroutineNames.includes(call.name)) {
       }
@@ -184,6 +187,13 @@ export default class Engine {
         break;
       case KeywordToken.STATIC:
         kind = "static";
+        Engine.staticCount++;
+        if (Engine.staticCount > maxStaticCount) {
+          throw this.syntaxError(
+            "",
+            `too many static variables (>${maxStaticCount})`
+          );
+        }
         break;
     }
     this.tokenizer.advance();
@@ -720,5 +730,13 @@ export default class Engine {
       this.vmwriter.writeArithmetic(SymbolToken.ADD);
       this.assertToken(SymbolToken.CLOSING_BRACKET);
     }
+  }
+
+  static cleanup(): void {
+    Engine.staticCount = 0;
+  }
+
+  static postValidation(): void {
+    Engine.cleanup();
   }
 }

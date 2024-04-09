@@ -11,9 +11,10 @@ export default function compiler(
       engine.compileClass();
       out.push(engine.getOut());
     } catch (err: any) {
+      Engine.cleanup();
       return err as CompilerError;
     }
   }
-  // Engine.postValidation();
+  Engine.postValidation();
   return out;
 }

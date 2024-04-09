@@ -86,7 +86,7 @@ export class SyntaxError extends CompilerError {
     if (expectedToken === null) {
       this.message = "expected token";
     } else if (expectedToken === "") {
-      this.message = "expected end of file";
+      this.message = "unexpected token";
     } else {
       this.message = `expected ${this.expectedTokenToEnglish(expectedToken)}`;
     }
