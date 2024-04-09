@@ -19,7 +19,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.25);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -31,7 +31,7 @@
       padding: 15px;
       background-color: hsl(220, 10%, 5%);
       border-radius: 15px;
-      border: 5px solid hsl(0, 0%, 70%);
+      border: 4px solid hsl(0, 0%, 70%);
       box-shadow: 0 0 30px 5px black;
 
       #exit {

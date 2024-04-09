@@ -19,11 +19,13 @@
 {/if}
 
 <style lang="scss">
-  :not(h1) {
-    font-size: 15px;
+  h1 {
+    margin-top: 10px;
   }
 
-  :first-child {
-    margin-top: 10px;
+  pre {
+    font-size: 15px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
   }
 </style>
