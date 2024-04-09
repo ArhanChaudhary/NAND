@@ -57,7 +57,7 @@ export enum KeywordToken {
 
 export default class Tokenizer {
   constructor(private fileData: { fileName: string; file: string[] }) {}
-  private inputStreamIndex = 0;
+  private fileIndex = 0;
   private currentLine = "";
   private prevLineIndex = 0;
   private currentLineIndex = 0;
@@ -156,10 +156,12 @@ export default class Tokenizer {
   public advance(): boolean {
     let line: string | undefined;
     if (this.currentLine.length === this.currentLineIndex) {
-      line = this.fileData.file[this.inputStreamIndex++];
+      line = this.fileData.file[this.fileIndex++];
       if (line === undefined) {
         // without this tokens stay as their own value
         this.currentToken = "";
+        // back to a valid index
+        this.fileIndex--;
         return false;
       }
       this.currentLineIndex = 0;
@@ -271,7 +273,7 @@ export default class Tokenizer {
   }
 
   public lineNumber(): number {
-    return this.inputStreamIndex;
+    return this.fileIndex;
   }
 
   public lineIndex(): number {

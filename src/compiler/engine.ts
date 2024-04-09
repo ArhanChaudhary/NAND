@@ -138,7 +138,6 @@ export default class Engine {
         "",
         "file must end after program declaration"
       );
-    console.log("Compilation successful! :D");
   }
 
   private compileClassVarDec(): void {

@@ -17,5 +17,6 @@ export default function compiler(
     }
   }
   Engine.postValidation();
+  console.log("Compilation successful! :D");
   return out;
 }

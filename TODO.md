@@ -1,9 +1,8 @@
 # TODO (NAND)
 * compiler
-  * empty file compiler error
   * replace prompt and alert
   * green syntax highlight for subroutines
-  * ensure all subroutines and classes are defined at compile time
+  * ensure all subroutines and classes are defined at compile time (must have Sys.init and Main.main)
 * readme
   * a lot more comments and remove comments on example programs
   * Writing programs in NAND
