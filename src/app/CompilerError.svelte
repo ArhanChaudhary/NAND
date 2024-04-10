@@ -10,7 +10,7 @@
 </script>
 
 {#if showCompilerError}
-  <Alert bind:showAlert={showCompilerError} alignTop={true}>
+  <Alert bind:showAlert={showCompilerError}>
     <h1>Unexpected compilation error:</h1>
     {#if $compilerError}
       <pre>{$compilerError.toString()}</pre>
@@ -19,12 +19,7 @@
 {/if}
 
 <style lang="scss">
-  h1 {
-    margin-top: 10px;
-  }
-
   pre {
-    font-size: 15px;
     white-space: pre-wrap;
     word-wrap: break-word;
   }

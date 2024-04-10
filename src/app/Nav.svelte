@@ -94,7 +94,7 @@
   import assembler from "../assembler/main";
   import VMTranslator from "../vm/main";
   import compiler from "../compiler/main";
-  import { CompilerError } from "../compiler/exceptions";
+  import { BroadCompilerError, CompilerError } from "../compiler/exceptions";
   import {
     JackOS,
     startComputer,
@@ -120,7 +120,9 @@
     if (shouldAutoLoad("New Program")) {
       loadExampleProgram("New Program");
     } else {
-      $activeTabName = $IDEContext.find((file) => file.fileName === $activeTabName)
+      $activeTabName = $IDEContext.find(
+        (file) => file.fileName === $activeTabName
+      )
         ? $activeTabName
         : $IDEContext[0]?.fileName;
     }
@@ -137,6 +139,16 @@
     }
   }
 
+  function displayCompilerError(compilerError: CompilerError) {
+    console.log("Compilation unsuccessful :(");
+    $activeTabName = compilerError.getFileName();
+    tick().then(() => {
+      document.querySelector(".line.compilerErrorLine")!.scrollIntoView({
+        block: "center",
+      });
+    });
+  }
+
   function compileAndStartComputer() {
     const program = [...$IDEContext];
     program.sort((a, b) => {
@@ -147,25 +159,25 @@
     const VMCodes = compiler(program);
     if (VMCodes instanceof CompilerError) {
       $compilerError = VMCodes;
-      $activeTabName = $compilerError.getFileName();
-      tick().then(() => {
-        document.querySelector(".line.compilerErrorLine")!.scrollIntoView({
-          block: "center",
-        });
-      });
+      displayCompilerError($compilerError);
       return;
     } else if (VMCodes instanceof Error) {
-      alert(`the compiler unexpectedly crashed with an internal error:
-
-      ${VMCodes.toString()}`);
+      $compilerError = new BroadCompilerError(
+        `Compiler has crashed with an internal error (this is a bug):\n\n${VMCodes.toString()}`
+      );
+      displayCompilerError($compilerError);
       return;
     }
     const assembly = VMTranslator(VMCodes);
     const machineCode = assembler(assembly);
-    if (machineCode.length >= 32768) {
-      alert(`Program of length ${machineCode} too large to load into memory.`);
+    if (machineCode.length > 32767) {
+      $compilerError = new BroadCompilerError(
+        `Program of ROM length ${machineCode.length} > 32767 too large to load into memory`
+      );
+      displayCompilerError($compilerError);
       return;
     }
+    console.log("Compilation successful! :D");
     $ROM.VMCodes = VMCodes;
     $ROM.assembly = assembly;
     $ROM.machineCode = machineCode;

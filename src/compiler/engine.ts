@@ -150,9 +150,8 @@ export default class Engine {
         kind = "static";
         Engine.staticCount++;
         if (Engine.staticCount > maxStaticCount) {
-          throw this.tokenizer.syntaxError(
-            "",
-            `too many static variables (>${maxStaticCount})`
+          throw this.tokenizer.referenceError(
+            `${Engine.staticCount} > ${maxStaticCount} static variables is too many to load into memory`
           );
         }
         break;

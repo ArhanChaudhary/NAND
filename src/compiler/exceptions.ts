@@ -138,3 +138,14 @@ export class ReferenceError extends CompilerError {
     this.message = message;
   }
 }
+
+export class BroadCompilerError extends CompilerError {
+  constructor(private stringified: string) {
+    super("Main", "", 1, 0);
+    this.stringified = stringified;
+  }
+
+  public toString(): string {
+    return this.stringified;
+  }
+}

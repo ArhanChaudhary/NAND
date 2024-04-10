@@ -1,6 +1,6 @@
 <script lang="ts">
   export let showAlert: boolean;
-  export let alignTop: boolean = false;
+  export let alignTop: boolean = true;
 </script>
 
 <div id="overlay" class:alignTop>
@@ -47,6 +47,18 @@
         right: 20px;
         font-size: 50px;
         cursor: pointer;
+      }
+
+      :global(> :first-child) {
+        margin-top: 10px;
+      }
+
+      :global(> :nth-last-child(2)) {
+        margin-bottom: 10px;
+      }
+
+      :global(:not(h1)) {
+        font-size: 15px;
       }
     }
   }

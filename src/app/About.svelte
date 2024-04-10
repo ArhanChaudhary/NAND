@@ -4,7 +4,7 @@
   export let showAbout: boolean;
 </script>
 
-<Alert bind:showAlert={showAbout}>
+<Alert bind:showAlert={showAbout} alignTop={false}>
   <h1>What is NAND?</h1>
   <p>
     <b>N</b> ot
@@ -42,13 +42,3 @@
     click "Start".
   </p>
 </Alert>
-
-<style lang="scss">
-  :not(h1) {
-    font-size: 15px;
-  }
-
-  :first-child {
-    margin-top: 10px;
-  }
-</style>
