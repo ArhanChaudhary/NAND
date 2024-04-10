@@ -44,24 +44,27 @@ export abstract class CompilerError {
   protected lineNumber: number;
   protected lineIndex: number;
   protected message!: string;
+  private errorType: string;
 
   constructor(
     fileName: string,
     line: string,
     lineNumber: number,
-    lineIndex: number
+    lineIndex: number,
+    errorType: string
   ) {
     this.fileName = fileName;
     this.line = line;
     this.lineNumber = lineNumber;
     this.lineIndex = lineIndex;
+    this.errorType = errorType;
   }
 
   public toString(): string {
     return `
   ${this.line}
   ${" ".repeat(this.lineIndex - 1)}^
-${this.constructor.name}: ${this.message}
+${this.errorType}: ${this.message}
   at ${this.fileName}.jack:${this.lineNumber}:${this.lineIndex}
 `;
   }
@@ -84,7 +87,7 @@ export class SyntaxError extends CompilerError {
     expectedToken: null | string | TokenType | (string | TokenType)[],
     info?: string
   ) {
-    super(fileName, line, lineNumber, lineIndex);
+    super(fileName, line, lineNumber, lineIndex, "SyntaxError");
     if (expectedToken === null) {
       this.message = "expected token";
     } else if (expectedToken === "") {
@@ -121,7 +124,7 @@ export class NameError extends CompilerError {
     expectedName: string,
     message: string
   ) {
-    super(fileName, line, lineNumber, lineIndex);
+    super(fileName, line, lineNumber, lineIndex, "NameError");
     this.message = `${message} (expected token '${expectedName}')`;
   }
 }
@@ -134,14 +137,14 @@ export class ReferenceError extends CompilerError {
     lineIndex: number,
     message: string
   ) {
-    super(fileName, line, lineNumber, lineIndex);
+    super(fileName, line, lineNumber, lineIndex, "ReferenceError");
     this.message = message;
   }
 }
 
 export class BroadCompilerError extends CompilerError {
   constructor(activeTab: string, private stringified: string) {
-    super(activeTab, "", 1, 1);
+    super(activeTab, "", 1, 1, "BroadCompilerError");
     this.stringified = stringified;
   }
 
