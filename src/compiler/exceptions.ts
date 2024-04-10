@@ -77,14 +77,14 @@ ${this.constructor.name}: ${this.message}
 
 export class SyntaxError extends CompilerError {
   constructor(
-    file: string,
+    fileName: string,
     line: string,
     lineNumber: number,
     lineIndex: number,
     expectedToken: null | string | TokenType | (string | TokenType)[],
     info?: string
   ) {
-    super(file, line, lineNumber, lineIndex);
+    super(fileName, line, lineNumber, lineIndex);
     if (expectedToken === null) {
       this.message = "expected token";
     } else if (expectedToken === "") {
@@ -114,34 +114,34 @@ export class SyntaxError extends CompilerError {
 
 export class NameError extends CompilerError {
   constructor(
-    file: string,
+    fileName: string,
     line: string,
     lineNumber: number,
     lineIndex: number,
     expectedName: string,
     message: string
   ) {
-    super(file, line, lineNumber, lineIndex);
+    super(fileName, line, lineNumber, lineIndex);
     this.message = `${message} (expected identifier '${expectedName}')`;
   }
 }
 
 export class ReferenceError extends CompilerError {
   constructor(
-    file: string,
+    fileName: string,
     line: string,
     lineNumber: number,
     lineIndex: number,
     message: string
   ) {
-    super(file, line, lineNumber, lineIndex);
+    super(fileName, line, lineNumber, lineIndex);
     this.message = message;
   }
 }
 
 export class BroadCompilerError extends CompilerError {
-  constructor(private stringified: string) {
-    super("Main", "", 1, 0);
+  constructor(activeTab: string, private stringified: string) {
+    super(activeTab, "", 1, 1);
     this.stringified = stringified;
   }
 

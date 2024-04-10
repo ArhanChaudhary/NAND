@@ -1,6 +1,5 @@
 # TODO (NAND)
 * compiler
-  * must have Sys.init
   * green syntax highlight for subroutines
 * readme
   * a lot more comments and remove comments on example programs

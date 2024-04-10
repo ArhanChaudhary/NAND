@@ -143,7 +143,7 @@
     console.log("Compilation unsuccessful :(");
     $activeTabName = compilerError.getFileName();
     tick().then(() => {
-      document.querySelector(".line.compilerErrorLine")!.scrollIntoView({
+      document.querySelector(".line.compilerErrorLine")?.scrollIntoView({
         block: "center",
       });
     });
@@ -163,6 +163,7 @@
       return;
     } else if (VMCodes instanceof Error) {
       $compilerError = new BroadCompilerError(
+        "Main",
         `Compiler has crashed with an internal error (this is a bug):\n\n${VMCodes.toString()}`
       );
       displayCompilerError($compilerError);
@@ -172,6 +173,7 @@
     const machineCode = assembler(assembly);
     if (machineCode.length > 32767) {
       $compilerError = new BroadCompilerError(
+        "Main",
         `Program of ROM length ${machineCode.length} > 32767 too large to load into memory`
       );
       displayCompilerError($compilerError);

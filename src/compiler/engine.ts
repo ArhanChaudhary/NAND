@@ -1,7 +1,7 @@
 import Tokenizer, { TokenType, SymbolToken, KeywordToken } from "./tokenizer";
 import SymbolTable from "./symboltable";
 import VMWriter from "./vmwriter";
-import { ReferenceError, CompilerError } from "./exceptions";
+import { ReferenceError, CompilerError, BroadCompilerError } from "./exceptions";
 
 const VarType = [
   KeywordToken.INT,
@@ -21,6 +21,19 @@ const OPS = [
   SymbolToken.GREATER_THAN,
   SymbolToken.EQUAL,
 ];
+
+function internalSubroutineCalls() {
+  return [
+    {
+      subroutineClass: "Sys",
+      subroutineName: "init",
+      throw: new BroadCompilerError(
+        "Sys",
+        "subroutine 'init' from class 'Sys' must be declared, as it is the entry point of the program",
+      ),
+    },
+  ];
+}
 
 const maxStaticCount = 256 - 16;
 export default class Engine {
@@ -42,7 +55,7 @@ export default class Engine {
     subroutineClass: string;
     subroutineName: string;
     throw: ReferenceError;
-  }[] = [];
+  }[] = internalSubroutineCalls();
   static allSubroutineDeclarations: {
     className: string;
     subroutineName: string;
@@ -708,7 +721,7 @@ export default class Engine {
   }
 
   static cleanup(): void {
-    Engine.trySubroutineCalls = [];
+    Engine.trySubroutineCalls = internalSubroutineCalls();
     Engine.allSubroutineDeclarations = [];
     Engine.staticCount = 0;
   }
