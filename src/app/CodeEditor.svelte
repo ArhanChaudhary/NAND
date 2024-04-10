@@ -168,16 +168,28 @@
     }
   }
   function highlightSyntax(code: string): string {
+    let subroutineNames = [
+      ...code
+        .matchAll(
+          /(function|constructor|method) [_a-zA-Z][_a-zA-Z0-9]+ ([_a-zA-Z][_a-zA-Z0-9]+)\(/g
+        )
+        // @ts-ignore
+        .map((i) => i[2]),
+    ];
     return code.replaceAll(
       new RegExp(
         String.raw`(\/\*[\s\S]*?\*\/)|(\/\/.*)|(?<!\w)(\d+)(?!\w)|(".*?")|(${SymbolTokens.join(
           "|"
         )})|\b(${TypeTokens.concat(
           escapeRegexList($IDEContext.map((file) => file.fileName))
-        ).join("|")})\b|\b(${KeywordTokens.join("|")})\b`,
+        ).join(
+          "|"
+        )})\b|\b(${KeywordTokens.join("|")})\b|\b(${subroutineNames.join(
+          "|"
+        )})\b`,
         "g"
       ),
-      (_, p0, p1, p2, p3, p4, p5, p6) => {
+      (_, p0, p1, p2, p3, p4, p5, p6, p7) => {
         if (p0) {
           return `<span class='gray'>${p0
             .split("\n")
@@ -202,6 +214,8 @@
           return `<span class='light-blue'>${escape(p5)}</span>`;
         } else if (p6) {
           return `<span class='red'>${escape(p6)}</span>`;
+        } else if (p7) {
+          return `<span class='green'>${escape(p7)}</span>`;
         }
         throw new Error("syntax highlighting failed");
       }
@@ -315,6 +329,10 @@
 
       :global(.yellow) {
         color: hsl(39, 67%, 69%);
+      }
+
+      :global(.green) {
+        color: hsl(95, 38%, 62%);
       }
     }
   }

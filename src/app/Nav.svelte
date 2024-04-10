@@ -82,7 +82,7 @@
         mainFileDatum,
         ...exampleProgram.exampleProgramData.filter(
           (fileDatum) => fileDatum.fileName !== "Main"
-        ),
+        ).sort((a, b) => +(a.fileName < b.fileName))
       ];
     }
     return examplePrograms;

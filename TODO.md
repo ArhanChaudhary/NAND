@@ -1,6 +1,4 @@
 # TODO (NAND)
-* compiler
-  * green syntax highlight for subroutines
 * readme
   * a lot more comments and remove comments on example programs
   * Writing programs in NAND
