@@ -1,7 +1,11 @@
 import Tokenizer, { TokenType, SymbolToken, KeywordToken } from "./tokenizer";
 import SymbolTable from "./symboltable";
 import VMWriter from "./vmwriter";
-import { ReferenceError, CompilerError, BroadCompilerError } from "./exceptions";
+import {
+  ReferenceError,
+  CompilerError,
+  BroadCompilerError,
+} from "./exceptions";
 
 const VarType = [
   KeywordToken.INT,
@@ -29,7 +33,7 @@ function internalSubroutineCalls() {
       subroutineName: "init",
       throw: new BroadCompilerError(
         "Sys",
-        "subroutine 'init' from class 'Sys' must be declared, as it is the entry point of the program",
+        "subroutine 'init' from class 'Sys' must be declared, as it is the entry point of the program"
       ),
     },
   ];
@@ -216,6 +220,25 @@ export default class Engine {
       throw this.tokenizer.referenceError(
         `subroutine '${this.subroutineName}' can only be declared once`
       );
+    if (this.subroutineName === "init" && this.className === "Sys") {
+      if (this.subroutineType !== KeywordToken.FUNCTION) {
+        throw this.tokenizer.nameError(
+          KeywordToken.FUNCTION,
+          "Sys.init must be a class function",
+          this.tokenizer.lineIndex() -
+            this.subroutineType.length -
+            this.subroutineReturnType.length -
+            2
+        );
+      }
+      if (this.subroutineReturnType !== KeywordToken.VOID) {
+        throw this.tokenizer.nameError(
+          KeywordToken.VOID,
+          "Sys.init must return void",
+          this.tokenizer.lineIndex() - this.subroutineReturnType.length - 1
+        );
+      }
+    }
     this.subroutineNames.push(this.subroutineName);
     Engine.allSubroutineDeclarations.push({
       className: this.className,
@@ -246,6 +269,12 @@ export default class Engine {
       VarType.includes(this.tokenizer.token()) ||
       VarType.includes(this.tokenizer.tokenType())
     ) {
+      if (this.subroutineName === "init" && this.className === "Sys") {
+        throw this.tokenizer.nameError(
+          SymbolToken.CLOSING_PARENTHESIS,
+          "Sys.init cannot have parameters"
+        );
+      }
       const type = this.tokenizer.token();
       this.assertToken(VarType);
       this.define(type, "argument");
@@ -398,7 +427,7 @@ export default class Engine {
       default:
         throw this.tokenizer.syntaxError(
           "",
-          "subroutine call must be followed by '(' or '.'"
+          `subroutine call must be followed by '${SymbolToken.OPENING_PARENTHESIS}' or '${SymbolToken.PERIOD}'`
         );
     }
     this.vmwriter.writeCall(`${subroutineClass}.${subroutineName}`, nArgs);
@@ -509,7 +538,7 @@ export default class Engine {
         if (this.tokenizer.token() !== KeywordToken.THIS)
           throw this.tokenizer.syntaxError(
             KeywordToken.THIS,
-            "constructors can only return 'this'"
+            `constructors can only return '${KeywordToken.THIS}'`
           );
         this.compileTerm();
       } else {
@@ -611,7 +640,7 @@ export default class Engine {
           case KeywordToken.THIS:
             if (this.subroutineType === KeywordToken.FUNCTION)
               throw this.tokenizer.referenceError(
-                "functions cannot reference 'this'"
+                `class functions cannot reference '${KeywordToken.THIS}'`
               );
             this.vmwriter.writePush("pointer", 0);
             this.tokenizer.advance();

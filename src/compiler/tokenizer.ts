@@ -81,13 +81,14 @@ export default class Tokenizer {
 
   public nameError(
     expectedToken: string,
-    message: string
+    message: string,
+    lineIndex?: number
   ): NameError {
     return new NameError(
       this.fileData.fileName,
       this.line(),
       this.lineNumber(),
-      this.lineIndex(),
+      lineIndex || this.lineIndex(),
       expectedToken,
       message
     );

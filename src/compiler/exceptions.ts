@@ -122,7 +122,7 @@ export class NameError extends CompilerError {
     message: string
   ) {
     super(fileName, line, lineNumber, lineIndex);
-    this.message = `${message} (expected identifier '${expectedName}')`;
+    this.message = `${message} (expected token '${expectedName}')`;
   }
 }
 
