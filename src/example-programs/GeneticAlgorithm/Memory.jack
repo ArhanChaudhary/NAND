@@ -57,7 +57,8 @@ class Memory {
 
     // /** De-allocates the given object (cast as an array) by making
     //  *  it available for future allocations. */
-    // function void deAlloc(Array o) {
+    // leave it as defined so that the compiler doesn't complain
+    function void deAlloc(Array o) {
     //     var Array segment;
     //     var Array nextSegment;
     //     let segment = o - 2;
@@ -68,7 +69,7 @@ class Memory {
     //     } else {
     //         let segment[0] = (nextSegment - segment) - 2;
     //     }
-    // }
+    }
 
     // function void deFrag() {
     //     var Array segment;
