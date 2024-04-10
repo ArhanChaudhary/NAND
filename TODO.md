@@ -1,4 +1,5 @@
 # TODO (NAND)
+* fix svg icon not displaying
 * readme
   * a lot more comments and remove comments on example programs
   * Writing programs in NAND

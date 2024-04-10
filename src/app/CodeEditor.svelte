@@ -168,15 +168,19 @@
     }
   }
   function highlightSyntax(code: string): string {
-    let subroutineNames: string[] = [];
-    for (let file of $IDEContext) {
-      let subroutineMatches = file.file.join("\n").matchAll(
-        /(function|constructor|method) [_a-zA-Z][_a-zA-Z0-9]+ ([_a-zA-Z][_a-zA-Z0-9]+)\(/g
-      );
-      for (let [_, __, match] of subroutineMatches) {
-        subroutineNames.push(match);
-      }
-    }
+    let subroutineNames = [
+      ...new Set(
+        $IDEContext.flatMap((file) =>
+          [
+            ...file.file
+              .join("\n")
+              .matchAll(
+                /(function|constructor|method) [_a-zA-Z][_a-zA-Z0-9]+ ([_a-zA-Z][_a-zA-Z0-9]+)\(/g
+              ),
+          ].map((match) => match[2])
+        )
+      ),
+    ];
     return code.replaceAll(
       new RegExp(
         String.raw`(\/\*[\s\S]*?\*\/)|(\/\/.*)|(?<!\w)(\d+)(?!\w)|(".*?")|(${SymbolTokens.join(
