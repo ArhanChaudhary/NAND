@@ -1,7 +1,7 @@
 import Tokenizer, { TokenType, SymbolToken, KeywordToken } from "./tokenizer";
 import SymbolTable from "./symboltable";
 import VMWriter from "./vmwriter";
-import { NameError, SyntaxError, ReferenceError } from "./exceptions";
+import { ReferenceError, CompilerError } from "./exceptions";
 
 const VarType = [
   KeywordToken.INT,
@@ -32,12 +32,21 @@ export default class Engine {
   private className = "";
   private subroutineName = "";
   private subroutineNames: string[] = [];
-  private subroutineCalls: { name: string }[] = [];
   private subroutineType = "";
   private subroutineReturnType = "";
   private lastStatementIsReturn = false;
   private labelCounter = 0;
+
   static staticCount = 0;
+  static trySubroutineCalls: {
+    subroutineClass: string;
+    subroutineName: string;
+    throw: ReferenceError;
+  }[] = [];
+  static allSubroutineDeclarations: {
+    className: string;
+    subroutineName: string;
+  }[] = [];
 
   constructor(fileData: { fileName: string; file: string[] }) {
     this.fileName = fileData.fileName;
@@ -195,6 +204,10 @@ export default class Engine {
         `subroutine '${this.subroutineName}' can only be declared once`
       );
     this.subroutineNames.push(this.subroutineName);
+    Engine.allSubroutineDeclarations.push({
+      className: this.className,
+      subroutineName: this.subroutineName,
+    });
     this.assertToken(TokenType.IDENTIFIER);
     this.assertToken(SymbolToken.OPENING_PARENTHESIS);
     this.compileParameterList();
@@ -325,8 +338,9 @@ export default class Engine {
     const prevTokenType = this.symbolTable.typeOf(prevToken) as string;
     const prevTokenIndex = this.symbolTable.indexOf(prevToken) as number;
     let nArgs = 0;
-    let subroutineClass: string | null;
-    let subroutineMethod: string;
+    let subroutineClass: string;
+    let subroutineName: string;
+    let tryCallThrow: ReferenceError;
     switch (this.tokenizer.token()) {
       case SymbolToken.OPENING_PARENTHESIS:
         if (this.subroutineType === KeywordToken.FUNCTION)
@@ -334,12 +348,18 @@ export default class Engine {
             SymbolToken.PERIOD,
             "class functions cannot call instance methods"
           );
-        this.subroutineCalls.push({ name: prevToken });
+        subroutineClass = this.className;
+        subroutineName = prevToken;
+        tryCallThrow = this.tokenizer.referenceError(
+          `subroutine '${subroutineName}' from class '${subroutineClass}' was never declared`,
+          undefined,
+          undefined,
+          this.tokenizer.lineIndex() - prevToken.length
+        );
         this.tokenizer.advance();
         this.vmwriter.writePush("pointer", 0);
-        nArgs = this.compileExpressionList();
+        nArgs = this.compileExpressionList() + 1;
         this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
-        this.vmwriter.writeCall(`${this.className}.${prevToken}`, nArgs + 1);
         break;
       case SymbolToken.PERIOD:
         if (prevTokenType !== null) {
@@ -349,7 +369,10 @@ export default class Engine {
           subroutineClass = prevToken;
         }
         this.tokenizer.advance();
-        subroutineMethod = this.tokenizer.token();
+        subroutineName = this.tokenizer.token();
+        tryCallThrow = this.tokenizer.referenceError(
+          `subroutine '${subroutineName}' from class '${subroutineClass}' was never declared`
+        );
         this.assertToken(TokenType.IDENTIFIER);
         this.assertToken(SymbolToken.OPENING_PARENTHESIS);
         if (prevTokenType !== null) {
@@ -358,10 +381,6 @@ export default class Engine {
         }
         nArgs += this.compileExpressionList();
         this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
-        this.vmwriter.writeCall(
-          `${subroutineClass}.${subroutineMethod}`,
-          nArgs
-        );
         break;
       default:
         throw this.tokenizer.syntaxError(
@@ -369,6 +388,12 @@ export default class Engine {
           "subroutine call must be followed by '(' or '.'"
         );
     }
+    this.vmwriter.writeCall(`${subroutineClass}.${subroutineName}`, nArgs);
+    Engine.trySubroutineCalls.push({
+      subroutineClass,
+      subroutineName,
+      throw: tryCallThrow,
+    });
   }
 
   private compileExpressionList(): number {
@@ -465,7 +490,7 @@ export default class Engine {
       if (this.subroutineReturnType === KeywordToken.VOID)
         throw this.tokenizer.syntaxError(
           SymbolToken.SEMICOLON,
-          "void subroutine cannot have a return value"
+          "void subroutines cannot have a return value"
         );
       if (this.subroutineType === KeywordToken.CONSTRUCTOR) {
         if (this.tokenizer.token() !== KeywordToken.THIS)
@@ -683,10 +708,26 @@ export default class Engine {
   }
 
   static cleanup(): void {
+    Engine.trySubroutineCalls = [];
+    Engine.allSubroutineDeclarations = [];
     Engine.staticCount = 0;
   }
 
-  static postValidation(): void {
-    Engine.cleanup();
+  static postValidation(): CompilerError | null {
+    let undeclaredSubroutineCall = Engine.trySubroutineCalls.find(
+      (subroutineCall) =>
+        !Engine.allSubroutineDeclarations.some(
+          (subroutineDeclaration) =>
+            subroutineCall.subroutineClass ===
+              subroutineDeclaration.className &&
+            subroutineCall.subroutineName ===
+              subroutineDeclaration.subroutineName
+        )
+    );
+    if (undeclaredSubroutineCall) {
+      return undeclaredSubroutineCall.throw;
+    } else {
+      return null;
+    }
   }
 }

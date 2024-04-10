@@ -15,6 +15,11 @@ export default function compiler(
       return err as CompilerError;
     }
   }
-  Engine.postValidation();
-  return out;
+  let postValidationError = Engine.postValidation();
+  Engine.cleanup();
+  if (postValidationError === null) {
+    return out;
+  } else {
+    return postValidationError;
+  }
 }

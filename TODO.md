@@ -1,11 +1,11 @@
 # TODO (NAND)
 * compiler
-  * replace prompt and alert
+  * must have Sys.init
   * green syntax highlight for subroutines
-  * ensure all subroutines and classes are defined at compile time (must have Sys.init and Main.main)
 * readme
   * a lot more comments and remove comments on example programs
   * Writing programs in NAND
+    * max ROM 32768 and max static 240
     * jack tutorial, base off https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf and https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf
     * if and else doesn't require bracket
     * [][] works
