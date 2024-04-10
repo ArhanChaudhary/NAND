@@ -80,9 +80,9 @@
       if (!mainFileDatum) throw new Error("Main file not found");
       exampleProgram.exampleProgramData = [
         mainFileDatum,
-        ...exampleProgram.exampleProgramData.filter(
-          (fileDatum) => fileDatum.fileName !== "Main"
-        ).sort((a, b) => +(a.fileName < b.fileName))
+        ...exampleProgram.exampleProgramData
+          .filter((fileDatum) => fileDatum.fileName !== "Main")
+          .sort((a, b) => +(a.fileName < b.fileName)),
       ];
     }
     return examplePrograms;
