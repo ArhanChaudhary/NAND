@@ -26,20 +26,6 @@ const OPS = [
   SymbolToken.EQUAL,
 ];
 
-function internalSubroutineCalls() {
-  return [
-    {
-      subroutineClass: "Sys",
-      subroutineName: "init",
-      throw: new BroadCompilerError(
-        "Sys",
-        "subroutine 'init' from class 'Sys' must be declared, as it is the entry point of the program"
-      ),
-    },
-  ];
-}
-
-const maxStaticCount = 256 - 16;
 export default class Engine {
   private vmwriter: VMWriter;
   private tokenizer: Tokenizer;
@@ -54,16 +40,80 @@ export default class Engine {
   private lastStatementIsReturn = false;
   private labelCounter = 0;
 
+  static maxStaticCount = 256 - 16;
   static staticCount = 0;
   static trySubroutineCalls: {
     subroutineClass: string;
     subroutineName: string;
-    throw: ReferenceError;
-  }[] = internalSubroutineCalls();
+    missingThrowMessage: ReferenceError;
+  }[] = [];
   static allSubroutineDeclarations: {
     className: string;
     subroutineName: string;
   }[] = [];
+  static internalSubroutineCalls = [
+    {
+      subroutineClass: "Sys",
+      subroutineName: "init",
+      subroutineType: KeywordToken.FUNCTION,
+      subroutineReturnType: KeywordToken.VOID,
+      missingThrowMessageEnding: "as it is the entry point of the program",
+      // cant set to used in vmwriter because that happens after compiling
+      used: true,
+    },
+    {
+      subroutineClass: "Memory",
+      subroutineName: "alloc",
+      subroutineType: KeywordToken.FUNCTION,
+      subroutineReturnType: KeywordToken.INT,
+      missingThrowMessageEnding:
+        "as constructors internally use it to allocate memory. You should copy my implementation of this subroutine as defined in example programs",
+      used: false,
+    },
+    {
+      subroutineClass: "String",
+      subroutineName: "newWithStr",
+      subroutineType: KeywordToken.CONSTRUCTOR,
+      subroutineReturnType: "String",
+      missingThrowMessageEnding:
+        "as it is internally used to represent string literals. You should copy my implementation of this subroutine as defined in example programs",
+      used: false,
+    },
+    {
+      subroutineClass: "Math",
+      subroutineName: "multiply",
+      subroutineType: KeywordToken.FUNCTION,
+      subroutineReturnType: KeywordToken.INT,
+      missingThrowMessageEnding:
+        "as it is interally used to multiply two numbers. You should copy my implementation of this subroutine as defined in example programs",
+      used: false,
+    },
+    {
+      subroutineClass: "Math",
+      subroutineName: "divide",
+      subroutineType: KeywordToken.FUNCTION,
+      subroutineReturnType: KeywordToken.INT,
+      missingThrowMessageEnding:
+        "as it is interally used to divide two numbers. You should copy my implementation of this subroutine as defined in example programs",
+      used: false,
+    },
+  ];
+
+  static useInternalSubroutineCall(
+    subroutineClass: string,
+    subroutineName: string
+  ) {
+    const subroutine = Engine.internalSubroutineCalls.find(
+      (subroutine) =>
+        subroutine.subroutineClass === subroutineClass &&
+        subroutine.subroutineName === subroutineName
+    );
+    if (subroutine) {
+      subroutine.used = true;
+    } else {
+      throw new Error("invalid internal subroutine call usage");
+    }
+  }
 
   constructor(fileData: { fileName: string; file: string[] }) {
     this.fileName = fileData.fileName;
@@ -175,9 +225,9 @@ export default class Engine {
       case KeywordToken.STATIC:
         kind = "static";
         Engine.staticCount++;
-        if (Engine.staticCount > maxStaticCount) {
+        if (Engine.staticCount > Engine.maxStaticCount) {
           throw this.tokenizer.referenceError(
-            `${Engine.staticCount} > ${maxStaticCount} static variables is too many to load into memory`
+            `${Engine.staticCount} > ${Engine.maxStaticCount} static variables is too many to load into memory`
           );
         }
         break;
@@ -303,6 +353,7 @@ export default class Engine {
         if (this.symbolTable.count("this") === 0) break;
         this.vmwriter.writePush("constant", this.symbolTable.count("this"));
         this.vmwriter.writeCall("Memory.alloc", 1);
+        Engine.useInternalSubroutineCall("Memory", "alloc");
         this.vmwriter.writePop("pointer", 0);
         break;
       case KeywordToken.METHOD:
@@ -382,7 +433,7 @@ export default class Engine {
     let nArgs = 0;
     let subroutineClass: string;
     let subroutineName: string;
-    let tryCallThrow: ReferenceError;
+    let missingThrowMessage: ReferenceError;
     switch (this.tokenizer.token()) {
       case SymbolToken.OPENING_PARENTHESIS:
         if (this.subroutineType === KeywordToken.FUNCTION)
@@ -392,7 +443,7 @@ export default class Engine {
           );
         subroutineClass = this.className;
         subroutineName = prevToken;
-        tryCallThrow = this.tokenizer.referenceError(
+        missingThrowMessage = this.tokenizer.referenceError(
           `subroutine '${subroutineName}' from class '${subroutineClass}' was never declared`,
           undefined,
           undefined,
@@ -412,7 +463,7 @@ export default class Engine {
         }
         this.tokenizer.advance();
         subroutineName = this.tokenizer.token();
-        tryCallThrow = this.tokenizer.referenceError(
+        missingThrowMessage = this.tokenizer.referenceError(
           `subroutine '${subroutineName}' from class '${subroutineClass}' was never declared`
         );
         this.assertToken(TokenType.IDENTIFIER);
@@ -434,7 +485,7 @@ export default class Engine {
     Engine.trySubroutineCalls.push({
       subroutineClass,
       subroutineName,
-      throw: tryCallThrow,
+      missingThrowMessage,
     });
   }
 
@@ -623,6 +674,7 @@ export default class Engine {
           "String.newWithStr",
           Math.ceil(this.tokenizer.token().length / 2) + 1
         );
+        Engine.useInternalSubroutineCall("String", "newWithStr");
         this.assertToken(TokenType.STRING_CONST);
         break;
       case TokenType.KEYWORD:
@@ -750,24 +802,56 @@ export default class Engine {
   }
 
   static cleanup(): void {
-    Engine.trySubroutineCalls = internalSubroutineCalls();
-    Engine.allSubroutineDeclarations = [];
     Engine.staticCount = 0;
+    Engine.trySubroutineCalls = [];
+    Engine.allSubroutineDeclarations = [];
+    for (let internalSubroutineCall of Engine.internalSubroutineCalls) {
+      if (
+        internalSubroutineCall.subroutineClass !== "Sys" &&
+        internalSubroutineCall.subroutineName !== "init"
+      ) {
+        internalSubroutineCall.used = false;
+      }
+    }
   }
 
   static postValidation(): CompilerError | null {
-    let undeclaredSubroutineCall = Engine.trySubroutineCalls.find(
-      (subroutineCall) =>
-        !Engine.allSubroutineDeclarations.some(
-          (subroutineDeclaration) =>
-            subroutineCall.subroutineClass ===
-              subroutineDeclaration.className &&
-            subroutineCall.subroutineName ===
-              subroutineDeclaration.subroutineName
+    debugger;
+    let undeclaredSubroutineCall = Engine.trySubroutineCalls
+      .concat(
+        Engine.internalSubroutineCalls.reduce(
+          (acc, curr) => {
+            if (curr.used) {
+              acc.push({
+                subroutineClass: curr.subroutineClass,
+                subroutineName: curr.subroutineName,
+                missingThrowMessage: new BroadCompilerError(
+                  curr.subroutineClass,
+                  `subroutine '${curr.subroutineName}' from class '${curr.subroutineClass}' must be declared, ${curr.missingThrowMessageEnding}`
+                ),
+              });
+            }
+            return acc;
+          },
+          [] as {
+            subroutineClass: string;
+            subroutineName: string;
+            missingThrowMessage: BroadCompilerError;
+          }[]
         )
-    );
+      )
+      .find(
+        (subroutineCall) =>
+          !Engine.allSubroutineDeclarations.some(
+            (subroutineDeclaration) =>
+              subroutineCall.subroutineClass ===
+                subroutineDeclaration.className &&
+              subroutineCall.subroutineName ===
+                subroutineDeclaration.subroutineName
+          )
+      );
     if (undeclaredSubroutineCall) {
-      return undeclaredSubroutineCall.throw;
+      return undeclaredSubroutineCall.missingThrowMessage;
     } else {
       return null;
     }

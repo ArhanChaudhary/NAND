@@ -1,3 +1,4 @@
+import Engine from "./engine";
 import { SymbolToken } from "./tokenizer";
 
 export default class VMWriter {
@@ -136,6 +137,7 @@ export default class VMWriter {
         if (this.tryWritePrecomputedConstant((a, b) => a * b)) {
         } else {
           this.writeCall("Math.multiply", 2);
+          Engine.useInternalSubroutineCall("Math", "multiply");
         }
         break;
       case SymbolToken.DIVIDE:
@@ -145,6 +147,7 @@ export default class VMWriter {
         ) {
         } else {
           this.writeCall("Math.divide", 2);
+          Engine.useInternalSubroutineCall("Math", "divide");
         }
         break;
       default:
