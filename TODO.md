@@ -1,5 +1,5 @@
 # TODO (NAND)
-* fix svg icon not displaying
+* compiler thing
 * readme
   * a lot more comments and remove comments on example programs
   * Writing programs in NAND
@@ -48,6 +48,7 @@
 * vm escape bug
 
 # TODO (for later)
+* IDE on safari is really buggy
 * breakpoints
 * graphing calculator in jack
 * nand in nand

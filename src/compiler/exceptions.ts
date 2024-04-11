@@ -56,7 +56,9 @@ export abstract class CompilerError {
     this.fileName = fileName;
     this.line = line;
     this.lineNumber = lineNumber;
-    this.lineIndex = lineIndex;
+    // Math.max can lead to confusing error messages if on new lines
+    // but i dont care
+    this.lineIndex = Math.max(lineIndex, 1);
     this.errorType = errorType;
   }
 
