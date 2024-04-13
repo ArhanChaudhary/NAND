@@ -1,12 +1,13 @@
 import { KeywordToken, TokenType, SymbolToken } from "./tokenizer";
 
-function tokenStringToType(tokenString: string): string {
+function tokenStringToTypeString(tokenString: string): string | null {
   if (Object.values<string>(KeywordToken).includes(tokenString)) {
     return tokenTypeToString(TokenType.KEYWORD);
   } else if (Object.values<string>(SymbolToken).includes(tokenString)) {
     return tokenTypeToString(TokenType.SYMBOL);
+  } else {
+    return "token";
   }
-  throw new Error("Invalid token string");
 }
 
 function tokenTypeToString(tokenType: TokenType): string {
@@ -106,7 +107,7 @@ export class SyntaxError extends CompilerError {
     expectedToken: string | TokenType | (string | TokenType)[]
   ): string {
     if (typeof expectedToken === "string") {
-      return `${tokenStringToType(expectedToken)} '${expectedToken}'`;
+      return `${tokenStringToTypeString(expectedToken)} '${expectedToken}'`;
     } else if (Array.isArray(expectedToken)) {
       return `token ${joinWithOr(expectedToken.map((i) => `'${i}'`))}`;
     } else if (expectedToken in TokenType) {
@@ -127,7 +128,7 @@ export class NameError extends CompilerError {
     message: string
   ) {
     super(fileName, line, lineNumber, lineIndex, "NameError");
-    this.message = `${message} (expected token '${expectedName}')`;
+    this.message = `${message} (expected ${tokenStringToTypeString(expectedName)} '${expectedName}')`;
   }
 }
 
