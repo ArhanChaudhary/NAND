@@ -58,6 +58,7 @@ export default class Engine {
       subroutineType: KeywordToken.FUNCTION,
       subroutineReturnType: KeywordToken.VOID,
       missingThrowMessageEnding: "as it is the entry point of the program",
+      nArgs: 0,
       // cant set to used in vmwriter because that happens after compiling
       used: true,
     },
@@ -68,6 +69,7 @@ export default class Engine {
       subroutineReturnType: KeywordToken.INT,
       missingThrowMessageEnding:
         "as constructors internally use it to allocate memory. You should copy my implementation of this subroutine as defined in example programs.\n\nIf you do so, make sure to initialize RAM[2048] = 14334 and RAM[2049] = 16384",
+      nArgs: 1,
       used: false,
     },
     {
@@ -77,6 +79,7 @@ export default class Engine {
       subroutineReturnType: "String",
       missingThrowMessageEnding:
         "as it is internally used to represent string literals. You should copy my implementation of this subroutine as defined in example programs",
+      nArgs: 1,
       used: false,
     },
     {
@@ -86,6 +89,7 @@ export default class Engine {
       subroutineReturnType: KeywordToken.INT,
       missingThrowMessageEnding:
         "as it is interally used to multiply two numbers. You should copy my implementation of this subroutine as defined in example programs",
+      nArgs: 2,
       used: false,
     },
     {
@@ -95,6 +99,7 @@ export default class Engine {
       subroutineReturnType: KeywordToken.INT,
       missingThrowMessageEnding:
         "as it is interally used to divide two numbers. You should copy my implementation of this subroutine as defined in example programs",
+      nArgs: 2,
       used: false,
     },
   ];
@@ -270,21 +275,29 @@ export default class Engine {
       throw this.tokenizer.referenceError(
         `subroutine '${this.subroutineName}' can only be declared once`
       );
-    if (this.subroutineName === "init" && this.className === "Sys") {
-      if (this.subroutineType !== KeywordToken.FUNCTION) {
+    let internalSubroutineCall = Engine.internalSubroutineCalls.find(
+      (subroutine) =>
+        subroutine.subroutineClass === this.className &&
+        subroutine.subroutineName === this.subroutineName
+    );
+    if (internalSubroutineCall) {
+      if (this.subroutineType !== internalSubroutineCall.subroutineType) {
         throw this.tokenizer.nameError(
-          KeywordToken.FUNCTION,
-          "Sys.init must be a class function",
+          internalSubroutineCall.subroutineType,
+          `${internalSubroutineCall.subroutineClass}.${internalSubroutineCall.subroutineName} must be a class function`,
           this.tokenizer.lineIndex() -
             this.subroutineType.length -
             this.subroutineReturnType.length -
             2
         );
       }
-      if (this.subroutineReturnType !== KeywordToken.VOID) {
+      if (
+        this.subroutineReturnType !==
+        internalSubroutineCall.subroutineReturnType
+      ) {
         throw this.tokenizer.nameError(
-          KeywordToken.VOID,
-          "Sys.init must return void",
+          internalSubroutineCall.subroutineReturnType,
+          `${internalSubroutineCall.subroutineClass}.${internalSubroutineCall.subroutineName} has a fixed return type`,
           this.tokenizer.lineIndex() - this.subroutineReturnType.length - 1
         );
       }
@@ -315,16 +328,12 @@ export default class Engine {
   }
 
   private compileParameterList(): void {
+    // can lead to compiler display format issues but i dont care
+    let originalLineIndex = this.tokenizer.lineIndex();
     if (
       VarType.includes(this.tokenizer.token()) ||
       VarType.includes(this.tokenizer.tokenType())
     ) {
-      if (this.subroutineName === "init" && this.className === "Sys") {
-        throw this.tokenizer.nameError(
-          SymbolToken.CLOSING_PARENTHESIS,
-          "Sys.init cannot have parameters"
-        );
-      }
       const type = this.tokenizer.token();
       this.assertToken(VarType);
       this.define(type, "argument");
@@ -336,6 +345,25 @@ export default class Engine {
         this.define(type, "argument");
         this.assertToken(TokenType.IDENTIFIER);
       }
+    }
+    let internalSubroutineCall = Engine.internalSubroutineCalls.find(
+      (subroutine) =>
+        subroutine.subroutineClass === this.className &&
+        subroutine.subroutineName === this.subroutineName
+    );
+    if (
+      internalSubroutineCall &&
+      this.symbolTable.count("argument") !== internalSubroutineCall.nArgs
+    ) {
+      throw this.tokenizer.syntaxError(
+        "",
+        `${internalSubroutineCall.subroutineClass}.${
+          internalSubroutineCall.subroutineName
+        } must have exactly ${internalSubroutineCall.nArgs} argument${
+          internalSubroutineCall.nArgs === 1 ? "" : "s"
+        }`,
+        originalLineIndex
+      );
     }
   }
 

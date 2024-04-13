@@ -67,13 +67,14 @@ export default class Tokenizer {
 
   public syntaxError(
     expectedToken: null | string | TokenType | (string | TokenType)[],
-    info?: string
+    info?: string,
+    lineIndex?: number
   ): SyntaxError {
     return new SyntaxError(
       this.fileData.fileName,
       this.line(),
       this.lineNumber(),
-      this.lineIndex(),
+      lineIndex || this.lineIndex(),
       expectedToken,
       info
     );

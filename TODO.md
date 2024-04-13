@@ -1,5 +1,7 @@
 # TODO (NAND)
-* compiler thing
+* safari has broken ide (new lines dont work)
+* safari has broken keyboard input (it types in IDE)
+* safari has broken ide cursor
 * readme
   * a lot more comments and remove comments on example programs
   * Writing programs in NAND
