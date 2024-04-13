@@ -120,11 +120,7 @@
     if (shouldAutoLoad("New Program")) {
       loadExampleProgram("New Program");
     } else {
-      $activeTabName = $IDEContext.find(
-        (file) => file.fileName === $activeTabName
-      )
-        ? $activeTabName
-        : $IDEContext[0]?.fileName;
+      $activeTabName = $IDEContext[0]?.fileName;
     }
   });
 
@@ -141,7 +137,11 @@
 
   function displayCompilerError(compilerError: CompilerError) {
     console.log("Compilation unsuccessful :(");
-    $activeTabName = compilerError.getFileName();
+    $activeTabName = $IDEContext.some(
+      (file) => file.fileName === compilerError.getFileName()
+    )
+      ? compilerError.getFileName()
+      : $IDEContext[0]?.fileName;
     tick().then(() => {
       document.querySelector(".line.compilerErrorLine")?.scrollIntoView({
         block: "center",
