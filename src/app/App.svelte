@@ -6,6 +6,8 @@
   import questionMarkIcon from "/question-mark.svg?raw";
   import About from "./About.svelte";
   import CompilerError from "./CompilerError.svelte";
+  import Alert from "./Alert.svelte";
+  import { detect } from "detect-browser";
 
   let computerVW = 40;
   let computerWidth = (computerVW * window.innerWidth) / 100;
@@ -56,6 +58,21 @@
   let memoryViewWidth: number;
   let showAbout = false;
   let showMemoryView = true;
+  const browser = detect();
+  let showBrowserWarning = true;
+  if (browser && browser.name === "safari") {
+    const version = browser.version.split(".");
+    const major = Number(version[0]);
+    const minor = Number(version[1]);
+    const patch = Number(version[2]);
+    if (
+      major < 17 ||
+      (major === 17 && minor < 4) ||
+      (major === 17 && minor === 4 && patch < 1)
+    ) {
+      showBrowserWarning = true;
+    }
+  }
 </script>
 
 <svelte:document
@@ -64,6 +81,17 @@
   on:touchmove={touchmove}
   on:touchend={touchend}
 />
+{#if showBrowserWarning}
+  <Alert bind:showAlert={showBrowserWarning}>
+    <h1>Warning</h1>
+    <p>
+      Safari versions below 17.4.1 have a <a
+        href="https://bugs.webkit.org/show_bug.cgi?id=267808">bug</a
+      > that may cause the screen to render incorrectly. Please use a different browser
+      or update your Apple device if this happens
+    </p>
+  </Alert>
+{/if}
 {#if showAbout}
   <About bind:showAbout />
 {/if}

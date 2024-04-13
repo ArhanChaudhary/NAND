@@ -1,4 +1,5 @@
 # TODO (NAND)
+* ide trailing new lines dont render properly
 * safari has broken ide (new lines dont work)
 * safari has broken keyboard input (it types in IDE)
 * safari has broken ide cursor
@@ -11,7 +12,7 @@
     * [][] works
     * you cant malloc 0 even if the original OS could
     * theres no Sys.error(18) String.eraseLastChar String is empty
-    * arguments keyword
+    * arguments keyword (nArgs doesnt matter)
     * ub: abs -32768, stack overflows, heap overflows, modifying stack frame or registers,
     * start will automatically reset on IDE input
     * document key register 32767 to stop
@@ -22,7 +23,13 @@
     * Overflow
     * 2048
     * GeneticAlgorithm (will not reallocate)
-
+  * FAQ
+    * screen doesnt work on safari 16
+    * not actually entirely nand
+    * rust wasm
+    * ide is slow and finnicky
+    * PC A D are CPU registers
+    *
 # TODO (genetic algorithm)
 * make able to re-place obstacles (actually reallocate memory and stuff)
 * random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
