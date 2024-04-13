@@ -67,7 +67,7 @@ export default class Engine {
       subroutineType: KeywordToken.FUNCTION,
       subroutineReturnType: KeywordToken.INT,
       missingThrowMessageEnding:
-        "as constructors internally use it to allocate memory. You should copy my implementation of this subroutine as defined in example programs",
+        "as constructors internally use it to allocate memory. You should copy my implementation of this subroutine as defined in example programs.\n\nIf you do so, make sure to initialize RAM[2048] = 14334 and RAM[2049] = 16384",
       used: false,
     },
     {
@@ -350,11 +350,12 @@ export default class Engine {
     );
     switch (this.subroutineType) {
       case KeywordToken.CONSTRUCTOR:
-        if (this.symbolTable.count("this") === 0) break;
-        this.vmwriter.writePush("constant", this.symbolTable.count("this"));
-        this.vmwriter.writeCall("Memory.alloc", 1);
-        Engine.useInternalSubroutineCall("Memory", "alloc");
-        this.vmwriter.writePop("pointer", 0);
+        if (this.symbolTable.count("this") !== 0) {
+          this.vmwriter.writePush("constant", this.symbolTable.count("this"));
+          this.vmwriter.writeCall("Memory.alloc", 1);
+          Engine.useInternalSubroutineCall("Memory", "alloc");
+          this.vmwriter.writePop("pointer", 0);
+        }
         break;
       case KeywordToken.METHOD:
         this.vmwriter.writePush("argument", 0);
@@ -816,7 +817,6 @@ export default class Engine {
   }
 
   static postValidation(): CompilerError | null {
-    debugger;
     let undeclaredSubroutineCall = Engine.trySubroutineCalls
       .concat(
         Engine.internalSubroutineCalls.reduce(
