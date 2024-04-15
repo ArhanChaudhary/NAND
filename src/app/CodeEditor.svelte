@@ -100,7 +100,12 @@
   function updateContext(e: any) {
     let line = sel.anchorNode!.parentElement!.closest(".line");
     let lineNumber: number;
-    let textContent = e.target.innerText.replaceAll("\n\n", "\n");
+    // needed because browsers really like not agreeing on how to parse
+    // contenteditable (using innerText directly breaks... you guessed
+    // it, Safari)
+    let textContent = Array.prototype.map
+      .call(codeEditor.childNodes, (line) => line.textContent)
+      .join("\n");
     let absoluteLineCharacterOffset: number;
     if (line) {
       lineNumber = Array.prototype.indexOf.call(codeEditor.childNodes, line);
@@ -133,6 +138,7 @@
     document.querySelectorAll("#code-editor > div").forEach((div) => {
       div.remove();
     });
+    debugger;
     initialCodeEditorContent = highlightSyntax(textContent).split("\n");
     $shouldResetAndStart = true;
     tick().then(() => {
