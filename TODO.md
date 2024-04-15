@@ -18,11 +18,6 @@
     * Overflow
     * 2048
     * GeneticAlgorithm (will not reallocate)
-  * FAQ
-    * not actually entirely nand, rust wasm
-    * ide is slow and finnicky and buggy
-    * PC A D are CPU registers
-    * i didnt design it and credits to book
 # TODO (genetic algorithm)
 * make able to re-place obstacles (actually reallocate memory and stuff)
 * random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
