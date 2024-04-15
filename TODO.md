@@ -1,10 +1,7 @@
 # TODO (NAND)
-* ide trailing new lines dont render properly
 * safari has broken ide (new lines dont work)
-* safari has broken keyboard input (it types in IDE)
-* safari has broken ide cursor
+* a lot more comments and remove comments on example programs
 * readme
-  * a lot more comments and remove comments on example programs
   * Writing programs in NAND
     * max ROM 32768 and max static 240
     * jack tutorial, base off https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf and https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf
@@ -24,12 +21,10 @@
     * 2048
     * GeneticAlgorithm (will not reallocate)
   * FAQ
-    * screen doesnt work on safari 16
-    * not actually entirely nand
-    * rust wasm
-    * ide is slow and finnicky
+    * not actually entirely nand, rust wasm
+    * ide is slow and finnicky and buggy
     * PC A D are CPU registers
-    *
+    * i didnt design it and credits to book
 # TODO (genetic algorithm)
 * make able to re-place obstacles (actually reallocate memory and stuff)
 * random acceleration vector shouldnt actually be random, it slightly modifies current by +-1

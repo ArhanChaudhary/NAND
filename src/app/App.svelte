@@ -59,7 +59,7 @@
   let showAbout = false;
   let showMemoryView = true;
   const browser = detect();
-  let showBrowserWarning = true;
+  let showBrowserWarning = false;
   if (browser && browser.name === "safari") {
     const version = browser.version.split(".");
     const major = Number(version[0]);

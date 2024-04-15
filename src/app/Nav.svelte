@@ -221,6 +221,21 @@
     $activeTabName = "";
     $activeTabName = "Main";
   }
+
+  function removeCursorOnSafari() {
+    // hero of the day: https://stackoverflow.com/a/55652503/12230735
+    // woohoo for safari!!
+    const fakeInput = document.createElement("input");
+    fakeInput.setAttribute("type", "text");
+    fakeInput.setAttribute("readonly", "readonly");
+    fakeInput.style.position = "fixed";
+    fakeInput.style.opacity = "0";
+    fakeInput.style.height = "0";
+    fakeInput.style.fontSize = "16px"; // disable auto zoom
+    document.body.prepend(fakeInput);
+    fakeInput.focus();
+    fakeInput.remove();
+  }
 </script>
 
 <nav>
@@ -232,9 +247,13 @@
     width="55.94"
     height="60"
   />
-  <button on:click={compileAndStartComputer}> Start </button>
-  <button on:click={stopComputer}> Stop </button>
-  <button on:click={stopAndResetComputer}> Reset </button>
+  <button on:click={removeCursorOnSafari} on:click={compileAndStartComputer}>
+    Start
+  </button>
+  <button on:click={removeCursorOnSafari} on:click={stopComputer}> Stop </button>
+  <button on:click={removeCursorOnSafari} on:click={stopAndResetComputer}>
+    Reset
+  </button>
   <div class="nav-divider"></div>
   <div id="speed-runner-container">
     <input
