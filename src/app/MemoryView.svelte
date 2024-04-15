@@ -286,6 +286,12 @@
     }
     collapsed = !collapsed;
   }
+
+  function toggleCollapseOnPress(e: KeyboardEvent) {
+    if (e.key === "Enter" || e.key === " ") {
+      toggleCollapse();
+    }
+  }
 </script>
 
 <svelte:window on:resize={windowResize} />
@@ -299,7 +305,14 @@
     on:keyup|stopPropagation
   >
     <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <div id="memory-view-collapse" on:click={toggleCollapse} class:collapsed>
+    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+    <div
+      id="memory-view-collapse"
+      tabindex="0"
+      on:click={toggleCollapse}
+      on:keypress={toggleCollapseOnPress}
+      class:collapsed
+    >
       <div id="arrow-1"></div>
       <div id="arrow-2"></div>
     </div>
