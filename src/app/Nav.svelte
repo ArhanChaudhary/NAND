@@ -239,18 +239,15 @@
 </script>
 
 <nav>
-  <img
-    id="logo"
-    alt=""
-    src="/logo.png"
-    draggable="false"
-    width="55.94"
-    height="60"
-  />
+  <a id="logo" href="/">
+    <img alt="" src="/logo.png" draggable="false" width="46.64" height="50" />
+  </a>
   <button on:click={removeCursorOnSafari} on:click={compileAndStartComputer}>
     Start
   </button>
-  <button on:click={removeCursorOnSafari} on:click={stopComputer}> Stop </button>
+  <button on:click={removeCursorOnSafari} on:click={stopComputer}>
+    Stop
+  </button>
   <button on:click={removeCursorOnSafari} on:click={stopAndResetComputer}>
     Reset
   </button>
