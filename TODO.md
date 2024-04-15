@@ -1,6 +1,4 @@
 # TODO (NAND)
-* safari has broken ide (new lines dont work)
-* a lot more comments and remove comments on example programs
 * readme
   * Writing programs in NAND
     * max ROM 32768 and max static 240

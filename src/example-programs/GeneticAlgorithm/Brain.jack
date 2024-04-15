@@ -1,3 +1,6 @@
+/**
+ * The Brain module, used to tell dots how to move
+ */
 class Brain {
     field Array directions;
     field int step;

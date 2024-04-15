@@ -1,7 +1,12 @@
+/**
+ * The game 2048, in NAND!
+ * https://play2048.co/
+ */
 class Main {
     function void main() {
         var _2048 game;
         do _2048.init();
+        // 4x4 board, but we could do 3x3s too for the heck of it
         let game = _2048.new(4);
         do game.run();
         do game.dispose();

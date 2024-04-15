@@ -1,3 +1,7 @@
+/**
+ * The Dot class, providing functionality for a dot to move, draw, and
+ * calculate fitness upon death
+ */
 class Dot {
     static int initialX, initialY;
     field int posX, posY;
@@ -109,22 +113,6 @@ class Dot {
                 let velY = -velY;
             }
 
-            // if (~(velX > 5)) {
-            //     if (~(velX = 4)) {
-            //         if (~(velX = 0)) {
-            //             if (~(velY < 5)) {
-            //                 let velY = 4;
-            //             }
-            //         } else if (~(velY < 6)) {
-            //             let velY = 5;
-            //         }
-            //     } else if (~(velY < 4)) {
-            //         let velY = 3;
-            //     }
-            // } else {
-            //     let velX = 5;
-            //     let velY = 0;
-            // }
             if (velX > 5) {
                 let velX = 5;
                 let velY = 0;
@@ -152,6 +140,7 @@ class Dot {
             let posY = posY + velY;
 
             if ((posX < 2) | (posY < 2) | (posX > 510) | (posY > 254) |
+                // collision detection is O(1) and is just indexing an array
                 (obstacles[Main.getGridIndex(posX, posY)] = true)) {
                 let dead = true;
             } else {
@@ -191,12 +180,12 @@ class Dot {
         if (reachedGoal) {
             return Math.max(10000, 32767 - (stepWeight * brain.getStep()));
         }
-        // needed if goal is blocked off completely and the current grid index
-        // hasnt been flooded (is 0) for example if this was 0 then during the
-        // natural selection process no dot would be selected because everything
-        // is 0 and it would all just evolve off of one random dot which makes
-        // no sense it's also not easily possible to set it to 1 in flood itself
-        // because of ROM concerns
+        // Math.max is needed if goal is blocked off completely and the current
+        // grid index hasnt been flooded (is 0) for example if this was 0 then
+        // during the natural selection process no dot would be selected because
+        // everything is 0 and it would all just evolve off of one random dot
+        // which makes no sense it's also not easily possible to set it to 1 in
+        // flood itself because of ROM concerns
         return Math.max(1, obstacles[Main.getGridIndex(prevX, prevY)]);
     }
 }

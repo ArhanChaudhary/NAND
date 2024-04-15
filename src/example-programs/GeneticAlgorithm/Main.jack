@@ -1,4 +1,11 @@
+/**
+ * Simple machine learning in, of all things, NAND 8)
+ * After the user enters the dot position, the goal position, and
+ * obstacles, we simulate evolution! The dots will learn and evolve to
+ * try to first reach the goal and then in as few steps as possible.
+ */
 class Main {
+    // appreciate my state management ✨✨
     static int initialX;
     static int initialY;
     static int goalX;
@@ -37,6 +44,8 @@ class Main {
         let initialX = 256;
         let initialY = 127;
         let goalX = null;
+        // memory management is... a bit of a mess. So let's preallocate all
+        // of the strings we'll need
         let generationString = "Generation: ";
         let goalStepCountString = "Goal step count: ";
         let goalDistanceString = "Goal distance: ";
@@ -398,8 +407,13 @@ class Main {
         do Output.moveCursor(11, 21);
         do Output.printString(precomputingString);
 
+        // we're pulling out our trap card: BFS >:)
+        // this isn't any ordinary BFS, this algorithm is both directional and
+        // neighbor-aware
         let i = Main.getGridIndex(goalX, goalY);
         let floodQueue[0] = i;
+        // at the beginning we only allocated 100 for the floodQueue
+        // worry? nah, couldn't be me theres no way this will ever overflow right
         let floodQueueLength = 1;
         let obstacles[i] = 1;
         while (floodQueueLength > 0) {
@@ -460,6 +474,9 @@ class Main {
         let i = 0;
         while (i < 512) {
             if (~((obstacles[i] = -1) | (obstacles[i] = 0))) {
+                // cap the max weight at 3276 or 10 units away. This is to
+                // allow for padding for the minimum weight of 10000 for dots
+                // that have reached the goal
                 let obstacles[i] = Math.min(3276, 32767 / obstacles[i]);
                 if (i = i2) {
                     let initialBestDotFitness = obstacles[i];
@@ -483,12 +500,35 @@ class Main {
         var int bottomLeft;
         var int bottomRight;
 
+        // as I mentioned earlier, the BFS is neighbor-aware. This means it will
+        // tend to weigh windy and narrow paths worse than simple, open paths
+        // I will diagram the neighbors that are checked for each square, so
+        // remember that F means the from square (always the middle for this
+        // representation) and T means the to square
+
+        // we could make isAdjacent a parameter, and we probably should, but
+        // ROM space is tight :P
         if (isAdjacent) {
+            // if we are flooding an adjacent square, we need to check these
+            // four neighbors (with their rotated counterparts):
+            // 1  2  O
+            // T  F  O
+            // 3  4  O
+            // Notice that symmetry is important to maintain to make it flood
+            // direction independent. i.e. flooding from any direction on the
+            // same set of obstacles should be deterministic
             let bottomLeft = i - leftIndex;
             let bottomRight = i + leftIndex;
             let topLeft = bottomLeft - rightIndex;
             let topRight = bottomRight - rightIndex;
 
+            // this looks obtuse, but I promise it's simple. First consider the
+            // positions 1 and 3. If neither are obstacles, the penalty is 0.
+            // if either are obstacles, the penalty is 1. If both are obstacles,
+            // the penalty is 2. Do the same logic with positions 2 and 4. The
+            // final penalty is the maximum of the two (you see Math.min because
+            // penalty is actually a negative number to make some of the math
+            // easier)
             let penalty = Math.min(
                 (Main.floodIndexOutOfBounds(i, bottomLeft) |
                 (obstacles[bottomLeft] = -1)) +
@@ -501,6 +541,18 @@ class Main {
             );
             let i = i - rightIndex;
         } else {
+            // if we are flooding a diagonal square, it's a bit more simple
+            // than the adjacent case. We only need to check the two neighbors
+            // that are in the direction of the flood (and again with their
+            // rotated counterparts):
+            // T  1  O
+            // 2  F  O
+            // O  O  O
+            // Unlike before, the shape of this pattern makes the flood
+            // automatically direction independent, so we don't need to worry
+            // about symmetry. As before, If neither are obstacles, the penalty is 0.
+            // if either are obstacles, the penalty is 1. If both are obstacles,
+            // the penalty is 2.
             let rightIndex = Main.floodIndexOutOfBounds(i, i + rightIndex) |
                             (obstacles[i + rightIndex] = -1);
             let leftIndex = Main.floodIndexOutOfBounds(i, i + leftIndex) |
@@ -508,6 +560,10 @@ class Main {
             let penalty = leftIndex + rightIndex;
         }
 
+        // Alright, so we've assigned the attempted flood a penalty. Let's
+        // calculate how severe each penalty should be. These values don't
+        // have a specific mathematical basis, and were instead chosen through
+        // trial and error
         if (penalty = -2) {
             if (isAdjacent) {
                 let floodVal = floodDist + 11;
@@ -518,7 +574,10 @@ class Main {
             if (isAdjacent) {
                 let floodVal = floodDist + 8;
             } else {
-                // cant be ran because this will override the + 11 case
+                // this will override the + 11 case:
+                // O  O  O
+                // F  O  O
+                // 1  T  O
                 return;
             }
         } else {
@@ -530,6 +589,7 @@ class Main {
         }
 
         if ((obstacles[i] = 0) | (obstacles[i] > floodVal)) {
+            // only flood if we have a better weight or it hasn't been visited
             let obstacles[i] = floodVal;
             let floodQueue[floodQueueLength] = i;
             let floodQueueLength = floodQueueLength + 1;
@@ -558,6 +618,7 @@ class Main {
         var int obstacleY;
         var int obstacleX;
         if (obstacles[i] = -1) {
+            // let me cook
             let obstacleY = 0;
             let obstacleX = i;
             while (~(obstacleX < 32)) {

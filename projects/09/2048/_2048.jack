@@ -1,3 +1,4 @@
+/** The 2048 module and associated functions. */
 class _2048 {
     static int lcg;
     static int characterPixelWidth, characterPixelHeight;
@@ -205,9 +206,12 @@ class _2048 {
         }
         let nextPositionValue = getPosition(nextPosition);
         if (~(nextPositionValue = 0)) {
+            // combinedPosition ensure that we don't combine the same tile
+            // twice in one move
             if ((~(position = combinedPosition)) &
                 (~(nextPosition = combinedPosition)) &
                 (positionValue = nextPositionValue)) {
+                // combine two tiles
                 let validDirection = true;
                 let combinedPosition = nextPosition;
                 do setPosition(nextPosition, positionValue * 2, false);
@@ -219,6 +223,7 @@ class _2048 {
         let validDirection = true;
         do setPosition(nextPosition, positionValue, false);
         do erasePosition(position, positionValue, firstIteration);
+        // recurse!
         do tryMove(nextPosition, direction, false);
     }
 
@@ -298,6 +303,7 @@ class _2048 {
 
         do available.dispose();
 
+        // poor man's mod 10
         if ((lcg - ((lcg / 10) * 10)) = 0)
             do setPosition(chosenPosition, 4, true);
         else
@@ -340,6 +346,7 @@ class _2048 {
             let prevPositionValue = -1;
             let i = i + 1;
         }
+        // noo :(
         return true;
     }
 
@@ -353,6 +360,7 @@ class _2048 {
             let j = 0;
             while (j < size) {
                 let positionValue = grid[i][j];
+                // ideally 2048 should be dependent "size" but i don't care
                 if (~(positionValue < 2048))
                     return true;
                 let j = j + 1;

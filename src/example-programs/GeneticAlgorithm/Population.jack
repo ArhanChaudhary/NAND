@@ -1,3 +1,8 @@
+/**
+ * Ohh boy, we have a lot to go over in this one. The Population module is
+ * where all the magic happens, and is what makes the genetic algorithm
+ * genetic.
+ */
 class Population {
     static Array dots;
     static Array fitnessCache;
@@ -30,6 +35,7 @@ class Population {
         do Output.printString(allocatingString);
         do Output.moveCursor(15, 9);
         do Output.printString(escapeString);
+        // later TODO if i implement reallocation
         // if (~(dots = null)) {
         //     while (i < populationCount) {
         //         let dot = dots[i];
@@ -63,6 +69,10 @@ class Population {
         let dot = Dot.new();
         let brain = dot.getBrain();
         let directions = brain.getDirections();
+
+        // It's about to get real ugly. We're going to do some surgery on the
+        // RAM, so if you're a bit squeamish please stand by.
+
         let diff = (directions[-1] - dot) + 2;
         let remainingHeap = 16384 - dot;
         let remainingExtendedHeap = 24576 - dot;
@@ -129,11 +139,12 @@ class Population {
         }
         let i = 0;
 
+        // serves as swap memory for later on
+        // -1 because the best dot won't be changed
         let newBrainDirections = Array.new(populationCount - 1);
         if (~(newBrainDirections < 16387)) {
             do Sys.error(6);
         }
-        // auxilliary memory
         do Screen.setColor(false);
         do Screen.drawRectangle(177, 122, 369, 133);
         do Screen.drawRectangle(73, 166, 449, 177);
@@ -180,6 +191,7 @@ class Population {
     }
 
     function void naturalSelection() {
+        // This is the abracadabra of the program. Let's dive in.
         var Dot dot;
         var Dot bestDot;
         var Brain brain;
@@ -203,6 +215,15 @@ class Population {
         var int minStep;
         var int dotMinStepCache;
 
+        // Before we start, it's important to remember that any variable
+        // ending with Coef is a counter for the number of times the variable
+        // has overflown as a primitive way to represent larget numbers. You may
+        // see strange artichmetic done on these types of variables, but all
+        // it's really doing is preventing overflow.
+
+        // STEP 1: Calculate fitness of every dot and find the best one. We're
+        // also calculating the sum of all fitnesses to use for later.
+
         // safe to set as 1 because 1) calcualteFitness return >= 1 and 2)
         // bestDot can never be null after this loop
         let bestDotFitness = 1;
@@ -216,8 +237,8 @@ class Population {
             // ensures brain and bestDotBrain is only defined when necessary
             } else if (dotFitness = bestDotFitness) {
                 let brain = dot.getBrain();
-                let bestDotBrain = bestDot.getBrain(); // doesnt run when
-                                                       // bestDot is null
+                // doesnt run when bestDot is null
+                let bestDotBrain = bestDot.getBrain();
                 if (brain.getStep() < bestDotBrain.getStep()) {
                     let bestDot = dot;
                 }
@@ -235,6 +256,13 @@ class Population {
             let dotMinStepCache = brain.getStep();
             do Dot.setMinStep(dotMinStepCache);
         }
+
+        // STEP 2: Select a weighted random dot to be the parent of the next
+        // generation. For the number of dots, we select a random number between
+        // 0 and the fitness sum from step one. We then keep adding up dot
+        // fitnesses until it exceeds that number, and the dot that exceeds it
+        // is the parent. In a way, this acts as a weighted random selection
+        // where the higher the fitness, the more likely it is to be selected.
 
         let i = 0;
         while (i < (populationCount - 1)) {
@@ -274,7 +302,7 @@ class Population {
                     ((selectionSumCoef = randFitnessCoef) &
                      (selectionSum > randFitness))) {
                     let dot = dots[j];
-                    let j = populationCount;
+                    let j = populationCount; // break
                 }
                 let j = j + 1;
             }
@@ -286,6 +314,21 @@ class Population {
             } else {
                 let minStep = dotMinStepCache;
             }
+
+            // STEP 3: Mutate the parent's brain and store it in the swap memory
+            // allocated earlier. Did I say swap memory? I also meant the screen
+            // memory! Indeed, because we don't have enough RAM, we temporarily
+            // use the screen as a memory buffer. This explains why you see
+            // static on the screen during natural selection :)
+
+            // where 1530 came from is a long story. If I decide to fully
+            // explain it, here's a conversation I had with my friend for
+            // reference for future me:
+            // https://discord.com/channels/@me/890505752064716811/1173360871511183390
+
+            // in short, the mutation rate is a function of the amount of steps
+            // in the brain such that the mutation rate binomial distribution
+            // is roughly constant
             let dynamicMutationRateTimes32 = Math.min(1000, 1530 / minStep) * 32;
             let mutated = false;
             let j = 0;
@@ -305,6 +348,8 @@ class Population {
             }
             let newDirections[brainSize] = minStep; // cache for later
             if (~mutated) {
+                // if nothing mutated that's no fun! Force it to mutate anyways
+                // through the use of radiation exposure
                 let scaleCache = 32767 / minStep;
                 let randToMinStep = minStep;
                 // randToMinStep can be negative Math.abs does not guarantee
@@ -316,6 +361,10 @@ class Population {
             }
             let i = i + 1;
         }
+
+        // STEP 4: Copy the swap memory back to the RAM and reinstantiate
+        // everything.
+
         let i = 0;
         while (i < populationCount) {
             let dot = dots[i];

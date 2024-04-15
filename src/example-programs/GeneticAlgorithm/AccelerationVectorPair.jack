@@ -1,3 +1,7 @@
+/**
+ * The AccelerationVectorPair module, used to rudimentarily simulate physics
+ * These come in pairs for RAM memory efficiency
+ */
 class AccelerationVectorPair {
     field int x;
     field int y;

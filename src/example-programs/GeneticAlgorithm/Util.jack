@@ -1,7 +1,11 @@
+/**
+ * A wrapper around a simple LCG
+ */
 class Util {
     static int next;
 
     function void init() {
+        // The answer to the ultimate question of life, the universe, and everything
         let next = 42;
     }
 

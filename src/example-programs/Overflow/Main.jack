@@ -1,6 +1,14 @@
+/**
+ * This program is quite a special one! We're going to intentionally cause a
+ * stack overflow and then stack smash the heap. No modern platform will let
+ * you do this, but we're going to do it anyway so you can see what happens.
+ *
+ * Run this on an empty RAM for the best effect
+ */
 class Main {
     function void main() {
         do Main.foo();
+        // Uh oh, we're going to overflow the stack!
         do Main.main();
     }
 
@@ -8,7 +16,11 @@ class Main {
         var int b;
         var int c;
         do Output.moveCursor(0, 0);
+        // Print out the stack pointer. We'll start to have problems when this
+        // number exceeds 2048 and invades the memory region reserved for the
+        // heap
         do Output.printInt(Memory.peek(0));
+        // Just minding some of our own business... nothing much to see here
         let b = 0;
         while (b > 0) {
             let b = b * c;

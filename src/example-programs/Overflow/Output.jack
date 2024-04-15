@@ -37,15 +37,14 @@ class Output {
         let printIntCache = String.new(6);
 
         let createIndex = 0;
-        // Black square, used for displaying non-printable characters.
+        // Assigns the bitmap for each character in the character set.
+        // Note that I've bit packed these integers to save ROM space.
+        // You can view the script I used to do so in
+        // os/helpers/pack_output_raster.py on my repository.
+
         // do Output.create(63,63,63,63,63,63,63,63,63,0);
-        do Output.create(32767,32767,32767,32704);
+        do Output.create(32767,32767,32767,32704);         // Black square
         let createIndex = 32;
-
-        // Assigns the bitmap for each character in the charachter set.
-        // The first parameter is the character index, the next 11 numbers
-        // are the values of each row in the frame that represents this character.
-
         // do Output.create(0,0,0,0,0,0,0,0,0,0);          //
         do Output.create(0,0,0,0);
         // do Output.create(12,30,30,30,12,12,0,12,12,0);  // !
