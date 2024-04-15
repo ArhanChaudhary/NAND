@@ -12,6 +12,28 @@ is a turing equivalent computer made entirely from a [clock](https://en.wikipedi
 
 [Video demo of NAND](https://github.com/ArhanChaudhary/NAND/assets/57512390/7bedf191-d42c-4553-920f-01a539161bd3)
 
+### Table of Contents
+
+- [Example programs](#example-programs)
+    - [Average](#average)
+    - [Square](#square)
+    - [Pong](#pong)
+    - [Overflow](#overflow)
+    - [2048](#2048)
+    - [GeneticAlgorithm](#geneticalgorithm)
+- [Writing programs for NAND](#writing-programs-for-nand)
+    - [Jack Tutorial](#jack-tutorial)
+    - [Spec Addendums](#spec-addendums)
+    - [Undefined Behavior](#undefined-behavior)
+- [FAQ](#faq)
+    - [Whoa, is *everything* made from NAND gates?](#whoa-is-everything-made-from-nand-gates)
+    - [Did you design NAND entirely by yourself?](#did-you-design-nand-entirely-by-yourself)
+    - [How does NAND work?](#how-does-nand-work)
+    - [Why does the IDE feel finnicky?](#why-does-the-ide-feel-finnicky)
+    - [I've just ran a program and I see "ERR\[X\]". What does that mean?](#ive-just-ran-a-program-and-i-see-errx-what-does-that-mean)
+
+<hr>
+
 # Example programs
 
 ### Average
@@ -26,6 +48,7 @@ is a turing equivalent computer made entirely from a [clock](https://en.wikipedi
 
 ### GeneticAlgorithm
 
+<hr>
 
 # Writing programs for NAND
 
@@ -35,9 +58,11 @@ is a turing equivalent computer made entirely from a [clock](https://en.wikipedi
 
 ### Undefined Behavior
 
+<hr>
+
 # FAQ
 
-### Whoa, is *everything* made from NAND gates? That's so cool!
+### Whoa, is *everything* made from NAND gates?
 
 Wellll..., I admit the description and title are a little misleading, but still in good faith. The compiler and VM translator are written in Typescript, and the kernal and hardware are emulated in Rust. It's only really the logic simulator that runs every computation, screen rendering operation, and memory access entirely from NAND gates. Bootstrapping the entire tech stack is a feat that isn't unheard of, but such a massive project by itself probably deserves its own repository.
 
@@ -45,7 +70,7 @@ Wellll..., I admit the description and title are a little misleading, but still 
 
 NAND is entirely based off of the [Nand to Tetris course](https://www.nand2tetris.org) and its [associated book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk) (and you should definitely check it out, it's an absolutely incredible read). I just implemented the specification for CPU, assembler, VM translator, and compiler, while porting the platform to the web with its own IDE and user interface.
 
-### On the topic of design... how does NAND even work?
+### How does NAND work?
 
 I'm glad you asked! I've found the following illustrations quite illuminating:
 
