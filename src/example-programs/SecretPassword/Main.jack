@@ -1,11 +1,12 @@
 /**
  * A simple program to demonstrate stack smashing, or overwriting
  * the stack frame return address to call inaccessible functions.
+ *
+ * Input the numbers 267 and 1727, see what happens!
  */
 class Main {
     function void main() {
-        var int loc;
-        var int write;
+        var boolean authorized;
         do Output.printString("Good afternoon soldier.");
         do Output.println();
         do Output.println();
@@ -13,18 +14,29 @@ class Main {
         do Output.printString("clearance before we proceed with the briefing.");
         do Output.println();
         do Output.println();
-        do Output.printString("(Input the numbers 261 and 1710)");
-        do Output.println();
+        let authorized = Main.authorize();
+        if (~authorized) {
+            do Output.printString("Authorization request denied.");
+        }
+    }
+
+    function boolean authorize() {
+        var int loc;
+        var int write;
         let loc = Keyboard.readInt("Enter your username: ");
         let write = Keyboard.readInt("Enter your password: ");
         do Output.println();
         do Memory.poke(loc, write);
+        // Authorize sergeant, TODO
+        return false;
     }
 
     function void nuclear_bomb() {
-        do Output.printString("Welcome sergeant. The secret password is ");
-        do Output.printString("'nandctf{h0w_4b0ut_a_n1c3_g4m3_0f_st4ck_sm4sh1ng}'");
-        do Output.printString(", but make sure not to tell anyone!");
+        do Output.printString("Welcome sergeant.");
+        do Output.println();
+        do Output.printString("The secret password is 'nandctf{h0w_4b0ut_a_n1");
+        do Output.printString("c3_g4m3_0f_st4ck_sm4sh1ng}', but make sure not");
+        do Output.printString(" to tell anyone!");
         do Sys.halt();
     }
 }

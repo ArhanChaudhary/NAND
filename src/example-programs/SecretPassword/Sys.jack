@@ -16,7 +16,6 @@ class Sys {
         do Screen.clearScreen();
         do Output.init();
         do Main.main();
-        do Output.printString("Authorization request denied.");
         do Sys.halt();
     }
 
