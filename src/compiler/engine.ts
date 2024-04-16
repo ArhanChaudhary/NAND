@@ -450,6 +450,18 @@ export default class Engine {
           "all variables must be declared before the subroutine body. Move this variable declaration to the beginning of the subroutine"
         );
       default:
+        if (this.tokenizer.tokenType() === TokenType.IDENTIFIER) {
+          throw this.tokenizer.syntaxError(
+            [
+              KeywordToken.LET,
+              KeywordToken.IF,
+              KeywordToken.WHILE,
+              KeywordToken.DO,
+              KeywordToken.RETURN,
+            ],
+            "all statements must begin with either of these keywords"
+          );
+        }
         return false;
     }
     return true;
@@ -576,6 +588,11 @@ export default class Engine {
         this.compileExpression();
         this.vmwriter.writePop(kind, index);
         break;
+      default:
+        throw this.tokenizer.syntaxError(
+          [SymbolToken.OPENING_BRACKET, SymbolToken.EQUAL],
+          "let statement must be followed by either of these symbols"
+        );
     }
     this.assertToken(SymbolToken.SEMICOLON);
   }
