@@ -444,6 +444,11 @@ export default class Engine {
         this.lastStatementIsReturn = true;
         this.compileReturn();
         break;
+      case KeywordToken.VAR:
+        throw this.tokenizer.syntaxError(
+          "",
+          "all variables must be declared before the subroutine body. Move this variable declaration to the beginning of the subroutine"
+        );
       default:
         return false;
     }
