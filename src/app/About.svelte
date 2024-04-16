@@ -14,7 +14,7 @@
   </p>
 
   <p>
-    is a turing equivalent computer entirely built from a clock and NAND logic
+    is a turing equivalent 16-bit computer entirely built from a clock and NAND logic
     gates. NAND features its own machine code language, assembly language,
     assembler, VM language, VM translator, programming language, compiler, and
     IDE. NAND is based on the Jack-VM-Hack platform specified in the <a

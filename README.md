@@ -8,7 +8,7 @@
 <b>N</b> and-powered\
 <b>D</b> evice\
 \
-is a turing equivalent computer made entirely from a [clock](https://en.wikipedia.org/wiki/Clock_rate) and [NAND gates](https://en.wikipedia.org/wiki/NAND_gate). NAND features its own machine code language, assembly language, assembler, VM language, VM translator, programming language, compiler, and IDE. NAND is based on the Jack-VM-Hack platform specified in the [Nand to Tetris course](https://www.nand2tetris.org).
+is a turing equivalent 16-bit computer made entirely from a [clock](https://en.wikipedia.org/wiki/Clock_rate) and [NAND gates](https://en.wikipedia.org/wiki/NAND_gate). NAND features its own machine code language, assembly language, assembler, VM language, VM translator, programming language, compiler, and IDE. NAND is based on the Jack-VM-Hack platform specified in the [Nand to Tetris course](https://www.nand2tetris.org).
 
 [Video demo of NAND](https://github.com/ArhanChaudhary/NAND/assets/57512390/7bedf191-d42c-4553-920f-01a539161bd3)
 
@@ -97,4 +97,24 @@ NAND's IDE unfortunately trades implementation simplicity for a worse user exper
 
 ### I've just ran a program and I see "ERR[X]". What does that mean?
 
-NAND's OS has its own way of handling runtime errors. If you do something that puts the computer in an invalid state, like computing the result of 1 / 0, it will display an <a href="https://classes.engineering.wustl.edu/cse365/error_codes.php">error code</a> and immediately terminate.
+NAND's OS has its own way of handling runtime errors. If you do something that puts the computer in an invalid state, like computing the result of 1 / 0, it will display one of these error codes and immediately terminate:
+
+| Code            | Method/Function      | Description                                     |
+|-----------------|----------------------|-------------------------------------------------|
+| 1               | Sys.wait             | Duration must be positive                       |
+| 2               | Array.new            | Array size must be positive                     |
+| 3               | Math.divide          | Division by zero                                |
+| 4               | Math.sqrt            | Cannot compute square root of a negative number |
+| 5               | Memory.alloc         | Allocated memory size must be positive          |
+| 6               | Memory.alloc         | Heap overflow                                   |
+| 7               | Screen.drawPixel     | Illegal pixel coordinates                       |
+| 8               | Screen.drawLine      | Illegal line coordinates                        |
+| 9               | Screen.drawRectangle | Illegal rectangle coordinates                   |
+| 12              | Screen.drawCircle    | Illegal center coordinates                      |
+| 13              | Screen.drawCircle    | Illegal radius                                  |
+| 14              | String.new           | Maximum length must be non-negative             |
+| 15              | String.charAt        | String index out of bounds                      |
+| 16              | String.setCharAt     | String index out of bounds                      |
+| 17              | String.appendChar    | String is full                                  |
+| 19              | String.setInt        | Insufficient string capacity                    |
+| 20              | Output.moveCursor    | Illegal cursor location                         |

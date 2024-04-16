@@ -1,6 +1,7 @@
 # TODO (NAND)
 * readme
   * Writing programs in NAND
+    * appendix A for full grammar and primitive types
     * optional return
     * if and else doesn't require bracket
     * [][] works
