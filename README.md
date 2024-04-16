@@ -16,7 +16,6 @@ is a turing equivalent computer made entirely from a [clock](https://en.wikipedi
 
 - [Example programs](#example-programs)
     - [Average](#average)
-    - [Square](#square)
     - [Pong](#pong)
     - [Overflow](#overflow)
     - [SecretPassword](#secretpassword)
@@ -39,8 +38,6 @@ is a turing equivalent computer made entirely from a [clock](https://en.wikipedi
 # Example programs
 
 ### Average
-
-### Square
 
 ### Pong
 
