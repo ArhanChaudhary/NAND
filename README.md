@@ -19,20 +19,22 @@ is a turing equivalent computer made entirely from a [clock](https://en.wikipedi
     - [Square](#square)
     - [Pong](#pong)
     - [Overflow](#overflow)
+    - [SecretPassword](#secretpassword)
     - [2048](#2048)
     - [GeneticAlgorithm](#geneticalgorithm)
 - [Writing programs for NAND](#writing-programs-for-nand)
     - [Jack Tutorial](#jack-tutorial)
     - [Spec Addendums](#spec-addendums)
     - [Undefined Behavior](#undefined-behavior)
+    - [Hardware Limitations](#hardware-limitations)
 - [FAQ](#faq)
     - [Whoa, is *everything* made from NAND gates?](#whoa-is-everything-made-from-nand-gates)
-    - [Did you design NAND entirely by yourself?](#did-you-design-nand-entirely-by-yourself)
+    - [Did you design NAND by yourself?](#did-you-design-nand-by-yourself)
     - [How does NAND work?](#how-does-nand-work)
     - [Why does the IDE feel finnicky?](#why-does-the-ide-feel-finnicky)
     - [I've just ran a program and I see "ERR\[X\]". What does that mean?](#ive-just-ran-a-program-and-i-see-errx-what-does-that-mean)
 
-<hr>
+<br>
 
 # Example programs
 
@@ -44,11 +46,13 @@ is a turing equivalent computer made entirely from a [clock](https://en.wikipedi
 
 ### Overflow
 
+### SecretPassword
+
 ### 2048
 
 ### GeneticAlgorithm
 
-<hr>
+<br>
 
 # Writing programs for NAND
 
@@ -58,7 +62,9 @@ is a turing equivalent computer made entirely from a [clock](https://en.wikipedi
 
 ### Undefined Behavior
 
-<hr>
+### Hardware Limitations
+
+<br>
 
 # FAQ
 
@@ -66,7 +72,7 @@ is a turing equivalent computer made entirely from a [clock](https://en.wikipedi
 
 Wellll..., I admit the description and title are a little misleading, but still in good faith. The compiler and VM translator are written in Typescript, and the kernal and hardware are emulated in Rust. It's only really the logic simulator that runs every computation, screen rendering operation, and memory access entirely from NAND gates. Bootstrapping the entire tech stack is a feat that isn't unheard of, but such a massive project by itself probably deserves its own repository.
 
-### Did you design NAND entirely by yourself?
+### Did you design NAND by yourself?
 
 NAND is entirely based off of the [Nand to Tetris course](https://www.nand2tetris.org) and its [associated book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk) (and you should definitely check it out, it's an absolutely incredible read). I just implemented the specification for CPU, assembler, VM translator, and compiler, while porting the platform to the web with its own IDE and user interface.
 
@@ -74,15 +80,15 @@ NAND is entirely based off of the [Nand to Tetris course](https://www.nand2tetri
 
 I'm glad you asked! I've found the following illustrations quite illuminating:
 
-<img src="media/computer.png" width="500">
+<img src="media/computer.png" width="700">
 
 The NAND computer follows the <a href="https://en.wikipedia.org/wiki/Harvard_architecture">Harvard architecture</a>. That is, the instruction memory and the data memory are separately stored, and brought together to function in unison by the CPU.
 
-<img src="media/cpu.png" width="500">
+<img src="media/cpu.png" width="700">
 
 NAND's CPU is an <a href="https://en.wikipedia.org/wiki/Accumulator_(computing)#Accumulator_machines">accumulator machine</a>, meaning that it is heavily dependent on its built-in registers for control flow (in this case the accumulator is the D register). Don't worry if you don't fully understand what the CPU visualization depicts. Instead, take the perspective of appreciation for how this elegantly simple design powers the entirety of NAND — in your web browser!
 
-<img src="media/alu.png" width="500">
+<img src="media/alu.png" width="700">
 
 We've reached the nitty-gritty: the instruction set. As indicated, NAND's CPU only has *two* opcodes! This makes the instruction set relatively simple while providing a rich functionality. NAND's ALU is also specified with which expressions it can compute in a single instruction.
 

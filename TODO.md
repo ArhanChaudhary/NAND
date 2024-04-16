@@ -1,20 +1,20 @@
 # TODO (NAND)
 * readme
   * Writing programs in NAND
-    * max ROM 32768 and max static 240
-    * jack tutorial, base off https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf and https://www.csie.ntu.edu.tw/~cyy/courses/introCS/13fall/lectures/handouts/lec11_Jack.pdf
+    * optional return
     * if and else doesn't require bracket
     * [][] works
-    * you cant malloc 0 even if the original OS could
-    * theres no Sys.error(18) String.eraseLastChar String is empty
     * arguments keyword (nArgs doesnt matter)
+    * smaller edge cases
+
     * ub: abs -32768, stack overflows, heap overflows, modifying stack frame or registers,
-    * start will automatically reset on IDE input
-    * document key register 32767 to stop
+    * hardware limitations
+      * max ROM 32768 and max static 240 and max stack 1792 and screen stuff and multi keyboard input
   * NAND's example programs
     * Average
     * Pong
     * Square
+    * Hackerman
     * Overflow
     * 2048
     * GeneticAlgorithm (will not reallocate)

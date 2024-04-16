@@ -1,0 +1,30 @@
+/**
+ * A simple program to demonstrate stack smashing, or overwriting
+ * the stack frame return address to call inaccessible functions.
+ */
+class Main {
+    function void main() {
+        var int loc;
+        var int write;
+        do Output.printString("Good afternoon soldier.");
+        do Output.println();
+        do Output.println();
+        do Output.printString("The general wants you to make sure you have ");
+        do Output.printString("clearance before we proceed with the briefing.");
+        do Output.println();
+        do Output.println();
+        do Output.printString("(Input the numbers 261 and 1710)");
+        do Output.println();
+        let loc = Keyboard.readInt("Enter your username: ");
+        let write = Keyboard.readInt("Enter your password: ");
+        do Output.println();
+        do Memory.poke(loc, write);
+    }
+
+    function void nuclear_bomb() {
+        do Output.printString("Welcome sergeant. The secret password is ");
+        do Output.printString("'nandctf{h0w_4b0ut_a_n1c3_g4m3_0f_st4ck_sm4sh1ng}'");
+        do Output.printString(", but make sure not to tell anyone!");
+        do Sys.halt();
+    }
+}

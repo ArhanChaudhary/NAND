@@ -52,6 +52,7 @@
       "Square",
       "Pong",
       "Overflow",
+      "SecretPassword",
       "2048",
       "GeneticAlgorithm",
     ];
