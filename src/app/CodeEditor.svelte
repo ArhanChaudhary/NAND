@@ -90,28 +90,63 @@
   function queueUpdateContext(e: any) {
     $compilerError = null; // note that $IDEContext isnt reactively updated in updateContext
     clearTimeout(updateContextTimeout);
-    updateContextTimeout = setTimeout(() => {
-      requestAnimationFrame(() => {
-        updateContext(e);
-      });
-    }, 100);
+    updateContextTimeout = setTimeout(
+      requestAnimationFrame.bind(undefined, updateContext),
+      100
+    );
+  }
+  // needed because browsers really like not agreeing on how to parse
+  // contenteditable (using innerText directly breaks... you guessed
+  // it, Safari)
+  function getTextContent(root: ChildNode): string {
+    let ret = "";
+    for (let i = 0; i < root.childNodes.length; i++) {
+      let line = root.childNodes[i];
+      if (line.nodeType === Node.TEXT_NODE) {
+        ret += line.textContent;
+      } else {
+        ret += getTextContent(line);
+        if (elementCausesLineBreak(line as Element)) {
+          ret += "\n";
+        }
+      }
+    }
+    if (ret[ret.length - 1] === "\n") {
+      return ret.slice(0, -1);
+    } else {
+      return ret;
+    }
+  }
+  function elementCausesLineBreak(el: Element): boolean {
+    return (
+      el.classList.contains("line") ||
+      el.tagName === "P" ||
+      (el.tagName === "DIV" && el.classList.value === "")
+    );
+  }
+  function furthest(el: Element, selector: string): Element | null {
+    let ret = null;
+    while (el !== null) {
+      let prevSibling = el;
+      while (prevSibling !== null) {
+        if (prevSibling.matches(selector)) {
+          ret = prevSibling;
+          break;
+        }
+        prevSibling = prevSibling.previousElementSibling!;
+      }
+      el = el.parentElement!;
+    }
+    return ret;
   }
   const sel = window.getSelection()!;
-  function updateContext(e: any) {
-    let line = sel.anchorNode!.parentElement!.closest(".line");
+  function updateContext() {
+    let line = furthest(sel.anchorNode!.parentElement!, ".line");
     let lineNumber: number;
-    // needed because browsers really like not agreeing on how to parse
-    // contenteditable (using innerText directly breaks... you guessed
-    // it, Safari)
-    let textContent = Array.prototype.map
-      .call(codeEditor.childNodes, (line) => line.textContent)
-      .join("\n");
+    let textContent = getTextContent(codeEditor);
     let absoluteLineCharacterOffset: number;
     if (line) {
       lineNumber = Array.prototype.indexOf.call(codeEditor.childNodes, line);
-      if (textContent === "\n") {
-        textContent = "";
-      }
       absoluteLineCharacterOffset = sel.anchorOffset;
       let selChildNode = sel.anchorNode!;
       if (selChildNode.parentElement !== line) {
@@ -134,11 +169,24 @@
     if (activeTabContext) {
       activeTabContext.file = textContent.split("\n");
     }
-    if (!line) return;
+    if (!line) {
+      if (document.querySelectorAll("#code-editor > div").length === 0) {
+        // without this Safari can delete the entire contenteditable and all
+        // of the line divs. This doesnt fully fix it but i don't care
+        tick().then(() => {
+          document.querySelectorAll("#code-editor > :not(.line)").forEach((div) => {
+            div.remove();
+          });
+          initialCodeEditorContent = [""];
+        });
+      }
+      return;
+    }
+    // do not change this forEach loop, I've just lost 2 hours of my life
+    // because of this
     document.querySelectorAll("#code-editor > div").forEach((div) => {
       div.remove();
     });
-    debugger;
     initialCodeEditorContent = highlightSyntax(textContent).split("\n");
     $shouldResetAndStart = true;
     tick().then(() => {
@@ -153,13 +201,21 @@
       ) {
         relativeLineCharacterOffset -= relativeChildNode.textContent!.length;
         relativeChildNode = relativeChildNode.nextSibling!;
+        if (relativeChildNode === null) {
+          relativeChildNode = line;
+          break;
+        }
       }
       if (relativeChildNode.childNodes.length > 0) {
         relativeChildNode = relativeChildNode.childNodes[0];
       }
 
       let range = document.createRange();
-      range.setStart(relativeChildNode, relativeLineCharacterOffset);
+      try {
+        range.setStart(relativeChildNode, relativeLineCharacterOffset);
+      } catch (_) {
+        range.setStart(relativeChildNode, 0);
+      }
       range.collapse(true);
       sel.removeAllRanges();
       sel.addRange(range);
