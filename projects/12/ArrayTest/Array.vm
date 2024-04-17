@@ -1,7 +1,8 @@
 function Array.new 0
 push argument 0
 push constant 0
-gt
+lt
+not
 if-goto FALSE_CASE0
 push constant 2
 call Sys.error 1

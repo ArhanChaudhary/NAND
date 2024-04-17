@@ -40,7 +40,8 @@ return
 function Memory.alloc 2
 push argument 0
 push constant 0
-gt
+lt
+not
 if-goto FALSE_CASE0
 push constant 5
 call Sys.error 1
