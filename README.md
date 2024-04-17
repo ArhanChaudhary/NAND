@@ -24,13 +24,27 @@ is a turing equivalent 16-bit computer made entirely from a [clock](https://en.w
 - [Writing programs for NAND](#writing-programs-for-nand)
     - [Jack Tutorial](#jack-tutorial)
     - [Undefined Behavior](#undefined-behavior)
-    - [Hardware Limitations](#hardware-limitations)
+    - [Hardware Specification](#hardware-specification)
 - [Jack Reference](#jack-reference)
-    - [Syntactic elements](#syntactic-elements)
+    - [Syntax](#syntax)
+    - [Variables](#variables)
+    - [Statements](#statements)
+- [Jack OS](#jack-os)
+    - [Array](#array)
+    - [Keyboard](#keyboard)
+    - [Main](#main)
+    - [Math](#math)
+    - [Memory](#memory)
+    - [Output](#output)
+    - [Screen](#screen)
+    - [String](#string)
+    - [Sys](#sys)
+    - [Error Codes](#error-codes)
 - [How does NAND work?](#how-does-nand-work)
 - [FAQ](#faq)
     - [Whoa, is *everything* made from NAND gates?](#whoa-is-everything-made-from-nand-gates)
     - [Did you design NAND by yourself?](#did-you-design-nand-by-yourself)
+    - [If there's only one type, what is the point of specifying types at all?](#if-theres-only-one-type-what-is-the-point-of-specifying-types-at-all)
     - [Why does the IDE feel finnicky?](#why-does-the-ide-feel-finnicky)
 
 <br>
@@ -52,6 +66,16 @@ is a turing equivalent 16-bit computer made entirely from a [clock](https://en.w
 <br>
 
 # Writing programs for NAND
+
+**Before we start, the most important detail to remember about writing programs in Jack is that there is no operator priority; this is probably why your program isn't working.**
+
+For example, you should change: \
+`4 * 2 + 3` to `(4 * 2) + 3` \
+`if (~x & y)` to `if ((~x) & y)`
+
+but you can keep `if (y & ~x)` the same as there is no operator ambiguity.
+
+Without parenthesis, the return value of an ambiguous expression is **undefined behavior**.
 
 ### Jack Tutorial
 
@@ -90,20 +114,62 @@ class Main {
 
 If you've already had some experience with programming, this should look very familiar. It is clear that Jack was heavily inspired by Java, but as we'll get to later on, only at a surface level.
 
-Jack programs aren't meant to be ran by themselves. Every program is packaged with the operating system, providing the interfaces for `Array`, `Keyboard`, `Math`, `Memory`, `Output`, `Screen`, `String`, and `Sys`, each of which are defined in detail in the [Jack Reference](#jack-reference).
-
-Remember how we compared Jack to Java? That was a fascade, or at best misleading. While Java is strongly-typed and as such supports complex type features such as downcasting, polymorphism, and inerheritance, Jack supports none of these and only has one type under the hood: the signed 16-bit integer. This means the NAND compiler and runtime will allow you to mix and match different types in assignments and operations.
-
-Here's a fun fact. The only reason we explicitly specify types at all is so the compiler can figure out which class instance methods belong to. For instance, `s.appendChar(33)` is transformed into `String.appendChar(s, 33)` because we declared `s` with the type `String`. But don't take this detail the wrong way
-
-
+Jack classes aren't meant to run by themselves. By default, every program is packaged with the operating system, providing the interfaces for `Array`, `Keyboard`, `Math`, `Memory`, `Output`, `Screen`, `String`, and `Sys` defined in detail in the [Jack OS](#jack-os).
 
 Every programming language has a fixed set of primitive data types, of which Jack supports three: `int`, `char`, and `boolean`. You can represent your own data type by creating new classes as needed.
+// point stuff
 
+Remember how we said Jack was similar to Java? That was a fascade, or at best misleading. While Java is strongly-typed and as such supports complex type features such as downcasting, polymorphism, and inerheritance, Jack supports none of these and only has one type under the hood: the signed 16-bit integer. This is the primary reason why Jack is so weakly-typed. In effect, this means you can mix and match different types in assignments and operations if needed:
+
+```js
+var char c;
+var String s;
+let c = 33; // ‘A’
+// Equivalently
+let s = “A”;
+let c = s.charAt(0);
+```
+
+```js
+var Array a;
+let a = 5000;
+let a[100] = 77; // RAM[5100] = 77
+```
+
+```js
+var Complex c;
+var Array a;
+let a = Array.new(2);
+let a[0] = 7;
+let a[1] = 8;
+let c = a; // c == Complex(7, 8)
+```
+
+Don't take this the wrong way — Jack still provides a powerful and functional object-oriented model if used properly. Understanding when you should perform type conversions
+
+```js
+class Foo {
+    ...
+    method void f() {
+        var Bar b; // Declares a local variable of class type Bar
+        var int i; // Declares a local variable of primitive type int
+
+        do g(); // Calls method g of the current class on the this object;
+        // Note: Cannot be called from within a function (static method)
+
+        do Foo.p(3); // Calls function p of the current class;
+                     // Note: A function call must be preceded by the class name
+
+        do Bar.h(); // Calls function h of class Bar
+        let b = Bar.r(); // Calls function or constructor r of class Bar
+        do b.q(); // Calls method q of class Bar on the b object.
+    }
+}
+```
 
 ### Undefined Behavior
 
-### Hardware Limitations
+### Hardware Specification
 
 <br>
 
@@ -111,7 +177,7 @@ Every programming language has a fixed set of primitive data types, of which Jac
 
 This section was directly taken from the <a href="https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view">Nand to Tetris lecture slides</a> and the <a href="https://www.csie.ntu.edu.tw/~cyy/courses/introCS/18fall/lectures/handouts/lec13_Jack.pdf">National Taiwan University lecture slides</a>.
 
-### Syntactic elements
+### Syntax
 
 <table>
   <tbody>
@@ -132,7 +198,7 @@ This section was directly taken from the <a href="https://drive.google.com/file/
         <table>
           <tbody>
             <tr>
-              <th>
+              <th align="left">
                 <code>(</code>&nbsp;<code>)</code>
               </th>
               <td>
@@ -140,7 +206,7 @@ This section was directly taken from the <a href="https://drive.google.com/file/
               </td>
             </tr>
             <tr>
-              <th>
+              <th align="left">
                 <code>[</code>&nbsp;<code>]</code>
               </th>
               <td>
@@ -148,7 +214,7 @@ This section was directly taken from the <a href="https://drive.google.com/file/
               </td>
             </tr>
             <tr>
-              <th>
+              <th align="left">
                 <code>{</code>&nbsp;<code>}</code>
               </th>
               <td>
@@ -156,7 +222,7 @@ This section was directly taken from the <a href="https://drive.google.com/file/
               </td>
             </tr>
             <tr>
-              <th>
+              <th align="left">
                 <code>,</code>
               </th>
               <td>
@@ -164,7 +230,7 @@ This section was directly taken from the <a href="https://drive.google.com/file/
               </td>
             </tr>
             <tr>
-              <th>
+              <th align="left">
                 <code>;</code>
               </th>
               <td>
@@ -172,7 +238,7 @@ This section was directly taken from the <a href="https://drive.google.com/file/
               </td>
             </tr>
             <tr>
-              <th>
+              <th align="left">
                 <code>.</code>
               </th>
               <td>
@@ -180,7 +246,7 @@ This section was directly taken from the <a href="https://drive.google.com/file/
               </td>
             </tr>
             <tr>
-              <th>
+              <th align="left">
                 <code>=</code>
               </th>
               <td>
@@ -194,7 +260,7 @@ This section was directly taken from the <a href="https://drive.google.com/file/
                 <code>-</code>&nbsp;<code><</code>&nbsp;<code>></code>
               </th>
               <td>
-                Operators
+                Operators. Note that <code>&</code> and <code>|</code> do not short-circuit
               </td>
             </tr>
           </tbody>
@@ -207,7 +273,7 @@ This section was directly taken from the <a href="https://drive.google.com/file/
         <table>
           <tbody>
             <tr>
-              <th>
+              <th align="left">
                 <code>class</code>,
                 <code>constructor</code>,
                 <code>method</code>,
@@ -218,7 +284,7 @@ This section was directly taken from the <a href="https://drive.google.com/file/
               </td>
             </tr>
             <tr>
-              <th>
+              <th align="left">
                 <code>int</code>,
                 <code>boolean</code>,
                 <code>char</code>,
@@ -229,7 +295,7 @@ This section was directly taken from the <a href="https://drive.google.com/file/
               </td>
             </tr>
             <tr>
-              <th>
+              <th align="left">
                 <code>var</code>,
                 <code>static</code>,
                 <code>field</code>
@@ -239,7 +305,7 @@ This section was directly taken from the <a href="https://drive.google.com/file/
               </td>
             </tr>
             <tr>
-              <th>
+              <th align="left">
                 <code>let</code>,
                 <code>do</code>,
                 <code>if</code>,
@@ -252,7 +318,7 @@ This section was directly taken from the <a href="https://drive.google.com/file/
               </td>
             </tr>
             <tr>
-              <th>
+              <th align="left">
                 <code>true</code>,
                 <code>false</code>,
                 <code>null</code>
@@ -262,7 +328,7 @@ This section was directly taken from the <a href="https://drive.google.com/file/
               </td>
             </tr>
             <tr>
-              <th>
+              <th align="left">
                 <code>this</code>
               </th>
               <td>
@@ -297,7 +363,35 @@ This section was directly taken from the <a href="https://drive.google.com/file/
   </tbody>
 </table>
 
-If you do something that puts the computer in an invalid state, like computing the result of 1 / 0, NAND's OS will display one of these error codes and immediately terminate:
+### Variables
+
+### Statements
+
+
+
+# Jack OS
+
+### Array
+
+### Keyboard
+
+### Main
+
+### Math
+
+### Memory
+
+### Output
+
+### Screen
+
+### String
+
+### Sys
+
+### Error Codes
+
+If you do something that puts the computer in an invalid state, like computing the result of 1 / 0, the Jack OS will display one of these error codes and immediately terminate the program:
 
 | Code | Method/Function      | Description                                     |
 | ---- | -------------------- | ----------------------------------------------- |
@@ -333,11 +427,11 @@ NAND's CPU is an <a href="https://en.wikipedia.org/wiki/Accumulator_(computing)#
 
 <img src="media/alu.png" width="700">
 
-We've reached the nitty-gritty: the instruction set. As indicated, NAND's CPU only has *two* opcodes! This makes the instruction set relatively simple while providing a rich functionality. NAND's ALU is also specified with which expressions it can compute in a single instruction.
+We've reached the nitty-gritty instruction set. As indicated, NAND's CPU only has *two* opcodes! This makes the instruction set relatively simple while providing a rich functionality. NAND's ALU is also specified with which expressions it can compute in a single instruction.
 
 Phew! That was a lot to take in, but I promise you NAND is far less complicated than it's made out to be. From a relatively simple logical foundation, turing equivalence is achieved! If you want see my implementation of the NAND computer architecture, <a href="src/core">you're more than welcome to</a>! If you find yourself still curious, check out the <a href="https://drive.google.com/file/d/1Z_fxYmmRNXTkAzmZ6YMoX9NXZIRVCKiw/view">Nand to Tetris lecture slides</a> for further elaboration on every aspect of its design.
 
-Let's just briefly talk about the compiler to make this section feel complete. Some of NAND's strange syntactical features are a direct consequence of making the compiler easier to implement. The compiler is a <a href="https://en.wikipedia.org/wiki/LL_parser">recursive LL(1) parser</a>, generating VM code in <a href="https://en.wikipedia.org/wiki/Reverse_Polish_notation">postfix notation</a> to be utilized as a <a href="https://en.wikipedia.org/wiki/Stack_machine">simple stack machine</a>.
+Let's just briefly talk about the compiler to make this section feel complete. Some of NAND's strange syntactical features are a direct consequence of making the compiler easier to implement. The compiler is a <a href="https://en.wikipedia.org/wiki/LL_parser">recursive LL(1) parser</a>, generating VM code in <a href="https://en.wikipedia.org/wiki/Reverse_Polish_notation">postfix notation</a> to be utilized as a <a href="https://en.wikipedia.org/wiki/Stack_machine">simple stack machine</a>. Once again, you're more than welcome to see my <a href="src/compiler">compiler implementation</a> for yourself.
 
 # FAQ
 
@@ -348,6 +442,10 @@ Wellll..., I admit the description and title are a little misleading, but still 
 ### Did you design NAND by yourself?
 
 NAND is entirely based off of the [Nand to Tetris course](https://www.nand2tetris.org) and its [associated book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk) (and you should definitely check it out, it's an absolutely incredible read). I solely implemented the specification for CPU, assembler, VM translator, and compiler, while porting the platform to the web with its own IDE and user interface. Each VM instruction is then trivially mapped to corresponding machine code.
+
+### If there's only one type, what is the point of specifying types at all?
+
+This question references the fact that under the hood, the signed 16-bit integer is Jack's only type. We anyways need to be so explicit with types to help the compiler figure out which class instance methods belong to. For instance, if we declare `s` with the type `String`, `s.appendChar(33)` is transformed into `String.appendChar(s, 33)`.
 
 ### Why does the IDE feel finnicky?
 
