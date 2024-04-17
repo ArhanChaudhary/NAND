@@ -389,12 +389,10 @@ export default class Engine {
     );
     switch (this.subroutineType) {
       case KeywordToken.CONSTRUCTOR:
-        if (this.symbolTable.count("this") !== 0) {
-          this.vmwriter.writePush("constant", this.symbolTable.count("this"));
-          this.vmwriter.writeCall("Memory.alloc", 1);
-          Engine.useInternalSubroutineCall("Memory", "alloc");
-          this.vmwriter.writePop("pointer", 0);
-        }
+        this.vmwriter.writePush("constant", this.symbolTable.count("this"));
+        this.vmwriter.writeCall("Memory.alloc", 1);
+        Engine.useInternalSubroutineCall("Memory", "alloc");
+        this.vmwriter.writePop("pointer", 0);
         break;
       case KeywordToken.METHOD:
         this.vmwriter.writePush("argument", 0);
