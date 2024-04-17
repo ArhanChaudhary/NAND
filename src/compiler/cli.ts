@@ -1,3 +1,4 @@
+import { CompilerError } from "./exceptions";
 import compiler from "./main";
 import fs from "fs";
 
@@ -43,12 +44,16 @@ if (path.endsWith(".jack")) {
 }
 
 const out = compiler(inputFiles);
-out.forEach((fileData) => {
-  let outputFile: string;
-  if (path.endsWith(".jack")) {
-    outputFile = path.replace(/\.jack$/, ".vm");
-  } else {
-    outputFile = `${path}/${fileData.fileName}.vm`;
-  }
-  fs.writeFileSync(outputFile, fileData.VMCode.join("\n"));
-});
+if (out instanceof CompilerError) {
+  console.error(out.toString());
+} else {
+  out.forEach((fileData) => {
+    let outputFile: string;
+    if (path.endsWith(".jack")) {
+      outputFile = path.replace(/\.jack$/, ".vm");
+    } else {
+      outputFile = `${path}/${fileData.fileName}.vm`;
+    }
+    fs.writeFileSync(outputFile, fileData.VMCode.join("\n"));
+  });
+}
