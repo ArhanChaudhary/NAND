@@ -10,7 +10,7 @@ class Main {
         do Output.printString("Good afternoon soldier.");
         do Output.println();
         do Output.println();
-        do Output.printString("The general wants you to make sure you have ");
+        do Output.printString("The general wants to make sure you have ");
         do Output.printString("clearance before we proceed with the briefing.");
         do Output.println();
         do Output.println();
