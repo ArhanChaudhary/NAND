@@ -213,6 +213,17 @@ export default class Engine {
       this.compileSubroutine();
     }
 
+    if (
+      [KeywordToken.FIELD, KeywordToken.STATIC].includes(
+        this.tokenizer.token() as KeywordToken
+      )
+    ) {
+      throw this.tokenizer.syntaxError(
+        "",
+        "all class variables must be declared before any subroutine. Move this variable declaration to the beginning of the class"
+      );
+    }
+
     this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
     if (this.tokenizer.token() !== "")
       throw this.tokenizer.syntaxError(
