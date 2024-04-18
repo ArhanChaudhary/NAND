@@ -9,7 +9,7 @@
 <b>N</b> and-powered\
 <b>D</b> evice
 <!-- cSpell:enable -->
-is a turing equivalent 16-bit computer made entirely from a [clock](https://en.wikipedia.org/wiki/Clock_rate) and [NAND gates](https://en.wikipedia.org/wiki/NAND_gate). NAND features its own machine code language, assembly language, assembler, VM language, VM translator, programming language, compiler, and IDE. NAND is based on the Jack-VM-Hack platform specified in the [Nand to Tetris course](https://www.nand2tetris.org).
+is a turing equivalent 16-bit computer made entirely from a [clock](https://en.wikipedia.org/wiki/Clock_rate) and [NAND gates](https://en.wikipedia.org/wiki/NAND_gate). NAND features its own machine code language, assembly language, assembler, VM language, VM translator, programming language, compiler, IDE, and user interface. NAND is based on the Jack-VM-Hack platform specified in the [Nand to Tetris course](https://www.nand2tetris.org).
 
 [Video demo of NAND](https://github.com/ArhanChaudhary/NAND/assets/57512390/7bedf191-d42c-4553-920f-01a539161bd3)
 
@@ -80,7 +80,7 @@ Without parenthesis, the evaluation value of an ambiguous expression is **undefi
 
 ### Jack Tutorial
 
-NAND boasts its own complete tech stack. As a consequence, NAND can only be programmed in Jack, its custom weakly typed object-oriented programming language. In layman's terms, Jack is C with Java's syntax and without types.
+NAND boasts its own complete tech stack. As a consequence, NAND can only be programmed in Jack, its own weakly typed object-oriented programming language. In layman's terms, Jack is C with Java's syntax and without types.
 
 The rest of this section has been adapted from the <a href="https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view">Nand to Tetris lecture slides</a>. Let's take the approach of example-based learning and dive right in.
 
@@ -122,7 +122,7 @@ Remember how we said Jack was similar to Java? That was a facade, or at best mis
 ```js
 var char c;
 var String s;
-let c = 65; // ‘A’
+let c = 65; // 'A'
 // Equivalently
 let s = “A”;
 let c = s.charAt(0);
@@ -142,7 +142,7 @@ let a[0] = 7;
 let a[1] = 8;
 let c = a; // c == Complex(7, 8)
            // Works because it matches the memory layout
-           // of the Complex type
+           // of the Complex type defined elsewhere
 ```
 
 Don't take this the wrong way — Jack still provides a powerful and functional object-oriented model if used properly. This knowledge intends to help you understand when you should perform type conversions (memory layout should be the same)
@@ -415,7 +415,7 @@ A Jack program:
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------- |
 | static variables    | `static` *type varName1, varName2, ...*;<br>Only one copy of each static variable exists, and this copy is shared by all the object instances of the class (like *private static variables* in Java) | class declaration      | The class in which they are declared.                                                 |
 | field variables     | `field` *type varName1, varName2, ...*;<br>Every object (instance of the class) has a private copy of the field variables (like *member variables* in Java)                                          | class declaration      | The class in which they are declared, except for functions, where they are undefined. |
-| local variables     | `var` *type varName1, varName2, ...*;<br>Local variables are created just before the subroutine starts running and are disposed when it returns (like *local variables* in Java)                     | subroutine declaration | The subroutine in which they are declared.                                            |
+| local variables     | `var` *type varName1, varName2, ...*;<br>Local variables are created just before the subroutine starts running and are deallocated when it returns (like *local variables* in Java)                     | subroutine declaration | The subroutine in which they are declared.                                            |
 | parameter variables | *type varName1, varName2, ...*<br>Used to pass arguments to the subroutine. Treated like local variables whose values are initialized "from the outside", just before the subroutine starts running. | subroutine signature   | The subroutine in which they are declared.                                            |
 
 ### Statements
@@ -430,25 +430,343 @@ A Jack program:
 
 # Jack OS Reference
 
-This majority of this section was directly taken from the <a href="https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view">Nand to Tetris lecture slides</a> and the <a href="https://drive.google.com/file/d/137PiYjt4CAZ3ROWiD0DJ8XMUbMM0_VHR/view">Nand to Tetris lecture slides</a>.
+This section was adapted from the supplied Nand to Tetris software suite.
 
 ### Array
 
+```js
+/**
+ * Represents an array.
+ * In the Jack language, arrays are instances of the Array class.
+ * Once declared, the array entries can be accessed using the usual
+ * syntax arr[i]. Each array entry can hold a primitive data type as
+ * well as any object type. Different array entries can have different
+ * data types.
+ */
+class Array {
+    /**
+     * Constructs a new array of the given size.
+     */
+    function Array new(int size);
+
+    /**
+     * Deallocates an instance of Array and frees its memory space.
+     */
+    method void dispose();
+}
+```
+
 ### Keyboard
 
-### Main
+```js
+/**
+ * The Keyboard class provides an interface for reading inputs from
+ * a standard keyboard.
+ */
+class Keyboard {
+	/**
+	 * Returns the character code of the currently pressed key,
+	 * or 0 if no key is currently pressed.
+	 */
+	function char keyPressed();
+
+	/**
+	 * Waits until a keyboard key is pressed and released, then displays the
+   * corresponding character on the screen and returns the character.
+	 */
+	function char readChar();
+
+	/**
+	 * Prints the message on the screen, reads the next line (until a newLine
+	 * character) from the keyboard, and returns its value.
+   */
+	function String readLine(String message);
+
+	/**
+	 * Prints the message on the screen, reads the next line (until a newline
+   * character) from the keyboard, and returns its integer value (until the
+   * first non numeric character).
+	 */
+	function int readInt(String message);
+}
+```
 
 ### Math
 
+```js
+/**
+ * A library of commonly used mathematical functions.
+ */
+class Math {
+  /**
+   * Returns the absolute value of x.
+   */
+  function int abs(int x);
+
+  /**
+   * Returns the product of x and y.
+   * This function is internally called in lieu of the multiplication
+   * operator '*'. In other words, the Jack expression x * y and
+   * Math.multiply(x, y) are equivalent.
+   */
+  function int multiply(int x, int y);
+
+  /**
+   * Returns the integer part of x / y.
+   * This function is internally called in lieu of the division
+   * operator '/'. In other words, the Jack expression x / y and
+   * Math.divide(x, y) are equivalent.
+   */
+  function int divide(int dividend, int divisor);
+
+  /**
+   * Returns the integer part of the square root of x.
+   */
+  function int sqrt(int x);
+
+  /**
+   * Returns the greater of the two arguments.
+   */
+  function int max(int a, int b);
+
+  /**
+   * Returns the smaller of the two arguments.
+   */
+  function int min(int a, int b);
+}
+```
+
 ### Memory
+
+```js
+/**
+ * This library provides two services: direct access to the computer's main
+ * memory (RAM), and allocation and recycling of memory blocks. The NAND RAM
+ * consists of 32,768 words, each holding a 16-bit binary number.
+ */
+class Memory {
+  /*
+   * Returns the RAM value at the given address.
+   */
+  function int peek(int address);
+
+  /*
+   * Sets the value of the given RAM address to the given value.
+   */
+  function void poke(int address, int value);
+
+  /*
+   * Finds and allocates from the heap a memory block of the specified size and
+   * returns a reference to its base address.
+   */
+  function int alloc(int size);
+
+  /*
+   * Deallocates the given object (cast as an array) by making it available for
+   * future allocations.
+   */
+  function void deAlloc(Array o);
+}
+```
 
 ### Output
 
+```js
+/**
+ * A library of functions for writing text on the screen.
+ * The NAND physical screen consists of 512 rows of 256 pixels each.
+ * The library uses a fixed font, in which each character is displayed
+ * within a frame which is 11 pixels high (including 1 pixel for inter-line
+ * spacing) and 8 pixels wide (including 2 pixels for inter-character spacing).
+ * The resulting grid accommodates 23 rows (indexed 0..22, top to bottom)
+ * of 64 characters each (indexed 0..63, left to right). The top left
+ * character position on the screen is indexed (0,0). A cursor, implemented
+ * as a small filled square, indicates where the next character will be displayed.
+ */
+class Output {
+  /**
+   * Moves the cursor to the j'th column of the i'th row, erasing the character
+   * that was there.
+   */
+  function void moveCursor(int i, int j);
+
+  /**
+   * Displays the given character at the cursor location,
+   * and advances the cursor one column forward.
+   */
+  function void printChar(char c);
+
+  /**
+   * Displays the given string starting at the cursor location, and advances
+   * the cursor appropriately.
+   */
+  function void printString(String str);
+
+  /**
+   * Displays the given integer starting at the cursor location, and advances
+   * the cursor appropriately.
+   */
+  function void printInt(int i);
+
+  /**
+   * Advances the cursor to the beginning of the next line.
+   */
+  function void println();
+
+  /**
+   * Erases the character that was last written and moves the cursor one column
+   * back.
+   */
+  function void backSpace();
+}
+```
+
 ### Screen
+
+```js
+/**
+ * A library of functions for displaying graphics on the screen.
+ * The NAND physical screen consists of 256 rows (indexed 0..255, top to bottom)
+ * of 512 pixels each (indexed 0..511, left to right). The top left pixel on
+ * the screen is indexed (0,0).
+ */
+class Screen {
+  /*
+   * Erases the entire screen.
+   */
+  function void clearScreen();
+
+  /*
+   * Sets the current color to be used for all subsequent drawXXX commands.
+   * Black is represented by true, white by false.
+   */
+  function void setColor(boolean b);
+
+  /*
+   * Draws the (x, y) pixel using the current color.
+   */
+  function void drawPixel(int x, int y);
+
+  /*
+   * Draws a line from pixel (x1, y1) to pixel (x2, y2) using the current color.
+   */
+  function void drawLine(int x1, int y1, int x2, int y2);
+
+  /*
+   * Draws a filled rectangle whose top left corner is (x1, y1) and bottom
+   * right corner is (x2, y2) using the current color.
+   */
+  function void drawRectangle(int x1, int y1, int x2, int y2);
+
+  /*
+   * Draws a filled circle of radius r <= 181 around (x, y) using the current
+   * color.
+   */
+  function void drawCircle(int x, int y, int r);
+}
+```
 
 ### String
 
+```js
+/**
+ * Represents character strings. In addition for constructing and
+ * deallocating strings, the class features methods for getting and setting
+ * individual characters of the string, for erasing the string's last character,
+ * for appending a character to the string's end, and more typical
+ * string-oriented operations.
+ */
+class String {
+  /*
+   * Constructs a new empty string with a maximum length of maxLength and
+   * initial length of 0.
+   */
+  constructor String new(int maxLength);
+
+  /*
+   * Deallocates an instance of String and frees its memory space.
+   */
+  method void dispose();
+
+  /*
+   * Returns the current length of an instance of String.
+   */
+  method int length();
+
+  /*
+   * Returns the character at the j-th location of an instance of String.
+   */
+  method char charAt(int j);
+
+  /*
+   * Sets the character at the j-th location of an instance of String to c.
+   */
+  method void setCharAt(int j, char c);
+
+  /*
+   * Appends the given character to the end of an instance of String and
+   * returns the same instance.
+   */
+  method String appendChar(char c);
+
+  /*
+   * Erases the last character from an instance of String.
+   */
+  method void eraseLastChar();
+
+  /*
+   * Returns the integer value of an instance of String until the first
+   * non-numeric character.
+   */
+  method int intValue();
+
+  /*
+   * Sets an instance of String to the representation of the given number.
+   */
+  method void setInt(int number);
+
+  /*
+   * Returns the new line character.
+   */
+  function char newLine();
+
+  /*
+   * Returns the backspace character.
+   */
+  function char backSpace();
+
+  /*
+   * Returns the quotation mark character.
+   */
+  function char doubleQuote();
+}
+```
+
 ### Sys
+
+```js
+/**
+ * A library that supports various program execution services.
+ */
+class Sys {
+  /*
+   * Halts the program execution.
+   */
+  function void halt();
+
+  /*
+   * Displays the given error code in the format "ERR[errorCode]", and halts
+   * the program's execution.
+   */
+  function void error(int errorCode);
+
+  /*
+   * Waits approximately duration milliseconds and returns. Note that this is
+   * runtime dependent and may not be accurate.
+   */
+  function void wait(int duration);
+}
+```
 
 ### Error Codes
 
@@ -476,7 +794,7 @@ If you do something that forces the computer into an invalid state, like computi
 
 # How does NAND work?
 
-I'm glad you asked! I've found the following illustrations quite illuminating:
+I'm glad you asked! I've found the following illustrations from Nand to Tetris quite illuminating:
 
 <img src="media/computer.png" width="700">
 

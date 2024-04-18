@@ -1,6 +1,8 @@
 # TODO (NAND)
 * readme
   * Writing programs in NAND
+    * divide the Jack tutorial into more subsections
+    * reference readme in app
     * arguments keyword in docs (nArgs doesnt matter)
     * if and else doesn't require bracket
     * [][] works
@@ -8,14 +10,7 @@
     * ub: abs -32768, stack overflows, heap overflows, modifying stack frame or registers,
     * hardware limitations
       * max ROM 32768 and max static 240 and max stack 1792 and screen stuff and multi keyboard input
-  * NAND's example programs
-    * Average
-    * Pong
-    * Square
-    * SecretPassword
-    * Overflow
-    * 2048
-    * GeneticAlgorithm (will not reallocate)
+
 # TODO (genetic algorithm)
 * make able to re-place obstacles (actually reallocate memory and stuff)
 * random acceleration vector shouldnt actually be random, it slightly modifies current by +-1

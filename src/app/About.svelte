@@ -25,15 +25,15 @@
   <h1>How do I use NAND?</h1>
 
   <p>
-    NAND can only be programmed in its custom programming language, named Jack.
-    You can use either my example code or the <a
-      href="https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view"
-      >Jack language specification</a
+    NAND can only be programmed in Jack, its own weakly typed object-oriented programming language.
+    You can use either my example code or my <a
+      href="https://github.com/ArhanChaudhary/NAND?tab=readme-ov-file#writing-programs-for-nand"
+      >Jack language tutorial</a
     >
     as a reference for writing in Jack. You may also find useful the
     <a
-      href="https://drive.google.com/file/d/137PiYjt4CAZ3ROWiD0DJ8XMUbMM0_VHR/view"
-      >Jack OS specification</a
+      href="https://github.com/ArhanChaudhary/NAND?tab=readme-ov-file#jack-os-reference"
+      >Jack OS Reference</a
     > to interact with the hardware and use standard library functions.
   </p>
 
