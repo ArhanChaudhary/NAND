@@ -173,7 +173,7 @@ pop this 2
 label FALSE_CASE6
 push constant 0
 return
-function String.intValue 3
+function String.intValue 4
 push argument 0
 pop pointer 0
 push this 1
@@ -194,9 +194,6 @@ push this 2
 lt
 not
 if-goto WHILE_BREAKER9
-push local 0
-push constant 10
-call Math.multiply 2
 push this 1
 push local 1
 add
@@ -204,19 +201,37 @@ pop pointer 1
 push that 0
 push constant 48
 sub
+pop local 3
+push local 3
+push constant -1
+gt
+push local 3
+push constant 10
+lt
+and
+if-goto FALSE_CASE10
+push this 2
+pop local 1
+goto TRUE_CASE11
+label FALSE_CASE10
+push local 0
+push constant 10
+call Math.multiply 2
+push local 3
 add
 pop local 0
 push local 1
 push constant 1
 add
 pop local 1
+label TRUE_CASE11
 goto WHILE_ITER8
 label WHILE_BREAKER9
 push local 2
-if-goto FALSE_CASE10
+if-goto FALSE_CASE12
 push local 0
 return
-label FALSE_CASE10
+label FALSE_CASE12
 push local 0
 neg
 return
@@ -226,11 +241,11 @@ pop pointer 0
 push argument 1
 push constant 0
 lt
-if-goto FALSE_CASE11
+if-goto FALSE_CASE13
 push constant 0
 pop this 2
-goto TRUE_CASE12
-label FALSE_CASE11
+goto TRUE_CASE14
+label FALSE_CASE13
 push this 1
 push constant 45
 pop temp 0
@@ -242,45 +257,45 @@ pop this 2
 push argument 1
 neg
 pop argument 1
-label TRUE_CASE12
+label TRUE_CASE14
 push argument 1
 push constant 10000
 lt
-if-goto FALSE_CASE13
-push constant 5
-pop local 1
-goto TRUE_CASE14
-label FALSE_CASE13
-push argument 1
-push constant 1000
-lt
 if-goto FALSE_CASE15
-push constant 4
+push constant 5
 pop local 1
 goto TRUE_CASE16
 label FALSE_CASE15
 push argument 1
-push constant 100
+push constant 1000
 lt
 if-goto FALSE_CASE17
-push constant 3
+push constant 4
 pop local 1
 goto TRUE_CASE18
 label FALSE_CASE17
 push argument 1
-push constant 10
+push constant 100
 lt
 if-goto FALSE_CASE19
-push constant 2
+push constant 3
 pop local 1
 goto TRUE_CASE20
 label FALSE_CASE19
+push argument 1
+push constant 10
+lt
+if-goto FALSE_CASE21
+push constant 2
+pop local 1
+goto TRUE_CASE22
+label FALSE_CASE21
 push constant 1
 pop local 1
+label TRUE_CASE22
 label TRUE_CASE20
 label TRUE_CASE18
 label TRUE_CASE16
-label TRUE_CASE14
 push this 2
 push local 1
 add
@@ -289,20 +304,20 @@ push this 2
 push this 0
 gt
 not
-if-goto FALSE_CASE21
+if-goto FALSE_CASE23
 push constant 19
 call Sys.error 1
 pop temp 0
-label FALSE_CASE21
+label FALSE_CASE23
 push this 2
 pop local 1
 push constant 1
 pop local 0
-label WHILE_ITER22
+label WHILE_ITER24
 push local 0
 push constant 0
 eq
-if-goto WHILE_BREAKER23
+if-goto WHILE_BREAKER25
 push argument 1
 push constant 10
 call Math.divide 2
@@ -327,8 +342,8 @@ push temp 0
 pop that 0
 push local 0
 pop argument 1
-goto WHILE_ITER22
-label WHILE_BREAKER23
+goto WHILE_ITER24
+label WHILE_BREAKER25
 push constant 0
 return
 function String.newLine 0

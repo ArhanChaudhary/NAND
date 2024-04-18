@@ -85,14 +85,23 @@ class String {
     /** Returns the integer value of this string,
      *  until a non-digit character is detected. */
     method int intValue() {
-        var int v, i, isNegative;
+        var int v;
+        var int i;
+        var boolean isNegative;
+        var int cache;
+
         let isNegative = stringArray[0] = 45;
         if (isNegative) {
             let i = 1;
         }
         while (i < currentLength) {
-            let v = (v * 10) + (stringArray[i] - 48);
-            let i = i + 1;
+            let cache = stringArray[i] - 48;
+            if (~((cache > -1) & (cache < 10))) {
+                let i = currentLength;
+            } else {
+                let v = (v * 10) + cache;
+                let i = i + 1;
+            }
         }
         if (~isNegative) {
             return v;
