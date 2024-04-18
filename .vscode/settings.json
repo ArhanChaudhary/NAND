@@ -1,4 +1,15 @@
 {
     "rust-analyzer.linkedProjects": ["./src/Cargo.toml"],
-    "recommendations": ["svelte.svelte-vscode"]
+    "cSpell.words": [
+        "alloc",
+        "Deallocates",
+        "deallocating",
+        "keybinds",
+        "Nand",
+        "println",
+        "Tetris"
+    ],
+    "cSpell.ignorePaths": [
+        "src",
+    ]
 }

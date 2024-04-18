@@ -21,13 +21,13 @@
   function tabAdd() {
     let fileName: string;
     while (true) {
-      let promptInput = prompt("Enter new file name:");
+      let promptInput = prompt("Enter new class name:");
       if (promptInput === null) {
         return;
       } else if (promptInput == "" || !Tokenizer.isLetter(promptInput[0])) {
-        alert("Invalid file name!");
+        alert("Invalid class name!");
       } else if ($IDEContext.some((file) => file.fileName === promptInput)) {
-        alert("File already exists!");
+        alert("class already exists!");
       } else {
         fileName = promptInput;
         break;
@@ -41,7 +41,7 @@
     tabClick(fileName);
   }
   function tabDelete(tabName: string) {
-    if (!confirm(`Are you sure you want to delete ${tabName}?`)) return;
+    if (!confirm(`Are you sure you want to delete '${tabName}'?`)) return;
     if (tabName === $activeTabName) {
       const tabNames = $IDEContext.map((file) => file.fileName);
       let index = tabNames.indexOf(tabName) + 1;

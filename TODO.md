@@ -1,12 +1,9 @@
 # TODO (NAND)
 * readme
   * Writing programs in NAND
-    * appendix A for full grammar and primitive types
-    * optional return
+    * arguments keyword in docs (nArgs doesnt matter)
     * if and else doesn't require bracket
     * [][] works
-    * arguments keyword (nArgs doesnt matter)
-    * smaller edge cases
 
     * ub: abs -32768, stack overflows, heap overflows, modifying stack frame or registers,
     * hardware limitations
@@ -15,7 +12,7 @@
     * Average
     * Pong
     * Square
-    * Hackerman
+    * SecretPassword
     * Overflow
     * 2048
     * GeneticAlgorithm (will not reallocate)
