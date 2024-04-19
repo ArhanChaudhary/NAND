@@ -49,11 +49,10 @@
     const exampleProgramsOrder = [
       "New Program",
       "Average",
-      "Square",
       "Pong",
+      "2048",
       "Overflow",
       "SecretPassword",
-      "2048",
       "GeneticAlgorithm",
     ];
     function safeIndexOf(arr: string[], val: string) {

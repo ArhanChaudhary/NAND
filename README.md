@@ -18,9 +18,9 @@ is a turing equivalent 16-bit computer made entirely from a [clock](https://en.w
 - [Example programs](#example-programs)
     - [Average](#average)
     - [Pong](#pong)
+    - [2048](#2048)
     - [Overflow](#overflow)
     - [SecretPassword](#secretpassword)
-    - [2048](#2048)
     - [GeneticAlgorithm](#geneticalgorithm)
 - [Writing programs for NAND](#writing-programs-for-nand)
     - [Jack Tutorial](#jack-tutorial)
@@ -48,23 +48,64 @@ is a turing equivalent 16-bit computer made entirely from a [clock](https://en.w
     - [If there's only one type, what is the point of specifying types at all?](#if-theres-only-one-type-what-is-the-point-of-specifying-types-at-all)
     - [Why does the IDE feel finnicky?](#why-does-the-ide-feel-finnicky)
 
-<br>
-
 # Example programs
 
 ### Average
 
+A simple program that inputs some numbers and computes their average, showing off control flow, arithmetic operations, I/O, and dynamic memory allocation.
+
+Program output:
+```
+How many numbers? 4
+Enter a number: 100
+Enter a number: 42
+Enter a number: 400
+Enter a number: 300
+The average is 210
+```
+This program was directly supplied by the Nand to Tetris software suite.
+
 ### Pong
 
-### Overflow
+A program that runs the game of Pong, showing off the language's object-oriented model. Use the arrow keys to move the paddle left and right to bounce a ball. Every bounce, the paddle becomes smaller, and the game ends when the ball hits the bottom of the screen.
 
-### SecretPassword
+This program was directly supplied by the Nand to Tetris software suite.
 
 ### 2048
 
-### GeneticAlgorithm
+A program that runs the game of the game of 2048, showing off recursion and complex application logic. Use the arrow keys to move the numbers around the 4x4 grid. Two numbers that move into each other combine into their sum. You lose the game when you can't make any more moves. Once the 2048 tile is reached, you win the game, though you can keep playing on until you lose.
 
-<br>
+### Overflow
+
+A program that deliberately causes a stack overflow via infinite recursion to perform a [virtual machine escape](https://en.wikipedia.org/wiki/Virtual_machine_escape). It leverages the fact that there are no runtime checks to prevent a stack overflow. No other modern platform will let you do this :-)
+
+Upon running, the program will constantly print the stack pointer to the screen. Once this displayed value exceeds 2048, the stack will have reached the end of its intended memory space and spill onto the heap memory space, causing the print statement to malfunction in explosive fashion:
+
+<img src="media/overflow.png" width="700">
+
+Two things of noteworthy interest are worth pointing out.
+
+If you reload the page and run this program on an empty RAM (a RAM full of zeroes), you will notice that the program resets itself halfway through its execution despite not pressing the "Reset" button. Why this happens is simple: the jailbreaked runtime executes an instruction that sets the [program counter](https://en.wikipedia.org/wiki/Program_counter)'s value to 0, effectively telling the program to start over at the first instruction.
+
+If you run the GeneticAlgorithm example program and then run this immediately afterwards, the program interestingly reads from old RAM memory that hasn't yet been overwritten:
+
+<img src="media/old_memory.png" width="700">
+
+### SecretPassword
+
+A program that exploits the fact that the runtime doesn't prevent [stack smashing](https://en.wikipedia.org/wiki/Stack_buffer_overflow) to call a function that would otherwise be inaccessible. In order to understand how this works, let's examine this illustration of NAND's stack frame layout from the [Nand to Tetris book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk):
+
+<img src="media/stack_layout.png" width="700">
+
+If you're unfamiliar with stack layouts, here's the main idea behind the exploit. Whenever a function returns, it needs to know where (which machine code instruction memory address) it should go to proceed with execution flow. So, when the function is first called, this memory address, along with some other unimportant data, is temporarily stored on the stack in a memory region referred to as the [stack frame](https://en.wikipedia.org/wiki/Call_stack#STACK-FRAME). The illustration describes the exact position of this return address relative to the function call, a position that can be reverse engineered.
+
+The program enables the user to set a single memory address in the RAM to any value. Putting two and two together, if the user were to overwrite the return address of a stack frame with the location of another function in the instruction memory, they essentially gain the ability to execute arbitrary code included in the machine code binary.
+
+Indeed, if you enter 267 as the memory location and 1715 as the value to overwrite, two numbers reverse engineered by me by manually inspecting the stack memory space and the assembler, you'll see this concept working in action:
+
+<img src="media/secret_password.png" width="700">
+
+### GeneticAlgorithm
 
 # Writing programs for NAND
 
@@ -82,7 +123,7 @@ Without parenthesis, the evaluation value of an ambiguous expression is **undefi
 
 NAND boasts its own complete tech stack. As a consequence, NAND can only be programmed in Jack, its own weakly typed object-oriented programming language. In layman's terms, Jack is C with Java's syntax and without types.
 
-The rest of this section has been adapted from the <a href="https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view">Nand to Tetris lecture slides</a>. Let's take the approach of example-based learning and dive right in.
+The rest of this section has been adapted from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view). Let's take the approach of example-based learning and dive right in.
 
 ```js
 /**
@@ -145,7 +186,7 @@ let c = a; // c == Complex(7, 8)
            // of the Complex type defined elsewhere
 ```
 
-Don't take this the wrong way — Jack still provides a powerful and functional object-oriented model if used properly. This knowledge intends to help you understand when you should perform type conversions (memory layout should be the same)
+Don't take this the wrong way — Jack still provides a powerful and functional object-oriented model if used properly. This insight only intends to help you understand when you should perform type conversions (memory layout should be the same)
 
 ```js
 class Foo {
@@ -167,17 +208,31 @@ class Foo {
 }
 ```
 
-You now know how to program NAND in Jack! Press "Start" to compile and run your code. The OS will typically take a little under second to initialize memory and set up its services before you'll see your program running!
+You now know how to program NAND in Jack! Press "Start" to compile and run your code. The OS will typically take a little under second to initialize memory and set up its services before you're off to see your program running!
 
 ### Undefined Behavior
 
 ### Hardware Specification
 
-<br>
+Lastly, Jack's keyboard recognizes all ASCII characters, as well as the following keys:
+ * new line = 128 = `String.newline()`
+ * backspace = 129 = `String.backspace()`
+ * left arrow = 130
+ * up arrow = 131
+ * right arrow = 132
+ * down arrow = 133
+ * home = 134
+ * end = 135
+ * page up = 136
+ * page down = 137
+ * insert = 138
+ * delete = 139
+ * ESC = 140
+ * F1 - F12 = 141 - 152
 
 # Jack Reference
 
-This majority of this section was directly taken from the <a href="https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view">Nand to Tetris lecture slides</a> and the <a href="https://www.csie.ntu.edu.tw/~cyy/courses/introCS/18fall/lectures/handouts/lec13_Jack.pdf">National Taiwan University lecture slides</a>.
+This majority of this section was directly taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view) and the [National Taiwan University lecture slides](https://www.csie.ntu.edu.tw/~cyy/courses/introCS/18fall/lectures/handouts/lec13_Jack.pdf).
 
 ### Program structure
 
@@ -415,7 +470,7 @@ A Jack program:
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------- |
 | static variables    | `static` *type varName1, varName2, ...*;<br>Only one copy of each static variable exists, and this copy is shared by all the object instances of the class (like *private static variables* in Java) | class declaration      | The class in which they are declared.                                                 |
 | field variables     | `field` *type varName1, varName2, ...*;<br>Every object (instance of the class) has a private copy of the field variables (like *member variables* in Java)                                          | class declaration      | The class in which they are declared, except for functions, where they are undefined. |
-| local variables     | `var` *type varName1, varName2, ...*;<br>Local variables are created just before the subroutine starts running and are deallocated when it returns (like *local variables* in Java)                     | subroutine declaration | The subroutine in which they are declared.                                            |
+| local variables     | `var` *type varName1, varName2, ...*;<br>Local variables are created just before the subroutine starts running and are deallocated when it returns (like *local variables* in Java)                  | subroutine declaration | The subroutine in which they are declared.                                            |
 | parameter variables | *type varName1, varName2, ...*<br>Used to pass arguments to the subroutine. Treated like local variables whose values are initialized "from the outside", just before the subroutine starts running. | subroutine signature   | The subroutine in which they are declared.                                            |
 
 ### Statements
@@ -423,8 +478,8 @@ A Jack program:
 | Statement | Syntax                                                                                                                  | Description                                                                                                                                                                |
 | --------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | let       | `let` *varName = expression*;<br>or<br>`let` *varName*[*expression1*] = *expression2*;                                  | An assignment operation (where *varName* is either single-valued or an array). The variable kind may be *static, local, field, or parameter*.                              |
-| if        | `if` (expression) {<br>&nbsp;&nbsp;&nbsp;&nbsp;statements1<br>}<br>`else` {<br>&nbsp;&nbsp;&nbsp;&nbsp;statements2<br>} | Typical if statement with an optional else clause.<br><br> The curly brackets are mandatory even if *statements* is a single statement.                                    |
-| while     | `while` (expression) {<br>&nbsp;&nbsp;&nbsp;&nbsp;*statements*<br>}                                                     | Typical *while* statement.<br><br>The curly brackets are mandatory even if statements is a single statement.                                                               |
+| if        | `if` (expression) {<br>&nbsp;&nbsp;&nbsp;&nbsp;statements1<br>}<br>`else` {<br>&nbsp;&nbsp;&nbsp;&nbsp;statements2<br>} | Typical if statement with an optional else clause.                                                                                                                         |
+| while     | `while` (expression) {<br>&nbsp;&nbsp;&nbsp;&nbsp;*statements*<br>}                                                     | Typical *while* statement.                                                                                                                                                 |
 | do        | `do` *function-or-method-call*;                                                                                         | Used to call a function or a method for its effect, ignoring the returned value.                                                                                           |
 | return    | `return` expression;<br>or<br>`return`;                                                                                 | Used to return a value from a subroutine.<br>The second form must be used by functions and methods that return a void value. Constructors must return the expression this. |
 
@@ -464,30 +519,30 @@ class Array {
  * a standard keyboard.
  */
 class Keyboard {
-	/**
-	 * Returns the character code of the currently pressed key,
-	 * or 0 if no key is currently pressed.
-	 */
-	function char keyPressed();
-
-	/**
-	 * Waits until a keyboard key is pressed and released, then displays the
-   * corresponding character on the screen and returns the character.
-	 */
-	function char readChar();
-
-	/**
-	 * Prints the message on the screen, reads the next line (until a newLine
-	 * character) from the keyboard, and returns its value.
+  /**
+   * Returns the character code of the currently pressed key,
+   * or 0 if no key is currently pressed.
    */
-	function String readLine(String message);
+  function char keyPressed();
 
-	/**
-	 * Prints the message on the screen, reads the next line (until a newline
+  /**
+   * Waits until a keyboard key is pressed and released, then displays the
+   * corresponding character on the screen and returns the character.
+   */
+  function char readChar();
+
+  /**
+   * Prints the message on the screen, reads the next line (until a newLine
+   * character) from the keyboard, and returns its value.
+   */
+  function String readLine(String message);
+
+  /**
+   * Prints the message on the screen, reads the next line (until a newline
    * character) from the keyboard, and returns its integer value (until the
    * first non numeric character).
-	 */
-	function int readInt(String message);
+   */
+  function int readInt(String message);
 }
 ```
 
@@ -545,23 +600,23 @@ class Math {
  * consists of 32,768 words, each holding a 16-bit binary number.
  */
 class Memory {
-  /*
+  /**
    * Returns the RAM value at the given address.
    */
   function int peek(int address);
 
-  /*
+  /**
    * Sets the value of the given RAM address to the given value.
    */
   function void poke(int address, int value);
 
-  /*
+  /**
    * Finds and allocates from the heap a memory block of the specified size and
    * returns a reference to its base address.
    */
   function int alloc(int size);
 
-  /*
+  /**
    * Deallocates the given object (cast as an array) by making it available for
    * future allocations.
    */
@@ -631,34 +686,34 @@ class Output {
  * the screen is indexed (0,0).
  */
 class Screen {
-  /*
+  /**
    * Erases the entire screen.
    */
   function void clearScreen();
 
-  /*
+  /**
    * Sets the current color to be used for all subsequent drawXXX commands.
    * Black is represented by true, white by false.
    */
   function void setColor(boolean b);
 
-  /*
+  /**
    * Draws the (x, y) pixel using the current color.
    */
   function void drawPixel(int x, int y);
 
-  /*
+  /**
    * Draws a line from pixel (x1, y1) to pixel (x2, y2) using the current color.
    */
   function void drawLine(int x1, int y1, int x2, int y2);
 
-  /*
+  /**
    * Draws a filled rectangle whose top left corner is (x1, y1) and bottom
    * right corner is (x2, y2) using the current color.
    */
   function void drawRectangle(int x1, int y1, int x2, int y2);
 
-  /*
+  /**
    * Draws a filled circle of radius r <= 181 around (x, y) using the current
    * color.
    */
@@ -677,65 +732,65 @@ class Screen {
  * string-oriented operations.
  */
 class String {
-  /*
+  /**
    * Constructs a new empty string with a maximum length of maxLength and
    * initial length of 0.
    */
   constructor String new(int maxLength);
 
-  /*
+  /**
    * Deallocates an instance of String and frees its memory space.
    */
   method void dispose();
 
-  /*
+  /**
    * Returns the current length of an instance of String.
    */
   method int length();
 
-  /*
+  /**
    * Returns the character at the j-th location of an instance of String.
    */
   method char charAt(int j);
 
-  /*
+  /**
    * Sets the character at the j-th location of an instance of String to c.
    */
   method void setCharAt(int j, char c);
 
-  /*
+  /**
    * Appends the given character to the end of an instance of String and
    * returns the same instance.
    */
   method String appendChar(char c);
 
-  /*
+  /**
    * Erases the last character from an instance of String.
    */
   method void eraseLastChar();
 
-  /*
+  /**
    * Returns the integer value of an instance of String until the first
    * non-numeric character.
    */
   method int intValue();
 
-  /*
+  /**
    * Sets an instance of String to the representation of the given number.
    */
   method void setInt(int number);
 
-  /*
+  /**
    * Returns the new line character.
    */
   function char newLine();
 
-  /*
+  /**
    * Returns the backspace character.
    */
   function char backSpace();
 
-  /*
+  /**
    * Returns the quotation mark character.
    */
   function char doubleQuote();
@@ -749,18 +804,18 @@ class String {
  * A library that supports various program execution services.
  */
 class Sys {
-  /*
+  /**
    * Halts the program execution.
    */
   function void halt();
 
-  /*
+  /**
    * Displays the given error code in the format "ERR[errorCode]", and halts
    * the program's execution.
    */
   function void error(int errorCode);
 
-  /*
+  /**
    * Waits approximately duration milliseconds and returns. Note that this is
    * runtime dependent and may not be accurate.
    */
@@ -794,23 +849,23 @@ If you do something that forces the computer into an invalid state, like computi
 
 # How does NAND work?
 
-I'm glad you asked! I've found the following illustrations from Nand to Tetris quite illuminating:
+I'm glad you asked! I've found the following [illustrations](https://en.wikipedia.org/wiki/Hack_computer) quite illuminating:
 
 <img src="media/computer.png" width="700">
 
-The NAND computer follows the <a href="https://en.wikipedia.org/wiki/Harvard_architecture">Harvard architecture</a>. That is, the instruction memory and the data memory are separately stored, brought function in unison by the CPU.
+The NAND computer follows the [Harvard architecture](https://en.wikipedia.org/wiki/Harvard_architecture). That is, the instruction memory (ROM) and the data memory (RAM) are separately stored, brought function in unison by the CPU.
 
 <img src="media/cpu.png" width="700">
 
-NAND's CPU is an <a href="https://en.wikipedia.org/wiki/Accumulator_(computing)#Accumulator_machines">accumulator machine</a>, meaning that it is heavily dependent on its built-in registers for control flow (in this case the accumulator is the D register). Don't worry if you don't fully understand what the CPU visualization depicts. Instead, take the perspective of appreciation for how this elegantly simple design powers the entirety of NAND — in your web browser!
+NAND's CPU is an [accumulator machine](https://en.wikipedia.org/wiki/Accumulator_(computing)#Accumulator_machines), meaning that it is heavily dependent on its built-in registers for control flow (in this case the accumulator is the D register). Don't worry if you don't fully understand what the CPU visualization depicts. Instead, take the perspective of appreciation for how this elegantly simple design powers the entirety of NAND — in your web browser!
 
 <img src="media/alu.png" width="700">
 
 We've reached the instruction set, the nitty-gritty. As indicated, NAND's CPU only has *two* opcodes! This makes the instruction set relatively simple while providing a rich functionality. NAND's ALU is also specified with which expressions it can compute in a single instruction.
 
-Phew! That was a lot to take in, but I promise you NAND is far less complicated than it's made out to be. From a relatively simple logical foundation, turing equivalence is achieved! If you want see my implementation of the NAND computer architecture, <a href="src/core">you're more than welcome to</a>! If you find yourself still curious, check out the <a href="https://drive.google.com/file/d/1Z_fxYmmRNXTkAzmZ6YMoX9NXZIRVCKiw/view">Nand to Tetris lecture slides</a> for further elaboration on every aspect of its design.
+Phew! That was a lot to take in, but I promise you NAND is far less complicated than it's made out to be. From a relatively simple logical foundation, turing equivalence is achieved! If you want see my implementation of the NAND computer architecture, [you're more than welcome to](src/core)! If you find yourself still curious, check out the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1Z_fxYmmRNXTkAzmZ6YMoX9NXZIRVCKiw/view) for further elaboration on every aspect of its design.
 
-Let's just briefly talk about the compiler to make this section feel complete. Some of NAND's strange syntactical features are a direct consequence of making the compiler easier to implement. The compiler is a <a href="https://en.wikipedia.org/wiki/LL_parser">recursive LL(1) parser</a>, generating VM code in <a href="https://en.wikipedia.org/wiki/Reverse_Polish_notation">postfix notation</a> to be utilized as a <a href="https://en.wikipedia.org/wiki/Stack_machine">simple stack machine</a>. Once again, you're more than welcome to see my <a href="src/compiler">compiler implementation</a> for yourself.
+Let's just briefly talk about the compiler to make this section feel complete. Some of NAND's strange syntactical features are a direct consequence of making the compiler easier to implement. The compiler is a [recursive LL(1) parser](https://en.wikipedia.org/wiki/LL_parser), generating VM code in [postfix notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation) to be utilized as a [simple stack machine](https://en.wikipedia.org/wiki/Stack_machine). Once again, you're more than welcome to see my [compiler implementation](src/compiler) for yourself.
 
 # FAQ
 
@@ -828,4 +883,4 @@ This question references the fact that under the hood, the signed 16-bit integer
 
 ### Why does the IDE feel finnicky?
 
-NAND's IDE unfortunately trades implementation simplicity for a worse user experience. It uses the unorthodox <a href="https://medium.engineering/why-contenteditable-is-terrible-122d8a40e480">contenteditable</a> and hacky cursor positioning logic to get syntax highlighting to work. I myself was surprised that I managed to even bring it to a functional state. As a result, it's slow and noticeably buggy, plus common keybinds don't work. I'm sorry, but for now you'll just need to bear with me.
+NAND's IDE unfortunately trades implementation simplicity for a worse user experience. It uses the unorthodox [contenteditable](https://medium.engineering/why-contenteditable-is-terrible-122d8a40e480) and hacky cursor positioning logic to get syntax highlighting to work. I myself was surprised that I managed to even bring it to a functional state. As a result, it's slow and noticeably buggy, plus common keybinds don't work. I'm sorry, but for now you'll just need to bear with me.

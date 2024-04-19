@@ -38,9 +38,7 @@
 * vm escape bug
 
 # TODO (for later)
-* IDE on safari is really buggy
 * breakpoints
-* graphing calculator in jack
 * nand in nand
 * lisp interpreter
 * barrel shifter

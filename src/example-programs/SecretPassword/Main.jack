@@ -2,7 +2,7 @@
  * A simple program to demonstrate stack smashing, or overwriting
  * the stack frame return address to call inaccessible functions.
  *
- * Input the numbers 267 and 1727, see what happens!
+ * Input the numbers 267 and 1715, see what happens!
  */
 class Main {
     function void main() {
