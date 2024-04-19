@@ -703,7 +703,12 @@ export default class Engine {
     this.compileTerm();
     const op = this.tokenizer.token() as SymbolToken;
     if (OPS.includes(op)) {
+      const currentIsEquals = op === SymbolToken.EQUAL;
       this.tokenizer.advance();
+      const nextIsEquals = this.tokenizer.token() === SymbolToken.EQUAL;
+      if (currentIsEquals && nextIsEquals) {
+        throw this.tokenizer.syntaxError("", "use '=' instead of '==' for the equality comparison");
+      }
       this.compileExpression();
       this.vmwriter.writeArithmetic(op);
     }

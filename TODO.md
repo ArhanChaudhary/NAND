@@ -4,7 +4,6 @@
     * divide the Jack tutorial into more subsections
     * arguments keyword in docs (nArgs doesnt matter)
 
-    * ub: abs -32768, stack overflows, operator priority modifying stack frame, modifying registers, < and >, too few arguments (mention it is a wontfix)
     * hardware limitations
       * max ROM 32768 and max static 240 and max stack 1792 and screen stuff and multi keyboard input
 
