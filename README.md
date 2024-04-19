@@ -24,6 +24,7 @@ is a turing equivalent 16-bit computer made entirely from a [clock](https://en.w
     - [GeneticAlgorithm](#geneticalgorithm)
 - [Writing programs for NAND](#writing-programs-for-nand)
     - [Jack Tutorial](#jack-tutorial)
+    - [Manual Memory Management](#manual-memory-management)
     - [Undefined Behavior](#undefined-behavior)
     - [Hardware Specification](#hardware-specification)
 - [Jack Reference](#jack-reference)
@@ -54,7 +55,7 @@ is a turing equivalent 16-bit computer made entirely from a [clock](https://en.w
 
 A simple program that inputs some numbers and computes their average, showing off control flow, arithmetic operations, I/O, and dynamic memory allocation.
 
-Program output:
+Example program output:
 ```
 How many numbers? 4
 Enter a number: 100
@@ -85,15 +86,15 @@ Upon running, the program will constantly print the stack pointer to the screen.
 
 Two things of noteworthy interest are worth pointing out.
 
-If you reload the page and run this program on an empty RAM (a RAM full of zeroes), you will notice that the program resets itself halfway through its execution despite not pressing the "Reset" button. Why this happens is simple: the jailbreaked runtime executes an instruction that sets the [program counter](https://en.wikipedia.org/wiki/Program_counter)'s value to 0, effectively telling the program to start over at the first instruction.
+If you reload the page and run this program on an empty RAM (a RAM full of zeroes), you will notice that the program resets itself halfway through its execution despite not pressing the "Reset" button. Why this happens is simple: the jailbroken runtime executes an instruction that sets the [program counter](https://en.wikipedia.org/wiki/Program_counter)'s value to 0, effectively telling the program to start over at the first instruction.
 
-If you run the GeneticAlgorithm example program and then run this immediately afterwards, the program interestingly reads from old RAM memory that hasn't yet been overwritten:
+If you run the GeneticAlgorithm example program and then run this immediately afterwards, the program interestingly reads from old RAM memory that hasn't yet been overwritten.
 
 <img src="media/old_memory.png" width="700">
 
 ### SecretPassword
 
-A program that exploits the fact that the runtime doesn't prevent [stack smashing](https://en.wikipedia.org/wiki/Stack_buffer_overflow) to call a function that would otherwise be inaccessible. In order to understand how this works, let's examine this illustration of NAND's stack frame layout from the [Nand to Tetris book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk):
+A program that exploits the fact that the runtime doesn't prevent [stack smashing](https://en.wikipedia.org/wiki/Stack_buffer_overflow) to call a function that would otherwise be inaccessible. In order to understand how this works, let's examine this illustration of NAND's stack frame layout from the [Nand to Tetris book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk).
 
 <img src="media/stack_layout.png" width="700">
 
@@ -101,11 +102,15 @@ If you're unfamiliar with stack layouts, here's the main idea behind the exploit
 
 The program enables the user to set a single memory address in the RAM to any value. Putting two and two together, if the user were to overwrite the return address of a stack frame with the location of another function in the instruction memory, they essentially gain the ability to execute arbitrary code included in the machine code binary.
 
-Indeed, if you enter 267 as the memory location and 1715 as the value to overwrite, two numbers reverse engineered by me by manually inspecting the stack memory space and the assembler, you'll see this concept working in action:
+Indeed, if you enter 267 as the memory location and 1715 as the value to overwrite, two numbers reverse engineered by manually inspecting the stack memory space and the assembler, you'll see this idea in working action.
 
 <img src="media/secret_password.png" width="700">
 
 ### GeneticAlgorithm
+
+Believe it or not, out of the many, *many* different components of NAND, this program single-handedly took the longest to develop and get right!
+
+There are an incredible amount of unique optimization techniques I used to
 
 # Writing programs for NAND
 
@@ -128,7 +133,7 @@ The rest of this section has been adapted from the [Nand to Tetris lecture slide
 ```js
 /**
  * This program prompts the user to enter a phrase
- * and an energy level. Program output:
+ * and an energy level. Example program output:
  *
  * Whats on your mind? Superman
  * Whats your energy level? 3
@@ -208,13 +213,70 @@ class Foo {
 }
 ```
 
-You now know how to program NAND in Jack! Press "Start" to compile and run your code. The OS will typically take a little under second to initialize memory and set up its services before you're off to see your program running!
+### Manual Memory Management
+
+Let's say you're a crazy cat lover, just like me! And you wanted to write this program to show off just how much you absolutely adore cats.
+```js
+class Main {
+    function void main() {
+        while (true) {
+          do Output.printString("Kittens are so adorable! ");
+        }
+    }
+}
+```
+You may be startled to notice that after a few seconds, the program will crash with "ERR6", or a [heap overflow](https://en.wikipedia.org/wiki/Heap_overflow)!
+
+Jack is a [manually memory managed](https://en.wikipedia.org/wiki/Manual_memory_management) programming language. This means you have to be vigilant with properly deallocating memory that is no longer needed, or else the Jack OS will think otherwise and facilitate a [memory leak](https://en.wikipedia.org/wiki/Memory_leak). The best practice advice is to feature a `dispose` method for each class that represents an object that properly encapsulates this deallocation. Thus, when objects are no longer needed, you can call their `dispose` methods to ensure you won't eventually run out of heap memory.
+
+Let's fix this program for our fellow feline fanatics.
+```js
+class Main {
+    function void main() {
+        var String s;
+        while (true) {
+            let s = "Kittens are so adorable! ";
+            do Output.printString(s);
+            do s.dispose();
+        }
+    }
+}
+```
+Alternatively, you could allocate memory for the string only once.
+```js
+class Main {
+    function void main() {
+        var String s;
+        let s = "Kittens are so adorable! ";
+        while (true) {
+            do Output.printString(s);
+        }
+    }
+}
+```
+You'll notice that not only do these alternative versions print the string much faster, but this time they'll actually print forever! Hooray!
+
+Let's quickly peek into `String.dispose` so you can better understand how to write your own `dispose` methods.
+
+```js
+method void dispose() {
+    do stringArray.dispose();
+    do Memory.deAlloc(this);
+}
+```
+`Array.dispose` called by `stringArray`
+```js
+method void dispose() {
+    do Memory.deAlloc(this);
+}
+```
+Proper `dispose` methods must first appropriately call `dispose` on their field variables and then end with `do Memory.deAlloc(this);` to deallocate the object instance itself. If you've programmed in other manually memory managed languages, like C, this should look very familiar.
 
 ### Undefined Behavior
 
 ### Hardware Specification
 
-Lastly, Jack's keyboard recognizes all ASCII characters, as well as the following keys:
+Lastly, NAND's keyboard recognizes all ASCII characters, as well as the following keys.
  * new line = 128 = `String.newline()`
  * backspace = 129 = `String.backspace()`
  * left arrow = 130
@@ -229,6 +291,12 @@ Lastly, Jack's keyboard recognizes all ASCII characters, as well as the followin
  * delete = 139
  * ESC = 140
  * F1 - F12 = 141 - 152
+
+The currently pressed key is reflected at RAM address 24576. Though, you shouldn't directly access this location to handle user input. You should use the provided [Keyboard](#keyboard) class from the Jack OS and its associated functions.
+
+<hr>
+
+You now know how to program NAND in Jack! Press "Start" to compile and run your code. The OS will typically take a little under second to initialize memory and set up its services before you're off to see your program running!
 
 # Jack Reference
 
@@ -475,13 +543,13 @@ A Jack program:
 
 ### Statements
 
-| Statement | Syntax                                                                                                                  | Description                                                                                                                                                                |
-| --------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| let       | `let` *varName = expression*;<br>or<br>`let` *varName*[*expression1*] = *expression2*;                                  | An assignment operation (where *varName* is either single-valued or an array). The variable kind may be *static, local, field, or parameter*.                              |
-| if        | `if` (expression) {<br>&nbsp;&nbsp;&nbsp;&nbsp;statements1<br>}<br>`else` {<br>&nbsp;&nbsp;&nbsp;&nbsp;statements2<br>} | Typical if statement with an optional else clause.                                                                                                                         |
-| while     | `while` (expression) {<br>&nbsp;&nbsp;&nbsp;&nbsp;*statements*<br>}                                                     | Typical *while* statement.                                                                                                                                                 |
-| do        | `do` *function-or-method-call*;                                                                                         | Used to call a function or a method for its effect, ignoring the returned value.                                                                                           |
-| return    | `return` expression;<br>or<br>`return`;                                                                                 | Used to return a value from a subroutine.<br>The second form must be used by functions and methods that return a void value. Constructors must return the expression this. |
+| Statement | Syntax                                                                                                                                                                                     | Description                                                                                                                                                                |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| let       | `let` *varName = expression*;<br>or<br>`let` *varName*[*expression1*] = *expression2*;                                                                                                     | An assignment operation (where *varName* is either single-valued or an array). The variable kind may be *static, local, field, or parameter*.                              |
+| if        | `if` (expression) {<br>&nbsp;&nbsp;&nbsp;&nbsp;statements1<br>} `else if` (expression2) {<br>&nbsp;&nbsp;&nbsp;&nbsp;statements2<br>} `else` {<br>&nbsp;&nbsp;&nbsp;&nbsp;statements3<br>} | Typical *if* statement with an optional *else* or *else if* clause. The brackets are optional if there's only one statement.                                               |
+| while     | `while` (expression) {<br>&nbsp;&nbsp;&nbsp;&nbsp;*statements*<br>}                                                                                                                        | Typical *while* statement. The brackets are optional if there's only one statement.                                                                                        |
+| do        | `do` *function-or-method-call*;                                                                                                                                                            | Used to call a function or a method for its effect, ignoring the returned value.                                                                                           |
+| return    | `return` expression;<br>or<br>`return`;                                                                                                                                                    | Used to return a value from a subroutine.<br>The second form must be used by functions and methods that return a void value. Constructors must return the expression this. |
 
 # Jack OS Reference
 
@@ -519,30 +587,30 @@ class Array {
  * a standard keyboard.
  */
 class Keyboard {
-  /**
-   * Returns the character code of the currently pressed key,
-   * or 0 if no key is currently pressed.
-   */
-  function char keyPressed();
+    /**
+     * Returns the character code of the currently pressed key,
+     * or 0 if no key is currently pressed.
+     */
+    function char keyPressed();
 
-  /**
-   * Waits until a keyboard key is pressed and released, then displays the
-   * corresponding character on the screen and returns the character.
-   */
-  function char readChar();
+    /**
+     * Waits until a keyboard key is pressed and released, then displays the
+     * corresponding character on the screen and returns the character.
+     */
+    function char readChar();
 
-  /**
-   * Prints the message on the screen, reads the next line (until a newLine
-   * character) from the keyboard, and returns its value.
-   */
-  function String readLine(String message);
+    /**
+     * Prints the message on the screen, reads the next line (until a newLine
+     * character) from the keyboard, and returns its value.
+     */
+    function String readLine(String message);
 
-  /**
-   * Prints the message on the screen, reads the next line (until a newline
-   * character) from the keyboard, and returns its integer value (until the
-   * first non numeric character).
-   */
-  function int readInt(String message);
+    /**
+     * Prints the message on the screen, reads the next line (until a newline
+     * character) from the keyboard, and returns its integer value (until the
+     * first non numeric character).
+     */
+    function int readInt(String message);
 }
 ```
 
@@ -553,41 +621,41 @@ class Keyboard {
  * A library of commonly used mathematical functions.
  */
 class Math {
-  /**
-   * Returns the absolute value of x.
-   */
-  function int abs(int x);
+    /**
+     * Returns the absolute value of x.
+     */
+    function int abs(int x);
 
-  /**
-   * Returns the product of x and y.
-   * This function is internally called in lieu of the multiplication
-   * operator '*'. In other words, the Jack expression x * y and
-   * Math.multiply(x, y) are equivalent.
-   */
-  function int multiply(int x, int y);
+    /**
+     * Returns the product of x and y.
+     * This function is internally called in lieu of the multiplication
+     * operator '*'. In other words, the Jack expression x * y and
+     * Math.multiply(x, y) are equivalent.
+     */
+    function int multiply(int x, int y);
 
-  /**
-   * Returns the integer part of x / y.
-   * This function is internally called in lieu of the division
-   * operator '/'. In other words, the Jack expression x / y and
-   * Math.divide(x, y) are equivalent.
-   */
-  function int divide(int dividend, int divisor);
+    /**
+     * Returns the integer part of x / y.
+     * This function is internally called in lieu of the division
+     * operator '/'. In other words, the Jack expression x / y and
+     * Math.divide(x, y) are equivalent.
+     */
+    function int divide(int dividend, int divisor);
 
-  /**
-   * Returns the integer part of the square root of x.
-   */
-  function int sqrt(int x);
+    /**
+     * Returns the integer part of the square root of x.
+     */
+    function int sqrt(int x);
 
-  /**
-   * Returns the greater of the two arguments.
-   */
-  function int max(int a, int b);
+    /**
+     * Returns the greater of the two arguments.
+     */
+    function int max(int a, int b);
 
-  /**
-   * Returns the smaller of the two arguments.
-   */
-  function int min(int a, int b);
+    /**
+     * Returns the smaller of the two arguments.
+     */
+    function int min(int a, int b);
 }
 ```
 
@@ -600,27 +668,27 @@ class Math {
  * consists of 32,768 words, each holding a 16-bit binary number.
  */
 class Memory {
-  /**
-   * Returns the RAM value at the given address.
-   */
-  function int peek(int address);
+    /**
+     * Returns the RAM value at the given address.
+     */
+    function int peek(int address);
 
-  /**
-   * Sets the value of the given RAM address to the given value.
-   */
-  function void poke(int address, int value);
+    /**
+     * Sets the value of the given RAM address to the given value.
+     */
+    function void poke(int address, int value);
 
-  /**
-   * Finds and allocates from the heap a memory block of the specified size and
-   * returns a reference to its base address.
-   */
-  function int alloc(int size);
+    /**
+     * Finds and allocates from the heap a memory block of the specified size and
+     * returns a reference to its base address.
+     */
+    function int alloc(int size);
 
-  /**
-   * Deallocates the given object (cast as an array) by making it available for
-   * future allocations.
-   */
-  function void deAlloc(Array o);
+    /**
+     * Deallocates the given object (cast as an array) by making it available for
+     * future allocations.
+     */
+    function void deAlloc(Array o);
 }
 ```
 
@@ -639,40 +707,40 @@ class Memory {
  * as a small filled square, indicates where the next character will be displayed.
  */
 class Output {
-  /**
-   * Moves the cursor to the j'th column of the i'th row, erasing the character
-   * that was there.
-   */
-  function void moveCursor(int i, int j);
+    /**
+     * Moves the cursor to the j'th column of the i'th row, erasing the character
+     * that was there.
+     */
+    function void moveCursor(int i, int j);
 
-  /**
-   * Displays the given character at the cursor location,
-   * and advances the cursor one column forward.
-   */
-  function void printChar(char c);
+    /**
+     * Displays the given character at the cursor location,
+     * and advances the cursor one column forward.
+     */
+    function void printChar(char c);
 
-  /**
-   * Displays the given string starting at the cursor location, and advances
-   * the cursor appropriately.
-   */
-  function void printString(String str);
+    /**
+     * Displays the given string starting at the cursor location, and advances
+     * the cursor appropriately.
+     */
+    function void printString(String str);
 
-  /**
-   * Displays the given integer starting at the cursor location, and advances
-   * the cursor appropriately.
-   */
-  function void printInt(int i);
+    /**
+     * Displays the given integer starting at the cursor location, and advances
+     * the cursor appropriately.
+     */
+    function void printInt(int i);
 
-  /**
-   * Advances the cursor to the beginning of the next line.
-   */
-  function void println();
+    /**
+     * Advances the cursor to the beginning of the next line.
+     */
+    function void println();
 
-  /**
-   * Erases the character that was last written and moves the cursor one column
-   * back.
-   */
-  function void backSpace();
+    /**
+     * Erases the character that was last written and moves the cursor one column
+     * back.
+     */
+    function void backSpace();
 }
 ```
 
@@ -686,38 +754,38 @@ class Output {
  * the screen is indexed (0,0).
  */
 class Screen {
-  /**
-   * Erases the entire screen.
-   */
-  function void clearScreen();
+    /**
+     * Erases the entire screen.
+     */
+    function void clearScreen();
 
-  /**
-   * Sets the current color to be used for all subsequent drawXXX commands.
-   * Black is represented by true, white by false.
-   */
-  function void setColor(boolean b);
+    /**
+     * Sets the current color to be used for all subsequent drawXXX commands.
+     * Black is represented by true, white by false.
+     */
+    function void setColor(boolean b);
 
-  /**
-   * Draws the (x, y) pixel using the current color.
-   */
-  function void drawPixel(int x, int y);
+    /**
+     * Draws the (x, y) pixel using the current color.
+     */
+    function void drawPixel(int x, int y);
 
-  /**
-   * Draws a line from pixel (x1, y1) to pixel (x2, y2) using the current color.
-   */
-  function void drawLine(int x1, int y1, int x2, int y2);
+    /**
+     * Draws a line from pixel (x1, y1) to pixel (x2, y2) using the current color.
+     */
+    function void drawLine(int x1, int y1, int x2, int y2);
 
-  /**
-   * Draws a filled rectangle whose top left corner is (x1, y1) and bottom
-   * right corner is (x2, y2) using the current color.
-   */
-  function void drawRectangle(int x1, int y1, int x2, int y2);
+    /**
+     * Draws a filled rectangle whose top left corner is (x1, y1) and bottom
+     * right corner is (x2, y2) using the current color.
+     */
+    function void drawRectangle(int x1, int y1, int x2, int y2);
 
-  /**
-   * Draws a filled circle of radius r <= 181 around (x, y) using the current
-   * color.
-   */
-  function void drawCircle(int x, int y, int r);
+    /**
+     * Draws a filled circle of radius r <= 181 around (x, y) using the current
+     * color.
+     */
+    function void drawCircle(int x, int y, int r);
 }
 ```
 
@@ -732,68 +800,68 @@ class Screen {
  * string-oriented operations.
  */
 class String {
-  /**
-   * Constructs a new empty string with a maximum length of maxLength and
-   * initial length of 0.
-   */
-  constructor String new(int maxLength);
+    /**
+     * Constructs a new empty string with a maximum length of maxLength and
+     * initial length of 0.
+     */
+    constructor String new(int maxLength);
 
-  /**
-   * Deallocates an instance of String and frees its memory space.
-   */
-  method void dispose();
+    /**
+     * Deallocates an instance of String and frees its memory space.
+     */
+    method void dispose();
 
-  /**
-   * Returns the current length of an instance of String.
-   */
-  method int length();
+    /**
+     * Returns the current length of an instance of String.
+     */
+    method int length();
 
-  /**
-   * Returns the character at the j-th location of an instance of String.
-   */
-  method char charAt(int j);
+    /**
+     * Returns the character at the j-th location of an instance of String.
+     */
+    method char charAt(int j);
 
-  /**
-   * Sets the character at the j-th location of an instance of String to c.
-   */
-  method void setCharAt(int j, char c);
+    /**
+     * Sets the character at the j-th location of an instance of String to c.
+     */
+    method void setCharAt(int j, char c);
 
-  /**
-   * Appends the given character to the end of an instance of String and
-   * returns the same instance.
-   */
-  method String appendChar(char c);
+    /**
+     * Appends the given character to the end of an instance of String and
+     * returns the same instance.
+     */
+    method String appendChar(char c);
 
-  /**
-   * Erases the last character from an instance of String.
-   */
-  method void eraseLastChar();
+    /**
+     * Erases the last character from an instance of String.
+     */
+    method void eraseLastChar();
 
-  /**
-   * Returns the integer value of an instance of String until the first
-   * non-numeric character.
-   */
-  method int intValue();
+    /**
+     * Returns the integer value of an instance of String until the first
+     * non-numeric character.
+     */
+    method int intValue();
 
-  /**
-   * Sets an instance of String to the representation of the given number.
-   */
-  method void setInt(int number);
+    /**
+     * Sets an instance of String to the representation of the given number.
+     */
+    method void setInt(int number);
 
-  /**
-   * Returns the new line character.
-   */
-  function char newLine();
+    /**
+     * Returns the new line character.
+     */
+    function char newLine();
 
-  /**
-   * Returns the backspace character.
-   */
-  function char backSpace();
+    /**
+     * Returns the backspace character.
+     */
+    function char backSpace();
 
-  /**
-   * Returns the quotation mark character.
-   */
-  function char doubleQuote();
+    /**
+     * Returns the quotation mark character.
+     */
+    function char doubleQuote();
 }
 ```
 
@@ -804,28 +872,28 @@ class String {
  * A library that supports various program execution services.
  */
 class Sys {
-  /**
-   * Halts the program execution.
-   */
-  function void halt();
+    /**
+     * Halts the program execution.
+     */
+    function void halt();
 
-  /**
-   * Displays the given error code in the format "ERR[errorCode]", and halts
-   * the program's execution.
-   */
-  function void error(int errorCode);
+    /**
+     * Displays the given error code in the format "ERR[errorCode]", and halts
+     * the program's execution.
+     */
+    function void error(int errorCode);
 
-  /**
-   * Waits approximately duration milliseconds and returns. Note that this is
-   * runtime dependent and may not be accurate.
-   */
-  function void wait(int duration);
+    /**
+     * Waits approximately duration milliseconds and returns. Note that this is
+     * runtime dependent and may not be accurate.
+     */
+    function void wait(int duration);
 }
 ```
 
 ### Error Codes
 
-If you do something that forces the computer into an invalid state, like computing the result of 1 / 0, the Jack OS will display one of these error codes in the format of "ERR[N]" and immediately terminate the program:
+If you do something that forces the computer into an invalid state, like computing the result of 1 / 0, the Jack OS will display one of these error codes in the format of "ERR[N]" and immediately terminate the program.
 
 | Code | Method/Function      | Description                                     |
 | ---- | -------------------- | ----------------------------------------------- |

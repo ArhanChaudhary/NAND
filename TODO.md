@@ -2,12 +2,9 @@
 * readme
   * Writing programs in NAND
     * divide the Jack tutorial into more subsections
-    * reference readme in app
     * arguments keyword in docs (nArgs doesnt matter)
-    * if and else doesn't require bracket
-    * [][] works
 
-    * ub: abs -32768, stack overflows, heap overflows, modifying stack frame or registers,
+    * ub: abs -32768, stack overflows, operator priority modifying stack frame, modifying registers, < and >, too few arguments (mention it is a wontfix)
     * hardware limitations
       * max ROM 32768 and max static 240 and max stack 1792 and screen stuff and multi keyboard input
 

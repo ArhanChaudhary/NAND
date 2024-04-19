@@ -2,10 +2,12 @@
     "rust-analyzer.linkedProjects": ["./src/Cargo.toml"],
     "cSpell.words": [
         "alloc",
+        "deallocate",
         "deallocated",
         "Deallocates",
         "deallocating",
-        "jailbreaked",
+        "deallocation",
+        "jailbroken",
         "keybinds",
         "Nand",
         "println",
