@@ -582,9 +582,9 @@ class Main {
             }
         } else {
             if (isAdjacent) {
-                let floodVal = floodDist + 5;
+                let floodVal = floodDist + 6;
             } else {
-                let floodVal = floodDist + 7;
+                let floodVal = floodDist + 9;
             }
         }
 

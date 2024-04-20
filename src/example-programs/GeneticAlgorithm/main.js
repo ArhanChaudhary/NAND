@@ -617,9 +617,9 @@ export default class Main {
       }
     } else {
       if (Main.#isAdjacent) {
-        floodVal = add(Main.#floodDist, 5);
+        floodVal = add(Main.#floodDist, 6);
       } else {
-        floodVal = add(Main.#floodDist, 7);
+        floodVal = add(Main.#floodDist, 9);
       }
     }
 
