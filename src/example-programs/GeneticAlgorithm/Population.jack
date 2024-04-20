@@ -139,7 +139,7 @@ class Population {
         }
         let i = 0;
 
-        // serves as swap memory for later on
+        // serves as temporary swap memory for later on
         // -1 because the best dot won't be changed
         let newBrainDirections = Array.new(populationCount - 1);
         if (~(newBrainDirections < 16387)) {

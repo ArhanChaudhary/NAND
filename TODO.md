@@ -9,7 +9,7 @@
 # TODO (genetic algorithm blog)
 * cache pairs of acceleration vectors
 * bfs for precomputing fitnesses, diagonal distance, take into account obstacles, the noop case
-* screen memory for extra swap space
+* screen memory for extra temporary swap space
 * coefficients to avoid overflow
 * lcg for random and scale down
 * heap memory over read bug

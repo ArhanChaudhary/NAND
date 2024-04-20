@@ -14,27 +14,24 @@
   </p>
 
   <p>
-    is a turing equivalent 16-bit computer entirely built from a clock and NAND logic
-    gates. NAND features its own machine code language, assembly language,
-    assembler, VM language, VM translator, programming language, compiler, and
-    IDE. NAND is based on the Jack-VM-Hack platform specified in the <a
-      href="https://www.nand2tetris.org/">Nand to Tetris course</a
+    is a turing equivalent 16-bit computer entirely built from a clock and NAND
+    logic gates. NAND features its own machine code language, assembly language,
+    assembler, virtual machine language, virtual machine translator, programming
+    language, compiler, and IDE. NAND is based on the Jack-VM-Hack platform
+    specified in the <a href="https://www.nand2tetris.org/"
+      >Nand to Tetris course</a
     >.
   </p>
 
   <h1>How do I use NAND?</h1>
 
   <p>
-    NAND can only be programmed in Jack, its own weakly typed object-oriented programming language.
-    You can use either my example code or my <a
+    NAND can only be programmed in Jack, its weakly typed object-oriented
+    programming language. You should use either my example code and my <a
       href="https://github.com/ArhanChaudhary/NAND?tab=readme-ov-file#writing-programs-for-nand"
       >Jack language tutorial</a
     >
-    as a reference for writing in Jack. You may also find useful the
-    <a
-      href="https://github.com/ArhanChaudhary/NAND?tab=readme-ov-file#jack-os-reference"
-      >Jack OS Reference</a
-    > to interact with the hardware and use standard library functions.
+    as a reference for writing in Jack.
   </p>
 
   <p>

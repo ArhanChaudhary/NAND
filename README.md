@@ -31,7 +31,7 @@ is a turing equivalent 16-bit computer made entirely from a [clock](https://en.w
     - [Hardware Specification](#hardware-specification)
     - [Beyond the Jack OS](#beyond-the-jack-os)
 - [Jack Reference](#jack-reference)
-    - [Program structure](#program-structure)
+    - [Program Structure](#program-structure)
     - [Syntax](#syntax)
     - [Variables](#variables)
     - [Statements](#statements)
@@ -103,7 +103,7 @@ A program that exploits the fact that the runtime doesn't prevent [stack smashin
 
 *taken from the [Nand to Tetris book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk).*
 
-If you're unfamiliar with stack layouts, here's the main idea behind the exploit. Whenever a function returns, it needs to know where (which machine code instruction memory address) it should go to proceed with execution flow. So, when the function is first called, this memory address, along with some other unimportant data, is temporarily stored on the stack in a memory region referred to as the [stack frame](https://en.wikipedia.org/wiki/Call_stack#STACK-FRAME). The illustration describes the exact position of this return address relative to the function call, a position that can be reverse engineered.
+If you're unfamiliar with stack layouts, here's the main idea behind the exploit. Whenever a function returns, it needs to know where (which machine code instruction memory address) it should go to proceed with execution flow. So, when the function is first called, this memory address, along with some other unimportant data, is temporarily stored on the stack in a memory region referred to as the [stack frame](https://en.wikipedia.org/wiki/Call_stack#STACK-FRAME) as a reference for where to return. The illustration describes the exact position of this return address relative to the function call, a position that can be reverse engineered.
 
 The program enables the user to set a single memory address in the RAM to any value. Putting two and two together, if the user were to overwrite the return address of a stack frame with the location of another function in the instruction memory, they essentially gain the ability to execute arbitrary code included in the machine code binary.
 
@@ -117,7 +117,23 @@ This isn't a vulnerability unique to NAND. It exists in C as well! How cool!
 
 Believe it or not, out of the many, *many* different components of NAND, this program single-handedly took the longest to develop!
 
-There are an incredible amount of unique optimization techniques I used to
+This program is a creature simulation that utilizes simple machine learning. It follows this excellent artificial intelligence coded series (parts <a href="https://www.youtube.com/watch?v=VnwjxityDLQ">one</a> and <a href="https://www.youtube.com/watch?v=BOZfhUcNiqk">two</a>) from <a href="https://www.youtube.com/@CodeBullet">Code Bullet</a>. Make sure to check his channel out, he makes some really cool stuff!
+
+[Video demo of the Genetic Algorithm program](https://github.com/ArhanChaudhary/ArhanChaudhary/assets/57512390/c0ecf5e9-26d0-4367-a1a9-0ed2ebc4098d)
+
+Simply explained:
+
+Every dot has its own "brain" of acceleration vectors, and they evolve to reach a goal through natural selection. Every generation, dots that "die" closer to the goal are more likely to be selected as the parents for the next generation. Closeness isn't determined by the distance formula but rather a directional [Breadth-first search](https://en.wikipedia.org/wiki/Breadth-first_search) :). Reproduction inherently causes some of the brain to mutate, effectively simulating natural evolution.
+
+Nevertheless, there is much to be desired. Due to performance, the only factor dots use to evolve is the death closeness to the goal, consequently leaving the natural selection algorithm with a low entropy. Due to memory usage, there are smaller than satisfactory limits on the number of dots and the sizes of their brains. Lastly, due to technical complexity, re-placing obstacles during the simulation does not guarantee that the dots will have large enough brains to reach the goal. Brain sizes are only determined at the beginning of the program.
+
+I've used a myriad of optimization techniques to snake around the following hardware restrictions and make this possible:
+- NAND has a limited ROM memory space, meaning the program won't compile if there's too much code. In fact, the final version of this program uses 99.2% of the instruction memory space.
+- NAND has a limited RAM memory space, meaning the program has to be careful to optimize heap memory usage. In fact, the reason why the screen fills with static between generations is to use the screen memory space as temporary swap memory for the next generation — the RAM is already completely full!
+- NAND's clock speed is relatively slow, making runtime speed a major concern.
+- NAND has no floating point type (decimal numbers) and can only represent the integers between -32768 and 32767, making calculating fitness less precise and more challenging to implement. [Integer overflows](https://en.wikipedia.org/wiki/Integer_overflow) must also be accounted for.
+
+To avoid beating around the bush, I've stuck to documenting these techniques and additional natural selection algorithm insights in this program's codebase for those interested.
 
 # Writing programs for NAND
 
@@ -133,7 +149,7 @@ Without parenthesis, the evaluation value of an ambiguous expression is **undefi
 
 ### Jack Introduction
 
-NAND boasts its own complete tech stack. As a consequence, NAND can only be programmed in Jack, its weakly typed object-oriented programming language. In layman's terms, Jack is C with Java's syntax and without types.
+NAND boasts its own complete tech stack. As a consequence, NAND can only be programmed in Jack, its weakly typed object-oriented programming language. In layman's terms, Jack is C with Java's syntax.
 
 Let's take the approach of example-based learning and dive right in.
 
@@ -166,7 +182,9 @@ class Main {
 ```
 *taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view).*
 
-If you've already had some experience with programming, this should look very familiar; it is clear that Jack was heavily inspired by Java. `Main.main` is the entry point to the program. The function demonstrates basic usage of variables as well as the while loop for control flow. Additionally, it uses `Keyboard.readLine` and `Keyboard.readInt` to read input from the user, and `Output.printString` and `Output.println` to render output to the screen, all of which are defined in detail in the [Jack OS Reference](#jack-os).
+If you've already had some experience with programming, this should look very familiar; it is clear that Jack was heavily inspired by Java. `Main.main` is the entry point to the program. The function demonstrates basic usage of variables as well as the while loop for control flow.
+
+Additionally, it uses `Keyboard.readLine` and `Keyboard.readInt` to read input from the user, and `Output.printString` and `Output.println` to print output to the screen, all of which are defined in detail in the [Jack OS Reference](#jack-os). By default, the Jack OS is bundled with your program during compilation to enable interfacing with strings, memory, hardware, and more.
 
 ### Custom Data Types
 
@@ -342,15 +360,35 @@ The currently pressed key is reflected at RAM address 24576. Though, you shouldn
 
 ### Beyond the Jack OS
 
-By default, the Jack OS is bundled with your program during compilation to enable interfacing with strings, memory, hardware, and more. To the extraordinarily dedicated, it is possible to provide your own OS with your own hardware interfaces. There are a few core functions you *must* implement if you choose to do so.
+By default, the Jack OS is bundled with your program during compilation to enable interfacing with strings, memory, hardware, and more. To the extraordinarily dedicated, it is possible to provide your own OS implementation with your own hardware interfaces — the IDE treats Jack OS files the same as typical program files as they can likewise be deleted or overwritten. There are a few core functions you *must* implement for your program to compile if you choose to do so. You're free to copy my implementations of these functions as needed.
 
-`Sys.init`: The *real* entry point of the program, hardcoded in the virtual machine implementation. In the current Jack OS, This function initializes
+`Sys.init`: The *real* entry point of the program, hardcoded in the virtual machine implementation. For context, the provided Jack OS implementation looks like this:
+
+```js
+function void init() {
+    do Memory.init();
+    do Math.init();
+    do Screen.init();
+    do Screen.clearScreen();
+    do Output.init();
+    do Main.main();
+    do Sys.halt();
+}
+```
+
+`Memory.alloc`: A heap memory allocator internally used by class constructors to create objects. NAND inherently places emphasis on the heap for data storage, so this function is useful in many other contexts too.
+
+`String.newWithStr`: An internal constructor for string literals.
+
+`Math.multiply`: This function is internally called in lieu of the multiplication operator `*`. In other words, the Jack expression `x * y` and `Math.multiply(x, y)` are equivalent.
+
+`Math.divide`: This function is internally called in lieu of the floored division operator `/`. In other words, the Jack expression `x / y` and `Math.divide(x, y)` are equivalent.
 
 # Jack Reference
 
 This majority of this section was taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view) and the [National Taiwan University lecture slides](https://www.csie.ntu.edu.tw/~cyy/courses/introCS/18fall/lectures/handouts/lec13_Jack.pdf).
 
-### Program structure
+### Program Structure
 
 <pre>
 <b>class</b> ClassName {
@@ -940,7 +978,7 @@ class Sys {
 
 ### Error Codes
 
-If you do something that forces the computer into an invalid state, like computing the result of `1 / 0`, the Jack OS will display one of these error codes in the format of "ERR[N]" and immediately terminate the program.
+If you do something that forces the computer into an invalid state, like computing the result of `1 / 0`, the Jack OS will display one of these error codes in the format "ERR[N]" and immediately terminate the program.
 
 | Code | Method/Function      | Description                                     |
 | ---- | -------------------- | ----------------------------------------------- |
@@ -964,13 +1002,17 @@ If you do something that forces the computer into an invalid state, like computi
 
 # How does NAND work?
 
-I'm glad you asked! I've found the following [illustrations](https://en.wikipedia.org/wiki/Hack_computer) quite illuminating:
+I'm glad you asked! I've found the following illustrations quite illuminating:
 
 <img src="media/computer.png" width="700">
+
+*taken from [Wikipedia](https://commons.wikimedia.org/wiki/File:Hack_Computer_Block_Diagram_2.png)*
 
 The NAND computer follows the [Harvard architecture](https://en.wikipedia.org/wiki/Harvard_architecture). That is, the instruction memory (ROM) and the data memory (RAM) are separately stored, brought function in unison by the CPU.
 
 <img src="media/cpu.png" width="700">
+
+*taken from [Wikipedia](https://commons.wikimedia.org/wiki/File:Hack_Computer_Block_Diagram_2.png)*
 
 NAND's CPU is an [accumulator machine](https://en.wikipedia.org/wiki/Accumulator_(computing)#Accumulator_machines), meaning that it is heavily dependent on its built-in registers for control flow (in this case the accumulator is the D register). Don't worry if you don't fully understand what the CPU visualization depicts. Instead, take the perspective of appreciation for how this elegantly simple design powers the entirety of NAND — in your web browser!
 
@@ -1002,8 +1044,8 @@ NAND's IDE unfortunately trades implementation simplicity for a worse user exper
 
 <hr>
 
-You now know how to program NAND in Jack! And wow! What a fascinating journey of knowledge it's been. This write-up only begins to do justice the pure genius behind the computer architecture of the modern world. Hopefully, you gain a newfound appreciation for the Herculean amount of technical complexity it takes to bridge the gap between your code and program output on the screen.
+You now know how to program NAND in Jack! And wow! It's been grand voyage of discovery. This write-up only begins to do justice the pure genius behind the computer architecture of the modern world. Hopefully, you gain a newfound appreciation for the Herculean amount of technical complexity it takes to bridge the gap between your code and program output on the screen.
 
-Press "Start" to compile and run your code. The OS will typically take a little under second to initialize memory and set up its services before you're off to see your program running!
+Press "Start" to compile and run your code. The OS will typically take a little under a second to initialize memory and set up its services before you're off to see your program running!
 
 If you've read this far, my heartfelt thank you! Happy coding!
