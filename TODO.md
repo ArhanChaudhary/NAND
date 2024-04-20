@@ -1,25 +1,16 @@
-# TODO (NAND)
-* readme
-  * Writing programs in NAND
-    * divide the Jack tutorial into more subsections
-    * arguments keyword in docs (nArgs doesnt matter)
-
-    * hardware limitations
-      * max ROM 32768 and max static 240 and max stack 1792 and screen stuff and multi keyboard input
-
 # TODO (genetic algorithm)
 * make able to re-place obstacles (actually reallocate memory and stuff)
-* random acceleration vector shouldnt actually be random, it slightly modifies current by +-1
+* random acceleration vector should not actually be random, it slightly modifies current by +-1
 * should acceleration vectors mutate in consecutive pairs as it is or individually?
 * determine optimal dynamicMutationRate constant (current is 1530)
 * BFS constants
-* take into account steps dot hasnt reach goal, ie 100 steps to reach 100 fitness is better than 150 steps to reach 105 fitness
+* take into account steps dot hasn't reach goal, ie 100 steps to reach 100 fitness is better than 150 steps to reach 105 fitness
 
-# TODO (blog)
+# TODO (genetic algorithm blog)
 * cache pairs of acceleration vectors
 * bfs for precomputing fitnesses, diagonal distance, take into account obstacles, the noop case
 * screen memory for extra swap space
-* coefs to avoid overflow
+* coefficients to avoid overflow
 * lcg for random and scale down
 * heap memory over read bug
 * efficient collision detection
@@ -38,4 +29,4 @@
 * nand in nand
 * lisp interpreter
 * barrel shifter
-* mouse input and click input (use RAM 24767 to avoid breaking backwards incompat)
+* mouse input and click input (use RAM 24767 to avoid breaking backwards incompatibility)

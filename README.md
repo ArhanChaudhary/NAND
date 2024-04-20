@@ -9,7 +9,7 @@
 <b>N</b> and-powered\
 <b>D</b> evice
 <!-- cSpell:enable -->
-is a turing equivalent 16-bit computer made entirely from a [clock](https://en.wikipedia.org/wiki/Clock_rate) and [NAND gates](https://en.wikipedia.org/wiki/NAND_gate). NAND features its own machine code language, assembly language, assembler, VM language, VM translator, programming language, compiler, IDE, and user interface. NAND is based on the Jack-VM-Hack platform specified in the [Nand to Tetris course](https://www.nand2tetris.org).
+is a turing equivalent 16-bit computer made entirely from a [clock](https://en.wikipedia.org/wiki/Clock_rate) and [NAND gates](https://en.wikipedia.org/wiki/NAND_gate). NAND features its own machine code language, assembly language, assembler, virtual machine language, virtual machine translator, programming language, compiler, IDE, and user interface. NAND is based on the Jack-VM-Hack platform specified in the [Nand to Tetris course](https://www.nand2tetris.org).
 
 [Video demo of NAND](https://github.com/ArhanChaudhary/NAND/assets/57512390/7bedf191-d42c-4553-920f-01a539161bd3)
 
@@ -23,10 +23,13 @@ is a turing equivalent 16-bit computer made entirely from a [clock](https://en.w
     - [SecretPassword](#secretpassword)
     - [GeneticAlgorithm](#geneticalgorithm)
 - [Writing programs for NAND](#writing-programs-for-nand)
-    - [Jack Tutorial](#jack-tutorial)
+    - [Jack Introduction](#jack-introduction)
+    - [Custom Data Types](#custom-data-types)
+    - [Weak Type Coercions](#weak-type-coercions)
     - [Manual Memory Management](#manual-memory-management)
     - [Undefined Behavior](#undefined-behavior)
     - [Hardware Specification](#hardware-specification)
+    - [Beyond the Jack OS](#beyond-the-jack-os)
 - [Jack Reference](#jack-reference)
     - [Program structure](#program-structure)
     - [Syntax](#syntax)
@@ -64,13 +67,13 @@ Enter a number: 400
 Enter a number: 300
 The average is 210
 ```
-This program was directly supplied by the Nand to Tetris software suite.
+*This program was supplied by the Nand to Tetris software suite.*
 
 ### Pong
 
 A program that runs the game of Pong, showing off the language's object-oriented model. Use the arrow keys to move the paddle left and right to bounce a ball. Every bounce, the paddle becomes smaller, and the game ends when the ball hits the bottom of the screen.
 
-This program was directly supplied by the Nand to Tetris software suite.
+*This program was supplied by the Nand to Tetris software suite.*
 
 ### 2048
 
@@ -88,15 +91,17 @@ Two things of noteworthy interest are worth pointing out.
 
 If you reload the page and run this program on an empty RAM (a RAM full of zeroes), you will notice that the program resets itself halfway through its execution despite not pressing the "Reset" button. Why this happens is simple: the jailbroken runtime executes an instruction that sets the [program counter](https://en.wikipedia.org/wiki/Program_counter)'s value to 0, effectively telling the program to start over at the first instruction.
 
-If you run the GeneticAlgorithm example program and then run this immediately afterwards, the program interestingly reads from old RAM memory that hasn't yet been overwritten.
+If you run the GeneticAlgorithm example program and then run this immediately afterwards, interestingly enough, the program reads the old RAM memory that was simply never overwritten.
 
 <img src="media/old_memory.png" width="700">
 
 ### SecretPassword
 
-A program that exploits the fact that the runtime doesn't prevent [stack smashing](https://en.wikipedia.org/wiki/Stack_buffer_overflow) to call a function that would otherwise be inaccessible. In order to understand how this works, let's examine this illustration of NAND's stack frame layout from the [Nand to Tetris book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk).
+A program that exploits the fact that the runtime doesn't prevent [stack smashing](https://en.wikipedia.org/wiki/Stack_buffer_overflow) to call a function that would otherwise be inaccessible. In order to understand how this works, let's examine this illustration of NAND's stack frame layout.
 
 <img src="media/stack_layout.png" width="700">
+
+*taken from the [Nand to Tetris book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk).*
 
 If you're unfamiliar with stack layouts, here's the main idea behind the exploit. Whenever a function returns, it needs to know where (which machine code instruction memory address) it should go to proceed with execution flow. So, when the function is first called, this memory address, along with some other unimportant data, is temporarily stored on the stack in a memory region referred to as the [stack frame](https://en.wikipedia.org/wiki/Call_stack#STACK-FRAME). The illustration describes the exact position of this return address relative to the function call, a position that can be reverse engineered.
 
@@ -106,9 +111,11 @@ Indeed, if you enter 267 as the memory location and 1715 as the value to overwri
 
 <img src="media/secret_password.png" width="700">
 
+This isn't a vulnerability unique to NAND. It exists in C as well! How cool!
+
 ### GeneticAlgorithm
 
-Believe it or not, out of the many, *many* different components of NAND, this program single-handedly took the longest to develop and get right!
+Believe it or not, out of the many, *many* different components of NAND, this program single-handedly took the longest to develop!
 
 There are an incredible amount of unique optimization techniques I used to
 
@@ -124,11 +131,11 @@ but you can keep `if (y & ~x)` the same as there is no operator ambiguity.
 
 Without parenthesis, the evaluation value of an ambiguous expression is **undefined behavior**.
 
-### Jack Tutorial
+### Jack Introduction
 
-NAND boasts its own complete tech stack. As a consequence, NAND can only be programmed in Jack, its own weakly typed object-oriented programming language. In layman's terms, Jack is C with Java's syntax and without types.
+NAND boasts its own complete tech stack. As a consequence, NAND can only be programmed in Jack, its weakly typed object-oriented programming language. In layman's terms, Jack is C with Java's syntax and without types.
 
-The rest of this section has been adapted from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view). Let's take the approach of example-based learning and dive right in.
+Let's take the approach of example-based learning and dive right in.
 
 ```js
 /**
@@ -157,41 +164,14 @@ class Main {
     }
 }
 ```
+*taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view).*
 
 If you've already had some experience with programming, this should look very familiar; it is clear that Jack was heavily inspired by Java. `Main.main` is the entry point to the program. The function demonstrates basic usage of variables as well as the while loop for control flow. Additionally, it uses `Keyboard.readLine` and `Keyboard.readInt` to read input from the user, and `Output.printString` and `Output.println` to render output to the screen, all of which are defined in detail in the [Jack OS Reference](#jack-os).
 
-Every programming language has a fixed set of primitive data types. Jack supports three: `int`, `char`, and `boolean`. You can represent your own abstract data type by creating new classes as needed.
-// point stuff, mention deallocating memory, no concept of private variables
+### Custom Data Types
 
-Remember how we said Jack was similar to Java? That was a facade, or at best misleading. While Java is strongly-typed and as such supports complex type features such as down casting, polymorphism, and inheritance, Jack supports none of these and only has one type under the hood: the signed 16-bit integer. This is the primary reason why Jack is so weakly-typed. In effect, the compiler won't care if you mix and match different types in assignments and operations:
-
-```js
-var char c;
-var String s;
-let c = 65; // 'A'
-// Equivalently
-let s = “A”;
-let c = s.charAt(0);
-```
-
-```js
-var Array a;
-let a = 5000;
-let a[100] = 77; // RAM[5100] = 77
-```
-
-```js
-var Complex c;
-var Array a;
-let a = Array.new(2);
-let a[0] = 7;
-let a[1] = 8;
-let c = a; // c == Complex(7, 8)
-           // Works because it matches the memory layout
-           // of the Complex type defined elsewhere
-```
-
-Don't take this the wrong way — Jack still provides a powerful and functional object-oriented model if used properly. This insight only intends to help you understand when you should perform type conversions (memory layout should be the same)
+Every programming language has a fixed set of primitive data types. Jack supports three: `int`, `char`, and `boolean`. You can extend this basic repertoire with your own abstract data types by creating new classes as needed.
+// point stuff, mention deallocating memory, private variables
 
 ```js
 class Foo {
@@ -212,6 +192,54 @@ class Foo {
     }
 }
 ```
+*taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view).*
+
+### Weak Type Coercions
+
+Remember how we said Jack was similar to Java? That was a facade, or at best misleading. While Java is strongly-typed and as such supports complex type features such as down casting, polymorphism, and inheritance, Jack supports none of these and only has one type under the hood: the signed 16-bit integer. This is the primary reason why Jack is so weakly-typed. In effect, the compiler won't care if you mix and match different types in assignments and operations.
+
+```js
+var char c;
+var String s;
+let c = 65; // 'A'
+// Equivalently
+let s = “A”;
+let c = s.charAt(0);
+```
+```js
+var Array a;
+let a = 5000;
+let a[100] = 77; // RAM[5100] = 77
+```
+```js
+var Array arr;
+var String helloWorld;
+let helloWorld = "Hello World!"
+let arr = Array.new(4); // Arrays are not strictly typed
+let arr[0] = 12;
+let arr[1] = false;
+let arr[2] = Point.new(5, 6);
+let arr[3] = helloWorld;
+```
+```js
+class Complex {
+    field int real;
+    field int imaginary;
+    ...
+}
+...
+var Complex c;
+var Array a;
+let a = Array.new(2);
+let a[0] = 7;
+let a[1] = 8;
+let c = a; // c == Complex(7, 8)
+           // Works because it matches the memory layout
+           // of the Complex type
+```
+*all code segments taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view).*
+
+Don't take this the wrong way — Jack still provides a powerful and functional object-oriented model. This insight intends to help you understand when and how you should perform type conversions as needed.
 
 ### Manual Memory Management
 
@@ -228,6 +256,8 @@ class Main {
 You may be startled to notice that after a few seconds, the program will crash with "ERR6", or a [heap overflow](https://en.wikipedia.org/wiki/Heap_overflow)!
 
 Jack is a [manually memory managed](https://en.wikipedia.org/wiki/Manual_memory_management) programming language. This means you have to be vigilant with properly deallocating memory that is no longer needed, or else the Jack OS will think otherwise and facilitate a [memory leak](https://en.wikipedia.org/wiki/Memory_leak). The best practice advice is to feature a `dispose` method for each class that represents an object that properly encapsulates this deallocation. Thus, when objects are no longer needed, you can call their `dispose` methods to ensure you won't eventually run out of heap memory.
+
+If you've programmed in other manually memory managed languages, like C, this should look very familiar. One key difference is the Jack OS stores arrays and strings on the heap rather than on the stack, hinting to why the program crashes with a heap overflow.
 
 Let's fix this program for our fellow feline fanatics.
 ```js
@@ -270,11 +300,27 @@ method void dispose() {
     do Memory.deAlloc(this);
 }
 ```
-Proper `dispose` methods must first appropriately call `dispose` on their field variables and then end with `do Memory.deAlloc(this);` to deallocate the object instance itself. If you've programmed in other manually memory managed languages, like C, this should look very familiar.
+Proper `dispose` methods must first appropriately call `dispose` on their field variables and then end with `do Memory.deAlloc(this);` to deallocate the object instance itself.
 
 ### Undefined Behavior
 
+With how primitive Jack and NAND are, footguns within the language are inevitable. To my knowledge, the following is a list of all undefined behavior that you should look out for, ordered from (in my opinion) most important to least important.
+
+- operator priority
+- < and > (compatibility reasons)
+- -32768 is a funny number. It is the only one that holds the property such that -(-32768) = -32768. In other words, it a singleton without a positive counterpart, and this has consequences. `Math.abs` is one such victim of its behavior.
+- modifying stack frame
+- too few arguments (mention it is a won't fix), too many: arguments keyword in docs (nArgs doesn't matter)
+- stack overflows
+- modifying registers
+
 ### Hardware Specification
+
+//max ROM 32768 and max static 240 and max stack 1792 and screen stuff
+
+<img src="media/memory_layout.png" width="700">
+
+*taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1BexrNmdqYhKPkqD_Y81qNAUeyfzl-ZtO/view).*
 
 Lastly, NAND's keyboard recognizes all ASCII characters, as well as the following keys.
  * new line = 128 = `String.newline()`
@@ -294,13 +340,15 @@ Lastly, NAND's keyboard recognizes all ASCII characters, as well as the followin
 
 The currently pressed key is reflected at RAM address 24576. Though, you shouldn't directly access this location to handle user input. You should use the provided [Keyboard](#keyboard) class from the Jack OS and its associated functions.
 
-<hr>
+### Beyond the Jack OS
 
-You now know how to program NAND in Jack! Press "Start" to compile and run your code. The OS will typically take a little under second to initialize memory and set up its services before you're off to see your program running!
+By default, the Jack OS is bundled with your program during compilation to enable interfacing with strings, memory, hardware, and more. To the extraordinarily dedicated, it is possible to provide your own OS with your own hardware interfaces. There are a few core functions you *must* implement if you choose to do so.
+
+`Sys.init`: The *real* entry point of the program, hardcoded in the virtual machine implementation. In the current Jack OS, This function initializes
 
 # Jack Reference
 
-This majority of this section was directly taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view) and the [National Taiwan University lecture slides](https://www.csie.ntu.edu.tw/~cyy/courses/introCS/18fall/lectures/handouts/lec13_Jack.pdf).
+This majority of this section was taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view) and the [National Taiwan University lecture slides](https://www.csie.ntu.edu.tw/~cyy/courses/introCS/18fall/lectures/handouts/lec13_Jack.pdf).
 
 ### Program structure
 
@@ -326,17 +374,17 @@ This majority of this section was directly taken from the [Nand to Tetris lectur
 }
 </pre>
 
-About this spec:
-- Every part in this spec can appear 0 or more times
+About this layout:
+- Every part in this layout can appear 0 or more times
 - The order of the field / static
 declarations is arbitrary
 - The order of the subroutine declarations is arbitrary
-- Each type is either `int`, `boolean`, `char`, or a class name
+- Each type is either `void`, `int`, `boolean`, `char`, or a class name
 
 A Jack program:
 - Defines classes in separate files
 - Consists of a collection of one or more classes, one of which must be named `Main`
-- Must define the `main` function in the `Main` class, the entry point of the program
+- Must define the `main` function in the `Main` class, the entry point of the program defined by the Jack OS.
 
 ### Syntax
 
@@ -448,8 +496,7 @@ A Jack program:
               <th align="left">
                 <code>int</code>,
                 <code>boolean</code>,
-                <code>char</code>,
-                <code>void</code>
+                <code>char</code>
               </th>
               <td>
                 Primitive types
@@ -543,13 +590,13 @@ A Jack program:
 
 ### Statements
 
-| Statement | Syntax                                                                                                                                                                                     | Description                                                                                                                                                                |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| let       | `let` *varName = expression*;<br>or<br>`let` *varName*[*expression1*] = *expression2*;                                                                                                     | An assignment operation (where *varName* is either single-valued or an array). The variable kind may be *static, local, field, or parameter*.                              |
-| if        | `if` (expression) {<br>&nbsp;&nbsp;&nbsp;&nbsp;statements1<br>} `else if` (expression2) {<br>&nbsp;&nbsp;&nbsp;&nbsp;statements2<br>} `else` {<br>&nbsp;&nbsp;&nbsp;&nbsp;statements3<br>} | Typical *if* statement with an optional *else* or *else if* clause. The brackets are optional if there's only one statement.                                               |
-| while     | `while` (expression) {<br>&nbsp;&nbsp;&nbsp;&nbsp;*statements*<br>}                                                                                                                        | Typical *while* statement. The brackets are optional if there's only one statement.                                                                                        |
-| do        | `do` *function-or-method-call*;                                                                                                                                                            | Used to call a function or a method for its effect, ignoring the returned value.                                                                                           |
-| return    | `return` expression;<br>or<br>`return`;                                                                                                                                                    | Used to return a value from a subroutine.<br>The second form must be used by functions and methods that return a void value. Constructors must return the expression this. |
+| Statement | Syntax                                                                                                                                                                                      | Description                                                                                                                                   |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| let       | `let` *varName = expression*;<br>or<br>`let` *varName*[*expression1*] = *expression2*;                                                                                                      | An assignment operation (where *varName* is either single-valued or an array). The variable kind may be *static, local, field, or parameter*. |
+| if        | `if` (expression1) {<br>&nbsp;&nbsp;&nbsp;&nbsp;statements1<br>} `else if` (expression2) {<br>&nbsp;&nbsp;&nbsp;&nbsp;statements2<br>} `else` {<br>&nbsp;&nbsp;&nbsp;&nbsp;statements3<br>} | Typical *if* statement with an optional *else* or *else if* clause. The brackets are optional if there's only one statement.                  |
+| while     | `while` (expression) {<br>&nbsp;&nbsp;&nbsp;&nbsp;*statements*<br>}                                                                                                                         | Typical *while* statement. The brackets are optional if there's only one statement.                                                           |
+| do        | `do` *function-or-method-call*;                                                                                                                                                             | Used to call a function or a method for its effect, ignoring the returned value.                                                              |
+| return    | `return` expression;<br>or<br>`return`;                                                                                                                                                     | Used to return a value from a subroutine. Constructors must return the expression `this`.                                                     |
 
 # Jack OS Reference
 
@@ -893,7 +940,7 @@ class Sys {
 
 ### Error Codes
 
-If you do something that forces the computer into an invalid state, like computing the result of 1 / 0, the Jack OS will display one of these error codes in the format of "ERR[N]" and immediately terminate the program.
+If you do something that forces the computer into an invalid state, like computing the result of `1 / 0`, the Jack OS will display one of these error codes in the format of "ERR[N]" and immediately terminate the program.
 
 | Code | Method/Function      | Description                                     |
 | ---- | -------------------- | ----------------------------------------------- |
@@ -933,17 +980,17 @@ We've reached the instruction set, the nitty-gritty. As indicated, NAND's CPU on
 
 Phew! That was a lot to take in, but I promise you NAND is far less complicated than it's made out to be. From a relatively simple logical foundation, turing equivalence is achieved! If you want see my implementation of the NAND computer architecture, [you're more than welcome to](src/core)! If you find yourself still curious, check out the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1Z_fxYmmRNXTkAzmZ6YMoX9NXZIRVCKiw/view) for further elaboration on every aspect of its design.
 
-Let's just briefly talk about the compiler to make this section feel complete. Some of NAND's strange syntactical features are a direct consequence of making the compiler easier to implement. The compiler is a [recursive LL(1) parser](https://en.wikipedia.org/wiki/LL_parser), generating VM code in [postfix notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation) to be utilized as a [simple stack machine](https://en.wikipedia.org/wiki/Stack_machine). Once again, you're more than welcome to see my [compiler implementation](src/compiler) for yourself.
+Let's just briefly talk about the compiler to make this section feel complete. Some of NAND's strange syntactical features are a direct consequence of making the compiler easier to implement. The compiler is a [recursive LL(1) parser](https://en.wikipedia.org/wiki/LL_parser), generating virtual machine code in [postfix notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation) to be utilized as a [simple stack machine](https://en.wikipedia.org/wiki/Stack_machine). Once again, you're more than welcome to see my [compiler implementation](src/compiler) for yourself.
 
 # FAQ
 
 ### Whoa, is *everything* made from NAND gates?
 
-Well..., I admit the description and title are a little misleading, but still in good faith. The compiler and VM translator are written in Typescript, and the kernel and hardware are emulated in Rust. It's only really the logic simulator that runs every computation, screen rendering operation, and memory access entirely from NAND gates. Bootstrapping the full tech stack is a feat that isn't unheard of, but such a massive project by itself probably deserves its own repository.
+Well..., I admit the description and title are a little misleading, but still in good faith. The compiler and virtual machine translator are written in Typescript, and the kernel and hardware are emulated in Rust. It's only really the logic simulator that runs every computation, screen rendering operation, and memory access entirely from NAND gates. Bootstrapping the full tech stack is a feat that isn't unheard of, but such a massive project by itself probably deserves its own repository.
 
 ### Did you design NAND by yourself?
 
-NAND is entirely based off of the [Nand to Tetris course](https://www.nand2tetris.org) and its [associated book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk) (and you should definitely check it out, it's an absolutely incredible read). I solely implemented the specification for CPU, assembler, VM translator, and compiler, while porting the platform to the web with its own IDE and user interface. Each VM instruction is then trivially mapped to corresponding machine code.
+NAND is entirely based off of the [Nand to Tetris course](https://www.nand2tetris.org) and its [associated book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk) (and you should definitely check it out, it's an absolutely incredible read). I solely implemented the specification for CPU, assembler, virtual machine translator, and compiler, while porting the platform to the web with its own IDE and user interface. Each virtual machine instruction is then trivially mapped to corresponding machine code.
 
 ### If there's only one type, what is the point of specifying types at all?
 
@@ -952,3 +999,11 @@ This question references the fact that under the hood, the signed 16-bit integer
 ### Why does the IDE feel finnicky?
 
 NAND's IDE unfortunately trades implementation simplicity for a worse user experience. It uses the unorthodox [contenteditable](https://medium.engineering/why-contenteditable-is-terrible-122d8a40e480) and hacky cursor positioning logic to get syntax highlighting to work. I myself was surprised that I managed to even bring it to a functional state. As a result, it's slow and noticeably buggy, plus common keybinds don't work. I'm sorry, but for now you'll just need to bear with me.
+
+<hr>
+
+You now know how to program NAND in Jack! And wow! What a fascinating journey of knowledge it's been. This write-up only begins to do justice the pure genius behind the computer architecture of the modern world. Hopefully, you gain a newfound appreciation for the Herculean amount of technical complexity it takes to bridge the gap between your code and program output on the screen.
+
+Press "Start" to compile and run your code. The OS will typically take a little under second to initialize memory and set up its services before you're off to see your program running!
+
+If you've read this far, my heartfelt thank you! Happy coding!
