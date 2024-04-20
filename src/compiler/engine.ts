@@ -703,11 +703,23 @@ export default class Engine {
     this.compileTerm();
     const op = this.tokenizer.token() as SymbolToken;
     if (OPS.includes(op)) {
-      const currentIsEquals = op === SymbolToken.EQUAL;
+      const prev = op;
       this.tokenizer.advance();
-      const nextIsEquals = this.tokenizer.token() === SymbolToken.EQUAL;
-      if (currentIsEquals && nextIsEquals) {
-        throw this.tokenizer.syntaxError("", "use '=' instead of '==' for the equality comparison");
+      const curr = this.tokenizer.token();
+      if (prev === SymbolToken.EQUAL && curr === SymbolToken.EQUAL) {
+        throw this.tokenizer.syntaxError(
+          "",
+          "use '=' instead of '==' for the equality comparison"
+        );
+      } else if (
+        (prev === SymbolToken.GREATER_THAN &&
+          curr === SymbolToken.GREATER_THAN) ||
+        (prev === SymbolToken.LESS_THAN && curr === SymbolToken.LESS_THAN)
+      ) {
+        throw this.tokenizer.syntaxError(
+          "",
+          "NAND does not support bit shifts"
+        );
       }
       this.compileExpression();
       this.vmwriter.writeArithmetic(op);
