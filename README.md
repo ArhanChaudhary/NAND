@@ -334,13 +334,23 @@ With how primitive Jack and NAND are, footguns within the language are inevitabl
 
 ### Hardware Specification
 
-//max ROM 32768 and max static 240 and max stack 1792 and screen stuff
+Since its rise in the 1970s, there's a good reason why 16-bit computing has fallen from grace in the modern era. Compared to 32-bit or 64-bit computing, 16-bit computing offered limited processing power and memory capacity that simply weren't meeting the demands of contemporary software and applications.
+
+NAND is no exception to this reality.
 
 <img src="media/memory_layout.png" width="700">
 
 *taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1BexrNmdqYhKPkqD_Y81qNAUeyfzl-ZtO/view).*
 
-Lastly, NAND's keyboard recognizes all ASCII characters, as well as the following keys.
+Compared to your 16 GiB MacBook, NAND has a meager 4 KiB RAM, a ratio of 0.00002%! In spite of this, [it was able to take us to the moon](https://www.metroweekly.com/2014/07/to-the-moon-and-back-on-4kb-of-memory/), so who's to say NAND can't either.
+
+The Jack OS reserves 14,336 memory addresses of the 4 KiB for the heap, a number that is abnormally small. This is why it's so important to ensure complex Jack applications manage their memory efficiently. If you're overly ambitious, you might run out of heap memory thus completely impeding development of your program.
+
+The hardware reserves 8,192 memory addresses of the 4 KiB for the screen. Each bit of each address linearly maps to a corresponding pixel on the provided 512x256 screen, in [LSb 0 bit numbering](https://en.wikipedia.org/wiki/Bit_numbering#LSb_0_bit_numbering).
+
+The hardware reserves memory address 24,576 for the keyboard, at which the currently pressed key is reflected. Though, you shouldn't directly access this location to handle user input. You should use the provided [Keyboard](#keyboard) class from the Jack OS and its associated functions.
+
+NAND's keyboard recognizes all ASCII characters, as well as the following keys.
  * new line = 128 = `String.newline()`
  * backspace = 129 = `String.backspace()`
  * left arrow = 130
@@ -356,7 +366,7 @@ Lastly, NAND's keyboard recognizes all ASCII characters, as well as the followin
  * ESC = 140
  * F1 - F12 = 141 - 152
 
-The currently pressed key is reflected at RAM address 24576. Though, you shouldn't directly access this location to handle user input. You should use the provided [Keyboard](#keyboard) class from the Jack OS and its associated functions.
+Lastly, the hardware reserves 240 memory addresses for static class variables and 1,792 memory addresses for the global stack. Unless you perform deep recursion, you probably won't find these limitations troublesome.
 
 ### Beyond the Jack OS
 
