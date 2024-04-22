@@ -28,13 +28,13 @@ is a turing equivalent 16-bit computer made entirely from a [clock](https://en.w
     - [Weak Type Coercions](#weak-type-coercions)
     - [Manual Memory Management](#manual-memory-management)
     - [Undefined Behavior](#undefined-behavior)
-      - [Operator priority](#operator-priority)
-      - [Lesser and greater than operators](#lesser-and-greater-than-operators)
+      - [Operator Priority](#operator-priority)
+      - [Lesser and Greater than Operators](#lesser-and-greater-than-operators)
       - [-32768](#-32768)
-      - [Calling a function with too few arguments](#calling-a-function-with-too-few-arguments)
+      - [Calling a Function with Too Few Arguments](#calling-a-function-with-too-few-arguments)
       - [Improper Type Casting](#improper-type-casting)
-      - [Stack overflows](#stack-overflows)
-      - [Modifying stack frames or internal registers](#modifying-stack-frames-or-internal-registers)
+      - [Stack Overflows](#stack-overflows)
+      - [Modifying Stack Frames or Internal Registers](#modifying-stack-frames-or-internal-registers)
     - [Hardware Specification](#hardware-specification)
     - [Beyond the Jack OS](#beyond-the-jack-os)
 - [How does NAND work?](#how-does-nand-work)
@@ -405,11 +405,11 @@ Proper `dispose` methods must first appropriately call `dispose` on their field 
 
 With how primitive Jack and NAND are, footguns within the language are inevitable. I've compiled the following instances of undefined behavior you should be aware of, ordered from (in my opinion) most important to least important.
 
-#### Operator priority
+#### Operator Priority
 
 I found this caveat to be so important that I've moved it towards the [beginning of this section](#writing-programs-for-nand).
 
-#### Lesser and greater than operators
+#### Lesser and Greater than Operators
 
 The Jack expressions
 ```js
@@ -460,7 +460,7 @@ Your main concern should be handling logic errors with the negative operator. As
 
 It's the same thing! What happened here? Because NAND is a 16-bit machine, -32768 is the only number such that if you subtract one from it, you get its flipped bits. In other words, -32768 satisfies `x - 1 = ~x`, simplifying the expression to `~(~x)` or just `x`.
 
-#### Calling a function with too few arguments
+#### Calling a Function with Too Few Arguments
 
 This one is self-explanatory, so here's a brief demonstration.
 
@@ -486,7 +486,7 @@ On the other hand, calling a function with too *many* arguments is perfectly val
 
 #### Improper Type Casting
 
-You can utilize `Array` to cast variables into any other type. Calling instance methods that do not exist on these types is undefined behavior.
+You can utilize `Array` to cast a variable into any other type. Calling instance methods that don't exist on these type casted variables is undefined behavior; the compiler isn't smart enough yet to realize when you're doing this.
 
 ```js
 /**
@@ -505,17 +505,17 @@ class Main {
         let a = Array.new(1);
         let b = Main.new();
         let c = b[1];
-        // calling `String.length` on an instance of `Main`.
+        // Invalidly calling `String.length` on an instance of `Main`.
         do Output.printInt(c.length());
     }
 }
 ```
 
-#### Stack overflows
+#### Stack Overflows
 
 See the [Overflow](#overflow) program for an in-depth example.
 
-#### Modifying stack frames or internal registers
+#### Modifying Stack Frames or Internal Registers
 
 Modifying stack frames or the internal registers that respectively reside at memory addresses `256` to `2047` and `1` to `15` may lead to undefined behavior. This typically isn't possible without misusing `Memory.poke` or negative array indexing. See the [SecretPassword](#secretpassword) program for an in-depth example.
 
