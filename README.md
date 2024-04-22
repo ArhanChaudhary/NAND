@@ -194,8 +194,7 @@ Additionally, it uses `Keyboard.readLine` and `Keyboard.readInt` to read input f
 
 ### Custom Data Types
 
-Every programming language has a fixed set of primitive data types. Jack supports three: `int`, `char`, and `boolean`. You can extend this basic repertoire with your own abstract data types as needed.
-// point stuff, mention deallocating memory, private variables
+Every programming language has a fixed set of primitive data types. Jack supports three: `int`, `char`, and `boolean`. You can extend this basic repertoire with your own abstract data types as needed. Prior experience with [object-oriented programming](https://en.wikipedia.org/wiki/Object-oriented_programming) directly carries over to  this section.
 <!-- cSpell:disable -->
 ```js
 /** Represents a point in 2D plane. */
@@ -253,16 +252,23 @@ class Point {
 ```
 ```js
 var Point p1, p2, p3;
-let p1 = Point.new(1,2);
-let p2 = Point.new(3,4);
+let p1 = Point.new(1, 2);
+let p2 = Point.new(3, 4);
 let p3 = p1.plus(p2);
 do p3.print(); // prints (4, 6)
 do Output.printInt(p1.distance(p2)); // prints 5
 do Output.printInt(getPointCount()); // prints 3
 ```
-<!-- cSpell:enable -->
 *taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view).*
 
+We define a `Point` class that represents an abstract point in space. It uses `field` variables to declare per-instance attributes of the data type. It exposes public `method` functions we can use to interface with the point, such as the functionality to add two points together and calculate the distance between two points.
+
+All `field` variables are privately scoped. If you wish to get or set these variables from outside the class declaration, these variables must have corresponding `method` functions to provide this functionality.
+
+Omitted from the code sample to stay on-topic, it is customary for data classes to define `dispose` methods for deallocation once objects are no longer used. See [Manual Memory Management](#manual-memory-management).
+
+If needed, I've provided a reference for `function` and `method` calling syntax.
+<!-- cSpell:enable -->
 ```js
 class Foo {
     ...
@@ -270,7 +276,7 @@ class Foo {
         var Bar b; // Declares a local variable of class type Bar
         var int i; // Declares a local variable of primitive type int
 
-        do g(); // Calls method g of the current class on the this object
+        do g(); // Calls method g of the current class on the current object instance
                 // Note: Cannot be called from within a function (static method)
 
         do Foo.p(3); // Calls function p of the current class;
@@ -282,6 +288,7 @@ class Foo {
     }
 }
 ```
+
 *taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view).*
 
 ### Weak Type Coercions

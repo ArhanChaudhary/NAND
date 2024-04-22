@@ -4,7 +4,7 @@
 * should acceleration vectors mutate in consecutive pairs as it is or individually?
 * determine optimal dynamicMutationRate constant (current is 1530)
 * BFS constants
-* take into account steps dot hasn't reach goal, ie 100 steps to reach 100 fitness is better than 150 steps to reach 105 fitness
+* take into account steps dot hasn't reach goal, ie 100 steps to reach 100 fitness is better than 150 steps to **reach** 105 fitness
 
 # TODO (genetic algorithm blog)
 * cache pairs of acceleration vectors
