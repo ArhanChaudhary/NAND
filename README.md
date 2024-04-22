@@ -433,7 +433,7 @@ This isn't an implementation bug, but rather an inconsistency with Nand to Tetri
 
 #### -32768
 
--32768 is one of its kind. It is the only number that holds the property such that -(-32768) = -32768, a singleton without a positive counterpart[*](#note-1). This can lead to unsoundness and logic errors.
+-32768 is one of its kind. It is the only number that holds the property such that -(-32768) = -32768, a singleton without a positive counterpart<sup>*</sup>. This can lead to unsoundness and logic errors.
 
 ```js
 /**
@@ -589,7 +589,7 @@ I'm glad you asked! I've found the following illustrations quite illuminating:
 
 *taken from [Wikipedia](https://commons.wikimedia.org/wiki/File:Hack_Computer_Block_Diagram_2.png).*
 
-The NAND computer follows the [Harvard architecture](https://en.wikipedia.org/wiki/Harvard_architecture). That is, the instruction memory (ROM) and the data memory (RAM) are separately stored, brought function in unison by the CPU.
+The NAND computer follows the [Harvard architecture](https://en.wikipedia.org/wiki/Harvard_architecture). That is, the instruction memory (ROM) and the data memory (RAM) are separately stored, brought to function in unison by the CPU.
 
 <img src="media/cpu.png" width="700">
 
