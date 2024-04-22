@@ -139,7 +139,7 @@ I've used a myriad of optimization techniques to snake around the following hard
 - NAND has a limited RAM memory space, meaning the program has to be careful to optimize heap memory usage. In fact, the reason why the screen fills with static between generations is to use the screen memory space as temporary swap memory for the next generation — the RAM is already completely full!
 - NAND has no floating point type (decimal numbers) and can only represent the integers between -32768 and 32767, making calculating fitness less precise and more challenging to implement. [Integer overflows](https://en.wikipedia.org/wiki/Integer_overflow) must also be accounted for.
 
-To avoid beating around the bush, I've stuck to documenting these techniques and additional insights in this program's codebase for those interested.
+To avoid beating around the bush, I've stuck to documenting these techniques and additional insights in this program's <a href="src/example-programs/GeneticAlgorithm">codebase</a> for those interested.
 
 # Writing programs for NAND
 
@@ -194,7 +194,7 @@ Additionally, it uses `Keyboard.readLine` and `Keyboard.readInt` to read input f
 
 ### Custom Data Types
 
-Every programming language has a fixed set of primitive data types. Jack supports three: `int`, `char`, and `boolean`. You can extend this basic repertoire with your own abstract data types as needed. Prior knowledge about [object-oriented programming](https://en.wikipedia.org/wiki/Object-oriented_programming) directly carries over to  this section.
+Every programming language has a fixed set of primitive data types. Jack supports three: `int`, `char`, and `boolean`. You can extend this basic repertoire with your own abstract data types as needed. Prior knowledge about [object-oriented programming](https://en.wikipedia.org/wiki/Object-oriented_programming) directly carries over to this section.
 <!-- cSpell:disable -->
 ```js
 /** Represents a point in 2D plane. */

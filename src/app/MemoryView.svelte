@@ -199,13 +199,16 @@
     switch (memoryDisplay) {
       case "bin":
         highlightIndex = $computerMemory.pcRegister;
+        break;
       case "asm":
         highlightIndex = pcToAssembly[$computerMemory.pcRegister];
+        break;
       case "vm":
         let ret = assemblyToVMCode[pcToAssembly[$computerMemory.pcRegister]];
         if (ret !== null) {
           highlightIndex = ret;
         }
+        break;
     }
     if (followPC) {
       scrollToIndex = highlightIndex;
