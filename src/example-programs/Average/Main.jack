@@ -3,7 +3,11 @@
 // by Nisan and Schocken, MIT Press.
 // File name: projects/09/Average/Main.jack
 
-// Inputs some numbers and computes their average
+/**
+ * A simple program that inputs some numbers and computes their average,
+ * showing off control flow, arithmetic operations, I/O, and dynamic memory
+ * allocation.
+ */
 class Main {
     function void main() {
         var Array a;

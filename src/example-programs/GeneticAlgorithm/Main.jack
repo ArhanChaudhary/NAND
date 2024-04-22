@@ -3,6 +3,12 @@
  * After the user enters the dot position, the goal position, and
  * obstacles, we simulate evolution! The dots will learn and evolve to
  * try to first reach the goal and then in as few steps as possible.
+ *
+ * It follows the artificial intelligence coded series
+ * parts 1: https://www.youtube.com/watch?v=VnwjxityDLQ
+ * and 2: https://www.youtube.com/watch?v=BOZfhUcNiqk
+ * from Code Bullet: https://www.youtube.com/@CodeBullet
+ * Make sure to check out his channel, he makes some really cool stuff!
  */
 class Main {
     // appreciate my state management ✨✨

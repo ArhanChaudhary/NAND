@@ -1,6 +1,9 @@
 /**
- * The game 2048, in NAND!
- * https://play2048.co/
+ * The game of 2048, showing off recursion and complex application logic. Use
+ * the arrow keys to move the numbers around the 4x4 grid. The same numbers
+ * combine into their sum when moved into each other. Once the 2048 tile is
+ * reached, you win the game, though you can keep playing on until you lose.
+ * You lose the game when the board is full and you can't make any more moves.
  */
 class Main {
     function void main() {

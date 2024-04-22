@@ -29,11 +29,12 @@ is a turing equivalent 16-bit computer made entirely from a [clock](https://en.w
     - [Manual Memory Management](#manual-memory-management)
     - [Undefined Behavior](#undefined-behavior)
       - [Operator priority](#operator-priority)
-      - [Less and greater than operators](#less-and-greater-than-operators)
+      - [Lesser and greater than operators](#lesser-and-greater-than-operators)
       - [-32768](#-32768)
       - [Calling a function with too few arguments](#calling-a-function-with-too-few-arguments)
+      - [Improper Type Casting](#improper-type-casting)
       - [Stack overflows](#stack-overflows)
-      - [Modifying stack frames or the internal registers](#modifying-stack-frames-or-the-internal-registers)
+      - [Modifying stack frames or internal registers](#modifying-stack-frames-or-internal-registers)
     - [Hardware Specification](#hardware-specification)
     - [Beyond the Jack OS](#beyond-the-jack-os)
 - [How does NAND work?](#how-does-nand-work)
@@ -77,13 +78,13 @@ The average is 210
 
 ### Pong
 
-A program that runs the game of Pong, showing off the language's object-oriented model. Use the arrow keys to move the paddle left and right to bounce a ball. Every bounce, the paddle becomes smaller, and the game ends when the ball hits the bottom of the screen.
+The game of Pong, showing off the language's object-oriented model. Use the arrow keys to move the paddle left and right to bounce a ball. Every bounce, the paddle becomes smaller, and the game ends when the ball hits the bottom of the screen.
 
 *This program was supplied by the Nand to Tetris software suite.*
 
 ### 2048
 
-A program that runs the game of the game of 2048, showing off recursion and complex application logic. Use the arrow keys to move the numbers around the 4x4 grid. Two numbers that move into each other combine into their sum. You lose the game when you can't make any more moves. Once the 2048 tile is reached, you win the game, though you can keep playing on until you lose.
+The game of 2048, showing off recursion and complex application logic. Use the arrow keys to move the numbers around the 4x4 grid. The same numbers combine into their sum when moved into each other. Once the 2048 tile is reached, you win the game, though you can keep playing on until you lose. You lose the game when the board is full and you can't make any more moves.
 
 ### Overflow
 
@@ -95,9 +96,9 @@ Upon running, the program will constantly print the stack pointer to the screen.
 
 Two things of noteworthy interest are worth pointing out.
 
-If you reload the page and run this program on an empty RAM (a RAM full of zeroes), you will notice that the program resets itself halfway through its execution despite not pressing the "Reset" button. Why this happens is simple: the jailbroken runtime executes an instruction that sets the [program counter](https://en.wikipedia.org/wiki/Program_counter)'s value to 0, effectively telling the program to start over at the first instruction.
+If you reload the page and run this program on an empty RAM (a RAM full of zeroes), you will notice that the program resets itself halfway through its execution despite not pressing the "Reset" button. Why this happens is simple: the jailbroken runtime executes an instruction that sets the [program counter](https://en.wikipedia.org/wiki/Program_counter)'s value to 0, effectively telling the program to jump to the first instruction and start over.
 
-If you run the GeneticAlgorithm example program and then run this immediately afterwards, interestingly enough, the program reads the old RAM memory that was simply never overwritten.
+If you run the GeneticAlgorithm example program and then run this immediately afterwards, the program in its rampage reads old RAM memory that was simply never overwritten.
 
 <img src="media/old_memory.png" width="700">
 
@@ -111,35 +112,34 @@ A program that exploits the fact that the runtime doesn't prevent [stack smashin
 
 If you're unfamiliar with stack layouts, here's the main idea behind the exploit. Whenever a function returns, it needs to know where (which machine code instruction memory address) it should go to proceed with execution flow. So, when the function is first called, this memory address, along with some other unimportant data, is temporarily stored on the stack in a memory region referred to as the [stack frame](https://en.wikipedia.org/wiki/Call_stack#STACK-FRAME) as a reference for where to return. The illustration describes the exact position of this return address relative to the function call, a position that can be reverse engineered.
 
-The program enables the user to set a single memory address in the RAM to any value. Putting two and two together, if the user were to overwrite the return address of a stack frame with the location of another function in the instruction memory, they essentially gain the ability to execute arbitrary code included in the machine code binary.
+The program enables the user to overwrite a single memory address in the RAM to any value. Putting two and two together, if the user were to overwrite the return address of a stack frame with the address of another function, they essentially gain the ability to execute arbitrary code included in the program.
 
 Indeed, if you enter 267 as the memory location and 1715 as the value to overwrite, two numbers reverse engineered by manually inspecting the stack memory space and the assembler, you'll see this idea in working action.
 
 <img src="media/secret_password.png" width="700">
 
-This isn't a vulnerability unique to NAND. It exists in C as well! How cool!
+This isn't a vulnerability unique to NAND. [It exists in C as well](https://en.wikipedia.org/wiki/Buffer_overflow)! How cool!
 
 ### GeneticAlgorithm
 
 Believe it or not, out of the many, *many* different components of NAND, this single-handedly took the longest to develop!
 
-This program is a creature simulation that utilizes simple machine learning. It follows an artificial intelligence coded series (parts <a href="https://www.youtube.com/watch?v=VnwjxityDLQ">one</a> and <a href="https://www.youtube.com/watch?v=BOZfhUcNiqk">two</a>) from <a href="https://www.youtube.com/@CodeBullet">Code Bullet</a>. Make sure to check his channel out, he makes some really cool stuff!
+This program is a creature simulation that utilizes simple machine learning. It follows the artificial intelligence coded series (parts <a href="https://www.youtube.com/watch?v=VnwjxityDLQ">one</a> and <a href="https://www.youtube.com/watch?v=BOZfhUcNiqk">two</a>) from <a href="https://www.youtube.com/@CodeBullet">Code Bullet</a>. Make sure to check out his channel, he makes some really cool stuff!
 
 [Video demo of the Genetic Algorithm program](https://github.com/ArhanChaudhary/ArhanChaudhary/assets/57512390/c0ecf5e9-26d0-4367-a1a9-0ed2ebc4098d)
 
 Simply explained:
 
-Every dot has its own "brain" of acceleration vectors, and they evolve to reach a goal through natural selection. Every generation, dots that "die" closer to the goal are more likely to be selected as the parents for the next generation. Reproduction inherently causes some of the brain to mutate, effectively simulating natural evolution.
+Every dot has its own "brain" of acceleration vectors, and they evolve to reach a goal through natural selection. Every generation, dots that "die" closer to the goal are more likely to be selected as the parents for the next generation. Reproduction inherently causes some of the brain to mutate, wholly effectively simulating natural evolution.
 
-Nevertheless, there is much to be desired. Due to performance, the only factor dots use to evolve is their closeness to the goal upon death, endowing the natural selection algorithm with a low entropy. Due to memory usage, there are smaller than satisfactory limits on the number of dots and the sizes of their brains. Lastly, due to technical complexity, re-placing obstacles during the simulation does not guarantee that the dots will have large enough brains to reach the goal. Brain sizes are only determined at the beginning of the program.
+Nevertheless, there is much to be desired. Due to performance, the only factor dots use to evolve is their closeness to the goal upon death, endowing the natural selection algorithm with low entropy. Due to memory usage, there are smaller than satisfactory limits on the number of dots and the sizes of their brains. Lastly, due to technical complexity, re-placing obstacles during the simulation does not guarantee that the dots will have large enough brains to reach the goal. Brain sizes are only determined at the beginning of the program.
 
 I've used a myriad of optimization techniques to snake around the following hardware restrictions and make this possible:
 - NAND has a limited ROM memory space, meaning the program won't compile if there's too much code. In fact, the final version of this program uses 99.2% of the instruction memory space.
 - NAND has a limited RAM memory space, meaning the program has to be careful to optimize heap memory usage. In fact, the reason why the screen fills with static between generations is to use the screen memory space as temporary swap memory for the next generation — the RAM is already completely full!
-- NAND's clock speed is relatively slow, making runtime speed a major concern.
 - NAND has no floating point type (decimal numbers) and can only represent the integers between -32768 and 32767, making calculating fitness less precise and more challenging to implement. [Integer overflows](https://en.wikipedia.org/wiki/Integer_overflow) must also be accounted for.
 
-To avoid beating around the bush, I've stuck to documenting these techniques and additional natural selection algorithm insights in this program's codebase for those interested.
+To avoid beating around the bush, I've stuck to documenting these techniques and additional insights in this program's codebase for those interested.
 
 # Writing programs for NAND
 
@@ -151,7 +151,7 @@ For example, you should change: \
 
 but you can keep `if (y & ~x)` the same as there is no operator ambiguity.
 
-Without parenthesis, the evaluation value of an ambiguous expression is **undefined behavior**.
+Without parenthesis, the evaluation value of an ambiguous expression is **undefined**.
 
 ### Jack Introduction
 
@@ -162,7 +162,7 @@ Let's take the approach of example-based learning and dive right in.
 ```js
 /**
  * This program prompts the user to enter a phrase
- * and an energy level. Example program output:
+ * and an energy level. Program output:
  *
  * Whats on your mind? Superman
  * Whats your energy level? 3
@@ -188,32 +188,32 @@ class Main {
 ```
 *taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view).*
 
-If you've already had some experience with programming, this should look very familiar; it is clear that Jack was heavily inspired by Java. `Main.main` is the entry point to the program. The function demonstrates basic usage of variables as well as the while loop for control flow.
+If you've already had some experience with programming, this should look very familiar; it is clear that Jack was heavily inspired by Java. `Main.main` is the entry point to the program. The code segment demonstrates basic usage of variables as well as the while loop for control flow.
 
-Additionally, it uses `Keyboard.readLine` and `Keyboard.readInt` to read input from the user, and `Output.printString` and `Output.println` to print output to the screen, all of which are defined in detail in the [Jack OS Reference](#jack-os). By default, the Jack OS is bundled with your program during compilation to enable interfacing with strings, memory, hardware, and more.
+Additionally, it uses `Keyboard.readLine` and `Keyboard.readInt` to read input from the user, and `Output.printString` and `Output.println` to print output to the screen — all of which are defined in detail in the [Jack OS Reference](#jack-os). By default, the Jack OS is bundled with your program during compilation to enable interfacing with strings, memory, hardware, and more.
 
 ### Custom Data Types
 
-Every programming language has a fixed set of primitive data types. Jack supports three: `int`, `char`, and `boolean`. You can extend this basic repertoire with your own abstract data types as needed. Prior experience with [object-oriented programming](https://en.wikipedia.org/wiki/Object-oriented_programming) directly carries over to  this section.
+Every programming language has a fixed set of primitive data types. Jack supports three: `int`, `char`, and `boolean`. You can extend this basic repertoire with your own abstract data types as needed. Prior knowledge about [object-oriented programming](https://en.wikipedia.org/wiki/Object-oriented_programming) directly carries over to  this section.
 <!-- cSpell:disable -->
 ```js
 /** Represents a point in 2D plane. */
 class Point {
-    // The coordinates of this point:
-    field int x, y
+    // The coordinates of the current point instance:
+    field int x, y;
     // The number of point objects constructed so far:
     static int pointCount;
-    /** Constructs a point and initializes it
-        with the given coordinates */
+    /** Constructs a point and initializes
+        it with the given coordinates */
     constructor Point new(int ax, int ay) {
       let x = ax;
       let y = ay;
       let pointCount = pointCount + 1;
       return this;
     }
-    /** Returns the x coordinate of this point */
+    /** Returns the x coordinate of the current point instance */
     method int getx() { return x; }
-    /** Returns the y coordinate of this point */
+    /** Returns the y coordinate of the current point instance */
     method int gety() { return y; }
     /** Returns the number of Points constructed so far */
     function int getPointCount() {
@@ -225,15 +225,15 @@ class Point {
         return Point.new(x + other.getx(),
                          y + other.gety());
     }
-    /** Returns the Euclidean distance between
-        this point and the other point */
+    /** Returns the Euclidean distance between the
+        current point instance and the other point */
     method int distance(Point other) {
         var int dx, dy;
         let dx = x - other.getx();
         let dy = y - other.gety();
         return Math.sqrt((dx * dx) + (dy * dy));
     }
-    /** Prints this point, as "(x, y)" */
+    /** Prints the current point instance, as "(x, y)" */
     method void print() {
         var String tmp;
         let tmp = "(";
@@ -244,7 +244,7 @@ class Point {
         do Output.printString(tmp);
         do tmp.dispose();
         do Output.printInt(y);
-        let tmp = ", ";
+        let tmp = ")";
         do Output.printString(tmp);
         do tmp.dispose();
     }
@@ -256,18 +256,20 @@ let p1 = Point.new(1, 2);
 let p2 = Point.new(3, 4);
 let p3 = p1.plus(p2);
 do p3.print(); // prints (4, 6)
+do Output.println();
 do Output.printInt(p1.distance(p2)); // prints 5
+do Output.println();
 do Output.printInt(getPointCount()); // prints 3
 ```
 *taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view).*
 
-We define a `Point` class that represents an abstract point in space. It uses `field` variables to declare per-instance attributes of the data type. It exposes public `method` functions we can use to interface with the point, such as the functionality to add two points together and calculate the distance between two points.
+We define a `Point` class to represent an abstract point in space. It uses `field` variables to declare per-instance attributes of the data type. It exposes public `method` functions we can use to interface with the point, giving the caller the functionality to add two points together and calculate the distance between two points.
 
 All `field` variables are privately scoped. If you wish to get or set these variables from outside the class declaration, these variables must have corresponding `method` functions to provide this functionality.
 
-Omitted from the code sample to stay on-topic, it is customary for data classes to define `dispose` methods for deallocation once objects are no longer used. See [Manual Memory Management](#manual-memory-management).
+Omitted from the code sample to stay on-topic, it is customary for data classes to define `dispose` methods for deallocation once objects are no longer needed. See [Manual Memory Management](#manual-memory-management).
 
-If needed, I've provided a reference for `function` and `method` calling syntax.
+If needed, here's a reference for `function` and `method` calling syntax.
 <!-- cSpell:enable -->
 ```js
 class Foo {
@@ -300,7 +302,7 @@ var char c;
 var String s;
 let c = 65; // 'A'
 // Equivalently
-let s = “A”;
+let s = "A";
 let c = s.charAt(0);
 ```
 ```js
@@ -352,7 +354,7 @@ class Main {
 ```
 You may be startled to notice that after a few seconds, the program will crash with "ERR6", or a [heap overflow](https://en.wikipedia.org/wiki/Heap_overflow)!
 
-Jack is a [manually memory managed](https://en.wikipedia.org/wiki/Manual_memory_management) programming language. This means you have to be vigilant with properly deallocating memory that is no longer needed, or else the Jack OS will think otherwise and facilitate a [memory leak](https://en.wikipedia.org/wiki/Memory_leak). The best practice advice is to feature a `dispose` method for each class that represents an object that properly encapsulates this deallocation. Thus, when objects are no longer needed, you can call their `dispose` methods to ensure you won't eventually run out of heap memory.
+Jack is a [manually memory managed](https://en.wikipedia.org/wiki/Manual_memory_management) programming language. This means you must be vigilant to properly deallocate memory that is no longer needed, or else the Jack OS will think otherwise and facilitate a [memory leak](https://en.wikipedia.org/wiki/Memory_leak). The best practice advice is to feature a `dispose` method for each class that represents an object that properly encapsulates this deallocation. Thus, when objects are no longer needed, you can call their `dispose` methods to ensure you won't eventually run out of heap memory.
 
 If you've programmed in other manually memory managed languages, like C, this should look very familiar. One key difference is the Jack OS stores arrays and strings on the heap rather than on the stack, hinting to why the program crashes with a heap overflow.
 
@@ -397,17 +399,17 @@ method void dispose() {
     do Memory.deAlloc(this);
 }
 ```
-Proper `dispose` methods must first appropriately call `dispose` on their field variables and then end with `do Memory.deAlloc(this);` to deallocate the object instance itself.
+Proper `dispose` methods must first appropriately call `dispose` on their field variables and then finish with `do Memory.deAlloc(this);` to deallocate the object instance itself.
 
 ### Undefined Behavior
 
-With how primitive Jack and NAND are, footguns within the language are inevitable. I've compiled the following instances of undefined behavior you should be aware of while writing programs in Jack, ordered from (in my opinion) most important to least important.
+With how primitive Jack and NAND are, footguns within the language are inevitable. I've compiled the following instances of undefined behavior you should be aware of, ordered from (in my opinion) most important to least important.
 
 #### Operator priority
 
 I found this caveat to be so important that I've moved it towards the [beginning of this section](#writing-programs-for-nand).
 
-#### Less and greater than operators
+#### Lesser and greater than operators
 
 The Jack expressions
 ```js
@@ -482,11 +484,38 @@ class Main {
 
 On the other hand, calling a function with too *many* arguments is perfectly valid. You can use the `arguments` keyword to index extra function arguments. Note that there is no indicator for the argument count.
 
+#### Improper Type Casting
+
+You can utilize `Array` to cast variables into any other type. Calling instance methods that do not exist on these types is undefined behavior.
+
+```js
+/**
+ * Program output:
+ * 2051
+ */
+class Main {
+    constructor Main new() {
+        return this;
+    }
+
+    function void main() {
+        var Array a;
+        var Main b;
+        var String c;
+        let a = Array.new(1);
+        let b = Main.new();
+        let c = b[1];
+        // calling `String.length` on an instance of `Main`.
+        do Output.printInt(c.length());
+    }
+}
+```
+
 #### Stack overflows
 
 See the [Overflow](#overflow) program for an in-depth example.
 
-#### Modifying stack frames or the internal registers
+#### Modifying stack frames or internal registers
 
 Modifying stack frames or the internal registers that respectively reside at memory addresses `256` to `2047` and `1` to `15` may lead to undefined behavior. This typically isn't possible without misusing `Memory.poke` or negative array indexing. See the [SecretPassword](#secretpassword) program for an in-depth example.
 
@@ -528,9 +557,9 @@ Lastly, the hardware reserves 240 memory addresses for static class variables an
 
 ### Beyond the Jack OS
 
-By default, the Jack OS is bundled with your program during compilation to enable interfacing with strings, memory, hardware, and more. To the extraordinarily dedicated, it is possible to provide your own OS implementation with your own hardware interfaces — the IDE treats Jack OS files the same as typical program files as they can likewise be deleted or overwritten. There are a few core functions you *must* implement for your program to compile if you choose to do so. You're free to copy my implementations of these functions as needed.
+By default, the Jack OS is bundled with your program during compilation to enable interfacing with strings, memory, hardware, and more. To the extraordinarily dedicated, it is possible to provide your own OS implementation with your own hardware interfaces. The IDE treats Jack OS files the same as typical program files; they can likewise be deleted or overwritten. There are a few core functions you *must* implement for your program to compile if you choose to do so. You're free to copy my implementations of these functions as needed.
 
-`Sys.init`: The *real* entry point of the program, hardcoded in the virtual machine implementation. For context, the provided Jack OS implementation looks like this:
+`Sys.init`: rather than `Main.main`, this is the *real* entry point of the program, hardcoded in the virtual machine implementation. For context, the provided Jack OS implementation looks like this:
 
 ```js
 function void init() {
@@ -570,9 +599,9 @@ NAND's CPU is an [accumulator machine](https://en.wikipedia.org/wiki/Accumulator
 
 <img src="media/alu.png" width="700">
 
-We've reached the instruction set, the nitty-gritty. As indicated, NAND's CPU only has *two* opcodes! This makes the instruction set relatively simple while providing a rich functionality. NAND's ALU is also specified with which expressions it can compute in a single instruction.
+We've reached the instruction set, the nitty-gritty. As indicated, NAND's CPU only has *two* opcodes! This makes the instruction set relatively simple while providing a rich functionality. NAND's ALU is additionally specified with the expressions it can compute in a single instruction.
 
-Phew! That was a lot to take in, but I promise you NAND is far less complicated than it's made out to be. From a relatively simple logical foundation, turing equivalence is achieved! If you want see my implementation of the NAND computer architecture, [you're more than welcome to](src/core)! If you find yourself still curious, check out the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1Z_fxYmmRNXTkAzmZ6YMoX9NXZIRVCKiw/view) for further elaboration on every aspect of its design.
+Phew! That was a lot to take in, but I promise you NAND is far less complicated than I've made it out to be. From a relatively simple logical foundation, turing equivalence is achieved! If you want see my implementation of the NAND computer architecture, [you're more than welcome to](src/core)! If you find yourself still curious, check out the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1Z_fxYmmRNXTkAzmZ6YMoX9NXZIRVCKiw/view) for further elaboration on every aspect of the architecture.
 
 Let's briefly talk about the compiler and the virtual machine to make this section feel complete. These concepts are nothing unique to NAND, hence their brevity. Some of NAND's strange syntactical features are a direct consequence of making the compiler easier to implement. The compiler is a [recursive descent parser](https://en.wikipedia.org/wiki/Recursive_descent_parser) on an [LL(1) grammar](https://en.wikipedia.org/wiki/LL_parser), generating virtual machine code to be utilized as a [simple stack machine](https://en.wikipedia.org/wiki/Stack_machine) (a technique that also handles managing [call stacks](https://en.wikipedia.org/wiki/Call_stack)). Each virtual machine instruction is then trivially mapped to assembly and machine code. Once again, you're more than welcome to see my [compiler implementation](src/compiler) for yourself.
 
@@ -614,7 +643,7 @@ declarations is arbitrary
 A Jack program:
 - Defines classes in separate files
 - Consists of a collection of one or more classes, one of which must be named `Main`
-- Must define the `main` function in the `Main` class, the entry point of the program defined by the Jack OS.
+- Must define the `main` function in the `Main` class, the entry point of the program defined by the Jack OS
 
 ### Syntax
 
@@ -699,7 +728,7 @@ A Jack program:
                 <code>-</code>&nbsp;<code><</code>&nbsp;<code>></code>
               </th>
               <td>
-                Operators. Note that <code>&</code> and <code>|</code> do not short-circuit
+                Operators. Note that <code>&</code> and <code>|</code> are bitwise and do not short-circuit
               </td>
             </tr>
           </tbody>
@@ -790,7 +819,7 @@ A Jack program:
       <td>
           <i>Integer</i> constants must be positive and in standard decimal notation, e.g., <code>1984</code>. Negative integers like <code>-13</code> are not constants but rather expressions consisting of a unary negative operator applied to an integer constant.<br>
           <br>
-          <i>String</i> constants are enclosed within quotation marks and may contain any characters except new lines or quotation marks. Unlike typical programming languages, these characters cannot be escaped within a string, so these characters are instead supplied by the functions <code>String.newLine()</code> and <code>String.doubleQuote()</code> from the OS. <small><small>iI you manage to read this, say <a href="https://files.bithole.dev/nandy.png">hi</a> to Nandy</small></small><br>
+          <i>String</i> constants are enclosed within quotation marks and may contain any characters except new lines or quotation marks. Unlike typical programming languages, these characters cannot be escaped within a string, so these characters are instead supplied by the functions <code>String.newLine()</code> and <code>String.doubleQuote()</code> from the OS. <sub><sup>If you manage to read this, say <a href="https://files.bithole.dev/nandy.png">hi</a> to Nandy</sup></sub><br>
           <br>
           <i>Boolean</i> constants can be true or false.<br>
           <br>
@@ -800,8 +829,7 @@ A Jack program:
     <tr>
       <th>Identifiers</th>
       <td>
-          Identifiers are composed from arbitrarily long sequences of letters
-          (<code>A-Z</code>, <code>a-z</code>), digits (<code>0-9</code>), and "_". The first character must be a letter or "_".<br>
+          Identifiers are composed from arbitrarily long sequences of letters, digits, and "_". The first character cannot be a digit.<br>
           <br>
           Case sensitivity matters. Thus <code>x</code> and <code>X</code> are treated as different identifiers.
       </td>
@@ -1196,15 +1224,15 @@ If you do something that forces the computer into an invalid state, like computi
 
 ### Whoa, is *everything* made from NAND gates?
 
-Well..., I admit the description and title are a little misleading, but still in good faith. The compiler and virtual machine translator are written in Typescript, and the kernel and hardware are emulated in Rust. It's only really the logic simulator that runs every computation, screen rendering operation, and memory access entirely from NAND gates. Bootstrapping the full tech stack is a feat that isn't unheard of, but such a massive project by itself probably deserves its own repository.
+Well..., I admit the description and title are a little misleading, but still in good faith. The compiler and virtual machine translator are written in Typescript, and the kernel and hardware are emulated in Rust. Just the logic simulator runs computations and memory accesses from NAND gates. Bootstrapping the full tech stack is a feat that isn't unheard of, but such a massive project by itself probably deserves its own separate project.
 
 ### Did you design NAND by yourself?
 
-NAND is entirely based off of the [Nand to Tetris course](https://www.nand2tetris.org) and its [associated book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk) (and you should definitely check it out, it's an absolutely incredible read). I solely implemented the specification for CPU, assembler, virtual machine translator, and compiler, while porting the platform to the web with its own IDE and user interface.
+NAND is entirely based off of the [Nand to Tetris course](https://www.nand2tetris.org) and its [associated book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk) (you should definitely check it out, it's an absolutely incredible read). I solely implemented the specification for CPU, assembler, virtual machine translator, and compiler, while porting the platform to the web with its own IDE and user interface.
 
 ### If there's only one type, what is the point of specifying types at all?
 
-This question references the fact that under the hood, the signed 16-bit integer is Jack's only type. We anyways need to be so explicit with types to help the compiler figure out which class instance methods belong to. For instance, if we declare `s` with the type `String`, `s.appendChar(33)` is transformed into `String.appendChar(s, 33)`.
+This question references the fact that under the hood, the signed 16-bit integer is Jack's only real type. We anyways need to be so explicit with types to help the compiler figure out which class certain instance methods belong to. If we declare the Jack variable `s` with the type `String`, `s.appendChar(33)` is transformed during compilation into `String.appendChar(s, 33)`.
 
 ### Why does the IDE feel finnicky?
 

@@ -1,6 +1,7 @@
 /**
- * A simple program to demonstrate stack smashing, or overwriting
- * the stack frame return address to call inaccessible functions.
+ * A program that exploits the fact that the runtime doesn't prevent stack
+ * smashing, or overwriting the stack frame return address, to call
+ * a function that would otherwise be inaccessible.
  *
  * Input the numbers 267 and 1715, see what happens!
  */

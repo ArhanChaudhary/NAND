@@ -1,9 +1,10 @@
 /**
- * This program is quite a special one! We're going to intentionally cause a
- * stack overflow and then stack smash the heap. No modern platform will let
- * you do this, but we're going to do it anyway so you can see what happens.
+ * This program is quite a special one! We're going to deliberately cause a
+ * stack overflow to perform a virtual machine escape. It leverages the fact
+ * that there are no runtime checks to prevent a stack overflow. No modern
+ * platform will let you do this :-)
  *
- * Run this on an empty RAM for the best effect
+ * Run this on an empty RAM (reload the page) for the best effect
  */
 class Main {
     function void main() {
@@ -18,7 +19,7 @@ class Main {
         do Output.moveCursor(0, 0);
         // Print out the stack pointer. We'll start to have problems when this
         // number exceeds 2048 and invades the memory region reserved for the
-        // heap
+        // heap. The print statement will malfunction in explosive fashion!
         do Output.printInt(Memory.peek(0));
         // Just minding some of our own business... nothing much to see here
         let b = 0;
