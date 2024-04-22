@@ -24,6 +24,8 @@ const OPS = [
   SymbolToken.LESS_THAN,
   SymbolToken.GREATER_THAN,
   SymbolToken.EQUAL,
+  // unused but checked for syntax errors
+  SymbolToken.CARROT,
 ];
 
 export default class Engine {
@@ -598,10 +600,22 @@ export default class Engine {
         this.vmwriter.writePop(kind, index);
         break;
       default:
-        throw this.tokenizer.syntaxError(
-          [SymbolToken.OPENING_BRACKET, SymbolToken.EQUAL],
-          "let statement must be followed by either of these symbols"
-        );
+        const curr = this.tokenizer.token() as SymbolToken;
+        if (
+          OPS.includes(curr) &&
+          this.tokenizer.advance() &&
+          this.tokenizer.token() === SymbolToken.EQUAL
+        ) {
+          throw this.tokenizer.syntaxError(
+            "",
+            `the '${curr}=' operator isn't supported`
+          );
+        } else {
+          throw this.tokenizer.syntaxError(
+            [SymbolToken.OPENING_BRACKET, SymbolToken.EQUAL],
+            "let statement must be followed by either of these symbols"
+          );
+        }
     }
     this.assertToken(SymbolToken.SEMICOLON);
   }
@@ -704,13 +718,40 @@ export default class Engine {
     const op = this.tokenizer.token() as SymbolToken;
     if (OPS.includes(op)) {
       const prev = op;
-      this.tokenizer.advance();
-      const curr = this.tokenizer.token();
-      if (prev === SymbolToken.EQUAL && curr === SymbolToken.EQUAL) {
+      if (prev === SymbolToken.CARROT) {
         throw this.tokenizer.syntaxError(
           "",
-          "use '=' instead of '==' for the equality comparison"
+          "the bitwise xor operator '^' is not supported"
         );
+      }
+      this.tokenizer.advance();
+      const curr = this.tokenizer.token();
+      if (curr === SymbolToken.EQUAL) {
+        switch (prev) {
+          case SymbolToken.EQUAL:
+            throw this.tokenizer.syntaxError(
+              "",
+              "use '=' instead of '==' for the equality comparison"
+            );
+          case SymbolToken.LESS_THAN:
+            throw this.tokenizer.syntaxError(
+              "",
+              "use '>' and '~' instead of '<=' for the less than or equal to comparison"
+            );
+          case SymbolToken.GREATER_THAN:
+            throw this.tokenizer.syntaxError(
+              "",
+              "use '<' and '~' instead of '>=' for the greater than or equal to comparison"
+            );
+        }
+      } else if (curr === SymbolToken.MULTIPLY) {
+        switch (prev) {
+          case SymbolToken.MULTIPLY:
+            throw this.tokenizer.syntaxError(
+              "",
+              "use repeated multiplication instead of '**' for exponentiation"
+            );
+        }
       } else if (
         (prev === SymbolToken.GREATER_THAN &&
           curr === SymbolToken.GREATER_THAN) ||
@@ -855,6 +896,11 @@ export default class Engine {
             this.compileExpression();
             this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
             break;
+          case SymbolToken.EXCLAMATION_MARK:
+            throw this.tokenizer.syntaxError(
+              SymbolToken.NOT,
+              "use the bitwise not operator '~' instead of '!'"
+            );
           default:
             throw this.tokenizer.syntaxError("", "symbol cannot be used here");
         }

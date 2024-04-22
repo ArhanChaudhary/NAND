@@ -28,6 +28,9 @@ export enum SymbolToken {
   GREATER_THAN = ">",
   EQUAL = "=",
   NOT = "~",
+  // unused, checked for syntax errors
+  EXCLAMATION_MARK = "!",
+  CARROT = "^",
 }
 
 export enum KeywordToken {
@@ -201,7 +204,7 @@ export default class Tokenizer {
         } else if (Tokenizer.isNumber(char)) {
           this.currentTokenType = TokenType.INT_CONST;
         } else {
-          throw this.syntaxError("", "Invalid unicode character");
+          throw this.syntaxError("", "invalid unicode character");
         }
         continue;
       }
