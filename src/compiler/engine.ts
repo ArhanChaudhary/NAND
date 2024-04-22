@@ -601,15 +601,21 @@ export default class Engine {
         break;
       default:
         const curr = this.tokenizer.token() as SymbolToken;
-        if (
-          OPS.includes(curr) &&
-          this.tokenizer.advance() &&
-          this.tokenizer.token() === SymbolToken.EQUAL
-        ) {
-          throw this.tokenizer.syntaxError(
-            "",
-            `the '${curr}=' operator isn't supported`
-          );
+        if (OPS.includes(curr) && this.tokenizer.advance()) {
+          if (
+            curr === SymbolToken.ADD &&
+            this.tokenizer.token() === SymbolToken.ADD
+          ) {
+            throw this.tokenizer.syntaxError(
+              "",
+              "the '++' operator isn't supported. Manually increment the variable instead"
+            );
+          } else if (this.tokenizer.token() === SymbolToken.EQUAL) {
+            throw this.tokenizer.syntaxError(
+              "",
+              `the '${curr}=' operator isn't supported and must be manually expanded`
+            );
+          }
         } else {
           throw this.tokenizer.syntaxError(
             [SymbolToken.OPENING_BRACKET, SymbolToken.EQUAL],
