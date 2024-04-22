@@ -65,7 +65,7 @@ is a turing equivalent 16-bit computer made entirely from a [clock](https://en.w
 
 A simple program that inputs some numbers and computes their average, showing off control flow, arithmetic operations, I/O, and dynamic memory allocation.
 
-Example program output:
+Program output:
 ```
 How many numbers? 4
 Enter a number: 100
@@ -486,12 +486,12 @@ On the other hand, calling a function with too *many* arguments is perfectly val
 
 #### Improper Type Casting
 
-You can utilize `Array` to cast a variable into any other type. Calling instance methods that don't exist on these type casted variables is undefined behavior; the compiler isn't smart enough yet to realize when you're doing this.
+You can utilize `Array` to cast a variable into any other type. Calling instance methods that don't exist on type casted variables is undefined behavior; the compiler isn't smart enough to realize when you're doing this.
 
 ```js
 /**
  * Program output:
- * 2051
+ * 4
  */
 class Main {
     constructor Main new() {
@@ -504,7 +504,8 @@ class Main {
         var String c;
         let a = Array.new(1);
         let b = Main.new();
-        let c = b[1];
+        let a[0] = b;
+        let c = a[0];
         // Invalidly calling `String.length` on an instance of `Main`.
         do Output.printInt(c.length());
     }
@@ -1224,11 +1225,11 @@ If you do something that forces the computer into an invalid state, like computi
 
 ### Whoa, is *everything* made from NAND gates?
 
-Well..., I admit the description and title are a little misleading, but still in good faith. The compiler and virtual machine translator are written in Typescript, and the kernel and hardware are emulated in Rust. Just the logic simulator runs computations and memory accesses from NAND gates. Bootstrapping the full tech stack is a feat that isn't unheard of, but such a massive project by itself probably deserves its own separate project.
+Well..., I admit the description and title are a little misleading, but still in good faith. The compiler and virtual machine translator are written in Typescript, while the kernel and hardware are emulated in Rust. Just the logic simulator runs computations and memory accesses from NAND gates. Bootstrapping the full tech stack is a feat that isn't unheard of, but such a massive project by itself probably deserves its own separate project.
 
 ### Did you design NAND by yourself?
 
-NAND is entirely based off of the [Nand to Tetris course](https://www.nand2tetris.org) and its [associated book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk) (you should definitely check it out, it's an absolutely incredible read). I solely implemented the specification for CPU, assembler, virtual machine translator, and compiler, while porting the platform to the web with its own IDE and user interface.
+NAND follows the [Nand to Tetris course](https://www.nand2tetris.org) and its [associated book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk) (you should definitely check it out, it's an absolutely incredible read). I solely implemented the specification for CPU, assembler, virtual machine translator, and compiler, while porting the platform to the web with its own IDE and user interface.
 
 ### If there's only one type, what is the point of specifying types at all?
 
