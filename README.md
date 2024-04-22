@@ -28,8 +28,15 @@ is a turing equivalent 16-bit computer made entirely from a [clock](https://en.w
     - [Weak Type Coercions](#weak-type-coercions)
     - [Manual Memory Management](#manual-memory-management)
     - [Undefined Behavior](#undefined-behavior)
+      - [Operator priority](#operator-priority)
+      - [Less and greater than operators](#less-and-greater-than-operators)
+      - [-32768](#-32768)
+      - [Calling a function with too few arguments](#calling-a-function-with-too-few-arguments)
+      - [Stack overflows](#stack-overflows)
+      - [Modifying stack frames or the internal registers](#modifying-stack-frames-or-the-internal-registers)
     - [Hardware Specification](#hardware-specification)
     - [Beyond the Jack OS](#beyond-the-jack-os)
+- [How does NAND work?](#how-does-nand-work)
 - [Jack Reference](#jack-reference)
     - [Program Structure](#program-structure)
     - [Syntax](#syntax)
@@ -45,7 +52,6 @@ is a turing equivalent 16-bit computer made entirely from a [clock](https://en.w
     - [String](#string)
     - [Sys](#sys)
     - [Error Codes](#error-codes)
-- [How does NAND work?](#how-does-nand-work)
 - [FAQ](#faq)
     - [Whoa, is *everything* made from NAND gates?](#whoa-is-everything-made-from-nand-gates)
     - [Did you design NAND by yourself?](#did-you-design-nand-by-yourself)
@@ -115,17 +121,17 @@ This isn't a vulnerability unique to NAND. It exists in C as well! How cool!
 
 ### GeneticAlgorithm
 
-Believe it or not, out of the many, *many* different components of NAND, this program single-handedly took the longest to develop!
+Believe it or not, out of the many, *many* different components of NAND, this single-handedly took the longest to develop!
 
-This program is a creature simulation that utilizes simple machine learning. It follows this excellent artificial intelligence coded series (parts <a href="https://www.youtube.com/watch?v=VnwjxityDLQ">one</a> and <a href="https://www.youtube.com/watch?v=BOZfhUcNiqk">two</a>) from <a href="https://www.youtube.com/@CodeBullet">Code Bullet</a>. Make sure to check his channel out, he makes some really cool stuff!
+This program is a creature simulation that utilizes simple machine learning. It follows an artificial intelligence coded series (parts <a href="https://www.youtube.com/watch?v=VnwjxityDLQ">one</a> and <a href="https://www.youtube.com/watch?v=BOZfhUcNiqk">two</a>) from <a href="https://www.youtube.com/@CodeBullet">Code Bullet</a>. Make sure to check his channel out, he makes some really cool stuff!
 
 [Video demo of the Genetic Algorithm program](https://github.com/ArhanChaudhary/ArhanChaudhary/assets/57512390/c0ecf5e9-26d0-4367-a1a9-0ed2ebc4098d)
 
 Simply explained:
 
-Every dot has its own "brain" of acceleration vectors, and they evolve to reach a goal through natural selection. Every generation, dots that "die" closer to the goal are more likely to be selected as the parents for the next generation. Closeness isn't determined by the distance formula but rather a directional [Breadth-first search](https://en.wikipedia.org/wiki/Breadth-first_search) :). Reproduction inherently causes some of the brain to mutate, effectively simulating natural evolution.
+Every dot has its own "brain" of acceleration vectors, and they evolve to reach a goal through natural selection. Every generation, dots that "die" closer to the goal are more likely to be selected as the parents for the next generation. Reproduction inherently causes some of the brain to mutate, effectively simulating natural evolution.
 
-Nevertheless, there is much to be desired. Due to performance, the only factor dots use to evolve is the death closeness to the goal, consequently leaving the natural selection algorithm with a low entropy. Due to memory usage, there are smaller than satisfactory limits on the number of dots and the sizes of their brains. Lastly, due to technical complexity, re-placing obstacles during the simulation does not guarantee that the dots will have large enough brains to reach the goal. Brain sizes are only determined at the beginning of the program.
+Nevertheless, there is much to be desired. Due to performance, the only factor dots use to evolve is their closeness to the goal upon death, endowing the natural selection algorithm with a low entropy. Due to memory usage, there are smaller than satisfactory limits on the number of dots and the sizes of their brains. Lastly, due to technical complexity, re-placing obstacles during the simulation does not guarantee that the dots will have large enough brains to reach the goal. Brain sizes are only determined at the beginning of the program.
 
 I've used a myriad of optimization techniques to snake around the following hardware restrictions and make this possible:
 - NAND has a limited ROM memory space, meaning the program won't compile if there's too much code. In fact, the final version of this program uses 99.2% of the instruction memory space.
@@ -188,8 +194,74 @@ Additionally, it uses `Keyboard.readLine` and `Keyboard.readInt` to read input f
 
 ### Custom Data Types
 
-Every programming language has a fixed set of primitive data types. Jack supports three: `int`, `char`, and `boolean`. You can extend this basic repertoire with your own abstract data types by creating new classes as needed.
+Every programming language has a fixed set of primitive data types. Jack supports three: `int`, `char`, and `boolean`. You can extend this basic repertoire with your own abstract data types as needed.
 // point stuff, mention deallocating memory, private variables
+<!-- cSpell:disable -->
+```js
+/** Represents a point in 2D plane. */
+class Point {
+    // The coordinates of this point:
+    field int x, y
+    // The number of point objects constructed so far:
+    static int pointCount;
+    /** Constructs a point and initializes it
+        with the given coordinates */
+    constructor Point new(int ax, int ay) {
+      let x = ax;
+      let y = ay;
+      let pointCount = pointCount + 1;
+      return this;
+    }
+    /** Returns the x coordinate of this point */
+    method int getx() { return x; }
+    /** Returns the y coordinate of this point */
+    method int gety() { return y; }
+    /** Returns the number of Points constructed so far */
+    function int getPointCount() {
+        return pointCount;
+    }
+    /** Returns a point which is this
+        point plus the other point */
+    method Point plus(Point other) {
+        return Point.new(x + other.getx(),
+                         y + other.gety());
+    }
+    /** Returns the Euclidean distance between
+        this point and the other point */
+    method int distance(Point other) {
+        var int dx, dy;
+        let dx = x - other.getx();
+        let dy = y - other.gety();
+        return Math.sqrt((dx * dx) + (dy * dy));
+    }
+    /** Prints this point, as "(x, y)" */
+    method void print() {
+        var String tmp;
+        let tmp = "(";
+        do Output.printString(tmp);
+        do tmp.dispose();
+        do Output.printInt(x);
+        let tmp = ", ";
+        do Output.printString(tmp);
+        do tmp.dispose();
+        do Output.printInt(y);
+        let tmp = ", ";
+        do Output.printString(tmp);
+        do tmp.dispose();
+    }
+}
+```
+```js
+var Point p1, p2, p3;
+let p1 = Point.new(1,2);
+let p2 = Point.new(3,4);
+let p3 = p1.plus(p2);
+do p3.print(); // prints (4, 6)
+do Output.printInt(p1.distance(p2)); // prints 5
+do Output.printInt(getPointCount()); // prints 3
+```
+<!-- cSpell:enable -->
+*taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view).*
 
 ```js
 class Foo {
@@ -322,15 +394,94 @@ Proper `dispose` methods must first appropriately call `dispose` on their field 
 
 ### Undefined Behavior
 
-With how primitive Jack and NAND are, footguns within the language are inevitable. To my knowledge, the following is a list of all undefined behavior that you should look out for, ordered from (in my opinion) most important to least important.
+With how primitive Jack and NAND are, footguns within the language are inevitable. I've compiled the following instances of undefined behavior you should be aware of while writing programs in Jack, ordered from (in my opinion) most important to least important.
 
-- operator priority
-- < and > (compatibility reasons)
-- -32768 is a funny number. It is the only one that holds the property such that -(-32768) = -32768. In other words, it a singleton without a positive counterpart, and this has consequences. `Math.abs` is one such victim of its behavior.
-- modifying stack frame
-- too few arguments (mention it is a won't fix), too many: arguments keyword in docs (nArgs doesn't matter)
-- stack overflows
-- modifying registers
+#### Operator priority
+
+I found this caveat to be so important that I've moved it towards the [beginning of this section](#writing-programs-for-nand).
+
+#### Less and greater than operators
+
+The Jack expressions
+```js
+a > b
+a < b
+```
+are deceptively simple. They aren't always mathematically correct, and are respectively equivalent to the Java expressions
+```js
+((a - b) & (1 << 15)) == 0 && a != b
+((a - b) & (1 << 15)) != 0
+```
+What's up with the nuance? The virtual machine implementation converts `a > b` to `a - b > 0`. Here's the problem: `a - b` can [overflow](https://en.wikipedia.org/wiki/Integer_overflow) :(
+
+What does `20000 > -20000` evaluate to? The virtual machine transpiles this to `20000 - (-20000) > 0` which evaluates to `-25336 > 0`. Unfortunately, the answer is `false`.
+
+However, `20000 > -10000` evaluates to `30000 > 0`, or `true`.
+
+As you may have figured, if the absolute distance between `a` and `b` is more than 32767, `a > b` and `a < b` are wrong. Otherwise, you're fine.
+
+This isn't an implementation bug, but rather an inconsistency with Nand to Tetris itself. More about it [here](http://nand2tetris-questions-and-answers-forum.52.s1.nabble.com/Project-7-gt-and-lt-behavior-not-clearly-specified-for-signed-operands-td4036926.html#google_vignette). For compatibility reasons, this behavior won't be fixed.
+
+#### -32768
+
+-32768 is one of its kind. It is the only number that holds the property such that -(-32768) = -32768, a singleton without a positive counterpart[*](#note-1). This can lead to unsoundness and logic errors.
+
+```js
+/**
+ * Program output:
+ * --.)*(
+ */
+class Main {
+    function void main() {
+        // Note that -32768 must instead be written as ~32767
+        // because the CPU can't load a number that large
+        do Output.printInt(~32767);
+    }
+}
+```
+`Output.printInt` internally expects `Math.abs` to return a positive number. This isn't the case with -32768, so the Jack OS malfunctions.
+
+Your main concern should be handling logic errors with the negative operator. As the programmer, if you want to guarantee the negative of a negative number is positive, it is your responsibility to check for the case of -32768 and take appropriate action.
+
+<span id="note-1">*</span> This holds true because NAND's ALU internally processes the Jack expression `-x` as  `~(x - 1)`. Let's set `x` to `-32768` and evaluate it step by step. Here are the corresponding 16-bit [two's complement](https://en.wikipedia.org/wiki/Two%27s_complement) binary representations of the computation:
+
+`x` = `1000 0000 0000 0000` \
+`x - 1` = `0111 1111 1111 1111` \
+`~(x - 1)` = `1000 0000 0000 0000` = `x`
+
+It's the same thing! What happened here? Because NAND is a 16-bit machine, -32768 is the only number such that if you subtract one from it, you get its flipped bits. In other words, -32768 satisfies `x - 1 = ~x`, simplifying the expression to `~(~x)` or just `x`.
+
+#### Calling a function with too few arguments
+
+This one is self-explanatory, so here's a brief demonstration.
+
+```js
+/**
+ * Program output:
+ * I have 818 cookies.
+ */
+class Main {
+    function void main() {
+        do Main.cookies();
+    }
+
+    function void cookies(int a) {
+        do Output.printString("I have ");
+        do Output.printInt(a);
+        do Output.printString(" cookies.");
+    }
+}
+```
+
+On the other hand, calling a function with too *many* arguments is perfectly valid. You can use the `arguments` keyword to index extra function arguments. Note that there is no indicator for the argument count.
+
+#### Stack overflows
+
+See the [Overflow](#overflow) program for an in-depth example.
+
+#### Modifying stack frames or the internal registers
+
+Modifying stack frames or the internal registers that respectively reside at memory addresses `256` to `2047` and `1` to `15` may lead to undefined behavior. This typically isn't possible without misusing `Memory.poke` or negative array indexing. See the [SecretPassword](#secretpassword) program for an in-depth example.
 
 ### Hardware Specification
 
@@ -342,9 +493,9 @@ NAND is no exception to this reality.
 
 *taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1BexrNmdqYhKPkqD_Y81qNAUeyfzl-ZtO/view).*
 
-Compared to your 16 GiB MacBook, NAND has a meager 4 KiB RAM, a ratio of 0.00002%! In spite of this, [it was able to take us to the moon](https://www.metroweekly.com/2014/07/to-the-moon-and-back-on-4kb-of-memory/), so who's to say NAND can't either.
+Compared to your 16 GiB MacBook, NAND enjoys a meager 4 KiB of RAM, a ratio of *0.00002%*! In spite of this, [it was enough to take us to the moon](https://www.metroweekly.com/2014/07/to-the-moon-and-back-on-4kb-of-memory/), so who's to say NAND can't either.
 
-The Jack OS reserves 14,336 memory addresses of the 4 KiB for the heap, a number that is abnormally small. This is why it's so important to ensure complex Jack applications manage their memory efficiently. If you're overly ambitious, you might run out of heap memory thus completely impeding development of your program.
+The Jack OS reserves 14,336 memory addresses of the 4 KiB for the heap, a number that is abnormally small. This is why it's so important to ensure complex Jack applications allocate and deallocate their memory efficiently. If you're overly ambitious, you might run out of heap memory and be forced to completely rewrite your data types and logic.
 
 The hardware reserves 8,192 memory addresses of the 4 KiB for the screen. Each bit of each address linearly maps to a corresponding pixel on the provided 512x256 screen, in [LSb 0 bit numbering](https://en.wikipedia.org/wiki/Bit_numbering#LSb_0_bit_numbering).
 
@@ -393,6 +544,30 @@ function void init() {
 `Math.multiply`: This function is internally called in lieu of the multiplication operator `*`. In other words, the Jack expression `x * y` and `Math.multiply(x, y)` are equivalent.
 
 `Math.divide`: This function is internally called in lieu of the floored division operator `/`. In other words, the Jack expression `x / y` and `Math.divide(x, y)` are equivalent.
+
+# How does NAND work?
+
+I'm glad you asked! I've found the following illustrations quite illuminating:
+
+<img src="media/computer.png" width="700">
+
+*taken from [Wikipedia](https://commons.wikimedia.org/wiki/File:Hack_Computer_Block_Diagram_2.png).*
+
+The NAND computer follows the [Harvard architecture](https://en.wikipedia.org/wiki/Harvard_architecture). That is, the instruction memory (ROM) and the data memory (RAM) are separately stored, brought function in unison by the CPU.
+
+<img src="media/cpu.png" width="700">
+
+*taken from [Wikipedia](https://commons.wikimedia.org/wiki/File:Hack_Computer_Block_Diagram_2.png).*
+
+NAND's CPU is an [accumulator machine](https://en.wikipedia.org/wiki/Accumulator_(computing)#Accumulator_machines), meaning that it is heavily dependent on its built-in registers for control flow (in this case the accumulator is the D register). Don't worry if you don't fully understand what the CPU visualization depicts. Instead, take the perspective of appreciation for how this elegantly simple design powers the entirety of NAND — in your web browser!
+
+<img src="media/alu.png" width="700">
+
+We've reached the instruction set, the nitty-gritty. As indicated, NAND's CPU only has *two* opcodes! This makes the instruction set relatively simple while providing a rich functionality. NAND's ALU is also specified with which expressions it can compute in a single instruction.
+
+Phew! That was a lot to take in, but I promise you NAND is far less complicated than it's made out to be. From a relatively simple logical foundation, turing equivalence is achieved! If you want see my implementation of the NAND computer architecture, [you're more than welcome to](src/core)! If you find yourself still curious, check out the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1Z_fxYmmRNXTkAzmZ6YMoX9NXZIRVCKiw/view) for further elaboration on every aspect of its design.
+
+Let's briefly talk about the compiler and the virtual machine to make this section feel complete. These concepts are nothing unique to NAND, hence their brevity. Some of NAND's strange syntactical features are a direct consequence of making the compiler easier to implement. The compiler is a [recursive descent parser](https://en.wikipedia.org/wiki/Recursive_descent_parser) on an [LL(1) grammar](https://en.wikipedia.org/wiki/LL_parser), generating virtual machine code to be utilized as a [simple stack machine](https://en.wikipedia.org/wiki/Stack_machine) (a technique that also handles managing [call stacks](https://en.wikipedia.org/wiki/Call_stack)). Each virtual machine instruction is then trivially mapped to assembly and machine code. Once again, you're more than welcome to see my [compiler implementation](src/compiler) for yourself.
 
 # Jack Reference
 
@@ -596,7 +771,7 @@ A Jack program:
                 <code>arguments</code>
               </th>
               <td>
-                Subroutine arguments array reference
+                Function arguments array reference
               </td>
             </tr>
           </tbody>
@@ -606,24 +781,24 @@ A Jack program:
     <tr>
       <th>Constants</th>
       <td>
-          <i>Integer</i> constants must be positive and in standard decimal notation, e.g., <code>1984</code>. Negative integers like <code>-13</code> are not constants but rather expressions consisting of a unary minus operator applied to an integer constant.<br>
+          <i>Integer</i> constants must be positive and in standard decimal notation, e.g., <code>1984</code>. Negative integers like <code>-13</code> are not constants but rather expressions consisting of a unary negative operator applied to an integer constant.<br>
           <br>
-          <i>String</i> constants are enclosed within quotation marks and may contain any characters except new lines or quotation marks. Unlike typical programming languages, these characters cannot be escaped within a string, so these characters are instead supplied by the functions <code>String.newLine()</code> and <code>String.doubleQuote()</code> from the OS<br>
+          <i>String</i> constants are enclosed within quotation marks and may contain any characters except new lines or quotation marks. Unlike typical programming languages, these characters cannot be escaped within a string, so these characters are instead supplied by the functions <code>String.newLine()</code> and <code>String.doubleQuote()</code> from the OS. <small><small>iI you manage to read this, say <a href="https://files.bithole.dev/nandy.png">hi</a> to Nandy</small></small><br>
           <br>
           <i>Boolean</i> constants can be true or false.<br>
           <br>
-          The constant null signifies a null reference (a value of 0).
+          <i>null</i> signifies a null reference (a value of 0).
       </td>
     </tr>
-  <tr>
-    <th>Identifiers</th>
-    <td>
-        Identifiers are composed from arbitrarily long sequences of letters
-        (<code>A-Z</code>, <code>a-z</code>), digits (<code>0-9</code>), and "_". The first character must be a letter or "_".<br>
-        <br>
-        Case sensitivity matters. Thus <code>x</code> and <code>X</code> are treated as different identifiers.
-    </td>
-  </tr>
+    <tr>
+      <th>Identifiers</th>
+      <td>
+          Identifiers are composed from arbitrarily long sequences of letters
+          (<code>A-Z</code>, <code>a-z</code>), digits (<code>0-9</code>), and "_". The first character must be a letter or "_".<br>
+          <br>
+          Case sensitivity matters. Thus <code>x</code> and <code>X</code> are treated as different identifiers.
+      </td>
+    </tr>
   </tbody>
 </table>
 
@@ -1010,30 +1185,6 @@ If you do something that forces the computer into an invalid state, like computi
 | 19   | String.setInt        | Insufficient string capacity                    |
 | 20   | Output.moveCursor    | Illegal cursor location                         |
 
-# How does NAND work?
-
-I'm glad you asked! I've found the following illustrations quite illuminating:
-
-<img src="media/computer.png" width="700">
-
-*taken from [Wikipedia](https://commons.wikimedia.org/wiki/File:Hack_Computer_Block_Diagram_2.png)*
-
-The NAND computer follows the [Harvard architecture](https://en.wikipedia.org/wiki/Harvard_architecture). That is, the instruction memory (ROM) and the data memory (RAM) are separately stored, brought function in unison by the CPU.
-
-<img src="media/cpu.png" width="700">
-
-*taken from [Wikipedia](https://commons.wikimedia.org/wiki/File:Hack_Computer_Block_Diagram_2.png)*
-
-NAND's CPU is an [accumulator machine](https://en.wikipedia.org/wiki/Accumulator_(computing)#Accumulator_machines), meaning that it is heavily dependent on its built-in registers for control flow (in this case the accumulator is the D register). Don't worry if you don't fully understand what the CPU visualization depicts. Instead, take the perspective of appreciation for how this elegantly simple design powers the entirety of NAND — in your web browser!
-
-<img src="media/alu.png" width="700">
-
-We've reached the instruction set, the nitty-gritty. As indicated, NAND's CPU only has *two* opcodes! This makes the instruction set relatively simple while providing a rich functionality. NAND's ALU is also specified with which expressions it can compute in a single instruction.
-
-Phew! That was a lot to take in, but I promise you NAND is far less complicated than it's made out to be. From a relatively simple logical foundation, turing equivalence is achieved! If you want see my implementation of the NAND computer architecture, [you're more than welcome to](src/core)! If you find yourself still curious, check out the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1Z_fxYmmRNXTkAzmZ6YMoX9NXZIRVCKiw/view) for further elaboration on every aspect of its design.
-
-Let's just briefly talk about the compiler to make this section feel complete. Some of NAND's strange syntactical features are a direct consequence of making the compiler easier to implement. The compiler is a [recursive LL(1) parser](https://en.wikipedia.org/wiki/LL_parser), generating virtual machine code in [postfix notation](https://en.wikipedia.org/wiki/Reverse_Polish_notation) to be utilized as a [simple stack machine](https://en.wikipedia.org/wiki/Stack_machine). Once again, you're more than welcome to see my [compiler implementation](src/compiler) for yourself.
-
 # FAQ
 
 ### Whoa, is *everything* made from NAND gates?
@@ -1042,7 +1193,7 @@ Well..., I admit the description and title are a little misleading, but still in
 
 ### Did you design NAND by yourself?
 
-NAND is entirely based off of the [Nand to Tetris course](https://www.nand2tetris.org) and its [associated book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk) (and you should definitely check it out, it's an absolutely incredible read). I solely implemented the specification for CPU, assembler, virtual machine translator, and compiler, while porting the platform to the web with its own IDE and user interface. Each virtual machine instruction is then trivially mapped to corresponding machine code.
+NAND is entirely based off of the [Nand to Tetris course](https://www.nand2tetris.org) and its [associated book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk) (and you should definitely check it out, it's an absolutely incredible read). I solely implemented the specification for CPU, assembler, virtual machine translator, and compiler, while porting the platform to the web with its own IDE and user interface.
 
 ### If there's only one type, what is the point of specifying types at all?
 

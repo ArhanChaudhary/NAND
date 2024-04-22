@@ -11,8 +11,10 @@
         "jailbroken",
         "keybinds",
         "Nand",
+        "Nandy",
         "println",
-        "Tetris"
+        "Tetris",
+        "transpiles"
     ],
     "cSpell.ignorePaths": [
         "src",

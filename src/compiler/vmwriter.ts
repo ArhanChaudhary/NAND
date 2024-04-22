@@ -103,7 +103,7 @@ export default class VMWriter {
       case SymbolToken.LESS_THAN:
         if (
           this.tryWritePrecomputedConstant((a, b) =>
-            ((a - b) & 0b1000000000000000) !== 0 && a !== b ? -1 : 0
+            ((a - b) & (1 << 15)) !== 0 ? -1 : 0
           )
         ) {
         } else {
@@ -113,7 +113,7 @@ export default class VMWriter {
       case SymbolToken.GREATER_THAN:
         if (
           this.tryWritePrecomputedConstant((a, b) =>
-            ((a - b) & 0b1000000000000000) === 0 && a !== b ? -1 : 0
+            ((a - b) & (1 << 15)) === 0 && a !== b ? -1 : 0
           )
         ) {
         } else {
