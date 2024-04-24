@@ -14,11 +14,11 @@
   </p>
 
   <p>
-    is a turing equivalent 16-bit computer entirely built from a clock and NAND
-    logic gates. NAND features its own machine code language, assembly language,
-    assembler, virtual machine language, virtual machine translator, programming
-    language, compiler, and IDE. NAND is based on the Jack-VM-Hack platform
-    specified in the <a href="https://www.nand2tetris.org/"
+    is a Turing equivalent 16-bit computer entirely built from a clock and NAND
+    logic gates. NAND features its own CPU, machine code language, assembly
+    language, assembler, virtual machine language, virtual machine translator,
+    programming language, compiler, and IDE. NAND is based on the Jack-VM-Hack
+    platform specified in the <a href="https://www.nand2tetris.org/"
       >Nand to Tetris course</a
     >.
   </p>

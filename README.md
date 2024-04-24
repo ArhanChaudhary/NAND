@@ -9,7 +9,7 @@
 <b>N</b> and-powered\
 <b>D</b> evice
 <!-- cSpell:enable -->
-is a turing equivalent 16-bit computer made entirely from a [clock](https://en.wikipedia.org/wiki/Clock_rate) and [NAND gates](https://en.wikipedia.org/wiki/NAND_gate). NAND features its own machine code language, assembly language, assembler, virtual machine language, virtual machine translator, programming language, compiler, IDE, and user interface. NAND is based on the Jack-VM-Hack platform specified in the [Nand to Tetris course](https://www.nand2tetris.org).
+is a Turing equivalent 16-bit computer made entirely from a [clock](https://en.wikipedia.org/wiki/Clock_rate) and [NAND gates](https://en.wikipedia.org/wiki/NAND_gate) emulated on the web. NAND features its own CPU, machine code language, assembly language, assembler, virtual machine language, virtual machine translator, programming language, compiler, IDE, and user interface. NAND is based on the Jack-VM-Hack platform specified in the [Nand to Tetris course](https://www.nand2tetris.org) and its [associated book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk).
 
 [Video demo of NAND](https://github.com/ArhanChaudhary/NAND/assets/57512390/7bedf191-d42c-4553-920f-01a539161bd3)
 
@@ -134,7 +134,7 @@ Every dot has its own "brain" of acceleration vectors, and they evolve to reach 
 
 Nevertheless, there is much to be desired. Due to performance, the only factor dots use to evolve is their closeness to the goal upon death, endowing the natural selection algorithm with low entropy. Due to memory usage, there are smaller than satisfactory limits on the number of dots and the sizes of their brains. Lastly, due to technical complexity, re-placing obstacles during the simulation does not guarantee that the dots will have large enough brains to reach the goal. Brain sizes are only determined at the beginning of the program.
 
-I've used a myriad of optimization techniques to snake around the following hardware restrictions and make this possible:
+I've utilized a myriad of optimization techniques to snake around the following hardware restrictions and make this possible:
 - NAND has a limited ROM memory space, meaning the program won't compile if there's too much code. In fact, the final version of this program uses 99.2% of the instruction memory space.
 - NAND has a limited RAM memory space, meaning the program has to be careful to optimize heap memory usage. In fact, the reason why the screen fills with static between generations is to use the screen memory space as temporary swap memory for the next generation — the RAM is already completely full!
 - NAND has no floating point type (decimal numbers) and can only represent the integers between -32768 and 32767, making calculating fitness less precise and more challenging to implement. [Integer overflows](https://en.wikipedia.org/wiki/Integer_overflow) must also be accounted for.
@@ -602,7 +602,7 @@ NAND's CPU is an [accumulator machine](https://en.wikipedia.org/wiki/Accumulator
 
 We've reached the instruction set, the nitty-gritty. As indicated, NAND's CPU only has *two* opcodes! This makes the instruction set relatively simple while providing a rich functionality. NAND's ALU is additionally specified with the expressions it can compute in a single instruction.
 
-Phew! That was a lot to take in, but I promise you NAND is far less complicated than I've made it out to be. From a relatively simple logical foundation, turing equivalence is achieved! If you want see my implementation of the NAND computer architecture, [you're more than welcome to](src/core)! If you find yourself still curious, check out the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1Z_fxYmmRNXTkAzmZ6YMoX9NXZIRVCKiw/view) for further elaboration on every aspect of the architecture.
+Phew! That was a lot to take in, but I promise you NAND is far less complicated than I've made it out to be. From a relatively simple logical foundation, Turing equivalence is achieved! If you want see my implementation of the NAND computer architecture, [you're more than welcome to](src/core)! If you find yourself still curious, check out the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1Z_fxYmmRNXTkAzmZ6YMoX9NXZIRVCKiw/view) for further elaboration on every aspect of the architecture.
 
 Let's briefly talk about the compiler and the virtual machine to make this section feel complete. These concepts are nothing unique to NAND, hence their brevity. Some of NAND's strange syntactical features are a direct consequence of making the compiler easier to implement. The compiler is a [recursive descent parser](https://en.wikipedia.org/wiki/Recursive_descent_parser) on an [LL(1) grammar](https://en.wikipedia.org/wiki/LL_parser), generating virtual machine code to be utilized as a [simple stack machine](https://en.wikipedia.org/wiki/Stack_machine) (a technique that also handles managing [call stacks](https://en.wikipedia.org/wiki/Call_stack)). Each virtual machine instruction is then trivially mapped to assembly and machine code. Once again, you're more than welcome to see my [compiler implementation](src/compiler) for yourself.
 
