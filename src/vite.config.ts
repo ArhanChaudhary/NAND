@@ -16,6 +16,9 @@ export default defineConfig({
   plugins: [
     wasm(),
     VitePWA({
+      workbox: {
+        globPatterns: ['**/*.{js,html,wasm,png}']
+      },
       manifest: {
         name: "NAND",
         short_name: "NAND",

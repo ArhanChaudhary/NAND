@@ -77,7 +77,9 @@
     (resolved: { memory: WebAssembly.Memory }) => {
       wasmMemory = resolved.memory;
     }
-  );
+  ).catch(() => {
+    alert("The web page cache is outdated. Please force refresh the page using Cmd + Shift + R");
+  });
 
   const loadComputerRuntime = new Promise<void>(async (resolve) => {
     await Promise.all([initializeComputerWasm, loadComputerRunner]);

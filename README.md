@@ -540,7 +540,7 @@ The hardware reserves memory address 24,576 for the keyboard, at which the curre
 
 NAND's keyboard recognizes all ASCII characters, as well as the following keys.
  * new line = 128 = `String.newline()`
- * backspace = 129 = `String.backspace()`
+ * backspace = 129 = `String.backSpace()`
  * left arrow = 130
  * up arrow = 131
  * right arrow = 132
@@ -599,6 +599,8 @@ The NAND computer follows the [Harvard architecture](https://en.wikipedia.org/wi
 NAND's CPU is an [accumulator machine](https://en.wikipedia.org/wiki/Accumulator_(computing)#Accumulator_machines), meaning that it is heavily dependent on its built-in registers for control flow (in this case the accumulator is the D register). Don't worry if you don't fully understand what the CPU visualization depicts. Instead, take the perspective of appreciation for how this elegantly simple design powers the entirety of NAND — in your web browser!
 
 <img src="media/alu.png" width="700">
+
+*taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1Z_fxYmmRNXTkAzmZ6YMoX9NXZIRVCKiw/view)*
 
 We've reached the instruction set, the nitty-gritty. As indicated, NAND's CPU only has *two* opcodes! This makes the instruction set relatively simple while providing a rich functionality. NAND's ALU is additionally specified with the expressions it can compute in a single instruction.
 
