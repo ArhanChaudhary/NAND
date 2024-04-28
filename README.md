@@ -188,9 +188,9 @@ class Main {
 ```
 *taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view).*
 
-If you've already had some experience with programming, this should look very familiar; it is clear that Jack was heavily inspired by Java. `Main.main` is the entry point to the program. The code segment demonstrates basic usage of variables as well as the while loop for control flow.
+If you've already had some experience with programming, this should look very familiar; it is clear that Jack was heavily inspired by Java. `Main.main`, the entry point to the program, demonstrates basic usage of variables as well as the while loop for control flow.
 
-Additionally, it uses `Keyboard.readLine` and `Keyboard.readInt` to read input from the user, and `Output.printString` and `Output.println` to print output to the screen — all of which are defined in detail in the [Jack OS Reference](#jack-os). By default, the Jack OS is bundled with your program during compilation to enable interfacing with strings, memory, hardware, and more.
+Additionally, it uses `Keyboard.readLine` and `Keyboard.readInt` to read input from the user, and `Output.printString` and `Output.println` to print output to the screen — all of which are defined in detail in the [Jack OS Reference](#jack-os-reference). By default, the Jack OS is bundled with your program during compilation to enable interfacing with strings, memory, hardware, and more.
 
 ### Custom Data Types
 
