@@ -18,7 +18,7 @@
   });
 
   let computerRunner: Worker;
-  let computerKernal: Worker;
+  let computerKernel: Worker;
   // https://github.com/Menci/vite-plugin-top-level-await?tab=readme-ov-file#workers
   if (import.meta.env.DEV) {
     computerRunner = new Worker(
@@ -27,8 +27,8 @@
         type: "module",
       }
     );
-    computerKernal = new Worker(
-      new URL("computer-kernal.ts", import.meta.url),
+    computerKernel = new Worker(
+      new URL("computer-kernel.ts", import.meta.url),
       {
         type: "module",
       }
@@ -40,8 +40,8 @@
         type: "classic",
       }
     );
-    computerKernal = new Worker(
-      new URL("computer-kernal.ts", import.meta.url),
+    computerKernel = new Worker(
+      new URL("computer-kernel.ts", import.meta.url),
       {
         type: "classic",
       }
@@ -60,8 +60,8 @@
     );
   });
 
-  const loadComputerKernal = new Promise<void>((resolve) => {
-    computerKernal.addEventListener(
+  const loadComputerKernel = new Promise<void>((resolve) => {
+    computerKernel.addEventListener(
       "message",
       (e) => {
         if (e.data.action === "loaded") {
@@ -99,17 +99,17 @@
     );
   });
 
-  await Promise.all([loadJackOS, loadComputerRuntime, loadComputerKernal]);
+  await Promise.all([loadJackOS, loadComputerRuntime, loadComputerKernel]);
   export function startComputer() {
     computerIsRunning.set(true);
     computerRunner.postMessage(undefined);
-    computerKernal.postMessage({ action: "partialStart" });
+    computerKernel.postMessage({ action: "partialStart" });
   }
 
   export function resetAndStartComputer(machineCode: string[]) {
     computerIsRunning.set(true);
     computerRunner.postMessage(undefined);
-    computerKernal.postMessage({
+    computerKernel.postMessage({
       action: "resetAndPartialStart",
       machineCode,
     });
@@ -117,20 +117,20 @@
 
   export function stopAndResetComputer() {
     computerIsRunning.set(false);
-    computerKernal.postMessage({ action: "stopAndReset" });
+    computerKernel.postMessage({ action: "stopAndReset" });
   }
 
   export function stopComputer() {
     computerIsRunning.set(false);
-    computerKernal.postMessage({ action: "stop" });
+    computerKernel.postMessage({ action: "stop" });
   }
 
   export function speedComputer(speedPercentage: number) {
-    computerKernal.postMessage({ action: "speed", speedPercentage });
+    computerKernel.postMessage({ action: "speed", speedPercentage });
   }
 
   function keyboardComputer(keyValue: number) {
-    computerKernal.postMessage({ action: "keyboard", keyValue });
+    computerKernel.postMessage({ action: "keyboard", keyValue });
   }
 </script>
 
@@ -205,7 +205,7 @@
         setTimeout(() => {
           makeRedAfterwards = false;
         }, 50);
-        computerKernal.postMessage({ action: "partialStop" });
+        computerKernel.postMessage({ action: "partialStop" });
         break;
     }
   }
@@ -215,7 +215,7 @@
   let hasInitRunner = false;
   async function initRunner() {
     const offscreenCanvas = computerScreen.transferControlToOffscreen();
-    computerKernal.postMessage(
+    computerKernel.postMessage(
       {
         action: "screenInit",
         offscreenCanvas,
@@ -226,7 +226,7 @@
     );
 
     await new Promise<void>((resolve) => {
-      computerKernal.addEventListener(
+      computerKernel.addEventListener(
         "message",
         (e) => {
           if (e.data.action === "ready") {
@@ -238,7 +238,7 @@
     });
 
     computerRunner.addEventListener("message", messageHandler);
-    computerKernal.addEventListener("message", messageHandler);
+    computerKernel.addEventListener("message", messageHandler);
     hasInitRunner = true;
   }
 

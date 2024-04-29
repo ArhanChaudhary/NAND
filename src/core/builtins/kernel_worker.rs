@@ -8,7 +8,7 @@ mod hardware_info;
 pub mod runtime;
 mod screen;
 
-#[wasm_bindgen(js_name = kernalHandleMessage)]
+#[wasm_bindgen(js_name = kernelHandleMessage)]
 pub fn handle_message(message: JsValue) {
     let received_worker_message: ReceivedWorkerMessage =
         serde_wasm_bindgen::from_value(message).unwrap();
