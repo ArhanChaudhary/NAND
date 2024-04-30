@@ -332,11 +332,9 @@
           {/if}
           {#if memoryDisplayType === "rom"}
             <option value="vm">VM</option>
-          {/if}
-          <option value="bin">Bin</option>
-          {#if memoryDisplayType === "rom"}
             <option value="asm">Asm</option>
           {/if}
+          <option value="bin">Bin</option>
         </select>
       </div>
       {#if memoryDisplayType === "rom"}

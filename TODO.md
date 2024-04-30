@@ -1,3 +1,7 @@
+# TODO
+* make String work with just String.new if newWithStr isn't found
+* asm and bin loader
+
 # TODO (genetic algorithm)
 * make able to re-place obstacles (actually reallocate memory and stuff)
 * random acceleration vector should not actually be random, it slightly modifies current by +-1

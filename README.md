@@ -600,7 +600,7 @@ NAND's CPU is an [accumulator machine](https://en.wikipedia.org/wiki/Accumulator
 
 <img src="media/alu.png" width="700">
 
-*taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1Z_fxYmmRNXTkAzmZ6YMoX9NXZIRVCKiw/view)*
+*taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1Z_fxYmmRNXTkAzmZ6YMoX9NXZIRVCKiw/view).*
 
 We've reached the instruction set, the nitty-gritty. As indicated, NAND's CPU only has *two* opcodes! This makes the instruction set relatively simple while providing a rich functionality. NAND's ALU is additionally specified with the expressions it can compute in a single instruction.
 
