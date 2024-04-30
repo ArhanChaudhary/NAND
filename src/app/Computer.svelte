@@ -163,7 +163,7 @@
         } else if (hardwareInfoMessage.hz >= 1_000) {
           clockSpeed = (hardwareInfoMessage.hz / 1_000).toPrecision(3) + " KHz";
         } else {
-          clockSpeed = Math.round(hardwareInfoMessage.hz) + " Hz";
+          clockSpeed = Math.round(hardwareInfoMessage.hz).toString().padStart(2, "0") + " Hz";
         }
         if (makeRedAfterwards) {
           lightStatus = "red";

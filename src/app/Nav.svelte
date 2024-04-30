@@ -263,6 +263,7 @@
       min="0"
       max="100"
       value="100"
+      on:keydown|stopPropagation
       on:input={_speedComputer}
     />
     <span>Slow</span>
