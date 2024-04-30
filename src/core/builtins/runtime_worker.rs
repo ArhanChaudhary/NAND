@@ -78,7 +78,7 @@ pub fn try_start() {
         }
         if ALL_STEPS_PER_LOOP[ALL_STEPS_PER_LOOP.len() - 1] != steps_per_loop {
             thread::sleep(std::time::Duration::from_micros(
-                (ALL_STEPS_PER_LOOP[ALL_STEPS_PER_LOOP.len() - 1] - steps_per_loop) as u64,
+                (110000 - 110000 * steps_per_loop / ALL_STEPS_PER_LOOP[ALL_STEPS_PER_LOOP.len() - 1]) as u64,
             ));
         }
         if hardware::keyboard(0, false) == 32767 {

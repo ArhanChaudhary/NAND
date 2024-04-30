@@ -46,7 +46,7 @@ pub fn try_stop() {
 }
 
 pub const ALL_STEPS_PER_LOOP: [usize; 11] =
-    [1, 10, 50, 200, 500, 2500, 7500, 15000, 22500, 27500, 30000];
+    [1, 10, 500, 2000, 8000, 15000, 22500, 29250, 29500, 29750, 30000];
 
 pub fn speed(speed_message: SpeedMessage) {
     let speed_percentage = speed_message.speed_percentage;
