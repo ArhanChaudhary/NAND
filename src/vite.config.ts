@@ -16,6 +16,7 @@ export default defineConfig({
   plugins: [
     wasm(),
     VitePWA({
+      registerType: "autoUpdate",
       workbox: {
         globPatterns: ['**/*.{js,html,wasm,png}']
       },
