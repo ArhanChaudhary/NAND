@@ -8,10 +8,13 @@
   }[];
   const loadJackOS = Promise.all(
     Object.entries(
-      import.meta.glob("../os/*.jack", { query: "?raw", import: "default" })
+      import.meta.glob<boolean, string, string>("../os/*.jack", {
+        query: "?raw",
+        import: "default",
+      })
     ).map(async ([OSFilePath, OSFile]) => ({
       fileName: OSFilePath.replace("../os/", "").replace(".jack", ""),
-      file: ((await OSFile()) as string).split("\n"),
+      file: (await OSFile()).split("\n"),
     }))
   ).then((OSFiles) => {
     JackOS = OSFiles;
@@ -73,20 +76,31 @@
   });
 
   let wasmMemory: WebAssembly.Memory;
-  const initializeComputerWasm = runtimeInit().then(
-    (resolved: { memory: WebAssembly.Memory }) => {
+  const initializeComputerWasm = runtimeInit()
+    .then((resolved: { memory: WebAssembly.Memory }) => {
       wasmMemory = resolved.memory;
-    }
-  ).catch(() => {
-    alert("The web page cache is outdated. Please force refresh the page using Cmd + Shift + R");
-  });
+    })
+    .catch(() => {
+      alert(
+        "The web page cache is outdated. Please force refresh the page using Cmd + Shift + R"
+      );
+    });
 
   const loadComputerRuntime = new Promise<void>(async (resolve) => {
     await Promise.all([initializeComputerWasm, loadComputerRunner]);
-    computerRunner.postMessage({
-      wasmModule: (runtimeInit as any).__wbindgen_wasm_module,
-      wasmMemory,
-    });
+    try {
+      computerRunner.postMessage({
+        wasmModule: (runtimeInit as any).__wbindgen_wasm_module,
+        wasmMemory,
+      });
+    } catch (e) {
+      if (e instanceof DOMException) {
+        alert(
+          "NAND must have self.crossOriginIsolated enabled for usage. This is happening because you either embedded NAND in a cross-origin iframe or misconfigured your response headers."
+        );
+      }
+      throw e;
+    }
 
     computerRunner.addEventListener(
       "message",
@@ -163,7 +177,9 @@
         } else if (hardwareInfoMessage.hz >= 1_000) {
           clockSpeed = (hardwareInfoMessage.hz / 1_000).toPrecision(3) + " KHz";
         } else {
-          clockSpeed = Math.round(hardwareInfoMessage.hz).toString().padStart(2, "0") + " Hz";
+          clockSpeed =
+            Math.round(hardwareInfoMessage.hz).toString().padStart(2, " ") +
+            " Hz";
         }
         if (makeRedAfterwards) {
           lightStatus = "red";
