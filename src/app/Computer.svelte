@@ -82,7 +82,7 @@
     })
     .catch(() => {
       alert(
-        "The web page cache is outdated. Please force refresh the page using Cmd + Shift + R"
+        "The web page cache is outdated. Please force refresh the page using Cmd + Shift + R or close and reopen the browser window."
       );
     });
 
@@ -178,7 +178,7 @@
           clockSpeed = (hardwareInfoMessage.hz / 1_000).toPrecision(3) + " KHz";
         } else {
           clockSpeed =
-            Math.round(hardwareInfoMessage.hz).toString().padStart(2, " ") +
+            Math.round(hardwareInfoMessage.hz).toString().padStart(2, "\xa0") +
             " Hz";
         }
         if (makeRedAfterwards) {
