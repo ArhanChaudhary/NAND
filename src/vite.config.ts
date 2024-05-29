@@ -18,7 +18,7 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       workbox: {
-        globPatterns: ['**/*.{js,html,wasm,png}']
+        globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
       },
       manifest: {
         name: "NAND",
