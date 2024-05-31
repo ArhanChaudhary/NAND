@@ -1227,7 +1227,9 @@ If you do something that forces the computer into an invalid state, like computi
 
 ### Whoa, is *everything* made from NAND gates?
 
-Well..., I admit the description and title are a little misleading, but still in good faith. The compiler and virtual machine translator are written in Typescript, while the kernel and hardware are emulated in Rust. Just the logic simulator runs computations and memory accesses from NAND gates. Bootstrapping the full tech stack is a feat that isn't unheard of, but such a massive project by itself probably deserves its own separate project.
+Well, I admit the description and title are misleading, but still in good faith. The compiler and virtual machine translator were written in Typescript, and the emulated kernel and emulated hardware do not at all represent how real computers work. The actual NAND gate logic simulator, written in Rust, only occupies a small part of the overall codebase. Even then, it's still a laughably high-level abstraction. The Rust code is compiled to WebAssembly to run on a browser, basically stripping away the entire premise of running every computation off of NAND gates.
+
+NAND serves the role of an educational and theoretical project. In *theory*, the same CPU logic would work with real-world manifestations of the emulated hardware. And a few nand2tetris fanatics have actually done this! By a few, I mean quite a lot of people; here's one such hardware project: https://gitlab.com/x653/nand2tetris-fpga/
 
 ### Did you design NAND by yourself?
 
