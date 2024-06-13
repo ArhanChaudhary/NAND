@@ -170,10 +170,10 @@
       position: absolute;
       border-radius: 50%;
       aspect-ratio: 1;
-      width: 50px;
+      width: 40px;
       left: 10px;
       bottom: 10px;
-      background-color: hsl(198, 17%, 9%);
+      background-color: rgba(0, 0, 0, 0.5);
       color: red;
       display: flex;
       align-items: center;
