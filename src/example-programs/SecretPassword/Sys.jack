@@ -21,6 +21,8 @@ class Sys {
 
     /** Halts the program execution. */
     function void halt() {
+        // NAND hardware-specific flag to tell the runtime to halt
+        // see src/core/builtins/runtime_worker.rs
         do Memory.poke(24576, 32767);
         while (~false) {}
     }

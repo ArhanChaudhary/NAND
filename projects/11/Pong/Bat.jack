@@ -83,7 +83,7 @@ class Bat {
 
     /** Moves the bat one step in the bat's direction. */
     method void move() {
-	    if (direction = 1) {
+        if (direction = 1) {
             let x = x - 4;
             if (x < 0) { let x = 0; }
             do Screen.setColor(false);

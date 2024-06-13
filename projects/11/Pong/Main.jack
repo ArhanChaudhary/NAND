@@ -4,10 +4,12 @@
 // File name: projects/11/Pong/Main.jack
 
 /**
- * The main class of the Pong game.
+ * The game of Pong, showing off the language's object-oriented model. Use the
+ * arrow keys to move the paddle left and right to bounce a ball. Every bounce,
+ * the paddle becomes smaller, and the game ends when the ball hits the bottom
+ * of the screen.
  */
 class Main {
-
     /** Initializes a Pong game and starts running it. */
     function void main() {
         var PongGame game;
