@@ -3,7 +3,7 @@
   import CodeEditorTabs from "./CodeEditorTabs.svelte";
   import wrapIcon from "/wrap.svg?raw";
 
-  let wrap = true;
+  let wrap = false;
 </script>
 
 <div id="ide">

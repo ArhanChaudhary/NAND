@@ -1,22 +1,31 @@
 // This file is part of www.nand2tetris.org
 // and the book "The Elements of Computing Systems"
 // by Nisan and Schocken, MIT Press.
-// File name: projects/11/Pong/Main.jack
+// File name: projects/12/SysTest/Main.jack
 
-/**
- * The game of Pong, showing off the language's object-oriented model. Use the
- * arrow keys to move the paddle left and right to bounce a ball. Every bounce,
- * the paddle becomes smaller, and the game ends when the ball hits the bottom
- * of the screen.
- */
+/** Test program for the OS Sys class. */
 class Main {
-    /** Initializes a Pong game and starts running it. */
+
+    /** Tests the wait method of the Sys class. */
     function void main() {
-        var PongGame game;
-        do PongGame.newInstance();
-        let game = PongGame.getInstance();
-        do game.run();
-        do game.dispose();
+        var char key;
+
+        do Output.printString("Wait test:");
+        do Output.println();
+        do Output.printString("Press any key. After 2 seconds, another message will be printed:");
+
+        while (key = 0) {
+	        let key = Keyboard.keyPressed();
+        }
+        while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+        }
+        
+        do Sys.wait(2000);
+
+        do Output.println();
+        do Output.printString("Time is up. Make sure that 2 seconds elapsed.");
+        
         return;
     }
 }
