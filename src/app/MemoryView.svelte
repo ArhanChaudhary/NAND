@@ -17,16 +17,17 @@
   let memoryDisplayType: string;
   let scrollToIndex: number | undefined;
   let highlightIndex: number;
+  let pcToAssembly: number[];
+  let assemblyToVMCode: (number | null)[];
   let VMCodeStarts: number[] = [];
   let scrollToAlignment: Alignment;
   let followPC = false;
-
   let onMountAsync = new Promise<void>(onMount);
+
   async function windowResize() {
     await onMountAsync;
     height = memoryView.clientHeight - memoryViewHeader.offsetHeight;
   }
-  $: memoryDisplayType, windowResize();
 
   function RAMToDisplay(mem: number) {
     switch (memoryDisplay) {
@@ -141,8 +142,49 @@
     }
   }
 
-  let pcToAssembly: number[];
-  let assemblyToVMCode: (number | null)[];
+  async function memoryDisplayTypeChanged() {
+    switch (memoryDisplayType) {
+      case "ram":
+        memoryDisplay = "dec";
+        break;
+      case "rom":
+        // make sure to change the itemCount thing if this is changed
+        memoryDisplay = "vm";
+        break;
+      case "load":
+        let a = document.createElement("input");
+        a.type = "file";
+        a.click();
+        break;
+    }
+    await onMountAsync;
+    virtualList.recomputeSizes(0);
+  }
+
+  let collapsed = false;
+  let oldMemoryViewWidth: number;
+  function toggleCollapse() {
+    if (collapsed) {
+      memoryViewWidth = oldMemoryViewWidth;
+    } else {
+      oldMemoryViewWidth = memoryViewWidth;
+      memoryViewWidth = 0;
+    }
+    collapsed = !collapsed;
+  }
+
+  function toggleCollapseOnPress(e: KeyboardEvent) {
+    if (e.key === "Enter" || e.key === " ") {
+      toggleCollapse();
+    }
+  }
+
+  $: memoryDisplayType, windowResize();
+  // inherently tied to memoryDisplayType, prioritize first
+  // to ensure memoryDisplay and memoryDisplayType don't desync
+  $: memoryDisplayType, memoryDisplayTypeChanged();
+
+  // order should be agnotic
   $: {
     if ($ROM.VMCodes.length) {
       VMCodeStarts = $ROM.VMCodes.slice(0, -1).reduce(
@@ -189,12 +231,15 @@
     );
   }
 
+  // order should be agnotic
   $: {
     scrollToAlignment;
-    if (memoryDisplayType === "rom" && followPC && $computerIsRunning)
+    if (memoryDisplayType === "rom" && followPC && $computerIsRunning) {
       scrollToAlignment = "center";
+    }
   }
 
+  // order should be agnotic
   $: if (memoryDisplayType === "rom") {
     switch (memoryDisplay) {
       case "bin":
@@ -215,31 +260,7 @@
     }
   }
 
-  $: {
-    if (typeof scrollToIndex === "number") {
-      if (itemCount === 0) {
-        scrollToIndex = undefined;
-      } else {
-        scrollToIndex = Math.max(0, Math.min(itemCount - 1, scrollToIndex));
-      }
-    }
-  }
-
-  $: memoryDisplayType, memoryDisplayTypeChanged();
-  async function memoryDisplayTypeChanged() {
-    switch (memoryDisplayType) {
-      case "ram":
-        memoryDisplay = "dec";
-        break;
-      case "rom":
-        // make sure to change the itemCount thing if this is changed
-        memoryDisplay = "vm";
-        break;
-    }
-    await onMountAsync;
-    virtualList.recomputeSizes(0);
-  }
-
+  // order should be agnostic
   $: {
     switch (memoryDisplay) {
       case "bin":
@@ -254,6 +275,7 @@
     }
   }
 
+  // order should be agnostic
   $: {
     switch (memoryDisplayType) {
       case "rom":
@@ -278,21 +300,12 @@
     }
   }
 
-  let collapsed = false;
-  let oldMemoryViewWidth: number;
-  function toggleCollapse() {
-    if (collapsed) {
-      memoryViewWidth = oldMemoryViewWidth;
+  // order towards the bottom, acts like a post-filter
+  $: if (typeof scrollToIndex === "number") {
+    if (itemCount === 0) {
+      scrollToIndex = undefined;
     } else {
-      oldMemoryViewWidth = memoryViewWidth;
-      memoryViewWidth = 0;
-    }
-    collapsed = !collapsed;
-  }
-
-  function toggleCollapseOnPress(e: KeyboardEvent) {
-    if (e.key === "Enter" || e.key === " ") {
-      toggleCollapse();
+      scrollToIndex = Math.max(0, Math.min(itemCount - 1, scrollToIndex));
     }
   }
 </script>
