@@ -122,11 +122,12 @@ export default class Tokenizer {
   }
 
   private removeComments(): void {
-    let startComment = this.currentLine.indexOf("/*");
-    let endComment = this.currentLine.indexOf("*/");
-    if (endComment !== -1) {
-      endComment += 2;
+    const comment = this.currentLine.indexOf("//");
+    if (comment !== -1) {
+      this.currentLine = this.currentLine.substring(0, comment);
     }
+    let startComment = this.currentLine.indexOf("/*");
+    let endComment = this.currentLine.indexOf("*/", startComment + 2);
     if (startComment === -1) {
       if (endComment === -1) {
         if (this.inComment) {
@@ -136,10 +137,10 @@ export default class Tokenizer {
         }
       } else {
         if (!this.inComment) {
-          throw new Error("Invalid end comment");
+          return;
         }
         this.inComment = false;
-        this.currentLine = this.currentLine.substring(endComment);
+        this.currentLine = this.currentLine.substring(endComment + 2);
       }
     } else {
       if (endComment === -1) {
@@ -148,14 +149,11 @@ export default class Tokenizer {
       } else {
         this.currentLine =
           this.currentLine.substring(0, startComment) +
-          this.currentLine.substring(endComment);
+          this.currentLine.substring(endComment + 2);
         this.removeComments();
         return;
       }
     }
-    const comment = this.currentLine.indexOf("//");
-    if (comment !== -1)
-      this.currentLine = this.currentLine.substring(0, comment);
   }
 
   public advance(): boolean {
