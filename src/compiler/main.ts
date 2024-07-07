@@ -4,6 +4,11 @@ import Engine from "./engine";
 export default function compiler(
   inputFiles: Array<{ fileName: string; file: string[] }>
 ): Array<{ fileName: string; VMCode: string[] }> | CompilerError {
+  inputFiles.sort((a, b) => {
+    if (a.fileName < b.fileName) return -1;
+    if (a.fileName > b.fileName) return 1;
+    return 0;
+  });
   let out: Array<{ fileName: string; VMCode: string[] }> = [];
   for (let fileData of inputFiles) {
     try {
