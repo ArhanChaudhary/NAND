@@ -1,8 +1,20 @@
 import Parser, { CommandType } from "./parser";
 import Code from "./code";
 import SymbolTable from "./symboltable";
+import { BroadCompilerError } from "../compiler/exceptions";
 
-export default function assembler(inputStream: string[]): string[] {
+export class ProgramTooBigError extends BroadCompilerError {
+  constructor(length: number) {
+    super(
+      "Main",
+      `Program of ROM length ${length} > 32767 too large to load into memory`
+    );
+  }
+}
+
+export default function assembler(
+  inputStream: string[]
+): string[] | ProgramTooBigError {
   const symbolTable = new SymbolTable();
   symbolTable.addEntry("SP", 0);
   symbolTable.addEntry("LCL", 1);
@@ -29,7 +41,7 @@ export default function assembler(inputStream: string[]): string[] {
   }
 
   parser = new Parser(inputStream);
-  const out: string[] = [];
+  let out = new Array<string>();
   let RAMAddress = 16;
   while (parser.advance()) {
     switch (parser.commandType()) {
@@ -59,6 +71,9 @@ export default function assembler(inputStream: string[]): string[] {
         break;
       }
     }
+  }
+  if (out.length > 32768) {
+    return new ProgramTooBigError(out.length);
   }
   return out;
 }

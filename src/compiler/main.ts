@@ -1,4 +1,4 @@
-import { CompilerError } from "./exceptions";
+import { BroadCompilerError, CompilerError } from "./exceptions";
 import Engine from "./engine";
 
 export default function compiler(
@@ -17,14 +17,19 @@ export default function compiler(
       out.push(engine.getOut());
     } catch (err: any) {
       Engine.cleanup();
-      return err as CompilerError;
+      if (err instanceof CompilerError) {
+        return err;
+      }
+      return new BroadCompilerError(
+        "Main",
+        `Compiler has crashed with an internal error (this is a bug):\n\n${err.toString()}`
+      );
     }
   }
   let postValidationError = Engine.postValidation();
   Engine.cleanup();
   if (postValidationError === null) {
     return out;
-  } else {
-    return postValidationError;
   }
+  return postValidationError;
 }

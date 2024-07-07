@@ -95,10 +95,10 @@
 </script>
 
 <script lang="ts">
-  import assembler from "../assembler/main";
+  import assembler, { ProgramTooBigError } from "../assembler/main";
   import VMTranslator from "../vm/main";
   import compiler from "../compiler/main";
-  import { BroadCompilerError, CompilerError } from "../compiler/exceptions";
+  import { CompilerError } from "../compiler/exceptions";
   import {
     JackOS,
     startComputer,
@@ -154,45 +154,46 @@
   }
 
   function compileAndStartComputer() {
-    const program = [...$IDEContext];
-    program.sort((a, b) => {
-      if (a.fileName < b.fileName) return -1;
-      if (a.fileName > b.fileName) return 1;
-      return 0;
-    });
-    const VMCodes = compiler(program);
-    if (VMCodes instanceof CompilerError) {
-      $compilerError = VMCodes;
-      displayCompilerError($compilerError);
-      return;
-    } else if (VMCodes instanceof Error) {
-      $compilerError = new BroadCompilerError(
-        "Main",
-        `Compiler has crashed with an internal error (this is a bug):\n\n${VMCodes.toString()}`
-      );
-      displayCompilerError($compilerError);
+    if (!$shouldResetAndStart) {
+      startComputer();
       return;
     }
-    const assembly = VMTranslator(VMCodes);
-    const machineCode = assembler(assembly);
-    if (machineCode.length > 32767) {
-      $compilerError = new BroadCompilerError(
-        "Main",
-        `Program of ROM length ${machineCode.length} > 32767 too large to load into memory`
-      );
-      displayCompilerError($compilerError);
-      return;
+
+    let VMCodes;
+    let assembly;
+    let machineCode;
+    if ($IDEContext.length) {
+      let program = [...$IDEContext];
+      VMCodes = compiler(program);
+      if (VMCodes instanceof CompilerError) {
+        $compilerError = VMCodes;
+        displayCompilerError($compilerError);
+        return;
+      }
+    } else {
+      VMCodes = $ROM.VMCodes;
+    }
+    if (VMCodes.length) {
+      assembly = VMTranslator(VMCodes);
+    } else {
+      assembly = $ROM.assembly;
+    }
+    if (assembly.length) {
+      machineCode = assembler(assembly);
+      if (machineCode instanceof ProgramTooBigError) {
+        $compilerError = machineCode;
+        displayCompilerError($compilerError);
+        return;
+      }
+    } else {
+      machineCode = $ROM.machineCode;
     }
     console.log("Compilation successful! :D");
     $ROM.VMCodes = VMCodes;
     $ROM.assembly = assembly;
     $ROM.machineCode = machineCode;
 
-    if ($shouldResetAndStart) {
-      resetAndStartComputer(machineCode);
-    } else {
-      startComputer();
-    }
+    resetAndStartComputer(machineCode);
     $shouldResetAndStart = false;
   }
 

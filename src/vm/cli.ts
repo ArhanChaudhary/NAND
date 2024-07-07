@@ -3,7 +3,7 @@ import fs from "fs";
 
 let path = process.argv[process.argv.length - 1].replace(/\/$/, "");
 
-let VMCodes: Array<{ fileName: string; VMCode: string[] }>;
+let VMCodes: { fileName: string; VMCode: string[] }[];
 let outputFile: string;
 if (path.endsWith(".vm")) {
   VMCodes = [
