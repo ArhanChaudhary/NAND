@@ -127,8 +127,8 @@ export default class Tokenizer {
       this.currentLine = this.currentLine.substring(0, comment);
     }
     let startComment = this.currentLine.indexOf("/*");
-    let endComment = this.currentLine.indexOf("*/", startComment + 2);
     if (startComment === -1) {
+      let endComment = this.currentLine.indexOf("*/");
       if (endComment === -1) {
         if (this.inComment) {
           this.currentLine = "";
@@ -143,6 +143,7 @@ export default class Tokenizer {
         this.currentLine = this.currentLine.substring(endComment + 2);
       }
     } else {
+      let endComment = this.currentLine.indexOf("*/", startComment + 2);
       if (endComment === -1) {
         this.currentLine = this.currentLine.substring(0, startComment);
         this.inComment = true;

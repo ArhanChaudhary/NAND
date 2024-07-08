@@ -87,7 +87,7 @@
     ).split("\n");
   }
   let updateContextTimeout: NodeJS.Timeout;
-  function queueUpdateContext(e: any) {
+  function queueUpdateContext() {
     $compilerError = null; // note that $IDEContext isnt reactively updated in updateContext
     clearTimeout(updateContextTimeout);
     updateContextTimeout = setTimeout(

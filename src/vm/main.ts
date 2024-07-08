@@ -4,6 +4,11 @@ import Parser, { CommandType } from "./parser";
 export default function VMTranslator(
   VMCodes: Array<{ fileName: string; VMCode: string[] }>
 ): string[] {
+  VMCodes.sort((a, b) => {
+    if (a.fileName < b.fileName) return -1;
+    if (a.fileName > b.fileName) return 1;
+    return 0;
+  });
   const codeWriter = new CodeWriter();
   codeWriter.writeInit();
   VMCodes.forEach((VMCode) => {

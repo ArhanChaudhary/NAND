@@ -154,9 +154,9 @@
         position: absolute;
         z-index: 1;
         top: 0;
-        left: -10px;
+        left: -15px;
         height: 100%;
-        width: calc(100% + 20px);
+        width: calc(100% + 30px);
       }
 
       &:hover,
