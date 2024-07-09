@@ -39,7 +39,7 @@ pub fn handle_message(message: JsValue) {
             hardware_info::try_stop_emitting();
         }
         ReceivedWorkerMessage::Stop => {
-            runtime::try_stop();
+            runtime::try_stop_blocking();
             screen::try_stop_rendering();
             hardware_info::try_stop_emitting();
         }

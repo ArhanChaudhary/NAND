@@ -36,17 +36,19 @@ pub fn reset_blocking_and_partial_start(
     }
 }
 
-pub fn try_stop() {
+pub fn try_stop_blocking() {
     if runtime_worker::in_runtime_loop() {
         unsafe {
             *runtime_worker::STOP_RUNTIME_LOOP.get() = true;
         }
+        while runtime_worker::in_runtime_loop_volatile() {}
         js_api::post_worker_message(runtime_worker::StoppedRuntimeMessage {});
     }
 }
 
-pub const ALL_STEPS_PER_LOOP: [usize; 11] =
-    [1, 10, 500, 2000, 8000, 15000, 22500, 29250, 29500, 29750, 30000];
+pub const ALL_STEPS_PER_LOOP: [usize; 11] = [
+    1, 10, 500, 2000, 8000, 15000, 22500, 29250, 29500, 29750, 30000,
+];
 
 pub fn speed(speed_message: SpeedMessage) {
     let speed_percentage = speed_message.speed_percentage;
