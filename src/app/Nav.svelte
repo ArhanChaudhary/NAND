@@ -165,7 +165,7 @@
     let machineCode;
     if ($IDEContext.length) {
       let program = [...$IDEContext];
-      VMCodes = compiler(program);
+      VMCodes = compiler(program, true);
       if (VMCodes instanceof CompilerError) {
         $compilerError = VMCodes;
         displayCompilerError($compilerError);

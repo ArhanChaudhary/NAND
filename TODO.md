@@ -1,5 +1,9 @@
 # TODO
 * make String work with just String.new if newWithStr isn't found
+* remove syncunsafecell
+* clear ram option "clr"
+* new video
+* readme for load and clr
 
 # TODO (genetic algorithm)
 * make able to re-place obstacles (actually reallocate memory and stuff)

@@ -1,7 +1,19 @@
 <script lang="ts">
   import VirtualList, { type Alignment } from "svelte-tiny-virtual-list";
-  import { ROM, computerMemory } from "./stores";
-  import { onMount } from "svelte";
+  import {
+    IDEContext,
+    ROM,
+    activeTabName,
+    compilerError,
+    computerMemory,
+  } from "./stores";
+  import { onMount, tick } from "svelte";
+  import compiler from "../compiler/main";
+  import { CompilerError } from "../compiler/exceptions";
+  import VMTranslator from "../vm/main";
+  import assembler, { ProgramTooBigError } from "../assembler/main";
+  import { JackOS } from "./Computer.svelte";
+  import { VMTranslatorError } from "../vm/codewriter";
 
   export let show: boolean;
   export let memoryViewWidth: number;
@@ -16,13 +28,137 @@
   let memoryDisplay: string;
   let memoryDisplayType: string;
   let scrollToIndex: number | undefined;
-  let highlightIndex: number;
-  let pcToAssembly: number[];
-  let assemblyToVMCode: (number | null)[];
-  let VMCodeStarts: number[] = [];
+  let highlightIndex: number | undefined;
+  let pcToAssembly = new Array<number>();
+  let assemblyToVMCode = new Array<number | null>();
+  let VMCodeStarts = new Array<number>();
   let scrollToAlignment: Alignment;
   let followPC = false;
   let onMountAsync = new Promise<void>(onMount);
+
+  async function loadUserFiles(e: Event) {
+    memoryDisplayType = "rom";
+
+    let reader = new FileReader();
+    let files = (e.target as HTMLInputElement).files as FileList;
+
+    let prevFileExtension: string | undefined;
+    let programFiles = new Array<{ fileName: string; file: string[] }>();
+
+    for (let i = 0; i < files.length; i++) {
+      await new Promise<void>((resolve) => {
+        reader.onload = () => resolve();
+        reader.readAsText(files[i]);
+      });
+
+      const fileContent = reader.result as string;
+      const [fileName, fileExtension] = files[i].name.split(".");
+
+      if (
+        !fileExtension ||
+        !["jack", "vm", "asm", "hack"].includes(fileExtension)
+      ) {
+        alert("Only .jack, .vm, .asm, and .hack files are supported.");
+        return;
+      }
+      if (
+        prevFileExtension !== undefined &&
+        prevFileExtension !== fileExtension
+      ) {
+        alert("Only one file type is supported at a time.");
+        return;
+      }
+      prevFileExtension = fileExtension;
+
+      programFiles.push({
+        fileName,
+        file: fileContent.split("\n"),
+      });
+    }
+
+    if (!programFiles.length || prevFileExtension === undefined) {
+      alert("No files loaded.");
+      return;
+    }
+
+    let filteredJackOS = JackOS.filter(
+      (OSFile) =>
+        !programFiles.find(
+          (programFile) => programFile.fileName === OSFile.fileName
+        )
+    );
+
+    $IDEContext =
+      prevFileExtension === "jack" ? programFiles.concat(filteredJackOS) : [];
+    $activeTabName = "";
+    $activeTabName = "Main";
+    tick().then(() => {
+      // omit this because it's hard to figure out the logic
+      // will compile twice unnecessarily but whatever
+      // also omit in case compilaton here fails
+      // $shouldResetAndStart = false;
+      memoryDisplay = { jack: "vm", vm: "vm", asm: "asm", hack: "bin" }[
+        prevFileExtension
+      ]!;
+    });
+
+    let VMCodes;
+    let assembly;
+    let machineCode;
+    switch (prevFileExtension) {
+      case "jack":
+        VMCodes = compiler(programFiles.concat(filteredJackOS), true);
+        if (VMCodes instanceof CompilerError) {
+          $compilerError = VMCodes;
+          return;
+        }
+      case "vm":
+        if (!VMCodes) {
+          VMCodes = compiler(filteredJackOS, false).concat(
+            programFiles.map((file) => ({
+              fileName: file.fileName,
+              VMCode: file.file,
+            }))
+          );
+        }
+        assembly = VMTranslator(VMCodes);
+        if (assembly instanceof VMTranslatorError) {
+          $compilerError = assembly;
+          return;
+        }
+      case "asm":
+        if (!assembly) {
+          if (programFiles.length !== 1) {
+            alert("Only one .asm file is supported.");
+            return;
+          }
+          assembly = programFiles[0].file;
+        }
+        machineCode = assembler(assembly);
+        if (machineCode instanceof ProgramTooBigError) {
+          $compilerError = machineCode;
+          return;
+        }
+        console.log("Compilation successful! :D");
+      case "hack":
+        if (!machineCode) {
+          if (programFiles.length !== 1) {
+            alert("Only one .hack file is supported.");
+            return;
+          }
+          machineCode = programFiles[0].file;
+          for (let instruction of machineCode) {
+            if (!/^[01]{16}$/.test(instruction)) {
+              alert("Invalid .hack file.");
+              return;
+            }
+          }
+        }
+        $ROM.VMCodes = VMCodes || [];
+        $ROM.assembly = assembly || [];
+        $ROM.machineCode = machineCode;
+    }
+  }
 
   async function windowResize() {
     await onMountAsync;
@@ -62,15 +198,16 @@
           case "bin": {
             let ret = $ROM.machineCode[i];
             if (!ret) return "00000000 00000000";
+            ret = ret.trim();
             return ret.slice(0, 8) + " " + ret.slice(8);
           }
           case "asm":
-            return $ROM.assembly[i];
+            return $ROM.assembly[i].trim();
           case "vm": {
             let foundIndex = indexOfVMCodeStarts(i);
             return $ROM.VMCodes[foundIndex].VMCode[
               i - VMCodeStarts[foundIndex]
-            ];
+            ].trim();
           }
         }
         break;
@@ -151,9 +288,13 @@
         memoryDisplay = "vm";
         break;
       case "load":
-        let a = document.createElement("input");
-        a.type = "file";
-        a.click();
+        let input = document.createElement("input");
+        input.type = "file";
+        input.onchange = loadUserFiles;
+        input.oncancel = () => (memoryDisplayType = "ram");
+        input.multiple = true;
+        input.accept = ".jack, .vm, .asm, .hack";
+        input.click();
         break;
     }
     await onMountAsync;
@@ -185,20 +326,24 @@
 
   // order should be agnotic
   $: {
+    pcToAssembly = $ROM.assembly.reduce((acc, assembly, index) => {
+      if (!assembly.startsWith("(")) {
+        let commentIndex = assembly.indexOf("//");
+        if (commentIndex !== -1) {
+          assembly = assembly.slice(0, commentIndex);
+        }
+        if (assembly.trim()) {
+          acc.push(index);
+        }
+      }
+      return acc;
+    }, new Array<number>());
     if ($ROM.VMCodes.length) {
       VMCodeStarts = $ROM.VMCodes.slice(0, -1).reduce(
         (acc, VMCode) => [...acc, acc[acc.length - 1] + VMCode.VMCode.length],
         [0]
       );
-    }
-    pcToAssembly = $ROM.assembly.reduce((acc, assembly, index) => {
-      if (!assembly.startsWith("(") && assembly.trim()) {
-        acc.push(index);
-      }
-      return acc;
-    }, [] as number[]);
-    assemblyToVMCode = $ROM.assembly.reduce(
-      (acc, assembly) => {
+      assemblyToVMCode = $ROM.assembly.reduce((acc, assembly) => {
         let commentIndex = assembly.indexOf("//");
         if (commentIndex === -1) {
           if (acc.length) {
@@ -213,21 +358,27 @@
           } else {
             expectedVMCodeIndex = (acc[acc.length - 1] as number) + 1;
           }
-          acc.push(expectedVMCodeIndex);
-          let actualVMCodeIndex = indexOfVMCodeStarts(expectedVMCodeIndex);
-          if (
-            assembly.slice(commentIndex + 3) !==
-            $ROM.VMCodes[actualVMCodeIndex].VMCode[
-              expectedVMCodeIndex - VMCodeStarts[actualVMCodeIndex]
-            ]
-          ) {
-            throw new Error("mismatched VM command");
+          while (true) {
+            let actualVMCodeIndex = indexOfVMCodeStarts(expectedVMCodeIndex);
+            let expectedVMCode = assembly.slice(commentIndex + 3);
+            let actualVMCode =
+              $ROM.VMCodes[actualVMCodeIndex].VMCode[
+                expectedVMCodeIndex - VMCodeStarts[actualVMCodeIndex]
+              ];
+            let VMCodeCommentIndex = actualVMCode.indexOf("//");
+            if (VMCodeCommentIndex !== -1) {
+              actualVMCode = actualVMCode.slice(0, VMCodeCommentIndex).trim();
+            }
+            if (expectedVMCode === actualVMCode) {
+              break;
+            }
+            expectedVMCodeIndex++;
           }
+          acc.push(expectedVMCodeIndex);
         }
         return acc;
-      },
-      [] as (number | null)[]
-    );
+      }, new Array<number | null>());
+    }
   }
 
   // order should be agnotic
@@ -297,6 +448,9 @@
     case "ram":
       itemCount = RAMLength;
       break;
+    case "load":
+      itemCount = 0;
+      break;
   }
 
   // order towards the bottom, acts like a post-filter
@@ -336,18 +490,21 @@
         <select class="memory-select" bind:value={memoryDisplayType}>
           <option value="ram">RAM</option>
           <option value="rom">ROM</option>
+          <option value="load">Load</option>
         </select>
-        <select class="memory-select" bind:value={memoryDisplay}>
-          {#if memoryDisplayType === "ram"}
-            <option value="dec">Dec</option>
-            <option value="hex">Hex</option>
-          {/if}
-          {#if memoryDisplayType === "rom"}
-            <option value="vm">VM</option>
-            <option value="asm">Asm</option>
-          {/if}
-          <option value="bin">Bin</option>
-        </select>
+        {#if memoryDisplayType !== "load"}
+          <select class="memory-select" bind:value={memoryDisplay}>
+            {#if memoryDisplayType === "ram"}
+              <option value="dec">Dec</option>
+              <option value="hex">Hex</option>
+            {/if}
+            {#if memoryDisplayType === "rom"}
+              <option value="vm">VM</option>
+              <option value="asm">Asm</option>
+            {/if}
+            <option value="bin">Bin</option>
+          </select>
+        {/if}
       </div>
       {#if memoryDisplayType === "rom"}
         <div id="goto-pc-wrapper">

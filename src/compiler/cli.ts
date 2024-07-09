@@ -43,7 +43,7 @@ if (path.endsWith(".jack")) {
     }));
 }
 
-const out = compiler(inputFiles);
+const out = compiler(inputFiles, true);
 if (out instanceof CompilerError) {
   console.error(out.toString());
 } else {

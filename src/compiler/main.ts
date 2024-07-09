@@ -2,8 +2,19 @@ import { BroadCompilerError, CompilerError } from "./exceptions";
 import Engine from "./engine";
 
 export default function compiler(
-  inputFiles: Array<{ fileName: string; file: string[] }>
-): Array<{ fileName: string; VMCode: string[] }> | CompilerError {
+  inputFiles: Array<{ fileName: string; file: string[] }>,
+  postValidation: false
+): { fileName: string; VMCode: string[] }[];
+
+export default function compiler(
+  inputFiles: Array<{ fileName: string; file: string[] }>,
+  postValidation: true
+): { fileName: string; VMCode: string[] }[] | CompilerError;
+
+export default function compiler(
+  inputFiles: Array<{ fileName: string; file: string[] }>,
+  postValidation: boolean
+): { fileName: string; VMCode: string[] }[] | CompilerError {
   inputFiles.sort((a, b) => {
     if (a.fileName < b.fileName) return -1;
     if (a.fileName > b.fileName) return 1;
@@ -26,10 +37,14 @@ export default function compiler(
       );
     }
   }
-  let postValidationError = Engine.postValidation();
-  Engine.cleanup();
-  if (postValidationError === null) {
-    return out;
+  if (postValidation) {
+    let postValidationError = Engine.postValidation();
+    Engine.cleanup();
+    if (postValidationError !== null) {
+      return postValidationError;
+    }
+  } else {
+    Engine.cleanup();
   }
-  return postValidationError;
+  return out;
 }
