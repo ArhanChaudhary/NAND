@@ -63,16 +63,14 @@
             let ret = $ROM.machineCode[i];
             return ret.slice(0, 8) + " " + ret.slice(8);
           }
-          case "asm": {
-            let ret = $ROM.assembly[i];
-            let commentIndex = ret.indexOf("//");
-            return commentIndex === -1 ? ret : ret.slice(0, commentIndex);
-          }
-          case "vm":
+          case "asm":
+            return $ROM.assembly[i];
+          case "vm": {
             let foundIndex = indexOfVMCodeStarts(i);
             return $ROM.VMCodes[foundIndex].VMCode[
               i - VMCodeStarts[foundIndex]
             ];
+          }
         }
         break;
     }
@@ -193,7 +191,7 @@
       );
     }
     pcToAssembly = $ROM.assembly.reduce((acc, assembly, index) => {
-      if (!assembly.startsWith("(")) {
+      if (!assembly.startsWith("(") && assembly.trim()) {
         acc.push(index);
       }
       return acc;
