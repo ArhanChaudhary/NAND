@@ -231,6 +231,7 @@
   }
 
   // order should be agnotic
+  let scrollToIndexTimeout: NodeJS.Timeout;
   $: if (memoryDisplayType === "rom") {
     switch (memoryDisplay) {
       case "bin":
@@ -241,13 +242,24 @@
         break;
       case "vm":
         let ret = assemblyToVMCode[pcToAssembly[$computerMemory.pcRegister]];
-        if (ret !== null) {
+        if (ret === null) {
+          clearTimeout(scrollToIndexTimeout);
+          // throttle disabling highlight so it doesnt disable when fast
+          // but does when slow
+          scrollToIndexTimeout = setTimeout(() => {
+            highlightIndex = undefined;
+          }, 50);
+        } else {
           highlightIndex = ret;
         }
         break;
     }
     if (followPC) {
-      scrollToIndex = highlightIndex;
+      scrollToIndex = undefined;
+      tick().then(() => {
+        scrollToAlignment = "center";
+        scrollToIndex = highlightIndex;
+      });
     }
   }
 
