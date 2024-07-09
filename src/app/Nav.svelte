@@ -115,6 +115,7 @@
     compilerError,
   } from "./stores";
   import { tick } from "svelte";
+  import { VMTranslatorError } from "../vm/codewriter";
 
   $: {
     $IDEContext;
@@ -175,6 +176,11 @@
     }
     if (VMCodes.length) {
       assembly = VMTranslator(VMCodes);
+      if (assembly instanceof VMTranslatorError) {
+        $compilerError = assembly;
+        displayCompilerError($compilerError);
+        return;
+      }
     } else {
       assembly = $ROM.assembly;
     }

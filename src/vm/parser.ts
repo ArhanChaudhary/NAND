@@ -29,18 +29,22 @@ export default class Parser {
   }
 
   public commandType(): CommandType {
-    let ret = {
-      pu: CommandType.C_PUSH,
-      po: CommandType.C_POP,
-      la: CommandType.C_LABEL,
-      go: CommandType.C_GOTO,
+    let mapping = {
+      push: CommandType.C_PUSH,
+      pop: CommandType.C_POP,
+      label: CommandType.C_LABEL,
+      goto: CommandType.C_GOTO,
       if: CommandType.C_IF,
-      fu: CommandType.C_FUNCTION,
-      re: CommandType.C_RETURN,
-      ca: CommandType.C_CALL,
-    }[this.currentCommand.substring(0, 2)];
-    if (ret === undefined) ret = CommandType.C_ARITHMETIC;
-    return ret;
+      function: CommandType.C_FUNCTION,
+      return: CommandType.C_RETURN,
+      call: CommandType.C_CALL,
+    };
+    for (let key in mapping) {
+      if (this.currentCommand.startsWith(key)) {
+        return (mapping as any)[key];
+      }
+    }
+    return CommandType.C_ARITHMETIC;
   }
 
   public arg1(): string {

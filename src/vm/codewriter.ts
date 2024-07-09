@@ -1,5 +1,13 @@
+import { BroadCompilerError } from "../compiler/exceptions";
+
+export class VMTranslatorError extends BroadCompilerError {
+  constructor(message: string) {
+    super("Main", message);
+  }
+}
+
 export default class CodeWriter {
-  private out: string[] = [];
+  private out = new Array<string>();
   private fileName = "";
   private currentFunction = "";
   private labelCount = 0;
@@ -352,7 +360,7 @@ export default class CodeWriter {
         out = ["@SP", "A=M-1", "M=!M"];
         break;
       default:
-        throw new Error("Invalid vm command: " + command);
+        throw new VMTranslatorError("Invalid vm command: " + command);
     }
     out[0] += ` // ${command}`;
     this.write(out);
@@ -406,7 +414,7 @@ export default class CodeWriter {
         }
         break;
       default:
-        throw new Error(`Invalid vm command segment: push ${segment} ${index}`);
+        throw new VMTranslatorError(`Invalid vm command segment: push ${segment} ${index}`);
     }
     out.push(...["@SP", "AM=M+1", "A=A-1"]);
     if (
@@ -467,7 +475,7 @@ export default class CodeWriter {
         }
         break;
       default:
-        throw new Error(`Invalid vm command segment: pop ${segment} ${index}`);
+        throw new VMTranslatorError(`Invalid vm command segment: pop ${segment} ${index}`);
     }
     out.push("M=D");
     out[0] += ` // pop ${segment} ${index}`;

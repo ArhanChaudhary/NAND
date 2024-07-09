@@ -1,3 +1,4 @@
+import { VMTranslatorError } from "./codewriter";
 import VMTranslator from "./main";
 import fs from "fs";
 
@@ -25,4 +26,7 @@ if (path.endsWith(".vm")) {
 }
 
 const out = VMTranslator(VMCodes);
+if (out instanceof VMTranslatorError) {
+  throw out;
+}
 fs.writeFileSync(outputFile, out.join("\n"));
