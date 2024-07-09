@@ -13,13 +13,9 @@ export const computerMemory = writable({
   aRegister: 0,
   dRegister: 0,
 });
-export const ROM = writable<{
-  machineCode: string[];
-  assembly: string[];
-  VMCodes: { fileName: string; VMCode: string[] }[];
-}>({
-  machineCode: new Array(32768).fill("00000000 00000000"),
-  assembly: new Array(32768).fill("@0"),
-  VMCodes: [],
+export const ROM = writable({
+  machineCode: new Array<string>(),
+  assembly: new Array<string>(),
+  VMCodes: new Array<{ fileName: string; VMCode: string[] }>(),
 });
 export const compilerError = writable<null | CompilerError>(null);

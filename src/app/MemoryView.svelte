@@ -61,6 +61,7 @@
         switch (memoryDisplay) {
           case "bin": {
             let ret = $ROM.machineCode[i];
+            if (!ret) return "00000000 00000000";
             return ret.slice(0, 8) + " " + ret.slice(8);
           }
           case "asm":
@@ -251,43 +252,39 @@
   }
 
   // order should be agnostic
-  $: {
-    switch (memoryDisplay) {
-      case "bin":
-        memoryViewWidth = 210;
-        break;
-      case "asm":
-      case "vm":
-        memoryViewWidth = 270;
-        break;
-      default:
-        memoryViewWidth = 150;
-    }
+  $: switch (memoryDisplay) {
+    case "bin":
+      memoryViewWidth = 210;
+      break;
+    case "asm":
+    case "vm":
+      memoryViewWidth = 270;
+      break;
+    default:
+      memoryViewWidth = 150;
   }
 
   // order should be agnostic
-  $: {
-    switch (memoryDisplayType) {
-      case "rom":
-        switch (memoryDisplay) {
-          case "bin":
-            itemCount = $ROM.machineCode.length;
-            break;
-          case "asm":
-            itemCount = $ROM.assembly.length;
-            break;
-          case "vm":
-          default:
-            itemCount = $ROM.VMCodes.map(
-              (VMCode) => VMCode.VMCode.length
-            ).reduce((a, b) => a + b, 0);
-            break;
-        }
-        break;
-      case "ram":
-        itemCount = RAMLength;
-        break;
-    }
+  $: switch (memoryDisplayType) {
+    case "rom":
+      switch (memoryDisplay) {
+        case "bin":
+          itemCount = $ROM.machineCode.length || 32768;
+          break;
+        case "asm":
+          itemCount = $ROM.assembly.length;
+          break;
+        case "vm":
+          itemCount = $ROM.VMCodes.map((VMCode) => VMCode.VMCode.length).reduce(
+            (a, b) => a + b,
+            0
+          );
+          break;
+      }
+      break;
+    case "ram":
+      itemCount = RAMLength;
+      break;
   }
 
   // order towards the bottom, acts like a post-filter
