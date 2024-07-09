@@ -1,4 +1,7 @@
 use super::utils::js_api::DeserializeableOffscreenCanvas;
+use crate::architecture;
+use crate::builtins::runtime_worker;
+use crate::builtins::utils::js_api;
 use serde::de::{MapAccess, Visitor};
 use serde::{Deserialize, Deserializer};
 use std::fmt;
@@ -32,14 +35,22 @@ pub fn handle_message(message: JsValue) {
             hardware_info::try_start_emitting();
         }
         ReceivedWorkerMessage::StopAndReset => {
-            runtime::try_stop_and_reset_blocking();
+            runtime::try_stop_blocking();
+            architecture::reset();
             screen::try_stop_rendering();
             hardware_info::reset_emitting();
             hardware_info::emit_default();
             hardware_info::try_stop_emitting();
         }
         ReceivedWorkerMessage::Stop => {
+            let in_runtime_loop = runtime_worker::in_runtime_loop();
             runtime::try_stop_blocking();
+            if in_runtime_loop {
+                js_api::post_worker_message(runtime_worker::StoppedRuntimeMessage {
+                    send_partial_stop_message: false,
+                });
+                hardware_info::emit();
+            }
             screen::try_stop_rendering();
             hardware_info::try_stop_emitting();
         }

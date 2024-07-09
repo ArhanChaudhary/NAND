@@ -76,6 +76,7 @@ pub fn reset_emitting() {
 }
 
 pub fn try_stop_emitting() {
+    // we dont want to block here to create as little latency as possible
     if let Some(emit_info_interval) = unsafe { (*EMIT_HARDWARE_INFO_INTERVAL.get()).take() } {
         js_api::clear_interval_with_handle(emit_info_interval);
     }

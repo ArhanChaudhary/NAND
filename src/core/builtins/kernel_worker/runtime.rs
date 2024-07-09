@@ -1,18 +1,7 @@
 use super::{KeyboardMessage, ResetAndPartialStartMessage, SpeedMessage};
 use crate::architecture;
-use crate::builtins::utils::js_api;
 use crate::builtins::{hardware, runtime_worker};
 use std::ptr;
-
-pub fn try_stop_and_reset_blocking() {
-    if runtime_worker::in_runtime_loop() {
-        unsafe {
-            *runtime_worker::STOP_RUNTIME_LOOP.get() = true;
-        }
-        while runtime_worker::in_runtime_loop_volatile() {}
-    }
-    architecture::reset();
-}
 
 pub fn reset_blocking_and_partial_start(
     reset_and_partial_start_message: ResetAndPartialStartMessage,
@@ -42,7 +31,6 @@ pub fn try_stop_blocking() {
             *runtime_worker::STOP_RUNTIME_LOOP.get() = true;
         }
         while runtime_worker::in_runtime_loop_volatile() {}
-        js_api::post_worker_message(runtime_worker::StoppedRuntimeMessage {});
     }
 }
 

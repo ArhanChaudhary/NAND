@@ -159,14 +159,14 @@
       computerWrapper.clientWidth / computerWrapper.clientHeight || null;
   }
 
-  let clockSpeed = "0.00 Hz";
+  let clockSpeed = "\xa00 Hz";
   let NANDCalls = "0";
   let lightStatus = "";
   let makeRedAfterwards = false;
   function messageHandler(e: MessageEvent) {
     switch (e.data.action) {
       case "infoMessage":
-        const hardwareInfoMessage = e.data.hardwareInfo;
+        let hardwareInfoMessage = e.data.hardwareInfo;
         if (hardwareInfoMessage.hz >= 100_000) {
           clockSpeed =
             (hardwareInfoMessage.hz / 1_000_000).toPrecision(3) + " MHz";
@@ -210,14 +210,16 @@
         }
         break;
       case "stoppedRuntime":
+        lightStatus = "red";
         // stopRendering might call hardwareInfo one last time so if we set it to
         // red here it might immediately be set to green afterwards otherwise
-        lightStatus = "red";
         makeRedAfterwards = true;
         setTimeout(() => {
           makeRedAfterwards = false;
         }, 50);
-        computerKernel.postMessage({ action: "partialStop" });
+        if (e.data.sendPartialStopMessage) {
+          computerKernel.postMessage({ action: "partialStop" });
+        }
         break;
     }
   }

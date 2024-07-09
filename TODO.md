@@ -3,7 +3,7 @@
 * remove syncunsafecell
 * clear ram option "clr"
 * new video
-* readme for load and clr
+* readme for load and clr 24576 32767 stops computer
 
 # TODO (genetic algorithm)
 * make able to re-place obstacles (actually reallocate memory and stuff)
