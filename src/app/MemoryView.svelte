@@ -1,6 +1,6 @@
 <script lang="ts">
   import VirtualList, { type Alignment } from "svelte-tiny-virtual-list";
-  import { ROM, computerIsRunning, computerMemory } from "./stores";
+  import { ROM, computerMemory } from "./stores";
   import { onMount } from "svelte";
 
   export let show: boolean;
@@ -229,14 +229,6 @@
       },
       [] as (number | null)[]
     );
-  }
-
-  // order should be agnotic
-  $: {
-    scrollToAlignment;
-    if (memoryDisplayType === "rom" && followPC && $computerIsRunning) {
-      scrollToAlignment = "center";
-    }
   }
 
   // order should be agnotic

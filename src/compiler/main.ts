@@ -9,7 +9,7 @@ export default function compiler(
     if (a.fileName > b.fileName) return 1;
     return 0;
   });
-  let out: Array<{ fileName: string; VMCode: string[] }> = [];
+  let out = new Array<{ fileName: string; VMCode: string[] }>();
   for (let fileData of inputFiles) {
     try {
       const engine = new Engine(fileData);

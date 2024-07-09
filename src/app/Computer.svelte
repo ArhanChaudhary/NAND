@@ -1,6 +1,5 @@
 <script lang="ts" context="module">
   import runtimeInit from "nand-core";
-  import { computerIsRunning } from "./stores";
 
   export let JackOS: {
     fileName: string;
@@ -116,13 +115,11 @@
 
   await Promise.all([loadJackOS, loadComputerRuntime, loadComputerKernel]);
   export function startComputer() {
-    computerIsRunning.set(true);
     computerRunner.postMessage(undefined);
     computerKernel.postMessage({ action: "partialStart" });
   }
 
   export function resetAndStartComputer(machineCode: string[]) {
-    computerIsRunning.set(true);
     computerRunner.postMessage(undefined);
     computerKernel.postMessage({
       action: "resetAndPartialStart",
@@ -131,12 +128,10 @@
   }
 
   export function stopAndResetComputer() {
-    computerIsRunning.set(false);
     computerKernel.postMessage({ action: "stopAndReset" });
   }
 
   export function stopComputer() {
-    computerIsRunning.set(false);
     computerKernel.postMessage({ action: "stop" });
   }
 
@@ -168,7 +163,7 @@
   let NANDCalls = "0";
   let lightStatus = "";
   let makeRedAfterwards = false;
-  function messageHandler(e: { data: any }) {
+  function messageHandler(e: MessageEvent) {
     switch (e.data.action) {
       case "infoMessage":
         const hardwareInfoMessage = e.data.hardwareInfo;
