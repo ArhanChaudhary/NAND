@@ -4,20 +4,19 @@ use crate::builtins::utils::bit_manipulation::{
 };
 use crate::builtins::{hardware, memory};
 use crate::gates::{and, is_zero, mux16, not, or};
-use std::cell::SyncUnsafeCell;
 
-pub static PC: SyncUnsafeCell<u16> = SyncUnsafeCell::new(0);
-static ADDRESS_M: SyncUnsafeCell<u16> = SyncUnsafeCell::new(0);
+pub static mut PC: u16 = 0;
+static mut ADDRESS_M: u16 = 0;
 
 fn pc(in_: u16, load: bool, reset: bool) {
     unsafe {
-        *PC.get() = slice16_0to14(memory::pc_register(
+        PC = slice16_0to14(memory::pc_register(
             // reset
             mux16(
                 // load
                 mux16(
                     // inc
-                    inc16(*PC.get()),
+                    inc16(PC),
                     in_,
                     load,
                 ),
@@ -31,9 +30,9 @@ fn pc(in_: u16, load: bool, reset: bool) {
 fn cpu(in_m: u16, instruction: u16, reset: bool) -> (u16, bool) {
     let alu_y1 = memory::a_register(0, false);
     unsafe {
-        *ADDRESS_M.get() = slice16_0to14(alu_y1);
+        ADDRESS_M = slice16_0to14(alu_y1);
     }
-    pc(unsafe { *ADDRESS_M.get() }, false, reset);
+    pc(unsafe { ADDRESS_M }, false, reset);
     let alu_out = alu(
         memory::d_register(0, false),
         mux16(alu_y1, in_m, nbit16(instruction, 12)),
@@ -105,11 +104,11 @@ fn memory(in_m: u16, load: bool, address_m: u16) -> u16 {
 
 fn computer(reset: bool) {
     let (out_m, load_m) = cpu(
-        memory(0, false, unsafe { *ADDRESS_M.get() }),
-        memory::rom32k(unsafe { *PC.get() }),
+        memory(0, false, unsafe { ADDRESS_M }),
+        memory::rom32k(unsafe { PC }),
         reset,
     );
-    memory(out_m, load_m, unsafe { *ADDRESS_M.get() });
+    memory(out_m, load_m, unsafe { ADDRESS_M });
 }
 
 pub fn ticktock() {

@@ -2,11 +2,10 @@ use super::memory;
 use super::utils::bit_manipulation::nbit16;
 use super::utils::sync_cell;
 use js_sys::{Uint8ClampedArray, WebAssembly};
-use std::cell::SyncUnsafeCell;
 use wasm_bindgen::prelude::*;
 
-static NAND_CALLS: SyncUnsafeCell<u64> = SyncUnsafeCell::new(0);
-pub static CLOCK: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
+static mut NAND_CALLS: u64 = 0;
+pub static mut CLOCK: bool = false;
 
 // -----------------------------------------------
 
@@ -14,7 +13,7 @@ pub static CLOCK: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
 #[allow(non_snake_case)]
 pub fn NAND(a: bool, b: bool) -> bool {
     unsafe {
-        *NAND_CALLS.get() += 1;
+        NAND_CALLS += 1;
     }
     !(a && b) // for science!!
 }
@@ -28,24 +27,24 @@ pub fn NAND(a: bool, b: bool) -> bool {
 // -----------------------------------------------
 
 pub fn nand_calls() -> u64 {
-    unsafe { *NAND_CALLS.get() }
+    unsafe { NAND_CALLS }
 }
 
 pub fn reset_nand_calls() {
     unsafe {
-        *NAND_CALLS.get() = 0;
+        NAND_CALLS = 0;
     }
 }
 
 pub fn tick() {
     unsafe {
-        *CLOCK.get() = true;
+        CLOCK = true;
     }
 }
 
 pub fn tock() {
     unsafe {
-        *CLOCK.get() = false;
+        CLOCK = false;
     }
 }
 
@@ -55,21 +54,21 @@ pub fn load_rom(machine_code_buf: &[u16]) {
     unsafe {
         std::ptr::copy_nonoverlapping(
             machine_code_buf.as_ptr(),
-            memory::ROM32K_MEMORY.get() as *mut u16,
+            memory::ROM32K_MEMORY.as_mut_ptr(),
             machine_code_buf.len(),
         );
     }
 }
 
-static PRESSED_KEY: SyncUnsafeCell<u16> = SyncUnsafeCell::new(0);
+pub static mut PRESSED_KEY: u16 = 0;
 pub fn keyboard(in_: u16, load: bool) -> u16 {
     if load {
         unsafe {
-            *PRESSED_KEY.get() = in_;
+            PRESSED_KEY = in_;
         }
         in_
     } else {
-        unsafe { *PRESSED_KEY.get() }
+        unsafe { PRESSED_KEY }
     }
 }
 
@@ -125,7 +124,7 @@ pub static CTX: sync_cell::SyncOnceCell<OffscreenCanvasRenderingContext2d> =
 pub fn render() {
     // https://rust-lang.github.io/rust-clippy/master/index.html#/large_stack_frames (2x speed up)
     let mut pixel_data = vec![0; SCREEN_WIDTH * SCREEN_HEIGHT].into_boxed_slice();
-    for (i, &word16) in unsafe { (*memory::SCREEN_MEMORY.get()).iter().enumerate() } {
+    for (i, &word16) in unsafe { memory::SCREEN_MEMORY.iter().enumerate() } {
         let y = i / (SCREEN_WIDTH / 16) * SCREEN_WIDTH;
         for j in 0..16 {
             if nbit16(word16, j) {

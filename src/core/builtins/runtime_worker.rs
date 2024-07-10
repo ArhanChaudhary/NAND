@@ -3,28 +3,19 @@ use super::kernel_worker::runtime::ALL_STEPS_PER_LOOP;
 use super::utils::{js_api, sync_cell};
 use crate::architecture;
 use serde::Serialize;
-use std::cell::SyncUnsafeCell;
+use std::ptr::addr_of;
 use std::{ptr, thread};
 use wasm_bindgen::prelude::*;
 
-static IN_RUNTIME_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
+pub static mut IN_RUNTIME_LOOP: bool = false;
 static DELAYED_IN_RUNTIME_LOOP_FALSE: sync_cell::SyncLazyCell<Closure<dyn Fn()>> =
     sync_cell::SyncLazyCell::new(|| {
         Closure::new(|| unsafe {
-            *IN_RUNTIME_LOOP.get() = false;
+            IN_RUNTIME_LOOP = false;
         })
     });
-pub fn in_runtime_loop() -> bool {
-    unsafe { *IN_RUNTIME_LOOP.get() }
-}
-pub fn in_runtime_loop_volatile() -> bool {
-    unsafe { ptr::read_volatile(IN_RUNTIME_LOOP.get()) }
-}
 
-static EMIT_INTERVAL_STEP_TOTAL: SyncUnsafeCell<usize> = SyncUnsafeCell::new(0);
-pub fn emit_interval_step_total() -> usize {
-    unsafe { *EMIT_INTERVAL_STEP_TOTAL.get() }
-}
+pub static mut EMIT_INTERVAL_STEP_TOTAL: usize = 0;
 
 // TODO: I would REALLY like to use atomics or a better form of synchronization
 // here but I am hesitant because I don't want to a open a can of worms not worth
@@ -43,12 +34,11 @@ pub fn emit_interval_step_total() -> usize {
 // https://docs.rs/parking_lot/0.11.1/parking_lot/
 // https://rustwasm.github.io/wasm-bindgen/reference/js-promises-and-rust-futures.html
 // https://github.com/wasm-rs/shared-channel/blob/master/src/spsc.rs
-pub static STOP_RUNTIME_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
-pub static LOADING_NEW_PROGRAM: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
-pub static READY_TO_LOAD_NEW_PROGRAM: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
+pub static mut LOADING_NEW_PROGRAM: bool = false;
+pub static mut STOP_RUNTIME_LOOP: bool = false;
+pub static mut READY_TO_LOAD_NEW_PROGRAM: bool = false;
 
-pub static STEPS_PER_LOOP: SyncUnsafeCell<usize> =
-    SyncUnsafeCell::new(ALL_STEPS_PER_LOOP[ALL_STEPS_PER_LOOP.len() - 1]);
+pub static mut STEPS_PER_LOOP: usize = ALL_STEPS_PER_LOOP[ALL_STEPS_PER_LOOP.len() - 1];
 
 #[derive(Serialize)]
 #[serde(tag = "action", rename = "stoppedRuntime")]
@@ -60,30 +50,29 @@ pub struct StoppedRuntimeMessage {
 #[wasm_bindgen(js_name = tryStartRuntime)]
 pub fn try_start() {
     unsafe {
-        if *IN_RUNTIME_LOOP.get() {
+        if IN_RUNTIME_LOOP {
             return;
         }
-        *IN_RUNTIME_LOOP.get() = true;
+        IN_RUNTIME_LOOP = true;
     }
     loop {
-        let steps_per_loop = unsafe { *STEPS_PER_LOOP.get() };
         unsafe {
-            if *LOADING_NEW_PROGRAM.get() {
-                *READY_TO_LOAD_NEW_PROGRAM.get() = true;
-                while ptr::read_volatile(LOADING_NEW_PROGRAM.get()) {}
+            if LOADING_NEW_PROGRAM {
+                READY_TO_LOAD_NEW_PROGRAM = true;
+                while ptr::read_volatile(addr_of!(LOADING_NEW_PROGRAM)) {}
             }
         }
-        for _ in 0..steps_per_loop {
+        for _ in 0..unsafe { STEPS_PER_LOOP } {
             architecture::ticktock();
         }
         unsafe {
-            *EMIT_INTERVAL_STEP_TOTAL.get() += steps_per_loop;
+            EMIT_INTERVAL_STEP_TOTAL += STEPS_PER_LOOP;
         }
-        if ALL_STEPS_PER_LOOP[ALL_STEPS_PER_LOOP.len() - 1] != steps_per_loop {
+        if ALL_STEPS_PER_LOOP[ALL_STEPS_PER_LOOP.len() - 1] != unsafe { STEPS_PER_LOOP } {
             thread::sleep(std::time::Duration::from_micros(
                 (110_000
-                    - 110_000 * steps_per_loop / ALL_STEPS_PER_LOOP[ALL_STEPS_PER_LOOP.len() - 1])
-                    as u64,
+                    - 110_000 * unsafe { STEPS_PER_LOOP }
+                        / ALL_STEPS_PER_LOOP[ALL_STEPS_PER_LOOP.len() - 1]) as u64,
             ));
         }
         if hardware::keyboard(0, false) == 32767 {
@@ -96,8 +85,8 @@ pub fn try_start() {
             break;
         }
         unsafe {
-            if *STOP_RUNTIME_LOOP.get() {
-                *STOP_RUNTIME_LOOP.get() = false;
+            if STOP_RUNTIME_LOOP {
+                STOP_RUNTIME_LOOP = false;
                 break;
             }
         }

@@ -43,7 +43,7 @@ pub fn handle_message(message: JsValue) {
             hardware_info::try_stop_emitting();
         }
         ReceivedWorkerMessage::Stop => {
-            let in_runtime_loop = runtime_worker::in_runtime_loop();
+            let in_runtime_loop = unsafe { runtime_worker::IN_RUNTIME_LOOP };
             runtime::try_stop_blocking();
             if in_runtime_loop {
                 js_api::post_worker_message(runtime_worker::StoppedRuntimeMessage {

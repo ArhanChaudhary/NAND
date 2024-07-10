@@ -1,11 +1,10 @@
 use super::ScreenInitMessage;
 use crate::builtins::hardware;
 use crate::builtins::utils::{js_api, sync_cell};
-use std::cell::SyncUnsafeCell;
 use wasm_bindgen::prelude::*;
 
-static IN_SCREEN_RENDERING_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
-static STOP_SCREEN_RENDERING_LOOP: SyncUnsafeCell<bool> = SyncUnsafeCell::new(false);
+static mut IN_SCREEN_RENDERING_LOOP: bool = false;
+static mut STOP_SCREEN_RENDERING_LOOP: bool = false;
 static SCREEN_RENDERER_CLOSURE: sync_cell::SyncLazyCell<Closure<dyn Fn()>> =
     sync_cell::SyncLazyCell::new(|| Closure::new(renderer));
 
@@ -23,10 +22,10 @@ pub fn init(screen_init_message: ScreenInitMessage) {
 }
 
 fn renderer() {
-    if unsafe { *STOP_SCREEN_RENDERING_LOOP.get() } {
+    if unsafe { STOP_SCREEN_RENDERING_LOOP } {
         unsafe {
-            *STOP_SCREEN_RENDERING_LOOP.get() = false;
-            *IN_SCREEN_RENDERING_LOOP.get() = false;
+            STOP_SCREEN_RENDERING_LOOP = false;
+            IN_SCREEN_RENDERING_LOOP = false;
         }
     } else {
         js_api::request_animation_frame(SCREEN_RENDERER_CLOSURE.as_ref().unchecked_ref());
@@ -35,9 +34,9 @@ fn renderer() {
 }
 
 pub fn try_start_rendering() {
-    if unsafe { !*IN_SCREEN_RENDERING_LOOP.get() } {
+    if unsafe { !IN_SCREEN_RENDERING_LOOP } {
         unsafe {
-            *IN_SCREEN_RENDERING_LOOP.get() = true;
+            IN_SCREEN_RENDERING_LOOP = true;
         }
         js_api::request_animation_frame(SCREEN_RENDERER_CLOSURE.as_ref().unchecked_ref());
     }
@@ -45,8 +44,8 @@ pub fn try_start_rendering() {
 
 pub fn try_stop_rendering() {
     unsafe {
-        if *IN_SCREEN_RENDERING_LOOP.get() {
-            *STOP_SCREEN_RENDERING_LOOP.get() = true;
+        if IN_SCREEN_RENDERING_LOOP {
+            STOP_SCREEN_RENDERING_LOOP = true;
         }
     }
 }
