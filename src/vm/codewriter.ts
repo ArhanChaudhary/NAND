@@ -1,10 +1,4 @@
-import { BroadCompilerError } from "../compiler/exceptions";
-
-export class VMTranslatorError extends BroadCompilerError {
-  constructor(message: string) {
-    super("Main", message);
-  }
-}
+import { VMTranslatorError } from "./main";
 
 export default class CodeWriter {
   private out = new Array<string>();

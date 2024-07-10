@@ -95,7 +95,7 @@
 </script>
 
 <script lang="ts">
-  import assembler, { ProgramTooBigError } from "../assembler/main";
+  import assembler, { BaseAssemblerError } from "../assembler/main";
   import VMTranslator from "../vm/main";
   import compiler from "../compiler/main";
   import { CompilerError } from "../compiler/exceptions";
@@ -115,7 +115,7 @@
     compilerError,
   } from "./stores";
   import { tick } from "svelte";
-  import { VMTranslatorError } from "../vm/codewriter";
+  import { VMTranslatorError } from "../vm/main";
 
   $: {
     $IDEContext;
@@ -186,7 +186,7 @@
     }
     if (assembly.length) {
       machineCode = assembler(assembly);
-      if (machineCode instanceof ProgramTooBigError) {
+      if (machineCode instanceof BaseAssemblerError) {
         $compilerError = machineCode;
         displayCompilerError($compilerError);
         return;

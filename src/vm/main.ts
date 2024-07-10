@@ -1,5 +1,12 @@
-import CodeWriter, { VMTranslatorError } from "./codewriter";
+import { BroadCompilerError } from "../compiler/exceptions";
+import CodeWriter from "./codewriter";
 import Parser, { CommandType } from "./parser";
+
+export class VMTranslatorError extends BroadCompilerError {
+  constructor(message: string) {
+    super("", message);
+  }
+}
 
 export default function VMTranslator(
   VMCodes: Array<{ fileName: string; VMCode: string[] }>

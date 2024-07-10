@@ -1,4 +1,4 @@
-import { VMTranslatorError } from "./codewriter";
+import { VMTranslatorError } from "./main";
 import VMTranslator from "./main";
 import fs from "fs";
 

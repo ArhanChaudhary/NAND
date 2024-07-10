@@ -11,9 +11,9 @@
   import compiler from "../compiler/main";
   import { CompilerError } from "../compiler/exceptions";
   import VMTranslator from "../vm/main";
-  import assembler, { ProgramTooBigError } from "../assembler/main";
+  import assembler, { BaseAssemblerError } from "../assembler/main";
   import { JackOS } from "./Computer.svelte";
-  import { VMTranslatorError } from "../vm/codewriter";
+  import { VMTranslatorError } from "../vm/main";
 
   export let show: boolean;
   export let memoryViewWidth: number;
@@ -135,7 +135,7 @@
           assembly = programFiles[0].file;
         }
         machineCode = assembler(assembly);
-        if (machineCode instanceof ProgramTooBigError) {
+        if (machineCode instanceof BaseAssemblerError) {
           $compilerError = machineCode;
           return;
         }

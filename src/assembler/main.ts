@@ -3,7 +3,15 @@ import Code from "./code";
 import SymbolTable from "./symboltable";
 import { BroadCompilerError } from "../compiler/exceptions";
 
-export class ProgramTooBigError extends BroadCompilerError {
+export class BaseAssemblerError extends BroadCompilerError {}
+
+export class AssemblerError extends BaseAssemblerError {
+  constructor(message: string) {
+    super("", message);
+  }
+}
+
+class ProgramTooBigError extends BaseAssemblerError {
   constructor(length: number) {
     super(
       "Main",
@@ -14,7 +22,7 @@ export class ProgramTooBigError extends BroadCompilerError {
 
 export default function assembler(
   inputStream: string[]
-): string[] | ProgramTooBigError {
+): string[] | BaseAssemblerError {
   const symbolTable = new SymbolTable();
   symbolTable.addEntry("SP", 0);
   symbolTable.addEntry("LCL", 1);
@@ -63,11 +71,20 @@ export default function assembler(
         break;
       }
       case CommandType.C_COMMAND: {
-        out.push(
-          `111${Code.comp(parser.comp())}${Code.dest(parser.dest())}${Code.jump(
-            parser.jump()
-          )}`
-        );
+        try {
+          out.push(
+            `111${Code.comp(parser.comp())}${Code.dest(
+              parser.dest()
+            )}${Code.jump(parser.jump())}`
+          );
+        } catch (err: any) {
+          if (err instanceof AssemblerError) {
+            return err;
+          }
+          return new AssemblerError(
+            `VM translator has crashed with an internal error (this is a bug):\n\n${err.toString()}`
+          );
+        }
         break;
       }
     }

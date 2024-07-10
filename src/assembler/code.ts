@@ -1,10 +1,10 @@
+import { AssemblerError } from "./main";
+
 export default class Code {
   public static dest(mnemonic: string): string {
-    const ret = [0, 0, 0];
-    if (mnemonic.includes("A")) ret[0] = 1;
-    if (mnemonic.includes("D")) ret[1] = 1;
-    if (mnemonic.includes("M")) ret[2] = 1;
-    return ret.join("");
+    return `${+mnemonic.includes("A")}${+mnemonic.includes(
+      "D"
+    )}${+mnemonic.includes("M")}`;
   }
 
   public static comp(mnemonic: string): string {
@@ -60,7 +60,7 @@ export default class Code {
       case AOrM + "|D":
         return ret + "010101";
       default:
-        throw new Error("Invalid command comp: " + mnemonic);
+        throw new AssemblerError("Invalid command comp: " + mnemonic);
     }
   }
 
@@ -75,7 +75,8 @@ export default class Code {
       JLE: "110",
       JMP: "111",
     }[mnemonic];
-    if (ret === undefined) throw new Error("Invalid command jump: " + mnemonic);
+    if (ret === undefined)
+      throw new AssemblerError("Invalid command jump: " + mnemonic);
     return ret;
   }
 }
