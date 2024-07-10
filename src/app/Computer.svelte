@@ -135,12 +135,20 @@
     computerKernel.postMessage({ action: "stop" });
   }
 
+  function partialStopComputer() {
+    computerKernel.postMessage({ action: "partialStop" });
+  }
+
   export function speedComputer(speedPercentage: number) {
     computerKernel.postMessage({ action: "speed", speedPercentage });
   }
 
   function keyboardComputer(keyValue: number) {
     computerKernel.postMessage({ action: "keyboard", keyValue });
+  }
+
+  export function clearRAM() {
+    computerKernel.postMessage({ action: "clearRAM" });
   }
 </script>
 
@@ -210,15 +218,10 @@
         }
         break;
       case "stoppedRuntime":
-        lightStatus = "red";
-        // stopRendering might call hardwareInfo one last time so if we set it to
-        // red here it might immediately be set to green afterwards otherwise
+        // stopRendering calls hardwareInfo one last time, set to red above
         makeRedAfterwards = true;
-        setTimeout(() => {
-          makeRedAfterwards = false;
-        }, 50);
         if (e.data.sendPartialStopMessage) {
-          computerKernel.postMessage({ action: "partialStop" });
+          partialStopComputer();
         }
         break;
     }

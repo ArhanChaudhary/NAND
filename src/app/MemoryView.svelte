@@ -12,7 +12,7 @@
   import { CompilerError } from "../compiler/exceptions";
   import VMTranslator from "../vm/main";
   import assembler, { BaseAssemblerError } from "../assembler/main";
-  import { JackOS } from "./Computer.svelte";
+  import { clearRAM, JackOS } from "./Computer.svelte";
   import { VMTranslatorError } from "../vm/main";
 
   export let show: boolean;
@@ -323,6 +323,13 @@
   // inherently tied to memoryDisplayType, prioritize first
   // to ensure memoryDisplay and memoryDisplayType don't desync
   $: memoryDisplayType, memoryDisplayTypeChanged();
+// inherently tied to memoryDisplay, prioritize first
+  $: if (memoryDisplay === "clr") {
+    memoryDisplay = "dec";
+    if (confirm("Are you sure you want to clear the RAM?")) {
+      clearRAM();
+    }
+  }
 
   // order should be agnotic
   $: {
@@ -415,42 +422,41 @@
   }
 
   // order should be agnostic
-  $: switch (memoryDisplay) {
-    case "bin":
-      memoryViewWidth = 210;
-      break;
-    case "asm":
-    case "vm":
-      memoryViewWidth = 270;
-      break;
-    default:
-      memoryViewWidth = 150;
-  }
-
-  // order should be agnostic
-  $: switch (memoryDisplayType) {
-    case "rom":
-      switch (memoryDisplay) {
-        case "bin":
-          itemCount = $ROM.machineCode.length || 32768;
-          break;
-        case "asm":
-          itemCount = $ROM.assembly.length;
-          break;
-        case "vm":
-          itemCount = $ROM.VMCodes.map((VMCode) => VMCode.VMCode.length).reduce(
-            (a, b) => a + b,
-            0
-          );
-          break;
-      }
-      break;
-    case "ram":
-      itemCount = RAMLength;
-      break;
-    case "load":
-      itemCount = 0;
-      break;
+  $: {
+    switch (memoryDisplay) {
+      case "bin":
+        memoryViewWidth = 210;
+        break;
+      case "asm":
+      case "vm":
+        memoryViewWidth = 270;
+        break;
+      default:
+        memoryViewWidth = 150;
+    }
+    switch (memoryDisplayType) {
+      case "rom":
+        switch (memoryDisplay) {
+          case "bin":
+            itemCount = $ROM.machineCode.length || 32768;
+            break;
+          case "asm":
+            itemCount = $ROM.assembly.length;
+            break;
+          case "vm":
+            itemCount = $ROM.VMCodes.map(
+              (VMCode) => VMCode.VMCode.length
+            ).reduce((a, b) => a + b, 0);
+            break;
+        }
+        break;
+      case "ram":
+        itemCount = RAMLength;
+        break;
+      case "load":
+        itemCount = 0;
+        break;
+    }
   }
 
   // order towards the bottom, acts like a post-filter
@@ -503,6 +509,9 @@
               <option value="asm">Asm</option>
             {/if}
             <option value="bin">Bin</option>
+            {#if memoryDisplayType === "ram"}
+              <option value="clr">Clr</option>
+            {/if}
           </select>
         {/if}
       </div>

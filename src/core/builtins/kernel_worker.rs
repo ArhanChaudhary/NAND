@@ -1,4 +1,5 @@
 use super::utils::js_api::DeserializeableOffscreenCanvas;
+use super::{hardware, memory};
 use crate::architecture;
 use crate::builtins::runtime_worker;
 use crate::builtins::utils::js_api;
@@ -15,55 +16,10 @@ mod screen;
 pub fn handle_message(message: JsValue) {
     let received_worker_message: ReceivedWorkerMessage =
         serde_wasm_bindgen::from_value(message).unwrap();
-    match received_worker_message {
-        ReceivedWorkerMessage::ScreenInit(screen_init_message) => {
-            screen::init(screen_init_message);
-        }
-        ReceivedWorkerMessage::PartialStart => {
-            screen::try_start_rendering();
-            hardware_info::try_start_emitting();
-        }
-        ReceivedWorkerMessage::PartialStop => {
-            screen::try_stop_rendering();
-            hardware_info::emit();
-            hardware_info::try_stop_emitting();
-        }
-        ReceivedWorkerMessage::ResetAndPartialStart(reset_and_partial_start_message) => {
-            runtime::reset_blocking_and_partial_start(reset_and_partial_start_message);
-            screen::try_start_rendering();
-            hardware_info::try_reset_emitting();
-            hardware_info::try_start_emitting();
-        }
-        ReceivedWorkerMessage::StopAndReset => {
-            runtime::try_stop_blocking();
-            architecture::reset();
-            screen::try_stop_rendering();
-            hardware_info::reset_emitting();
-            hardware_info::emit_default();
-            hardware_info::try_stop_emitting();
-        }
-        ReceivedWorkerMessage::Stop => {
-            let in_runtime_loop = unsafe { runtime_worker::IN_RUNTIME_LOOP };
-            runtime::try_stop_blocking();
-            if in_runtime_loop {
-                js_api::post_worker_message(runtime_worker::StoppedRuntimeMessage {
-                    send_partial_stop_message: false,
-                });
-                hardware_info::emit();
-            }
-            screen::try_stop_rendering();
-            hardware_info::try_stop_emitting();
-        }
-        ReceivedWorkerMessage::Keyboard(keyboard_message) => {
-            runtime::keyboard(keyboard_message);
-        }
-        ReceivedWorkerMessage::Speed(speed_message) => {
-            runtime::speed(speed_message);
-        }
-    }
+    ReceivedWorkerMessage::handle(received_worker_message);
 }
 
-enum ReceivedWorkerMessage {
+pub enum ReceivedWorkerMessage {
     ScreenInit(ScreenInitMessage),
     PartialStart,
     PartialStop,
@@ -72,6 +28,61 @@ enum ReceivedWorkerMessage {
     Stop,
     Keyboard(KeyboardMessage),
     Speed(SpeedMessage),
+    ClearRAM,
+}
+
+impl ReceivedWorkerMessage {
+    pub fn handle(received_worker_message: ReceivedWorkerMessage) {
+        match received_worker_message {
+            ReceivedWorkerMessage::ScreenInit(screen_init_message) => {
+                screen::init(screen_init_message);
+            }
+            ReceivedWorkerMessage::PartialStart => {
+                screen::try_start_rendering();
+                hardware_info::try_start_emitting();
+            }
+            ReceivedWorkerMessage::PartialStop => {
+                screen::try_stop_rendering();
+                hardware_info::emit();
+                hardware_info::try_stop_emitting();
+            }
+            ReceivedWorkerMessage::ResetAndPartialStart(reset_and_partial_start_message) => {
+                runtime::reset_blocking_and_partial_start(reset_and_partial_start_message);
+                hardware_info::try_reset_emitting();
+                ReceivedWorkerMessage::handle(ReceivedWorkerMessage::PartialStart);
+            }
+            ReceivedWorkerMessage::StopAndReset => {
+                runtime::try_stop_blocking();
+                architecture::reset();
+                screen::try_stop_rendering();
+                hardware_info::reset_emitting();
+                hardware_info::emit_default();
+                hardware_info::try_stop_emitting();
+            }
+            ReceivedWorkerMessage::Stop => {
+                let in_runtime_loop = unsafe { runtime_worker::IN_RUNTIME_LOOP };
+                runtime::try_stop_blocking();
+                if in_runtime_loop {
+                    js_api::post_worker_message(runtime_worker::StoppedRuntimeMessage {
+                        send_partial_stop_message: false,
+                    });
+                    hardware_info::emit();
+                }
+                screen::try_stop_rendering();
+                hardware_info::try_stop_emitting();
+            }
+            ReceivedWorkerMessage::Keyboard(keyboard_message) => {
+                hardware::keyboard(keyboard_message.key, true);
+            }
+            ReceivedWorkerMessage::Speed(speed_message) => {
+                runtime::speed(speed_message);
+            }
+            ReceivedWorkerMessage::ClearRAM => {
+                memory::clear_ram();
+                hardware_info::emit();
+            }
+        }
+    }
 }
 
 struct ReceivedWorkerMessageVisitor;
@@ -106,6 +117,7 @@ impl<'de> Visitor<'de> for ReceivedWorkerMessageVisitor {
             "speed" => ReceivedWorkerMessage::Speed(SpeedMessage {
                 speed_percentage: map.next_entry::<String, _>()?.unwrap().1,
             }),
+            "clearRAM" => ReceivedWorkerMessage::ClearRAM,
             _ => unreachable!(),
         })
     }

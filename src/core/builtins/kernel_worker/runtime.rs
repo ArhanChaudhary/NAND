@@ -1,4 +1,4 @@
-use super::{KeyboardMessage, ResetAndPartialStartMessage, SpeedMessage};
+use super::{ResetAndPartialStartMessage, SpeedMessage};
 use crate::architecture;
 use crate::builtins::{hardware, runtime_worker};
 use std::ptr::{self, addr_of};
@@ -53,8 +53,4 @@ pub fn speed(speed_message: SpeedMessage) {
             runtime_worker::STEPS_PER_LOOP = div_speed + ((next_div_speed - div_speed) * lerp) / 10;
         }
     };
-}
-
-pub fn keyboard(keyboard_message: KeyboardMessage) {
-    hardware::keyboard(keyboard_message.key, true);
 }

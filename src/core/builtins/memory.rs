@@ -1,4 +1,6 @@
-use super::hardware;
+use crate::architecture;
+
+use super::{hardware, kernel_worker::ReceivedWorkerMessage};
 
 static mut PC_DFF_OUT: u16 = 0;
 pub fn pc_register(in_: u16) -> u16 {
@@ -65,4 +67,15 @@ pub fn screen(in_: u16, load: bool, address: u16) -> u16 {
         }
     }
     out
+}
+
+pub fn clear_ram() {
+    unsafe {
+        RAM16K_MEMORY.fill(0);
+        PC_DFF_OUT = 0;
+        architecture::PC = 0;
+        D_REGISTER_DFF_OUT = 0;
+        A_REGISTER_DFF_OUT = 0;
+    }
+    ReceivedWorkerMessage::handle(ReceivedWorkerMessage::Stop);
 }

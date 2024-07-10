@@ -96,7 +96,7 @@ Upon running, the program will constantly print the stack pointer to the screen.
 
 Two things of noteworthy interest are worth pointing out.
 
-If you reload the page and run this program on an empty RAM (a RAM full of zeroes), you will notice that the program resets itself halfway through its execution despite not pressing the "Reset" button. Why this happens is simple: the jailbroken runtime executes an instruction that sets the [program counter](https://en.wikipedia.org/wiki/Program_counter)'s value to 0, effectively telling the program to jump to the first instruction and start over.
+If you run this program on an empty RAM full of zeroes (you can clear the RAM through the user interface), you will notice that the program resets itself halfway through its execution despite not pressing the "Reset" button. Why this happens is simple: the jailbroken runtime executes an instruction that sets the [program counter](https://en.wikipedia.org/wiki/Program_counter)'s value to 0, effectively telling the program to jump to the first instruction and start over.
 
 If you run the GeneticAlgorithm example program and then run this immediately afterwards, the program in its rampage reads old RAM memory that was simply never overwritten.
 
