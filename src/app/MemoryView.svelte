@@ -9,7 +9,7 @@
   } from "./stores";
   import { onMount, tick } from "svelte";
   import compiler from "../compiler/main";
-  import { CompilerError } from "../compiler/exceptions";
+  import { BroadCompilerError, CompilerError } from "../compiler/exceptions";
   import VMTranslator from "../vm/main";
   import assembler, { BaseAssemblerError } from "../assembler/main";
   import { clearRAM, JackOS } from "./Computer.svelte";
@@ -139,7 +139,6 @@
           $compilerError = machineCode;
           return;
         }
-        console.log("Compilation successful! :D");
       case "hack":
         if (!machineCode) {
           if (programFiles.length !== 1) {
@@ -149,11 +148,15 @@
           machineCode = programFiles[0].file;
           for (let instruction of machineCode) {
             if (!/^[01]{16}$/.test(instruction)) {
-              alert("Invalid .hack file.");
+              $compilerError = new BroadCompilerError(
+                "",
+                "Invalid .hack file format"
+              );
               return;
             }
           }
         }
+        console.log("Compilation successful! :D");
         $ROM.VMCodes = VMCodes || [];
         $ROM.assembly = assembly || [];
         $ROM.machineCode = machineCode;
@@ -323,7 +326,7 @@
   // inherently tied to memoryDisplayType, prioritize first
   // to ensure memoryDisplay and memoryDisplayType don't desync
   $: memoryDisplayType, memoryDisplayTypeChanged();
-// inherently tied to memoryDisplay, prioritize first
+  // inherently tied to memoryDisplay, prioritize first
   $: if (memoryDisplay === "clr") {
     memoryDisplay = "dec";
     if (confirm("Are you sure you want to clear the RAM?")) {
