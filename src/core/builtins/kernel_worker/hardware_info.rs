@@ -1,4 +1,3 @@
-use crate::architecture;
 use crate::builtins::utils::{js_api, sync_cell};
 use crate::builtins::{hardware, memory, runtime_worker};
 use js_sys::Uint16Array;
@@ -113,7 +112,7 @@ pub fn emit() {
             pressed_key: hardware::keyboard(0, false),
             a_register: memory::a_register(0, false),
             d_register: memory::d_register(0, false),
-            pc_register: unsafe { architecture::PC },
+            pc_register: unsafe { memory::PC },
         }),
     });
 }

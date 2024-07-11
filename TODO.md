@@ -1,5 +1,6 @@
 # TODO
 * make String work with just String.new if newWithStr isn't found
+* empty file load input
 * new video
 
 # TODO (genetic algorithm)

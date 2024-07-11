@@ -1,20 +1,16 @@
-use crate::architecture;
-
 use super::hardware;
 
 static mut PC_DFF_OUT: u16 = 0;
-pub fn pc_register(in_: u16) -> u16 {
-    // NOTE: load is always true
-    if unsafe { hardware::CLOCK } {
-        let out = unsafe { PC_DFF_OUT };
-        unsafe {
+pub static mut PC: u16 = 0;
+
+pub fn pc_register(in_: u16) {
+    unsafe {
+        // NOTE: load is always true
+        if hardware::CLOCK {
             PC_DFF_OUT = in_;
+        } else {
+            PC = PC_DFF_OUT;
         }
-        // TODO: this *should* return in_, but for some reason it just doesn't
-        // work
-        out
-    } else {
-        unsafe { PC_DFF_OUT }
     }
 }
 
@@ -74,7 +70,7 @@ pub fn clear_ram() {
         // make sure to update MemoryView.svelte if this is modified
         RAM16K_MEMORY.fill(0);
         PC_DFF_OUT = 0;
-        architecture::PC = 0;
+        PC = 0;
         D_REGISTER_DFF_OUT = 0;
         A_REGISTER_DFF_OUT = 0;
     }

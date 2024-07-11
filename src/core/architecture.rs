@@ -5,34 +5,14 @@ use crate::builtins::utils::bit_manipulation::{
 use crate::builtins::{hardware, memory};
 use crate::gates::{and, is_zero, mux16, not, or};
 
-pub static mut PC: u16 = 0;
 static mut ADDRESS_M: u16 = 0;
 
-fn pc(in_: u16, load: bool, reset: bool) {
-    unsafe {
-        PC = slice16_0to14(memory::pc_register(
-            // reset
-            mux16(
-                // load
-                mux16(
-                    // inc
-                    inc16(PC),
-                    in_,
-                    load,
-                ),
-                0,
-                reset,
-            ),
-        ));
-    }
-}
-
 fn cpu(in_m: u16, instruction: u16, reset: bool) -> (u16, bool) {
+    let c_instruction = nbit16(instruction, 15);
     let alu_y1 = memory::a_register(0, false);
     unsafe {
         ADDRESS_M = slice16_0to14(alu_y1);
     }
-    pc(unsafe { ADDRESS_M }, false, reset);
     let alu_out = alu(
         memory::d_register(0, false),
         mux16(alu_y1, in_m, nbit16(instruction, 12)),
@@ -43,37 +23,38 @@ fn cpu(in_m: u16, instruction: u16, reset: bool) -> (u16, bool) {
         nbit16(instruction, 7),
         nbit16(instruction, 6),
     );
-
     let alu_out_is_zero = is_zero(alu_out);
-
-    memory::d_register(
-        alu_out,
-        and(nbit16(instruction, 4), nbit16(instruction, 15)),
-    );
-    pc(
-        slice16_0to14(memory::a_register(
-            mux16(instruction, alu_out, nbit16(instruction, 15)),
-            or(not(nbit16(instruction, 15)), nbit16(instruction, 5)),
-        )),
-        and(
+    let alu_out_is_negative = nbit16(alu_out, 15);
+    let do_jump = and(
+        or(
             or(
-                or(
-                    and(
-                        not(or(nbit16(alu_out, 15), alu_out_is_zero)),
-                        nbit16(instruction, 0),
-                    ), // positive
-                    and(alu_out_is_zero, nbit16(instruction, 1)),
+                and(
+                    not(or(alu_out_is_negative, alu_out_is_zero)),
+                    nbit16(instruction, 0),
                 ),
-                and(nbit16(alu_out, 15), nbit16(instruction, 2)),
+                and(alu_out_is_zero, nbit16(instruction, 1)),
             ),
-            nbit16(instruction, 15),
+            and(alu_out_is_negative, nbit16(instruction, 2)),
         ),
-        reset,
+        c_instruction,
     );
-    (
-        alu_out,
-        and(nbit16(instruction, 3), nbit16(instruction, 15)),
-    )
+
+    memory::d_register(alu_out, and(nbit16(instruction, 4), c_instruction));
+    memory::pc_register(mux16(
+        // load
+        slice16_0to14(mux16(
+            // inc
+            inc16(unsafe { memory::PC }),
+            memory::a_register(
+                mux16(instruction, alu_out, c_instruction),
+                or(not(c_instruction), nbit16(instruction, 5)),
+            ),
+            do_jump,
+        )),
+        0,
+        reset,
+    ));
+    (alu_out, and(nbit16(instruction, 3), c_instruction))
 }
 
 // address[14] == 0 means select RAM
@@ -105,7 +86,7 @@ fn memory(in_m: u16, load: bool, address_m: u16) -> u16 {
 fn computer(reset: bool) {
     let (out_m, load_m) = cpu(
         memory(0, false, unsafe { ADDRESS_M }),
-        memory::rom32k(unsafe { PC }),
+        memory::rom32k(unsafe { memory::PC }),
         reset,
     );
     memory(out_m, load_m, unsafe { ADDRESS_M });
