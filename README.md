@@ -35,6 +35,7 @@ is a Turing equivalent 16-bit computer made entirely from a [clock](https://en.w
       - [Improper Type Casting](#improper-type-casting)
       - [Stack Overflows](#stack-overflows)
       - [Modifying Stack Frames or Internal Registers](#modifying-stack-frames-or-internal-registers)
+      - [Loading your Own Program](#loading-your-own-program)
     - [Hardware Specification](#hardware-specification)
     - [Beyond the Jack OS](#beyond-the-jack-os)
 - [How does NAND work?](#how-does-nand-work)
@@ -519,6 +520,10 @@ See the [Overflow](#overflow) program for an in-depth example.
 #### Modifying Stack Frames or Internal Registers
 
 Modifying stack frames or the internal registers that respectively reside at memory addresses `256` to `2047` and `1` to `15` may lead to undefined behavior. This typically isn't possible without misusing `Memory.poke` or negative array indexing. See the [SecretPassword](#secretpassword) program for an in-depth example.
+
+#### Loading your Own Program
+
+NAND offers program validation for `.jack` files but not for `.vm` files. This means NAND's virtual machine compiler gives you free reign to call nonexistent functions, reference unassigned variables, or perform any other logically invalid memory operation. In most cases of such undefined behavior, the [virtual machine will escape](https://en.wikipedia.org/wiki/Virtual_machine_escape) and the screen simply won't display anything. It will be your responsibility to debug the program yourself.
 
 ### Hardware Specification
 

@@ -1,7 +1,6 @@
 # TODO
 * make String work with just String.new if newWithStr isn't found
 * new video
-* readme in question mark in app
 
 # TODO (genetic algorithm)
 * make able to re-place obstacles (actually reallocate memory and stuff)
@@ -9,7 +8,7 @@
 * should acceleration vectors mutate in consecutive pairs as it is or individually?
 * determine optimal dynamicMutationRate constant (current is 1530)
 * BFS constants
-* take into account steps dot hasn't reach goal, ie 100 steps to reach 100 fitness is better than 150 steps to **reach** 105 fitness
+* take into account steps dot hasn't reach goal, ie 100 steps to reach 100 fitness is better than 150 steps to reach 105 fitness
 
 # TODO (genetic algorithm blog)
 * cache pairs of acceleration vectors
