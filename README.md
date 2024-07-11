@@ -11,7 +11,7 @@
 <!-- cSpell:enable -->
 is a Turing equivalent 16-bit computer made entirely from a [clock](https://en.wikipedia.org/wiki/Clock_rate) and [NAND gates](https://en.wikipedia.org/wiki/NAND_gate) emulated on the web. NAND features its own CPU, machine code language, assembly language, assembler, virtual machine language, virtual machine translator, programming language, compiler, IDE, and user interface. NAND is based on the Jack-VM-Hack platform specified in the [Nand to Tetris course](https://www.nand2tetris.org) and its [associated book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk).
 
-[Video demo of NAND](https://github.com/ArhanChaudhary/NAND/assets/57512390/7bedf191-d42c-4553-920f-01a539161bd3)
+[Video demo of NAND](https://github.com/ArhanChaudhary/NAND/assets/57512390/fc43ffc5-1d2e-447e-b807-f753b1b4320f)
 
 ### Table of Contents
 
