@@ -9,18 +9,19 @@
   async function loadExamplePrograms() {
     const exampleProgramPromises = [];
     for (const [exampleProgramPath, exampleProgramFileLoader] of Object.entries(
-      import.meta.glob<boolean, string, string>("../example-programs/**/*.jack", {
-        query: "?raw",
-        import: "default",
-      })
+      import.meta.glob<boolean, string, string>(
+        "../example-programs/**/*.jack",
+        {
+          query: "?raw",
+          import: "default",
+        }
+      )
     )) {
       const exampleProgramName =
         exampleProgramPath.split("/")[exampleProgramPath.split("/").length - 2];
       exampleProgramPromises.push(
         exampleProgramFileLoader().then((exampleProgramFileRaw) => {
-          const exampleProgramFile = exampleProgramFileRaw.split(
-            "\n"
-          );
+          const exampleProgramFile = exampleProgramFileRaw.split("\n");
           const exampleProgramDatum = examplePrograms.find(
             (exampleProgram) =>
               exampleProgram.exampleProgramName === exampleProgramName
@@ -47,7 +48,7 @@
     }
     await Promise.all(exampleProgramPromises);
     const exampleProgramsOrder = [
-      "New Program",
+      "Program Template",
       "Average",
       "Pong",
       "2048",
@@ -122,8 +123,8 @@
     $shouldResetAndStart = true;
   }
   exampleProgramLoader.then(() => {
-    if (shouldAutoLoad("New Program")) {
-      loadExampleProgram("New Program");
+    if (shouldAutoLoad("Program Template")) {
+      loadExampleProgram("Program Template");
     } else {
       $activeTabName = $IDEContext[0]?.fileName;
     }
@@ -132,7 +133,7 @@
   function shouldAutoLoad(exampleProgramName: string) {
     if (
       !localStorage.getItem("IDEContext") &&
-      exampleProgramName === "New Program"
+      exampleProgramName === "Program Template"
     ) {
       return true;
     } else {
