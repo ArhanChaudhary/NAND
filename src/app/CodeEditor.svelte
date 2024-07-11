@@ -174,9 +174,11 @@
         // without this Safari can delete the entire contenteditable and all
         // of the line divs. This doesnt fully fix it but i don't care
         tick().then(() => {
-          document.querySelectorAll("#code-editor > :not(.line)").forEach((div) => {
-            div.remove();
-          });
+          document
+            .querySelectorAll("#code-editor > :not(.line)")
+            .forEach((div) => {
+              div.remove();
+            });
           initialCodeEditorContent = [""];
         });
       }
@@ -249,11 +251,11 @@
           "|"
         )})|\b(${TypeTokens.concat(
           escapeRegexList($IDEContext.map((file) => file.fileName))
-        ).join(
-          "|"
-        )})\b|\b(${KeywordTokens.join("|")})\b|\b(${subroutineNames.join(
-          "|"
-        )})\b`,
+        ).join("|")})\b|\b(${KeywordTokens.join("|")})\b${
+          subroutineNames.length
+            ? String.raw`|\b(${subroutineNames.join("|")})\b`
+            : ""
+        }`,
         "g"
       ),
       (_, p0, p1, p2, p3, p4, p5, p6, p7) => {
