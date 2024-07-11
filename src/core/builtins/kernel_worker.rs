@@ -19,7 +19,7 @@ pub fn handle_message(message: JsValue) {
     ReceivedWorkerMessage::handle(received_worker_message);
 }
 
-pub enum ReceivedWorkerMessage {
+enum ReceivedWorkerMessage {
     ScreenInit(ScreenInitMessage),
     PartialStart,
     PartialStop,
@@ -32,26 +32,26 @@ pub enum ReceivedWorkerMessage {
 }
 
 impl ReceivedWorkerMessage {
-    pub fn handle(received_worker_message: ReceivedWorkerMessage) {
+    pub fn handle(received_worker_message: Self) {
         match received_worker_message {
-            ReceivedWorkerMessage::ScreenInit(screen_init_message) => {
+            Self::ScreenInit(screen_init_message) => {
                 screen::init(screen_init_message);
             }
-            ReceivedWorkerMessage::PartialStart => {
+            Self::PartialStart => {
                 screen::try_start_rendering();
                 hardware_info::try_start_emitting();
             }
-            ReceivedWorkerMessage::PartialStop => {
+            Self::PartialStop => {
                 screen::try_stop_rendering();
                 hardware_info::emit();
                 hardware_info::try_stop_emitting();
             }
-            ReceivedWorkerMessage::ResetAndPartialStart(reset_and_partial_start_message) => {
+            Self::ResetAndPartialStart(reset_and_partial_start_message) => {
                 runtime::reset_blocking_and_partial_start(reset_and_partial_start_message);
                 hardware_info::try_reset_emitting();
-                ReceivedWorkerMessage::handle(ReceivedWorkerMessage::PartialStart);
+                Self::handle(Self::PartialStart);
             }
-            ReceivedWorkerMessage::StopAndReset => {
+            Self::StopAndReset => {
                 runtime::try_stop_blocking();
                 architecture::reset();
                 screen::try_stop_rendering();
@@ -59,27 +59,26 @@ impl ReceivedWorkerMessage {
                 hardware_info::emit_default();
                 hardware_info::try_stop_emitting();
             }
-            ReceivedWorkerMessage::Stop => {
+            Self::Stop => {
                 let in_runtime_loop = unsafe { runtime_worker::IN_RUNTIME_LOOP };
                 runtime::try_stop_blocking();
                 if in_runtime_loop {
                     js_api::post_worker_message(runtime_worker::StoppedRuntimeMessage {
                         send_partial_stop_message: false,
                     });
-                    hardware_info::emit();
+                    hardware_info::emit()
                 }
                 screen::try_stop_rendering();
                 hardware_info::try_stop_emitting();
             }
-            ReceivedWorkerMessage::Keyboard(keyboard_message) => {
+            Self::Keyboard(keyboard_message) => {
                 hardware::keyboard(keyboard_message.key, true);
             }
-            ReceivedWorkerMessage::Speed(speed_message) => {
+            Self::Speed(speed_message) => {
                 runtime::speed(speed_message);
             }
-            ReceivedWorkerMessage::ClearRAM => {
+            Self::ClearRAM => {
                 memory::clear_ram();
-                hardware_info::emit();
             }
         }
     }

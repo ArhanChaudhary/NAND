@@ -13,10 +13,10 @@ pub fn reset_blocking_and_partial_start(
         .collect::<Vec<u16>>();
     unsafe {
         runtime_worker::LOADING_NEW_PROGRAM = true;
+        // read_volatile is absolutely needed here to prevent the compiler from optimizing the loop away
+        // see https://godbolt.org/z/xq7P8PEj4 for the full story
+        while !ptr::read_volatile(addr_of!(runtime_worker::READY_TO_LOAD_NEW_PROGRAM)) {}
     }
-    // read_volatile is absolutely needed here to prevent the compiler from optimizing the loop away
-    // see https://godbolt.org/z/xq7P8PEj4 for the full story
-    while unsafe { !ptr::read_volatile(addr_of!(runtime_worker::READY_TO_LOAD_NEW_PROGRAM)) } {}
     hardware::load_rom(machine_code.as_slice());
     architecture::reset();
     unsafe {

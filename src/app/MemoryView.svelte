@@ -12,7 +12,7 @@
   import { BroadCompilerError, CompilerError } from "../compiler/exceptions";
   import VMTranslator from "../vm/main";
   import assembler, { BaseAssemblerError } from "../assembler/main";
-  import { clearRAM, JackOS } from "./Computer.svelte";
+  import { clearRAM, JackOS, stopComputer } from "./Computer.svelte";
   import { VMTranslatorError } from "../vm/main";
 
   export let show: boolean;
@@ -329,9 +329,19 @@
   // inherently tied to memoryDisplay, prioritize first
   $: if (memoryDisplay === "clr") {
     memoryDisplay = "dec";
-    if (confirm("Are you sure you want to clear the RAM?")) {
-      clearRAM();
-    }
+    stopComputer();
+    // wait for lights to turn red
+    // theres definitely a better way to await this
+    setTimeout(() => {
+      if (confirm("Are you sure you want to clear the RAM?")) {
+        clearRAM();
+        // make sure to update memory.rs if this is modified
+        $computerMemory.ramMemory.fill(0, 0, $computerMemory.ramMemory.length);
+        $computerMemory.pcRegister = 0;
+        $computerMemory.aRegister = 0;
+        $computerMemory.dRegister = 0;
+      }
+    }, 100);
   }
 
   // order should be agnotic

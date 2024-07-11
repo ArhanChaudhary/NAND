@@ -1245,7 +1245,7 @@ NAND's IDE unfortunately trades implementation simplicity for a worse user exper
 
 <hr>
 
-You now know how to program NAND in Jack! And wow! It's been grand voyage of discovery. This write-up only begins to do justice the pure genius behind the computer architecture of the modern world. Hopefully, you gain a newfound appreciation for the Herculean amount of technical complexity it takes to bridge the gap between your code and program output on the screen.
+You now know how to program NAND in Jack! And wow! This write-up only begins to do justice the pure genius behind the computer architecture of the modern world. Hopefully, you gain a newfound appreciation for the Herculean amount of technical complexity it takes to bridge the gap between your code and program output on the screen.
 
 Press "Start" to compile and run your code. The OS will typically take a little under a second to initialize memory and set up its services before you're off to see your program running!
 

@@ -1,8 +1,7 @@
 # TODO
-* upgrade rustwasm
 * make String work with just String.new if newWithStr isn't found
 * new video
-* readme for load and clr 24576 32767 stops computer
+* readme in question mark in app
 
 # TODO (genetic algorithm)
 * make able to re-place obstacles (actually reallocate memory and stuff)
