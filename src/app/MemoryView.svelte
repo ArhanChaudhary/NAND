@@ -145,12 +145,14 @@
             alert("Only one .hack file is supported.");
             return;
           }
-          machineCode = programFiles[0].file;
+          machineCode = programFiles[0].file
+            // remove new lines
+            .filter((line) => line);
           for (let instruction of machineCode) {
             if (!/^[01]{16}$/.test(instruction)) {
               $compilerError = new BroadCompilerError(
                 "",
-                "Invalid .hack file format"
+                "Invalid .hack file format: expected sixteen 0s or 1s per line"
               );
               return;
             }
