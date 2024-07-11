@@ -1249,4 +1249,4 @@ You now know how to program NAND in Jack! And wow! This write-up only begins to 
 
 Press "Start" to compile and run your code. The OS will typically take a little under a second to initialize memory and set up its services before you're off to see your program running!
 
-If you've read this far, my heartfelt thank you! Happy coding!
+If you've read this far, my heartfelt thank you!

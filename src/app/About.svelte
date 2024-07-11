@@ -35,7 +35,9 @@
   </p>
 
   <p>
-    To run a NAND program, load an example program or write your own and then
-    click "Start".
+    To run a NAND program, first load an example program, load your own program,
+    or write your own using the IDE. Then, click "Start" to compile and run the
+    code. Note that the OS will typically take a little under a second to
+    initialize memory and set up its services.
   </p>
 </Alert>
