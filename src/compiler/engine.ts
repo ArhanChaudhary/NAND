@@ -59,7 +59,11 @@ export default class Engine {
       subroutineName: "init",
       subroutineType: KeywordToken.FUNCTION,
       subroutineReturnType: KeywordToken.VOID,
-      missingThrowMessageEnding: "as it is the entry point of the program",
+      missingThrowMessageEnding: `as it is the entry point of the program\n\nIf
+        this error was unexpected, you're probably forgetting to load the Jack
+        OS. Click "Program Template" in the "Load example program" dropdown to
+        bundle the Jack OS with your program for compilation. Save your current
+        code before doing so, as this will otherwise overwrite it.`,
       nArgs: 0,
       // cant set to used in vmwriter because that happens after compiling
       used: true,
@@ -69,8 +73,10 @@ export default class Engine {
       subroutineName: "alloc",
       subroutineType: KeywordToken.FUNCTION,
       subroutineReturnType: KeywordToken.INT,
-      missingThrowMessageEnding:
-        "as constructors internally use it to allocate memory. You should copy my implementation of this subroutine as defined in example programs.\n\nIf you do so, make sure to initialize RAM[2048] = 14334 and RAM[2049] = 16384",
+      missingThrowMessageEnding: `as constructors internally use it to allocate
+        memory. You should copy my implementation of this subroutine as defined
+        in example programs.\n\nIf you do so, make sure to initialize RAM[2048]
+        = 14334 and RAM[2049] = 16384`,
       nArgs: 1,
       used: false,
     },
@@ -79,8 +85,9 @@ export default class Engine {
       subroutineName: "newWithStr",
       subroutineType: KeywordToken.CONSTRUCTOR,
       subroutineReturnType: "String",
-      missingThrowMessageEnding:
-        "as it is internally used to represent string literals. You should copy my implementation of this subroutine as defined in example programs",
+      missingThrowMessageEnding: `as it is internally used to represent string
+        literals. You should copy my implementation of this subroutine as
+        defined in example programs`,
       nArgs: 1,
       used: false,
     },
@@ -89,8 +96,9 @@ export default class Engine {
       subroutineName: "multiply",
       subroutineType: KeywordToken.FUNCTION,
       subroutineReturnType: KeywordToken.INT,
-      missingThrowMessageEnding:
-        "as it is interally used to multiply two numbers. You should copy my implementation of this subroutine as defined in example programs",
+      missingThrowMessageEnding: `as it is interally used to multiply two
+        numbers. You should copy my implementation of this subroutine as defined
+        in example programs`,
       nArgs: 2,
       used: false,
     },
@@ -99,8 +107,9 @@ export default class Engine {
       subroutineName: "divide",
       subroutineType: KeywordToken.FUNCTION,
       subroutineReturnType: KeywordToken.INT,
-      missingThrowMessageEnding:
-        "as it is interally used to divide two numbers. You should copy my implementation of this subroutine as defined in example programs",
+      missingThrowMessageEnding: `as it is interally used to divide two
+        numbers. You should copy my implementation of this subroutine as defined
+        in example programs`,
       nArgs: 2,
       used: false,
     },
@@ -955,7 +964,9 @@ export default class Engine {
                 subroutineName: curr.subroutineName,
                 missingThrowMessage: new BroadCompilerError(
                   curr.subroutineClass,
-                  `subroutine '${curr.subroutineName}' from class '${curr.subroutineClass}' must be declared, ${curr.missingThrowMessageEnding}`
+                  `Subroutine '${curr.subroutineName}' from class
+                  '${curr.subroutineClass}' must be declared,
+                  ${curr.missingThrowMessageEnding}`
                 ),
               });
             }
