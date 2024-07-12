@@ -24,6 +24,7 @@
   let memoryView: HTMLDivElement;
   let memoryViewHeader: HTMLDivElement;
   let virtualList: VirtualList;
+  let fileInput: HTMLInputElement;
   let height: number;
   let memoryDisplay: string;
   let memoryDisplayType: string;
@@ -293,13 +294,8 @@
         memoryDisplay = "vm";
         break;
       case "load":
-        let input = document.createElement("input");
-        input.type = "file";
-        input.onchange = loadUserFiles;
-        input.oncancel = () => (memoryDisplayType = "ram");
-        input.multiple = true;
-        input.accept = ".jack, .vm, .asm, .hack";
-        input.click();
+        // may fail on safari :-(
+        fileInput.click();
         break;
     }
     await onMountAsync;
@@ -547,6 +543,19 @@
         on:input={gotoInput}
       />
     </div>
+    <input
+      bind:this={fileInput}
+      id="file-input"
+      hidden
+      type="file"
+      accept=".jack, .vm, .asm, .hack"
+      multiple
+      on:cancel={() => (memoryDisplayType = "ram")}
+      on:change={loadUserFiles}
+    />
+    {#if memoryDisplayType === "load"}
+      <label id="file-input-label" for="file-input">Load file(s)</label>
+    {/if}
     <VirtualList
       width="100%"
       {height}
@@ -739,6 +748,27 @@
         label {
           font-size: 16px;
         }
+      }
+    }
+
+    #file-input-label {
+      position: absolute;
+      z-index: 1;
+      right: 0;
+      left: 0;
+      background: hsl(0, 0%, 83%);
+      display: block;
+      border-radius: 5px;
+      margin: 4px 13px;
+      color: black;
+      line-height: 2em;
+      text-align: center;
+      outline: 1px solid hsl(0, 0%, 50%);
+      cursor: pointer;
+
+      &:hover {
+        background: hsl(0deg 0% 75%);
+        transform: translateY(1px);
       }
     }
 
