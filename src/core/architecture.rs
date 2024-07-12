@@ -40,15 +40,16 @@ fn cpu(in_m: u16, instruction: u16, reset: bool) -> (u16, bool) {
     );
 
     memory::d_register(alu_out, and(nbit16(instruction, 4), c_instruction));
+    memory::a_register(
+        mux16(instruction, alu_out, c_instruction),
+        or(not(c_instruction), nbit16(instruction, 5)),
+    );
     memory::pc_register(mux16(
         // load
         slice16_0to14(mux16(
             // inc
             inc16(unsafe { memory::PC }),
-            memory::a_register(
-                mux16(instruction, alu_out, c_instruction),
-                or(not(c_instruction), nbit16(instruction, 5)),
-            ),
+            alu_y1,
             do_jump,
         )),
         0,
