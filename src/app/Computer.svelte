@@ -188,7 +188,7 @@
         if (makeRedAfterwards) {
           lightStatus = "red";
           makeRedAfterwards = false;
-        } else if (hardwareInfoMessage.NANDCalls > 38_800_000_000) {
+        } else if (hardwareInfoMessage.NANDCalls > 31_300_000_000) {
           lightStatus = "green";
         } else if (hardwareInfoMessage.NANDCalls === 0) {
           lightStatus = "";
@@ -207,7 +207,7 @@
             Math.round((hardwareInfoMessage.NANDCalls * 10) / 1_000_000_000) /
               10 +
             " billion";
-        } else if (hardwareInfoMessage.NANDCalls >= 1_000_000) {
+        } else if (hardwareInfoMessage.NANDCalls >= 0) {
           NANDCalls =
             Math.round(hardwareInfoMessage.NANDCalls / 1_000_000) + " million";
         } else {
