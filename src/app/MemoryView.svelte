@@ -5,6 +5,7 @@
     ROM,
     activeTabName,
     compilerError,
+    computerIsRunning,
     computerMemory,
   } from "./stores";
   import { onMount, tick } from "svelte";
@@ -302,6 +303,21 @@
     virtualList.recomputeSizes(0);
   }
 
+  function promptClearRAM() {
+    if (memoryDisplay !== "clr") return;
+    memoryDisplay = "dec";
+    if ($computerIsRunning) {
+      stopComputer();
+    }
+    // wait for lights to turn red
+    // theres definitely a better way to await this
+    setTimeout(() => {
+      if (confirm("Are you sure you want to clear the RAM?")) {
+        clearRAM();
+      }
+    }, 100);
+  }
+
   let collapsed = false;
   let oldMemoryViewWidth: number;
   function toggleCollapse() {
@@ -325,22 +341,7 @@
   // to ensure memoryDisplay and memoryDisplayType don't desync
   $: memoryDisplayType, memoryDisplayTypeChanged();
   // inherently tied to memoryDisplay, prioritize first
-  $: if (memoryDisplay === "clr") {
-    memoryDisplay = "dec";
-    stopComputer();
-    // wait for lights to turn red
-    // theres definitely a better way to await this
-    setTimeout(() => {
-      if (confirm("Are you sure you want to clear the RAM?")) {
-        clearRAM();
-        // make sure to update memory.rs if this is modified
-        $computerMemory.ramMemory.fill(0, 0, $computerMemory.ramMemory.length);
-        $computerMemory.pcRegister = 0;
-        $computerMemory.aRegister = 0;
-        $computerMemory.dRegister = 0;
-      }
-    }, 100);
-  }
+  $: memoryDisplay, promptClearRAM();
 
   // order should be agnotic
   $: {

@@ -14,6 +14,17 @@ struct HardwareInfoMessage {
     nand_calls: u64,
 }
 
+impl HardwareInfoMessage {
+    fn new() -> Self {
+        Self {
+            clock_speed: unsafe {
+                PREV_SEC_TOTALS.iter().sum::<f64>() / PREV_SEC_TOTALS.len() as f64
+            },
+            nand_calls: hardware::nand_calls(),
+        }
+    }
+}
+
 #[derive(Serialize)]
 struct MemoryInfoMessage {
     #[serde(with = "serde_wasm_bindgen::preserve", rename = "ramMemory")]
@@ -30,6 +41,19 @@ struct MemoryInfoMessage {
     d_register: u16,
 }
 
+impl MemoryInfoMessage {
+    fn new() -> Self {
+        Self {
+            ram_memory: unsafe { Uint16Array::view(memory::RAM16K_MEMORY.as_slice()) },
+            screen_memory: unsafe { Uint16Array::view(memory::SCREEN_MEMORY.as_slice()) },
+            pressed_key: hardware::keyboard(0, false),
+            a_register: memory::a_register(0, false),
+            d_register: memory::d_register(0, false),
+            pc_register: unsafe { memory::PC },
+        }
+    }
+}
+
 #[derive(Serialize)]
 #[serde(tag = "action", rename = "infoMessage")]
 struct InfoMessage {
@@ -41,7 +65,7 @@ struct InfoMessage {
 
 static mut EMIT_HARDWARE_INFO_INTERVAL: Option<i32> = None;
 static EMIT_HARDWARE_INFO_CLOSURE: sync_cell::SyncLazyCell<Closure<dyn Fn()>> =
-    sync_cell::SyncLazyCell::new(|| Closure::new(emit_memory_and_hardware));
+    sync_cell::SyncLazyCell::new(|| Closure::new(update_clock_speed_and_emit));
 
 static mut PREV_SEC_TOTALS: VecDeque<f64> = VecDeque::new();
 static mut PREV_EMIT_INTERVAL_STEP_TOTAL: usize = 0;
@@ -88,7 +112,14 @@ pub fn emit_default() {
     });
 }
 
-pub fn emit_memory_and_hardware() {
+pub fn emit() {
+    js_api::post_worker_message(InfoMessage {
+        hardware_info: HardwareInfoMessage::new(),
+        memory_info: Some(MemoryInfoMessage::new()),
+    });
+}
+
+pub fn update_clock_speed_and_emit() {
     unsafe {
         if PREV_SEC_TOTALS.len()
             == (1000 * PREV_SEC_TOTAL_AVG_TIME) / EMIT_HARDWARE_INFO_INTERVAL_DELAY
@@ -102,18 +133,5 @@ pub fn emit_memory_and_hardware() {
         );
         PREV_EMIT_INTERVAL_STEP_TOTAL = runtime_worker::EMIT_INTERVAL_STEP_TOTAL;
     };
-    js_api::post_worker_message(InfoMessage {
-        hardware_info: HardwareInfoMessage {
-            clock_speed: unsafe { PREV_SEC_TOTALS.iter().sum::<f64>() / PREV_SEC_TOTALS.len() as f64 },
-            nand_calls: hardware::nand_calls(),
-        },
-        memory_info: Some(MemoryInfoMessage {
-            ram_memory: unsafe { Uint16Array::view(memory::RAM16K_MEMORY.as_slice()) },
-            screen_memory: unsafe { Uint16Array::view(memory::SCREEN_MEMORY.as_slice()) },
-            pressed_key: hardware::keyboard(0, false),
-            a_register: memory::a_register(0, false),
-            d_register: memory::d_register(0, false),
-            pc_register: unsafe { memory::PC },
-        }),
-    });
+    emit();
 }
