@@ -8,7 +8,8 @@ use wasm_bindgen::JsCast;
 
 #[derive(Serialize, Default)]
 struct HardwareInfoMessage {
-    hz: f64,
+    #[serde(rename = "clockSpeed")]
+    clock_speed: f64,
     #[serde(rename = "NANDCalls")]
     nand_calls: u64,
 }
@@ -40,7 +41,7 @@ struct InfoMessage {
 
 static mut EMIT_HARDWARE_INFO_INTERVAL: Option<i32> = None;
 static EMIT_HARDWARE_INFO_CLOSURE: sync_cell::SyncLazyCell<Closure<dyn Fn()>> =
-    sync_cell::SyncLazyCell::new(|| Closure::new(emit));
+    sync_cell::SyncLazyCell::new(|| Closure::new(emit_memory_and_hardware));
 
 static mut PREV_SEC_TOTALS: VecDeque<f64> = VecDeque::new();
 static mut PREV_EMIT_INTERVAL_STEP_TOTAL: usize = 0;
@@ -87,7 +88,7 @@ pub fn emit_default() {
     });
 }
 
-pub fn emit() {
+pub fn emit_memory_and_hardware() {
     unsafe {
         if PREV_SEC_TOTALS.len()
             == (1000 * PREV_SEC_TOTAL_AVG_TIME) / EMIT_HARDWARE_INFO_INTERVAL_DELAY
@@ -103,7 +104,7 @@ pub fn emit() {
     };
     js_api::post_worker_message(InfoMessage {
         hardware_info: HardwareInfoMessage {
-            hz: unsafe { PREV_SEC_TOTALS.iter().sum::<f64>() / PREV_SEC_TOTALS.len() as f64 },
+            clock_speed: unsafe { PREV_SEC_TOTALS.iter().sum::<f64>() / PREV_SEC_TOTALS.len() as f64 },
             nand_calls: hardware::nand_calls(),
         },
         memory_info: Some(MemoryInfoMessage {

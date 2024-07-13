@@ -175,14 +175,14 @@
     switch (e.data.action) {
       case "infoMessage":
         let hardwareInfoMessage = e.data.hardwareInfo;
-        if (hardwareInfoMessage.hz >= 100_000) {
+        if (hardwareInfoMessage.clockSpeed >= 100_000) {
           clockSpeed =
-            (hardwareInfoMessage.hz / 1_000_000).toPrecision(3) + " MHz";
-        } else if (hardwareInfoMessage.hz >= 1_000) {
-          clockSpeed = (hardwareInfoMessage.hz / 1_000).toPrecision(3) + " KHz";
+            (hardwareInfoMessage.clockSpeed / 1_000_000).toPrecision(3) + " MHz";
+        } else if (hardwareInfoMessage.clockSpeed >= 1_000) {
+          clockSpeed = (hardwareInfoMessage.clockSpeed / 1_000).toPrecision(3) + " KHz";
         } else {
           clockSpeed =
-            Math.round(hardwareInfoMessage.hz).toString().padStart(2, "\xa0") +
+            Math.round(hardwareInfoMessage.clockSpeed).toString().padStart(2, "\xa0") +
             " Hz";
         }
         if (makeRedAfterwards) {
