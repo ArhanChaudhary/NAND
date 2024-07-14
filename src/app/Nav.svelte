@@ -107,6 +107,7 @@
     stopAndResetComputer,
     stopComputer,
     speedComputer,
+    stepComputer,
   } from "./Computer.svelte";
   import {
     IDEContext,
@@ -258,7 +259,12 @@
   <button on:click={removeCursorOnSafari} on:click={compileAndStartComputer}>
     Start
   </button>
-  <button on:click={removeCursorOnSafari} on:click={stopComputer}>
+  <button
+    on:click={removeCursorOnSafari}
+    on:click={() => {
+      $computerIsRunning ? stopComputer() : stepComputer();
+    }}
+  >
     {$computerIsRunning === false ? "Step" : "Pause"}
   </button>
   <button on:click={removeCursorOnSafari} on:click={stopAndResetComputer}>

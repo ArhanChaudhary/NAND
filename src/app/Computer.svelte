@@ -130,6 +130,11 @@
     });
   }
 
+  export function stepComputer() {
+    computerIsRunning.set(false);
+    computerKernel.postMessage({ action: "step" });
+  }
+
   export function stopAndResetComputer() {
     computerIsRunning.set(null);
     computerKernel.postMessage({ action: "stopAndReset" });

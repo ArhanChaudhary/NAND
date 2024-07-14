@@ -24,6 +24,7 @@ enum ReceivedWorkerMessage {
     PartialStop,
     ResetAndPartialStart(ResetMessage),
     StopAndReset,
+    Step,
     Stop,
     Keyboard(KeyboardMessage),
     Speed(SpeedMessage),
@@ -62,16 +63,15 @@ impl ReceivedWorkerMessage {
                 hardware_info::emit_default();
                 hardware_info::try_stop_emitting();
             }
-            Self::Stop => {
-                let in_runtime_loop = unsafe { runtime_worker::IN_RUNTIME_LOOP };
+            Self::Step => {
                 runtime::try_stop_blocking();
-                if in_runtime_loop {
-                    hardware_info::update_clock_speed_and_emit();
-                } else {
-                    architecture::ticktock();
-                    hardware_info::emit();
-                    hardware::render();
-                }
+                architecture::ticktock();
+                hardware_info::emit();
+                hardware::render();
+            }
+            Self::Stop => {
+                runtime::try_stop_blocking();
+                hardware_info::update_clock_speed_and_emit();
                 screen::try_stop_rendering();
                 hardware_info::try_stop_emitting();
             }
@@ -111,6 +111,7 @@ impl<'de> Visitor<'de> for ReceivedWorkerMessageVisitor {
                 machine_code: map.next_entry::<String, _>()?.unwrap().1,
             }),
             "stopAndReset" => ReceivedWorkerMessage::StopAndReset,
+            "step" => ReceivedWorkerMessage::Step,
             "stop" => ReceivedWorkerMessage::Stop,
             "keyboard" => ReceivedWorkerMessage::Keyboard(KeyboardMessage {
                 key: map.next_entry::<String, _>()?.unwrap().1,
