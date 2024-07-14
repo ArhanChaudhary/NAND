@@ -1,6 +1,5 @@
 <script lang="ts" context="module">
   import runtimeInit from "nand-core";
-  import { computerIsRunning } from "./stores";
 
   export let JackOS: {
     fileName: string;
@@ -116,13 +115,11 @@
 
   await Promise.all([loadJackOS, loadComputerRuntime, loadComputerKernel]);
   export function startComputer() {
-    computerIsRunning.set(true);
     computerRunner.postMessage(undefined);
     computerKernel.postMessage({ action: "partialStart" });
   }
 
   export function resetAndStartComputer(machineCode: string[]) {
-    computerIsRunning.set(true);
     computerRunner.postMessage(undefined);
     computerKernel.postMessage({
       action: "resetAndPartialStart",
@@ -131,17 +128,14 @@
   }
 
   export function stopAndResetComputer() {
-    computerIsRunning.set(null);
     computerKernel.postMessage({ action: "stopAndReset" });
   }
 
   export function stopComputer() {
-    computerIsRunning.set(false);
     computerKernel.postMessage({ action: "stop" });
   }
 
   function partialStopComputer() {
-    computerIsRunning.set(false);
     computerKernel.postMessage({ action: "partialStop" });
   }
 
@@ -173,63 +167,64 @@
       computerWrapper.clientWidth / computerWrapper.clientHeight || null;
   }
 
-  let clockSpeed = 0;
-  let NANDCalls = 0;
+  let clockSpeed = "\xa00 Hz";
+  let NANDCalls = "0";
   let lightStatus = "";
+  let makeRedAfterwards = false;
   function messageHandler(e: MessageEvent) {
     switch (e.data.action) {
       case "infoMessage":
-        ({ clockSpeed, NANDCalls } = e.data.hardwareInfo);
+        let hardwareInfoMessage = e.data.hardwareInfo;
+        if (hardwareInfoMessage.clockSpeed >= 100_000) {
+          clockSpeed =
+            (hardwareInfoMessage.clockSpeed / 1_000_000).toPrecision(3) + " MHz";
+        } else if (hardwareInfoMessage.clockSpeed >= 1_000) {
+          clockSpeed = (hardwareInfoMessage.clockSpeed / 1_000).toPrecision(3) + " KHz";
+        } else {
+          clockSpeed =
+            Math.round(hardwareInfoMessage.clockSpeed).toString().padStart(2, "\xa0") +
+            " Hz";
+        }
+        if (makeRedAfterwards) {
+          lightStatus = "red";
+          makeRedAfterwards = false;
+        } else if (hardwareInfoMessage.NANDCalls > 31_300_000_000) {
+          lightStatus = "green";
+        } else if (hardwareInfoMessage.NANDCalls === 0) {
+          lightStatus = "";
+        } else {
+          lightStatus = "loading";
+        }
+        if (hardwareInfoMessage.NANDCalls >= 1_000_000_000_000) {
+          NANDCalls =
+            Math.round(
+              (hardwareInfoMessage.NANDCalls * 1000) / 1_000_000_000_000
+            ) /
+              1000 +
+            " trillion";
+        } else if (hardwareInfoMessage.NANDCalls >= 1_000_000_000) {
+          NANDCalls =
+            Math.round((hardwareInfoMessage.NANDCalls * 10) / 1_000_000_000) /
+              10 +
+            " billion";
+        } else if (hardwareInfoMessage.NANDCalls >= 0) {
+          NANDCalls =
+            Math.round(hardwareInfoMessage.NANDCalls / 1_000_000) + " million";
+        } else {
+          NANDCalls = "0";
+        }
         if (e.data.memoryInfo) {
           $computerMemory = e.data.memoryInfo;
         }
         break;
       case "stoppedRuntime":
+        // stopRendering calls hardwareInfo one last time, set to red above
+        makeRedAfterwards = true;
         if (e.data.sendPartialStopMessage) {
           partialStopComputer();
         }
         break;
     }
-  }
-
-  function formatClockSpeed(clockSpeed: number) {
-    if (clockSpeed >= 100_000) {
-      return (clockSpeed / 1_000_000).toPrecision(3) + " MHz";
-    } else if (clockSpeed >= 1_000) {
-      return (clockSpeed / 1_000).toPrecision(3) + " KHz";
-    } else {
-      return Math.round(clockSpeed).toString().padStart(2, "\xa0") + " Hz";
-    }
-  }
-
-  function formatNANDCalls(NANDCalls: number) {
-    if (NANDCalls >= 1_000_000_000_000) {
-      return (
-        Math.round((NANDCalls * 1000) / 1_000_000_000_000) / 1000 + " trillion"
-      );
-    } else if (NANDCalls >= 1_000_000_000) {
-      return Math.round((NANDCalls * 10) / 1_000_000_000) / 10 + " billion";
-    } else if (NANDCalls > 0) {
-      return Math.round(NANDCalls / 1_000_000) + " million";
-    } else {
-      return "0";
-    }
-  }
-
-  $: switch ($computerIsRunning) {
-    case true:
-      if (NANDCalls > 31_300_000_000) {
-        lightStatus = "green";
-      } else {
-        lightStatus = "loading";
-      }
-      break;
-    case false:
-      lightStatus = "red";
-      break;
-    case null:
-      lightStatus = "";
-      break;
   }
 
   let computerScreen: HTMLCanvasElement;
@@ -364,8 +359,8 @@
         {/each}
       </div>
     </div>
-    <div id="secHz">Clock speed: {formatClockSpeed(clockSpeed)}</div>
-    <div id="NANDCalls">NAND Calls: {formatNANDCalls(NANDCalls)}</div>
+    <div id="secHz">Clock speed: {clockSpeed}</div>
+    <div id="NANDCalls">NAND Calls: {NANDCalls}</div>
   </div>
 </div>
 

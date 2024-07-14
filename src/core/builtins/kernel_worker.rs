@@ -43,7 +43,7 @@ impl ReceivedWorkerMessage {
             }
             Self::PartialStop => {
                 screen::try_stop_rendering();
-                hardware_info::update_clock_speed_and_emit();
+                hardware_info::emit_memory_and_hardware();
                 hardware_info::try_stop_emitting();
             }
             Self::ResetAndPartialStart(reset_and_partial_start_message) => {
@@ -66,11 +66,7 @@ impl ReceivedWorkerMessage {
                     js_api::post_worker_message(runtime_worker::StoppedRuntimeMessage {
                         send_partial_stop_message: false,
                     });
-                    hardware_info::update_clock_speed_and_emit();
-                } else {
-                    architecture::ticktock();
-                    hardware_info::emit();
-                    hardware::render();
+                    hardware_info::emit_memory_and_hardware();
                 }
                 screen::try_stop_rendering();
                 hardware_info::try_stop_emitting();

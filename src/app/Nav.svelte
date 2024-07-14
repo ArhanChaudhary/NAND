@@ -114,7 +114,6 @@
     activeTabName,
     ROM,
     compilerError,
-    computerIsRunning,
   } from "./stores";
   import { tick } from "svelte";
   import { VMTranslatorError } from "../vm/main";
@@ -259,7 +258,7 @@
     Start
   </button>
   <button on:click={removeCursorOnSafari} on:click={stopComputer}>
-    {$computerIsRunning === false ? "Step" : "Pause"}
+    Stop
   </button>
   <button on:click={removeCursorOnSafari} on:click={stopAndResetComputer}>
     Reset
@@ -340,10 +339,7 @@
       background-color: transparent;
       border: none;
       cursor: pointer;
-      width: 5ch;
-      flex-shrink: 0;
       height: 100%;
-      box-sizing: content-box;
     }
 
     .nav-divider {
