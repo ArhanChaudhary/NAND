@@ -49,7 +49,7 @@
 
     for (let i = 0; i < files.length; i++) {
       await new Promise<void>((resolve) => {
-        reader.onload = () => resolve();
+        reader.onload = resolve.bind(null, undefined);
         reader.readAsText(files[i]);
       });
 

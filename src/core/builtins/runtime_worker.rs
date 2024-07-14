@@ -41,11 +41,8 @@ pub static mut READY_TO_LOAD_NEW_PROGRAM: bool = false;
 pub static mut STEPS_PER_LOOP: usize = ALL_STEPS_PER_LOOP[ALL_STEPS_PER_LOOP.len() - 1];
 
 #[derive(Serialize)]
-#[serde(tag = "action", rename = "stoppedRuntime")]
-pub struct StoppedRuntimeMessage {
-    #[serde(rename = "sendPartialStopMessage")]
-    pub send_partial_stop_message: bool,
-}
+#[serde(tag = "action", rename = "sendPartialStopMessage")]
+pub struct SendPartialStopMessage {}
 
 #[wasm_bindgen(js_name = tryStartRuntime)]
 pub fn try_start() {
@@ -79,9 +76,7 @@ pub fn try_start() {
             // This is still needed even though present in architecture::reset
             // or else pressing start again doesn't work because it wasnt reset.
             hardware::keyboard(0, true);
-            js_api::post_worker_message(StoppedRuntimeMessage {
-                send_partial_stop_message: true,
-            });
+            js_api::post_worker_message(SendPartialStopMessage {});
             break;
         }
         unsafe {

@@ -184,10 +184,8 @@
           $computerMemory = e.data.memoryInfo;
         }
         break;
-      case "stoppedRuntime":
-        if (e.data.sendPartialStopMessage) {
-          partialStopComputer();
-        }
+      case "sendPartialStopMessage":
+        partialStopComputer();
         break;
     }
   }
@@ -198,7 +196,11 @@
     } else if (clockSpeed >= 1_000) {
       return (clockSpeed / 1_000).toPrecision(3) + " KHz";
     } else {
-      return Math.round(clockSpeed).toString().padStart(2, "\xa0") + " Hz";
+      return (
+        Math.round(clockSpeed || 0)
+          .toString()
+          .padStart(2, "\xa0") + " Hz"
+      );
     }
   }
 

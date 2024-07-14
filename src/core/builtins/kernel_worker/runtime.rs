@@ -1,12 +1,10 @@
-use super::{ResetAndPartialStartMessage, SpeedMessage};
+use super::{ResetMessage, SpeedMessage};
 use crate::architecture;
 use crate::builtins::{hardware, runtime_worker};
 use std::ptr::{self, addr_of};
 
-pub fn reset_blocking_and_partial_start(
-    reset_and_partial_start_message: ResetAndPartialStartMessage,
-) {
-    let machine_code = reset_and_partial_start_message
+pub fn reset_blocking(reset_message: ResetMessage) {
+    let machine_code = reset_message
         .machine_code
         .into_iter()
         .map(|v| u16::from_str_radix(v.as_str(), 2).unwrap())
@@ -19,10 +17,6 @@ pub fn reset_blocking_and_partial_start(
     }
     hardware::load_rom(machine_code.as_slice());
     architecture::reset();
-    unsafe {
-        runtime_worker::LOADING_NEW_PROGRAM = false;
-        runtime_worker::READY_TO_LOAD_NEW_PROGRAM = false;
-    }
 }
 
 pub fn try_stop_blocking() {

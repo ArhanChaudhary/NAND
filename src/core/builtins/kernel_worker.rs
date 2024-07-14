@@ -2,7 +2,6 @@ use super::utils::js_api::DeserializeableOffscreenCanvas;
 use super::{hardware, memory};
 use crate::architecture;
 use crate::builtins::runtime_worker;
-use crate::builtins::utils::js_api;
 use serde::de::{MapAccess, Visitor};
 use serde::{Deserialize, Deserializer};
 use std::fmt;
@@ -23,7 +22,7 @@ enum ReceivedWorkerMessage {
     ScreenInit(ScreenInitMessage),
     PartialStart,
     PartialStop,
-    ResetAndPartialStart(ResetAndPartialStartMessage),
+    ResetAndPartialStart(ResetMessage),
     StopAndReset,
     Stop,
     Keyboard(KeyboardMessage),
@@ -46,8 +45,12 @@ impl ReceivedWorkerMessage {
                 hardware_info::update_clock_speed_and_emit();
                 hardware_info::try_stop_emitting();
             }
-            Self::ResetAndPartialStart(reset_and_partial_start_message) => {
-                runtime::reset_blocking_and_partial_start(reset_and_partial_start_message);
+            Self::ResetAndPartialStart(reset_message) => {
+                runtime::reset_blocking(reset_message);
+                unsafe {
+                    runtime_worker::LOADING_NEW_PROGRAM = false;
+                    runtime_worker::READY_TO_LOAD_NEW_PROGRAM = false;
+                }
                 hardware_info::try_reset_emitting();
                 Self::handle(Self::PartialStart);
             }
@@ -63,9 +66,6 @@ impl ReceivedWorkerMessage {
                 let in_runtime_loop = unsafe { runtime_worker::IN_RUNTIME_LOOP };
                 runtime::try_stop_blocking();
                 if in_runtime_loop {
-                    js_api::post_worker_message(runtime_worker::StoppedRuntimeMessage {
-                        send_partial_stop_message: false,
-                    });
                     hardware_info::update_clock_speed_and_emit();
                 } else {
                     architecture::ticktock();
@@ -107,11 +107,9 @@ impl<'de> Visitor<'de> for ReceivedWorkerMessageVisitor {
             }),
             "partialStart" => ReceivedWorkerMessage::PartialStart,
             "partialStop" => ReceivedWorkerMessage::PartialStop,
-            "resetAndPartialStart" => {
-                ReceivedWorkerMessage::ResetAndPartialStart(ResetAndPartialStartMessage {
-                    machine_code: map.next_entry::<String, _>()?.unwrap().1,
-                })
-            }
+            "resetAndPartialStart" => ReceivedWorkerMessage::ResetAndPartialStart(ResetMessage {
+                machine_code: map.next_entry::<String, _>()?.unwrap().1,
+            }),
             "stopAndReset" => ReceivedWorkerMessage::StopAndReset,
             "stop" => ReceivedWorkerMessage::Stop,
             "keyboard" => ReceivedWorkerMessage::Keyboard(KeyboardMessage {
@@ -139,7 +137,7 @@ pub struct ScreenInitMessage {
     offscreen_canvas: DeserializeableOffscreenCanvas,
 }
 
-pub struct ResetAndPartialStartMessage {
+pub struct ResetMessage {
     machine_code: Vec<String>,
 }
 
