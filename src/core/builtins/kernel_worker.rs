@@ -83,6 +83,7 @@ impl ReceivedWorkerMessage {
             }
             Self::ClearRAM => {
                 memory::clear_ram();
+                hardware_info::emit();
             }
         }
     }
