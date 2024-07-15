@@ -52,7 +52,7 @@ impl ReceivedWorkerMessage {
                     runtime_worker::LOADING_NEW_PROGRAM = false;
                     runtime_worker::READY_TO_LOAD_NEW_PROGRAM = false;
                 }
-                hardware_info::try_reset_emitting();
+                hardware_info::reset_emitting();
                 Self::handle(Self::PartialStart);
             }
             Self::StopAndReset => {

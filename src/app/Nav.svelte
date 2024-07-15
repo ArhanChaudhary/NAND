@@ -281,10 +281,12 @@
   </div>
   <div class="nav-divider"></div>
   <span>
-    <select on:change={(e) => {
-      // @ts-ignore
-      loadExampleProgram(e.target.value);
-    }}>
+    <select
+      on:change={(e) => {
+        // @ts-ignore
+        loadExampleProgram(e.target.value);
+      }}
+    >
       {#await exampleProgramLoader}
         <option label="Loading..."></option>
       {:then}
