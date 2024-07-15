@@ -52,14 +52,14 @@ impl ReceivedWorkerMessage {
                     runtime_worker::LOADING_NEW_PROGRAM = false;
                     runtime_worker::READY_TO_LOAD_NEW_PROGRAM = false;
                 }
-                hardware_info::reset_emitting();
+                hardware_info::reset_clock_speed();
                 Self::handle(Self::PartialStart);
             }
             Self::StopAndReset => {
                 runtime::try_stop_blocking();
                 architecture::reset();
                 screen::try_stop_rendering();
-                hardware_info::reset_emitting();
+                hardware_info::reset_clock_speed();
                 hardware_info::emit_default();
                 hardware_info::try_stop_emitting();
             }

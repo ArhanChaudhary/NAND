@@ -85,7 +85,7 @@ pub fn try_start_emitting() {
     }
 }
 
-pub fn reset_emitting() {
+pub fn reset_clock_speed() {
     unsafe {
         PREV_EMIT_INTERVAL_STEP_TOTAL = runtime_worker::EMIT_INTERVAL_STEP_TOTAL;
         PREV_SEC_TOTALS.clear();
