@@ -73,7 +73,10 @@ pub fn try_start() {
         if hardware::keyboard(0, false) == 32767 {
             // This is still needed even though present in architecture::reset
             // or else pressing start again doesn't work because it wasnt reset.
-            hardware::keyboard(0, true);
+            // use this instead of hardware::keyboard because CLOCK is false
+            unsafe {
+                hardware::PRESSED_KEY = 0;
+            }
             js_api::post_worker_message(SendPartialStopMessage {});
             break;
         }

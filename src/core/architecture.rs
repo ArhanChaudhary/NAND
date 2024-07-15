@@ -103,8 +103,9 @@ pub fn ticktock() {
 pub fn reset() {
     hardware::tick();
     computer(true);
+    // think of this as an extension to memory() at the end of computer()
+    hardware::keyboard(0, true);
     hardware::tock();
     computer(true);
     hardware::reset_nand_calls();
-    hardware::keyboard(0, true);
 }

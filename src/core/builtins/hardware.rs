@@ -59,7 +59,7 @@ pub fn load_rom(machine_code: Vec<u16>) {
     }
 }
 
-static mut PRESSED_KEY: u16 = 0;
+pub static mut PRESSED_KEY: u16 = 0;
 pub fn keyboard(in_: u16, load: bool) -> u16 {
     if load && unsafe { CLOCK } {
         unsafe {

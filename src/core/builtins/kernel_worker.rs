@@ -111,7 +111,11 @@ impl ReceivedWorkerMessage {
                 hardware_info::try_stop_emitting();
             }
             Self::Keyboard(keyboard_message) => {
-                hardware::keyboard(keyboard_message.key, true);
+                // DO NOT use this; nothing may happen because clock might be false
+                // hardware::keyboard(keyboard_message.key, true);
+                unsafe {
+                    hardware::PRESSED_KEY = keyboard_message.key;
+                }
             }
             Self::Speed(speed_message) => {
                 let speed_percentage = speed_message.speed_percentage;
