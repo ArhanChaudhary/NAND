@@ -1,6 +1,5 @@
 use super::hardware;
-use super::kernel_worker::runtime::ALL_STEPS_PER_LOOP;
-use super::utils::{js_api, sync_cell};
+use super::utils::{js_api, sync_cell, ALL_STEPS_PER_LOOP};
 use crate::architecture;
 use serde::Serialize;
 use std::{ptr, thread};

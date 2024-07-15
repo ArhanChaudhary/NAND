@@ -60,7 +60,7 @@ struct InfoMessage {
     #[serde(rename = "hardwareInfo")]
     hardware_info: HardwareInfoMessage,
     #[serde(rename = "memoryInfo")]
-    memory_info: Option<MemoryInfoMessage>,
+    memory_info: MemoryInfoMessage,
 }
 
 static mut EMIT_HARDWARE_INFO_INTERVAL: Option<i32> = None;
@@ -102,14 +102,14 @@ pub fn try_stop_emitting() {
 pub fn emit_default() {
     js_api::post_worker_message(InfoMessage {
         hardware_info: HardwareInfoMessage::default(),
-        memory_info: None,
+        memory_info: MemoryInfoMessage::new(),
     });
 }
 
 pub fn emit() {
     js_api::post_worker_message(InfoMessage {
         hardware_info: HardwareInfoMessage::new(),
-        memory_info: Some(MemoryInfoMessage::new()),
+        memory_info: MemoryInfoMessage::new(),
     });
 }
 

@@ -185,9 +185,7 @@
     switch (e.data.action) {
       case "infoMessage":
         ({ clockSpeed, NANDCalls } = e.data.hardwareInfo);
-        if (e.data.memoryInfo) {
-          $computerMemory = e.data.memoryInfo;
-        }
+        $computerMemory = e.data.memoryInfo;
         break;
       case "sendPartialStopMessage":
         partialStopComputer();
