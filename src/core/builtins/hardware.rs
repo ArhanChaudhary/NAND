@@ -48,7 +48,6 @@ pub fn tock() {
     }
 }
 
-#[wasm_bindgen]
 pub fn load_rom(machine_code_buf: &[u16]) {
     // needs to be this for the memory.copy instruction
     unsafe {
