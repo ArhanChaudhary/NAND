@@ -1,14 +1,14 @@
 use super::utils::js_api::DeserializeableOffscreenCanvas;
+use super::utils::ALL_STEPS_PER_LOOP;
 use super::{hardware, memory};
 use crate::architecture;
 use crate::builtins::runtime_worker;
 use serde::de::{MapAccess, Visitor};
 use serde::{Deserialize, Deserializer};
-use std::fmt;
+use std::{fmt, ptr};
 use wasm_bindgen::prelude::*;
 
 mod hardware_info;
-pub mod runtime;
 mod screen;
 
 #[wasm_bindgen(js_name = kernelHandleMessage)]
@@ -47,7 +47,16 @@ impl ReceivedWorkerMessage {
                 hardware_info::try_stop_emitting();
             }
             Self::ResetAndPartialStart(reset_message) => {
-                runtime::reset_blocking(reset_message);
+                unsafe {
+                    runtime_worker::LOADING_NEW_PROGRAM = true;
+                    // read_volatile is absolutely needed here to prevent the compiler from optimizing the loop away
+                    // see https://godbolt.org/z/xq7P8PEj4 for the full story
+                    while !ptr::read_volatile(ptr::addr_of!(
+                        runtime_worker::READY_TO_LOAD_NEW_PROGRAM
+                    )) {}
+                }
+                hardware::load_rom(reset_message.parsed_machine_code());
+                architecture::reset();
                 unsafe {
                     runtime_worker::LOADING_NEW_PROGRAM = false;
                     runtime_worker::READY_TO_LOAD_NEW_PROGRAM = false;
@@ -56,7 +65,12 @@ impl ReceivedWorkerMessage {
                 Self::handle(Self::PartialStart);
             }
             Self::StopAndReset => {
-                runtime::try_stop_blocking();
+                unsafe {
+                    if runtime_worker::IN_RUNTIME_LOOP {
+                        runtime_worker::STOP_RUNTIME_LOOP = true;
+                        while ptr::read_volatile(ptr::addr_of!(runtime_worker::IN_RUNTIME_LOOP)) {}
+                    }
+                }
                 architecture::reset();
                 screen::try_stop_rendering();
                 hardware_info::reset_clock_speed();
@@ -69,7 +83,12 @@ impl ReceivedWorkerMessage {
                 hardware::render();
             }
             Self::Stop => {
-                runtime::try_stop_blocking();
+                unsafe {
+                    if runtime_worker::IN_RUNTIME_LOOP {
+                        runtime_worker::STOP_RUNTIME_LOOP = true;
+                        while ptr::read_volatile(ptr::addr_of!(runtime_worker::IN_RUNTIME_LOOP)) {}
+                    }
+                }
                 hardware_info::update_clock_speed_and_emit();
                 screen::try_stop_rendering();
                 hardware_info::try_stop_emitting();
@@ -78,7 +97,21 @@ impl ReceivedWorkerMessage {
                 hardware::keyboard(keyboard_message.key, true);
             }
             Self::Speed(speed_message) => {
-                runtime::speed(speed_message);
+                let speed_percentage = speed_message.speed_percentage;
+                if speed_percentage == 100 {
+                    unsafe {
+                        runtime_worker::STEPS_PER_LOOP = ALL_STEPS_PER_LOOP[10];
+                    }
+                } else {
+                    let div = (speed_percentage as usize) / 10;
+                    let lerp = (speed_percentage as usize) % 10;
+                    let div_speed = ALL_STEPS_PER_LOOP[div];
+                    let next_div_speed = ALL_STEPS_PER_LOOP[div + 1];
+                    unsafe {
+                        runtime_worker::STEPS_PER_LOOP =
+                            div_speed + ((next_div_speed - div_speed) * lerp) / 10;
+                    }
+                };
             }
             Self::ClearRAM => {
                 memory::clear_ram();
