@@ -48,13 +48,13 @@ pub fn tock() {
     }
 }
 
-pub fn load_rom(machine_code_buf: &[u16]) {
+pub fn load_rom(machine_code: Vec<u16>) {
     // needs to be this for the memory.copy instruction
     unsafe {
         std::ptr::copy_nonoverlapping(
-            machine_code_buf.as_ptr(),
+            machine_code.as_ptr(),
             memory::ROM32K_MEMORY.as_mut_ptr(),
-            machine_code_buf.len(),
+            machine_code.len(),
         );
     }
 }
@@ -107,12 +107,12 @@ pub static CTX: sync_cell::SyncOnceCell<OffscreenCanvasRenderingContext2d> =
 
 // I've tried out two separate algorithms to render the screen; here's a benchmark between
 // the two algorithms for my future reference.
-
+//
 // The current algorithm comfortably hovers at an average of around 0.28ms per blit. The
 // second algorithm on the `alternative-screen-rendering-algorithm` branch performs at
 // around 0.05ms per blit on empty screens, but at around 2.11ms per blit on the largest
 // Square in the `Square` example program.
-
+//
 // Currently, I have no plans to switch between these two algorithms as
 // 1) the magic number for when to switch would be vastly different across different
 // platforms

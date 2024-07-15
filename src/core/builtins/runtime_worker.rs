@@ -3,7 +3,6 @@ use super::kernel_worker::runtime::ALL_STEPS_PER_LOOP;
 use super::utils::{js_api, sync_cell};
 use crate::architecture;
 use serde::Serialize;
-use std::ptr::addr_of;
 use std::{ptr, thread};
 use wasm_bindgen::prelude::*;
 
@@ -56,7 +55,7 @@ pub fn try_start() {
         unsafe {
             if LOADING_NEW_PROGRAM {
                 READY_TO_LOAD_NEW_PROGRAM = true;
-                while ptr::read_volatile(addr_of!(LOADING_NEW_PROGRAM)) {}
+                while ptr::read_volatile(ptr::addr_of!(LOADING_NEW_PROGRAM)) {}
             }
         }
         for _ in 0..unsafe { STEPS_PER_LOOP } {

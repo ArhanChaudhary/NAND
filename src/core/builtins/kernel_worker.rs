@@ -142,6 +142,15 @@ pub struct ResetMessage {
     machine_code: Vec<String>,
 }
 
+impl ResetMessage {
+    pub fn parsed_machine_code(&self) -> Vec<u16> {
+        self.machine_code
+            .iter()
+            .map(|v| u16::from_str_radix(v.as_str(), 2).unwrap())
+            .collect::<Vec<u16>>()
+    }
+}
+
 pub struct KeyboardMessage {
     key: u16,
 }

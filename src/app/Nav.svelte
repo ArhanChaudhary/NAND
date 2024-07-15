@@ -206,14 +206,6 @@
     $shouldResetAndStart = false;
   }
 
-  function _speedComputer(e: Event) {
-    speedComputer((e.target as HTMLInputElement).valueAsNumber);
-  }
-
-  function exampleProgramSelectChange(e: Event) {
-    loadExampleProgram((e.target as HTMLSelectElement).value);
-  }
-
   function loadExampleProgram(exampleProgramName: string) {
     const exampleProgram = examplePrograms.find(
       (exampleProgram) =>
@@ -279,14 +271,20 @@
       max="100"
       value="100"
       on:keydown|stopPropagation
-      on:input={_speedComputer}
+      on:input={(e) => {
+        // @ts-ignore
+        speedComputer(e.target.valueAsNumber);
+      }}
     />
     <span>Slow</span>
     <span style="float: right">Fast</span>
   </div>
   <div class="nav-divider"></div>
   <span>
-    <select on:change={exampleProgramSelectChange}>
+    <select on:change={(e) => {
+      // @ts-ignore
+      loadExampleProgram(e.target.value);
+    }}>
       {#await exampleProgramLoader}
         <option label="Loading..."></option>
       {:then}
