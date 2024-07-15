@@ -64,7 +64,6 @@ impl ReceivedWorkerMessage {
                 hardware_info::try_stop_emitting();
             }
             Self::Step => {
-                runtime::try_stop_blocking();
                 architecture::ticktock();
                 hardware_info::emit();
                 hardware::render();
