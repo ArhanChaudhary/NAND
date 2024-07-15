@@ -22,6 +22,7 @@ enum ReceivedWorkerMessage {
     ScreenInit(ScreenInitMessage),
     PartialStart,
     PartialStop,
+    Reset(ResetMessage),
     ResetAndPartialStart(ResetMessage),
     StopAndReset,
     Step,
@@ -38,6 +39,9 @@ impl ReceivedWorkerMessage {
                 screen::init(screen_init_message);
             }
             Self::PartialStart => {
+                // do not move reset_clock_speed here or else
+                // unpausing will cause the clock speed to visibly
+                // fluctuate
                 screen::try_start_rendering();
                 hardware_info::try_start_emitting();
             }
@@ -45,6 +49,19 @@ impl ReceivedWorkerMessage {
                 screen::try_stop_rendering();
                 hardware_info::update_clock_speed_and_emit();
                 hardware_info::try_stop_emitting();
+            }
+            Self::Reset(reset_message) => {
+                hardware::load_rom(reset_message.parsed_machine_code());
+                let org_pc = unsafe { memory::PC };
+                architecture::reset();
+                // TODO: not ideal, but prevents the case of
+                // ResetAndStop -> Reset -> step (if statement allows this)
+                // Reset -> no step
+                if org_pc == 0 {
+                    architecture::ticktock();
+                    hardware::render();
+                }
+                hardware_info::emit_default();
             }
             Self::ResetAndPartialStart(reset_message) => {
                 unsafe {
@@ -140,6 +157,9 @@ impl<'de> Visitor<'de> for ReceivedWorkerMessageVisitor {
             }),
             "partialStart" => ReceivedWorkerMessage::PartialStart,
             "partialStop" => ReceivedWorkerMessage::PartialStop,
+            "reset" => ReceivedWorkerMessage::Reset(ResetMessage {
+                machine_code: map.next_entry::<String, _>()?.unwrap().1,
+            }),
             "resetAndPartialStart" => ReceivedWorkerMessage::ResetAndPartialStart(ResetMessage {
                 machine_code: map.next_entry::<String, _>()?.unwrap().1,
             }),

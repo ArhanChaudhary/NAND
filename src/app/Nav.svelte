@@ -108,6 +108,7 @@
     stopComputer,
     speedComputer,
     stepComputer,
+    resetComputer,
   } from "./Computer.svelte";
   import {
     IDEContext,
@@ -206,6 +207,51 @@
     $shouldResetAndStart = false;
   }
 
+  function _resetComputer() {
+    // not DRY but idc
+    let VMCodes;
+    let assembly;
+    let machineCode;
+    if ($IDEContext.length) {
+      let program = [...$IDEContext];
+      VMCodes = compiler(program, true);
+      if (VMCodes instanceof CompilerError) {
+        $compilerError = VMCodes;
+        displayCompilerError($compilerError);
+        return;
+      }
+    } else {
+      VMCodes = $ROM.VMCodes;
+    }
+    if (VMCodes.length) {
+      assembly = VMTranslator(VMCodes);
+      if (assembly instanceof VMTranslatorError) {
+        $compilerError = assembly;
+        displayCompilerError($compilerError);
+        return;
+      }
+    } else {
+      assembly = $ROM.assembly;
+    }
+    if (assembly.length) {
+      machineCode = assembler(assembly);
+      if (machineCode instanceof BaseAssemblerError) {
+        $compilerError = machineCode;
+        displayCompilerError($compilerError);
+        return;
+      }
+    } else {
+      machineCode = $ROM.machineCode;
+    }
+    console.log("Compilation successful! :D");
+    $ROM.VMCodes = VMCodes;
+    $ROM.assembly = assembly;
+    $ROM.machineCode = machineCode;
+
+    resetComputer(machineCode);
+    $shouldResetAndStart = false;
+  }
+
   function loadExampleProgram(exampleProgramName: string) {
     const exampleProgram = examplePrograms.find(
       (exampleProgram) =>
@@ -254,10 +300,16 @@
   <button
     on:click={removeCursorOnSafari}
     on:click={() => {
-      $computerIsRunning ? stopComputer() : stepComputer();
+      if ($computerIsRunning) {
+        stopComputer();
+      } else if ($shouldResetAndStart) {
+        _resetComputer();
+      } else {
+        stepComputer();
+      }
     }}
   >
-    {$computerIsRunning === false ? "Step" : "Pause"}
+    {$computerIsRunning ? "Pause" : "Step"}
   </button>
   <button on:click={removeCursorOnSafari} on:click={stopAndResetComputer}>
     Reset

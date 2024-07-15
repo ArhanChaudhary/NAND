@@ -121,6 +121,11 @@
     computerKernel.postMessage({ action: "partialStart" });
   }
 
+  export function resetComputer(machineCode: string[]) {
+    computerIsRunning.set(null);
+    computerKernel.postMessage({ action: "reset", machineCode });
+  }
+
   export function resetAndStartComputer(machineCode: string[]) {
     computerIsRunning.set(true);
     computerRunner.postMessage(undefined);
