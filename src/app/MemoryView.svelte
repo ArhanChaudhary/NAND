@@ -39,8 +39,6 @@
   let onMountAsync = new Promise<void>(onMount);
 
   async function loadUserFiles(e: Event) {
-    memoryDisplayType = "rom";
-
     let reader = new FileReader();
     let files = (e.target as HTMLInputElement).files as FileList;
 
@@ -61,6 +59,8 @@
         !["jack", "vm", "asm", "hack"].includes(fileExtension)
       ) {
         alert("Only .jack, .vm, .asm, and .hack files are supported.");
+        // after alert so load is still visible
+        memoryDisplayType = "rom";
         return;
       }
       if (
@@ -68,6 +68,8 @@
         prevFileExtension !== fileExtension
       ) {
         alert("Only one file type is supported at a time.");
+        // after alert so load is still visible
+        memoryDisplayType = "rom";
         return;
       }
       prevFileExtension = fileExtension;
@@ -77,6 +79,9 @@
         file: fileContent.split("\n"),
       });
     }
+    tick().then(() => {
+      memoryDisplayType = "rom";
+    });
 
     if (!programFiles.length || prevFileExtension === undefined) {
       alert("No files loaded.");
@@ -94,15 +99,6 @@
       prevFileExtension === "jack" ? programFiles.concat(filteredJackOS) : [];
     $activeTabName = "";
     $activeTabName = "Main";
-    tick().then(() => {
-      // omit this because it's hard to figure out the logic
-      // will compile twice unnecessarily but whatever
-      // also omit in case compilaton here fails
-      // $shouldResetAndStart = false;
-      memoryDisplay = { jack: "vm", vm: "vm", asm: "asm", hack: "bin" }[
-        prevFileExtension
-      ]!;
-    });
 
     let VMCodes;
     let assembly;
@@ -292,7 +288,13 @@
         break;
       case "rom":
         // make sure to change the itemCount thing if this is changed
-        memoryDisplay = "vm";
+        if ($ROM.VMCodes.length) {
+          memoryDisplay = "vm";
+        } else if ($ROM.assembly.length) {
+          memoryDisplay = "asm";
+        } else {
+          memoryDisplay = "bin";
+        }
         break;
       case "load":
         // may fail on safari :-(
