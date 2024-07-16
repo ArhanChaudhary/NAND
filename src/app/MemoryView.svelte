@@ -415,13 +415,13 @@
       case "vm":
         let ret = assemblyToVMCode[pcToAssembly[$computerMemory.pcRegister]];
         if (ret === null) {
-          clearTimeout(scrollToIndexTimeout);
           // throttle disabling highlight so it doesnt disable when fast
           // but does when slow
           scrollToIndexTimeout = setTimeout(() => {
             highlightIndex = undefined;
           }, 50);
         } else {
+          clearTimeout(scrollToIndexTimeout);
           highlightIndex = ret;
         }
         break;
