@@ -297,7 +297,6 @@
         }
         break;
       case "load":
-        // may fail on safari :-(
         fileInput.click();
         break;
     }
@@ -508,13 +507,27 @@
     </div>
     <div id="memory-view-header" bind:this={memoryViewHeader}>
       <div id="memory-selects">
-        <select class="memory-select" bind:value={memoryDisplayType}>
+        <select
+          class="memory-select"
+          bind:value={memoryDisplayType}
+          on:change={(e) => {
+            // @ts-ignore
+            e.target.blur();
+          }}
+        >
           <option value="ram">RAM</option>
           <option value="rom">ROM</option>
           <option value="load">Load</option>
         </select>
         {#if memoryDisplayType !== "load"}
-          <select class="memory-select" bind:value={memoryDisplay}>
+          <select
+            class="memory-select"
+            bind:value={memoryDisplay}
+            on:change={(e) => {
+              // @ts-ignore
+              e.target.blur();
+            }}
+          >
             {#if memoryDisplayType === "ram"}
               <option value="dec">Dec</option>
               <option value="hex">Hex</option>
