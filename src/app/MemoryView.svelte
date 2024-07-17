@@ -302,6 +302,7 @@
         break;
     }
     await onMountAsync;
+    scrollToIndex = 0;
     virtualList.recomputeSizes(0);
   }
 
