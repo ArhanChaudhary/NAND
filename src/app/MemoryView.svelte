@@ -385,10 +385,10 @@
             let actualVMCode =
               $ROM.VMCodes[actualVMCodeIndex].VMCode[
                 expectedVMCodeIndex - VMCodeStarts[actualVMCodeIndex]
-              ];
+              ].trim();
             let VMCodeCommentIndex = actualVMCode.indexOf("//");
             if (VMCodeCommentIndex !== -1) {
-              actualVMCode = actualVMCode.slice(0, VMCodeCommentIndex).trim();
+              actualVMCode = actualVMCode.slice(0, VMCodeCommentIndex);
             }
             if (expectedVMCode === actualVMCode) {
               break;
