@@ -42,7 +42,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
-          cargo install wasm-pack@0.13.0
+          cargo install wasm-pack@0.12.1
       - name: Build NAND
         run: |
           npm run rwbuild
