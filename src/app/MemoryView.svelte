@@ -569,6 +569,10 @@
       multiple
       on:cancel={() => (memoryDisplayType = "ram")}
       on:change={loadUserFiles}
+      on:click={(e) => {
+        // @ts-ignore
+        e.target.value = "";
+      }}
     />
     {#if memoryDisplayType === "load"}
       <label id="file-input-label" for="file-input">Load file(s)</label>
