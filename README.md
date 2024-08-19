@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="media/logo.png" width="200">
+    <img src="media/logo.png" width="200" alt="The NAND logo">
 </p>
 <hr>
 <!-- cSpell:disable -->
@@ -15,6 +15,7 @@ is a Turing equivalent 16-bit computer made entirely from a [clock](https://en.w
 
 ### Table of Contents
 
+<!-- markdownlint-disable ul-indent -->
 - [Example programs](#example-programs)
     - [Average](#average)
     - [Pong](#pong)
@@ -59,6 +60,7 @@ is a Turing equivalent 16-bit computer made entirely from a [clock](https://en.w
     - [Did you design NAND by yourself?](#did-you-design-nand-by-yourself)
     - [If there's only one type, what is the point of specifying types at all?](#if-theres-only-one-type-what-is-the-point-of-specifying-types-at-all)
     - [Why does the IDE feel finnicky?](#why-does-the-ide-feel-finnicky)
+<!-- markdownlint-enable ul-indent -->
 
 # Example programs
 
@@ -67,7 +69,8 @@ is a Turing equivalent 16-bit computer made entirely from a [clock](https://en.w
 A simple program that inputs some numbers and computes their average, showing off control flow, arithmetic operations, I/O, and dynamic memory allocation.
 
 Program output:
-```
+
+```txt
 How many numbers? 4
 Enter a number: 100
 Enter a number: 42
@@ -75,6 +78,7 @@ Enter a number: 400
 Enter a number: 300
 The average is 210
 ```
+
 *This program was supplied by the Nand to Tetris software suite.*
 
 ### Pong
@@ -93,7 +97,7 @@ A program that deliberately causes a stack overflow via infinite recursion to pe
 
 Upon running, the program will constantly print the stack pointer to the screen. Once this displayed value exceeds 2048, the stack will have reached the end of its intended memory space and spill onto the heap memory space, causing the print statement to malfunction in explosive fashion:
 
-<img src="media/overflow.png" width="700">
+<img src="media/overflow.png" width="700" alt="A corrupted screen">
 
 Two things of noteworthy interest are worth pointing out.
 
@@ -101,13 +105,13 @@ If you run this program on an empty RAM full of zeroes (you can clear the RAM th
 
 If you run the GeneticAlgorithm example program and then run this immediately afterwards, the program in its rampage reads old RAM memory that was simply never overwritten.
 
-<img src="media/old_memory.png" width="700">
+<img src="media/old_memory.png" width="700" alt="Leaked previous program memory">
 
 ### SecretPassword
 
 A program that exploits the fact that the runtime doesn't prevent [stack smashing](https://en.wikipedia.org/wiki/Stack_buffer_overflow) to call a function that would otherwise be inaccessible. In order to understand how this works, let's examine this illustration of NAND's stack frame layout.
 
-<img src="media/stack_layout.png" width="700">
+<img src="media/stack_layout.png" width="700" alt="The NAND stack layout">
 
 *taken from the [Nand to Tetris book](https://www.amazon.com/Elements-Computing-Systems-second-Principles-dp-0262539802/dp/0262539802/ref=dp_ob_title_bk).*
 
@@ -117,7 +121,7 @@ The program enables the user to overwrite a single memory address in the RAM to 
 
 Indeed, if you enter 267 as the memory location and 1715 as the value to overwrite, two numbers reverse engineered by manually inspecting the stack memory space and the assembler, you'll see this idea in working action.
 
-<img src="media/secret_password.png" width="700">
+<img src="media/secret_password.png" width="700" alt="The working secret password program">
 
 This isn't a vulnerability unique to NAND. [It exists in C as well](https://en.wikipedia.org/wiki/Buffer_overflow)! How cool!
 
@@ -136,6 +140,7 @@ Every dot has its own "brain" of acceleration vectors, and they evolve to reach 
 Nevertheless, there is much to be desired. Due to performance, the only factor dots use to evolve is their closeness to the goal upon death, endowing the natural selection algorithm with low entropy. Due to memory usage, there are smaller than satisfactory limits on the number of dots and the sizes of their brains. Lastly, due to technical complexity, re-placing obstacles during the simulation does not guarantee that the dots will have large enough brains to reach the goal. Brain sizes are only determined at the beginning of the program.
 
 I've utilized a myriad of optimization techniques to snake around the following hardware restrictions and make this possible:
+
 - NAND has a limited ROM memory space, meaning the program won't compile if there's too much code. In fact, the final version of this program uses 99.2% of the instruction memory space.
 - NAND has a limited RAM memory space, meaning the program has to be careful to optimize heap memory usage. In fact, the reason why the screen fills with static between generations is to use the screen memory space as temporary swap memory for the next generation — the RAM is already completely full!
 - NAND has no floating point type (decimal numbers) and can only represent the integers between -32768 and 32767, making calculating fitness less precise and more challenging to implement. [Integer overflows](https://en.wikipedia.org/wiki/Integer_overflow) must also be accounted for.
@@ -187,6 +192,7 @@ class Main {
     }
 }
 ```
+
 *taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view).*
 
 If you've already had some experience with programming, this should look very familiar; it is clear that Jack was heavily inspired by Java. `Main.main`, the entry point to the program, demonstrates basic usage of variables as well as the while loop for control flow.
@@ -251,6 +257,7 @@ class Point {
     }
 }
 ```
+
 ```js
 var Point p1, p2, p3;
 let p1 = Point.new(1, 2);
@@ -262,6 +269,7 @@ do Output.printInt(p1.distance(p2)); // prints 5
 do Output.println();
 do Output.printInt(getPointCount()); // prints 3
 ```
+
 *taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view).*
 
 We define a `Point` class to represent an abstract point in space. It uses `field` variables to declare per-instance attributes of the data type. It exposes public `method` functions we can use to interface with the point, giving the caller the functionality to add two points together and calculate the distance between two points.
@@ -306,11 +314,13 @@ let c = 65; // 'A'
 let s = "A";
 let c = s.charAt(0);
 ```
+
 ```js
 var Array a;
 let a = 5000;
 let a[100] = 77; // RAM[5100] = 77
 ```
+
 ```js
 var Array arr;
 var String helloWorld;
@@ -321,6 +331,7 @@ let arr[1] = false;
 let arr[2] = Point.new(5, 6);
 let arr[3] = helloWorld;
 ```
+
 ```js
 class Complex {
     field int real;
@@ -337,6 +348,7 @@ let c = a; // c == Complex(7, 8)
            // Works because it matches the memory layout
            // of the Complex type
 ```
+
 *all code segments taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1CAGF8d3pDIOgqX8NZGzU34PPEzvfTYrk/view).*
 
 Don't take this the wrong way — Jack still provides a powerful and functional object-oriented model. This insight intends to help you understand when and how you should perform type conversions as needed.
@@ -344,6 +356,7 @@ Don't take this the wrong way — Jack still provides a powerful and functional 
 ### Manual Memory Management
 
 Let's say you're a crazy cat lover, just like me! And you wanted to write this program to show off just how much you absolutely adore cats.
+
 ```js
 class Main {
     function void main() {
@@ -353,6 +366,7 @@ class Main {
     }
 }
 ```
+
 You may be startled to notice that after a few seconds, the program will crash with "ERR6", or a [heap overflow](https://en.wikipedia.org/wiki/Heap_overflow)!
 
 Jack is a [manually memory managed](https://en.wikipedia.org/wiki/Manual_memory_management) programming language. This means you must be vigilant to properly deallocate memory that is no longer needed, or else the Jack OS will think otherwise and facilitate a [memory leak](https://en.wikipedia.org/wiki/Memory_leak). The best practice advice is to feature a `dispose` method for each class that represents an object that properly encapsulates this deallocation. Thus, when objects are no longer needed, you can call their `dispose` methods to ensure you won't eventually run out of heap memory.
@@ -360,6 +374,7 @@ Jack is a [manually memory managed](https://en.wikipedia.org/wiki/Manual_memory_
 If you've programmed in other manually memory managed languages, like C, this should look very familiar. One key difference is the Jack OS stores arrays and strings on the heap rather than on the stack, hinting to why the program crashes with a heap overflow.
 
 Let's fix this program for our fellow feline fanatics.
+
 ```js
 class Main {
     function void main() {
@@ -372,7 +387,9 @@ class Main {
     }
 }
 ```
+
 Alternatively, you could allocate memory for the string only once.
+
 ```js
 class Main {
     function void main() {
@@ -384,6 +401,7 @@ class Main {
     }
 }
 ```
+
 You'll notice that not only do these alternative versions print the string much faster, but this time they'll actually print forever! Hooray!
 
 Let's quickly peek into `String.dispose` so you can better understand how to write your own `dispose` methods.
@@ -394,12 +412,15 @@ method void dispose() {
     do Memory.deAlloc(this);
 }
 ```
+
 `Array.dispose` called by `stringArray`
+
 ```js
 method void dispose() {
     do Memory.deAlloc(this);
 }
 ```
+
 Proper `dispose` methods must first appropriately call `dispose` on their field variables and then finish with `do Memory.deAlloc(this);` to deallocate the object instance itself.
 
 ### Undefined Behavior
@@ -413,15 +434,19 @@ I found this caveat to be so important that I've moved it towards the [beginning
 #### Lesser and Greater than Operators
 
 The Jack expressions
+
 ```js
 a > b
 a < b
 ```
+
 are deceptively simple. They aren't always mathematically correct, and are respectively equivalent to the Java expressions
+
 ```js
 ((a - b) & (1 << 15)) == 0 && a != b
 ((a - b) & (1 << 15)) != 0
 ```
+
 What's up with the nuance? The virtual machine implementation converts `a > b` to `a - b > 0`. Here's the problem: `a - b` can [overflow](https://en.wikipedia.org/wiki/Integer_overflow) :(
 
 What does `20000 > -20000` evaluate to? The virtual machine transpiles this to `20000 - (-20000) > 0` which evaluates to `-25336 > 0`. Unfortunately, the answer is `false`.
@@ -449,6 +474,7 @@ class Main {
     }
 }
 ```
+
 `Output.printInt` internally expects `Math.abs` to return a positive number. This isn't the case with -32768, so the Jack OS malfunctions.
 
 Your main concern should be handling logic errors with the negative operator. As the programmer, if you want to guarantee the negative of a negative number is positive, it is your responsibility to check for the case of -32768 and take appropriate action.
@@ -531,7 +557,7 @@ Since its rise in the 1970s, there's a good reason why 16-bit computing has fall
 
 NAND is no exception to this reality.
 
-<img src="media/memory_layout.png" width="700">
+<img src="media/memory_layout.png" width="700" alt="The NAND memory layout">
 
 *taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1BexrNmdqYhKPkqD_Y81qNAUeyfzl-ZtO/view).*
 
@@ -544,20 +570,21 @@ The hardware reserves 8,192 memory addresses of the 4 KiB for the screen. Each b
 The hardware reserves memory address 24,576 for the keyboard, at which the currently pressed key is reflected. Though, you shouldn't directly access this location to handle user input. You should use the provided [Keyboard](#keyboard) class from the Jack OS and its associated functions.
 
 NAND's keyboard recognizes all ASCII characters, as well as the following keys.
- * new line = 128 = `String.newline()`
- * backspace = 129 = `String.backSpace()`
- * left arrow = 130
- * up arrow = 131
- * right arrow = 132
- * down arrow = 133
- * home = 134
- * end = 135
- * page up = 136
- * page down = 137
- * insert = 138
- * delete = 139
- * ESC = 140
- * F1 - F12 = 141 - 152
+
+- new line = 128 = `String.newline()`
+- backspace = 129 = `String.backSpace()`
+- left arrow = 130
+- up arrow = 131
+- right arrow = 132
+- down arrow = 133
+- home = 134
+- end = 135
+- page up = 136
+- page down = 137
+- insert = 138
+- delete = 139
+- ESC = 140
+- F1 - F12 = 141 - 152
 
 Lastly, the hardware reserves 240 memory addresses for static class variables and 1,792 memory addresses for the global stack. Unless you perform deep recursion, you probably won't find these limitations troublesome.
 
@@ -591,19 +618,19 @@ function void init() {
 
 I'm glad you asked! I've found the following illustrations quite illuminating:
 
-<img src="media/computer.png" width="700">
+<img src="media/computer.png" width="700" alt="The NAND computer architecture">
 
 *taken from [Wikipedia](https://commons.wikimedia.org/wiki/File:Hack_Computer_Block_Diagram_2.png).*
 
 The NAND computer follows the [Harvard architecture](https://en.wikipedia.org/wiki/Harvard_architecture). That is, the instruction memory (ROM) and the data memory (RAM) are separately stored, brought to function in unison by the CPU.
 
-<img src="media/cpu.png" width="700">
+<img src="media/cpu.png" width="700" alt="The NAND alu architecture">
 
 *taken from [Wikipedia](https://commons.wikimedia.org/wiki/File:Hack_Computer_Block_Diagram_2.png).*
 
 NAND's CPU is an [accumulator machine](https://en.wikipedia.org/wiki/Accumulator_(computing)#Accumulator_machines), meaning that it is heavily dependent on its built-in registers for control flow (in this case the accumulator is the D register). Don't worry if you don't fully understand what the CPU visualization depicts. Instead, take the perspective of appreciation for how this elegantly simple design powers the entirety of NAND — in your web browser!
 
-<img src="media/alu.png" width="700">
+<img src="media/alu.png" width="700" alt="The NAND instruction set">
 
 *taken from the [Nand to Tetris lecture slides](https://drive.google.com/file/d/1Z_fxYmmRNXTkAzmZ6YMoX9NXZIRVCKiw/view).*
 
@@ -642,6 +669,7 @@ This majority of this section was taken from the [Nand to Tetris lecture slides]
 </pre>
 
 About this layout:
+
 - Every part in this layout can appear 0 or more times
 - The order of the field / static
 declarations is arbitrary
@@ -649,6 +677,7 @@ declarations is arbitrary
 - Each type is either `void`, `int`, `boolean`, `char`, or a class name
 
 A Jack program:
+
 - Defines classes in separate files
 - Consists of a collection of one or more classes, one of which must be named `Main`
 - Must define the `main` function in the `Main` class, the entry point of the program defined by the Jack OS
@@ -1234,7 +1263,7 @@ If you do something that forces the computer into an invalid state, like computi
 
 Well, I admit the description and title are misleading, but still in good faith. The compiler and virtual machine translator were written in Typescript, and the emulated kernel and emulated hardware do not at all represent how real computers work. The actual NAND gate logic simulator, written in Rust, only occupies a small part of the overall codebase. Even then, it's still a laughably high-level abstraction. The Rust code is compiled to WebAssembly to run on a browser, basically stripping away the entire premise of running every computation off of NAND gates.
 
-NAND serves the role of an educational and theoretical project. In *theory*, the same CPU logic would work with real-world manifestations of the emulated hardware. And a few nand2tetris fanatics have actually done this! By a few, I mean quite a lot of people; here's one such hardware project: https://gitlab.com/x653/nand2tetris-fpga/
+NAND serves the role of an educational and theoretical project. In *theory*, the same CPU logic would work with real-world manifestations of the emulated hardware. And a few nand2tetris fanatics have actually done this! By a few, I mean quite a lot of people; here's one such hardware project: <https://gitlab.com/x653/nand2tetris-fpga/>
 
 ### Did you design NAND by yourself?
 

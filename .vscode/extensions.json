@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+      "rust-lang.rust-analyzer",
+      "streetsidesoftware.code-spell-checker",
+      "davidanson.vscode-markdownlint"
+    ],
+    "unwantedRecommendations": []
+  }

@@ -1,22 +1,26 @@
 {
-    "rust-analyzer.linkedProjects": ["./src/Cargo.toml"],
-    "cSpell.words": [
-        "alloc",
-        "deallocate",
-        "deallocated",
-        "Deallocates",
-        "deallocating",
-        "deallocation",
-        "footguns",
-        "jailbroken",
-        "keybinds",
-        "Nand",
-        "Nandy",
-        "println",
-        "Tetris",
-        "transpiles"
-    ],
-    "cSpell.ignorePaths": [
-        "src",
-    ]
+  "rust-analyzer.linkedProjects": ["./src/Cargo.toml"],
+  "cSpell.words": [
+    "alloc",
+    "deallocate",
+    "deallocated",
+    "Deallocates",
+    "deallocating",
+    "deallocation",
+    "footguns",
+    "jailbroken",
+    "keybinds",
+    "Nand",
+    "Nandy",
+    "println",
+    "Tetris",
+    "transpiles"
+  ],
+  "cSpell.ignorePaths": ["src"],
+  "markdownlint.config": {
+    "MD001": false,
+    "MD025": false,
+    "MD033": false,
+    "MD041": false
+  }
 }
