@@ -144,6 +144,7 @@
             return;
           }
           machineCode = programFiles[0].file
+            .map((line) => line.trim())
             // remove new lines
             .filter((line) => line);
           for (let instruction of machineCode) {
