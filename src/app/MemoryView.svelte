@@ -566,7 +566,6 @@
       id="file-input"
       hidden
       type="file"
-      accept=".jack, .vm, .asm, .hack"
       multiple
       on:cancel={() => (memoryDisplayType = "ram")}
       on:change={loadUserFiles}
