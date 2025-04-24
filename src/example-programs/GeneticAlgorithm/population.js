@@ -264,7 +264,7 @@ export default class Population {
       brain = dot.getBrain();
       directions = brain.getDirections();
       newDirections = Population.#newBrainDirections[i];
-      if (dotMinStepCache == 0) {
+      if (dotMinStepCache === 0) {
         minStep = brain.getStep();
       } else {
         minStep = dotMinStepCache;

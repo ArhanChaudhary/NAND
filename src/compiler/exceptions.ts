@@ -3,11 +3,11 @@ import { KeywordToken, TokenType, SymbolToken } from "./tokenizer";
 function tokenStringToTypeString(tokenString: string): string | null {
   if (Object.values<string>(KeywordToken).includes(tokenString)) {
     return tokenTypeToString(TokenType.KEYWORD);
-  } else if (Object.values<string>(SymbolToken).includes(tokenString)) {
-    return tokenTypeToString(TokenType.SYMBOL);
-  } else {
-    return "token";
   }
+  if (Object.values<string>(SymbolToken).includes(tokenString)) {
+    return tokenTypeToString(TokenType.SYMBOL);
+  }
+  return "token";
 }
 
 function tokenTypeToString(tokenType: TokenType): string {
@@ -30,26 +30,26 @@ function tokenTypeToString(tokenType: TokenType): string {
 function expectedTokenToString(tokenTypeOrString: string | TokenType): string {
   if (typeof tokenTypeOrString === "string") {
     return `'${tokenTypeOrString}'`;
-  } else {
-    return tokenTypeToString(tokenTypeOrString);
   }
+  return tokenTypeToString(tokenTypeOrString);
 }
 
 function joinExpectedTokensWithOr(arr: (string | TokenType)[]): string {
   if (arr.length === 0) {
     return "";
-  } else if (arr.length === 1) {
+  }
+  if (arr.length === 1) {
     return expectedTokenToString(arr[0]);
-  } else if (arr.length === 2) {
+  }
+  if (arr.length === 2) {
     return `${expectedTokenToString(arr[0])} or ${expectedTokenToString(
       arr[1]
     )}`;
-  } else {
-    return `${arr
-      .slice(0, -1)
-      .map(expectedTokenToString)
-      .join(", ")}, or ${expectedTokenToString(arr.slice(-1)[0])}`;
   }
+  return `${arr
+    .slice(0, -1)
+    .map(expectedTokenToString)
+    .join(", ")}, or ${expectedTokenToString(arr.slice(-1)[0])}`;
 }
 
 export abstract class CompilerError {
@@ -121,9 +121,11 @@ export class SyntaxError extends CompilerError {
   ): string {
     if (typeof expectedToken === "string") {
       return `${tokenStringToTypeString(expectedToken)} '${expectedToken}'`;
-    } else if (Array.isArray(expectedToken)) {
+    }
+    if (Array.isArray(expectedToken)) {
       return `token ${joinExpectedTokensWithOr(expectedToken)}`;
-    } else if (expectedToken in TokenType) {
+    }
+    if (expectedToken in TokenType) {
       const ret = tokenTypeToString(expectedToken);
       return "aeiou".includes(ret[0].toLowerCase()) ? `an ${ret}` : `a ${ret}`;
     }

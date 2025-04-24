@@ -92,7 +92,7 @@
     }
     return examplePrograms;
   }
-  let exampleProgramLoader = loadExamplePrograms();
+  const exampleProgramLoader = loadExamplePrograms();
 </script>
 
 <script lang="ts">

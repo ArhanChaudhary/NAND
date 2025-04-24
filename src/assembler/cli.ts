@@ -1,5 +1,5 @@
 import assembler, { BaseAssemblerError } from "./main";
-import fs from "fs";
+import fs from "node:fs";
 
 let path = process.argv[process.argv.length - 1].replace(/\/$/, "");
 

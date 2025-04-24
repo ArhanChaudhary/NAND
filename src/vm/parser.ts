@@ -1,13 +1,13 @@
 export enum CommandType {
-  C_ARITHMETIC,
-  C_PUSH,
-  C_POP,
-  C_LABEL,
-  C_GOTO,
-  C_IF,
-  C_FUNCTION,
-  C_RETURN,
-  C_CALL,
+  C_ARITHMETIC = 0,
+  C_PUSH = 1,
+  C_POP = 2,
+  C_LABEL = 3,
+  C_GOTO = 4,
+  C_IF = 5,
+  C_FUNCTION = 6,
+  C_RETURN = 7,
+  C_CALL = 8,
 }
 
 export default class Parser {
@@ -16,7 +16,7 @@ export default class Parser {
   private currentCommand = "";
 
   public advance(): boolean {
-    let line: string | undefined = this.inputStream[this.inputStreamIndex++];
+    const line: string | undefined = this.inputStream[this.inputStreamIndex++];
     if (line === undefined) return false;
     if (line === "") return this.advance();
     this.currentCommand = line;
@@ -29,7 +29,7 @@ export default class Parser {
   }
 
   public commandType(): CommandType {
-    let mapping = {
+    const mapping = {
       push: CommandType.C_PUSH,
       pop: CommandType.C_POP,
       label: CommandType.C_LABEL,
@@ -39,7 +39,7 @@ export default class Parser {
       return: CommandType.C_RETURN,
       call: CommandType.C_CALL,
     };
-    for (let key in mapping) {
+    for (const key in mapping) {
       if (this.currentCommand.startsWith(key)) {
         return (mapping as any)[key];
       }

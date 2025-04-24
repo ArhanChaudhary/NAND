@@ -261,14 +261,14 @@ export default class CodeWriter {
     ];
     // save numArgs in R14
     if (numArgs === 0 || numArgs === 1) {
-      out.push(...["@R14", "M=" + numArgs]);
+      out.push(...["@R14", `M=${numArgs}`]);
     } else {
-      out.push(...["@" + numArgs, "D=A", "@R14", "M=D"]);
+      out.push(...[`@${numArgs}`, "D=A", "@R14", "M=D"]);
     }
     out.push(
       ...[
         // do call
-        "@CALL_RETURN_ADDR" + this.labelCount,
+        `@CALL_RETURN_ADDR${this.labelCount}`,
         "D=A",
         "@DO_CALL",
         "0;JMP",
@@ -297,14 +297,15 @@ export default class CodeWriter {
         this.write(out);
         this.writePush("constant", 0, false);
         return;
-      } else if (numLocals === 2) {
+      }
+      if (numLocals === 2) {
         out.push(
           ...["@SP", "A=M", "M=0", "A=A+1", "M=0", "D=A+1", "@SP", "M=D"]
         );
       } else {
         out.push(
           ...[
-            "@" + numLocals,
+            `@${numLocals}`,
             "D=A",
             `(${functionName}_INIT_LOOP)`,
             "@SP",
@@ -339,7 +340,7 @@ export default class CodeWriter {
         out = [
           `@AFTER_DO_${command.toUpperCase()}${this.labelCount}`,
           "D=A",
-          "@DO_" + command.toUpperCase(),
+          `@DO_${command.toUpperCase()}`,
           "0;JMP",
           `(AFTER_DO_${command.toUpperCase()}${this.labelCount++})`,
         ];
@@ -354,7 +355,7 @@ export default class CodeWriter {
         out = ["@SP", "A=M-1", "M=!M"];
         break;
       default:
-        throw new VMTranslatorError("Invalid vm command: " + command);
+        throw new VMTranslatorError(`Invalid vm command: ${command}`);
     }
     out[0] += ` // ${command}`;
     this.write(out);
@@ -377,7 +378,7 @@ export default class CodeWriter {
         if (index === -1 || index === 0 || index === 1) {
           out = [];
         } else {
-          out = ["@" + index, "D=A"];
+          out = [`@${index}`, "D=A"];
         }
         break;
       case "pointer":
@@ -401,21 +402,23 @@ export default class CodeWriter {
           out = [
             CodeWriter.segmentMemoryMap[segment],
             "D=M",
-            "@" + index,
+            `@${index}`,
             "A=A+D",
             "D=M",
           ];
         }
         break;
       default:
-        throw new VMTranslatorError(`Invalid vm command segment: push ${segment} ${index}`);
+        throw new VMTranslatorError(
+          `Invalid vm command segment: push ${segment} ${index}`
+        );
     }
     out.push(...["@SP", "AM=M+1", "A=A-1"]);
     if (
       segment === "constant" &&
       (index === -1 || index === 0 || index === 1)
     ) {
-      out.push("M=" + index);
+      out.push(`M=${index}`);
     } else {
       out.push("M=D");
     }
@@ -469,7 +472,9 @@ export default class CodeWriter {
         }
         break;
       default:
-        throw new VMTranslatorError(`Invalid vm command segment: pop ${segment} ${index}`);
+        throw new VMTranslatorError(
+          `Invalid vm command segment: pop ${segment} ${index}`
+        );
     }
     out.push("M=D");
     out[0] += ` // pop ${segment} ${index}`;

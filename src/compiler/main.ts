@@ -20,8 +20,8 @@ export default function compiler(
     if (a.fileName > b.fileName) return 1;
     return 0;
   });
-  let out = new Array<{ fileName: string; VMCode: string[] }>();
-  for (let fileData of inputFiles) {
+  const out = new Array<{ fileName: string; VMCode: string[] }>();
+  for (const fileData of inputFiles) {
     try {
       const engine = new Engine(fileData);
       engine.compileClass();
@@ -38,7 +38,7 @@ export default function compiler(
     }
   }
   if (postValidation) {
-    let postValidationError = Engine.postValidation();
+    const postValidationError = Engine.postValidation();
     Engine.cleanup();
     if (postValidationError !== null) {
       return postValidationError;

@@ -22,7 +22,7 @@ export default class SymbolTable {
         this.counts.argument = 1;
         break;
       default:
-        throw new Error("Invalid subroutine type: " + subroutineType);
+        throw new Error(`Invalid subroutine type: ${subroutineType}`);
     }
     this.counts.local = 0;
   }
@@ -39,7 +39,7 @@ export default class SymbolTable {
         table = this.subroutineSymbolTable;
         break;
       default:
-        throw new Error("Invalid kind: " + kind);
+        throw new Error(`Invalid kind: ${kind}`);
     }
     if (name in table) return false;
     table[name] = { type, kind, index: this.counts[kind]++ };

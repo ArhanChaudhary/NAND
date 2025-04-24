@@ -1,11 +1,11 @@
 import { NameError, SyntaxError, ReferenceError } from "./exceptions";
 
 export enum TokenType {
-  KEYWORD,
-  SYMBOL,
-  IDENTIFIER,
-  INT_CONST,
-  STRING_CONST,
+  KEYWORD = 0,
+  SYMBOL = 1,
+  IDENTIFIER = 2,
+  INT_CONST = 3,
+  STRING_CONST = 4,
 }
 
 export enum SymbolToken {
@@ -126,9 +126,9 @@ export default class Tokenizer {
     if (comment !== -1) {
       this.currentLine = this.currentLine.substring(0, comment);
     }
-    let startComment = this.currentLine.indexOf("/*");
+    const startComment = this.currentLine.indexOf("/*");
     if (startComment === -1) {
-      let endComment = this.currentLine.indexOf("*/");
+      const endComment = this.currentLine.indexOf("*/");
       if (endComment === -1) {
         if (this.inComment) {
           this.currentLine = "";
@@ -143,7 +143,7 @@ export default class Tokenizer {
         this.currentLine = this.currentLine.substring(endComment + 2);
       }
     } else {
-      let endComment = this.currentLine.indexOf("*/", startComment + 2);
+      const endComment = this.currentLine.indexOf("*/", startComment + 2);
       if (endComment === -1) {
         this.currentLine = this.currentLine.substring(0, startComment);
         this.inComment = true;
@@ -262,13 +262,13 @@ export default class Tokenizer {
 
   public tokenType(): TokenType {
     if (this.currentTokenType === null)
-      throw new Error("Null token has no type at line: " + this.currentLine);
+      throw new Error(`Null token has no type at line: ${this.currentLine}`);
     return this.currentTokenType;
   }
 
   public token(): string {
     if (this.currentToken === null)
-      throw new Error("Token does not exist at line: " + this.currentLine);
+      throw new Error(`Token does not exist at line: ${this.currentLine}`);
     return this.currentToken;
   }
 

@@ -2,8 +2,8 @@ import Tokenizer, { TokenType, SymbolToken, KeywordToken } from "./tokenizer";
 import SymbolTable from "./symboltable";
 import VMWriter from "./vmwriter";
 import {
-  ReferenceError,
-  CompilerError,
+  type ReferenceError,
+  type CompilerError,
   BroadCompilerError,
 } from "./exceptions";
 
@@ -297,7 +297,7 @@ export default class Engine {
       throw this.tokenizer.referenceError(
         `subroutine '${this.subroutineName}' can only be declared once`
       );
-    let internalSubroutineCall = Engine.internalSubroutineCalls.find(
+    const internalSubroutineCall = Engine.internalSubroutineCalls.find(
       (subroutine) =>
         subroutine.subroutineClass === this.className &&
         subroutine.subroutineName === this.subroutineName
@@ -351,7 +351,7 @@ export default class Engine {
 
   private compileParameterList(): void {
     // can lead to compiler display format issues but i dont care
-    let originalLineIndex = this.tokenizer.lineIndex();
+    const originalLineIndex = this.tokenizer.lineIndex();
     if (
       VarType.includes(this.tokenizer.token()) ||
       VarType.includes(this.tokenizer.tokenType())
@@ -368,7 +368,7 @@ export default class Engine {
         this.assertToken(TokenType.IDENTIFIER);
       }
     }
-    let internalSubroutineCall = Engine.internalSubroutineCalls.find(
+    const internalSubroutineCall = Engine.internalSubroutineCalls.find(
       (subroutine) =>
         subroutine.subroutineClass === this.className &&
         subroutine.subroutineName === this.subroutineName
@@ -608,7 +608,7 @@ export default class Engine {
         this.compileExpression();
         this.vmwriter.writePop(kind, index);
         break;
-      default:
+      default: {
         const curr = this.tokenizer.token() as SymbolToken;
         if (OPS.includes(curr) && this.tokenizer.advance()) {
           if (
@@ -619,7 +619,8 @@ export default class Engine {
               "",
               "the '++' operator isn't supported. Manually increment the variable instead"
             );
-          } else if (this.tokenizer.token() === SymbolToken.EQUAL) {
+          }
+          if (this.tokenizer.token() === SymbolToken.EQUAL) {
             throw this.tokenizer.syntaxError(
               "",
               `the '${curr}=' operator isn't supported and must be manually expanded`
@@ -631,6 +632,7 @@ export default class Engine {
             "let statement must be followed by either of these symbols"
           );
         }
+      }
     }
     this.assertToken(SymbolToken.SEMICOLON);
   }
@@ -640,21 +642,21 @@ export default class Engine {
     const l2 = this.labelCounter++;
     this.assertToken(KeywordToken.WHILE);
     this.assertToken(SymbolToken.OPENING_PARENTHESIS);
-    this.vmwriter.writeLabel("WHILE_ITER" + l1);
+    this.vmwriter.writeLabel(`WHILE_ITER${l1}`);
     this.compileExpression();
     this.vmwriter.writeArithmetic(SymbolToken.NOT);
-    this.vmwriter.writeIf("WHILE_BREAKER" + l2);
+    this.vmwriter.writeIf(`WHILE_BREAKER${l2}`);
     this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
     if (this.tokenizer.token() === SymbolToken.OPENING_CURLY_BRACKET) {
       this.tokenizer.advance();
       this.compileStatements();
-      this.vmwriter.writeGoto("WHILE_ITER" + l1);
-      this.vmwriter.writeLabel("WHILE_BREAKER" + l2);
+      this.vmwriter.writeGoto(`WHILE_ITER${l1}`);
+      this.vmwriter.writeLabel(`WHILE_BREAKER${l2}`);
       this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
     } else {
       this.compileStatement();
-      this.vmwriter.writeGoto("WHILE_ITER" + l1);
-      this.vmwriter.writeLabel("WHILE_BREAKER" + l2);
+      this.vmwriter.writeGoto(`WHILE_ITER${l1}`);
+      this.vmwriter.writeLabel(`WHILE_BREAKER${l2}`);
     }
   }
 
@@ -695,7 +697,7 @@ export default class Engine {
     this.assertToken(SymbolToken.OPENING_PARENTHESIS);
     this.compileExpression();
     this.vmwriter.writeArithmetic(SymbolToken.NOT);
-    this.vmwriter.writeIf("FALSE_CASE" + l1);
+    this.vmwriter.writeIf(`FALSE_CASE${l1}`);
     this.assertToken(SymbolToken.CLOSING_PARENTHESIS);
     if (this.tokenizer.token() === SymbolToken.OPENING_CURLY_BRACKET) {
       this.tokenizer.advance();
@@ -711,20 +713,20 @@ export default class Engine {
       this.tokenizer.advance();
       if (this.tokenizer.token() === SymbolToken.OPENING_CURLY_BRACKET) {
         this.tokenizer.advance();
-        this.vmwriter.writeGoto("TRUE_CASE" + l2);
-        this.vmwriter.writeLabel("FALSE_CASE" + l1);
+        this.vmwriter.writeGoto(`TRUE_CASE${l2}`);
+        this.vmwriter.writeLabel(`FALSE_CASE${l1}`);
         this.compileStatements();
-        this.vmwriter.writeLabel("TRUE_CASE" + l2);
+        this.vmwriter.writeLabel(`TRUE_CASE${l2}`);
         this.assertToken(SymbolToken.CLOSING_CURLY_BRACKET);
       } else {
-        this.vmwriter.writeGoto("TRUE_CASE" + l2);
-        this.vmwriter.writeLabel("FALSE_CASE" + l1);
+        this.vmwriter.writeGoto(`TRUE_CASE${l2}`);
+        this.vmwriter.writeLabel(`FALSE_CASE${l1}`);
         this.compileStatement();
-        this.vmwriter.writeLabel("TRUE_CASE" + l2);
+        this.vmwriter.writeLabel(`TRUE_CASE${l2}`);
       }
       this.lastStatementIsReturn &&= returnInIfBlock;
     } else {
-      this.vmwriter.writeLabel("FALSE_CASE" + l1);
+      this.vmwriter.writeLabel(`FALSE_CASE${l1}`);
     }
   }
 
@@ -847,7 +849,7 @@ export default class Engine {
             throw this.tokenizer.syntaxError("", "keyword cannot be used here");
         }
         break;
-      case TokenType.IDENTIFIER:
+      case TokenType.IDENTIFIER: {
         const prevToken = this.tokenizer.token();
         const prevTokenKind = this.symbolTable.kindOf(prevToken) as string;
         const prevTokenIndex = this.symbolTable.indexOf(prevToken) as number;
@@ -894,6 +896,7 @@ export default class Engine {
             this.vmwriter.writePush(prevTokenKind, prevTokenIndex);
         }
         break;
+      }
       case TokenType.SYMBOL:
         switch (this.tokenizer.token()) {
           case SymbolToken.NOT:
@@ -943,7 +946,7 @@ export default class Engine {
     Engine.staticCount = 0;
     Engine.trySubroutineCalls = [];
     Engine.allSubroutineDeclarations = [];
-    for (let internalSubroutineCall of Engine.internalSubroutineCalls) {
+    for (const internalSubroutineCall of Engine.internalSubroutineCalls) {
       if (
         internalSubroutineCall.subroutineClass !== "Sys" &&
         internalSubroutineCall.subroutineName !== "init"
@@ -954,7 +957,7 @@ export default class Engine {
   }
 
   static postValidation(): CompilerError | null {
-    let undeclaredSubroutineCall = Engine.trySubroutineCalls
+    const undeclaredSubroutineCall = Engine.trySubroutineCalls
       .concat(
         Engine.internalSubroutineCalls.reduce(
           (acc, curr) => {
@@ -991,8 +994,7 @@ export default class Engine {
       );
     if (undeclaredSubroutineCall) {
       return undeclaredSubroutineCall.missingThrowMessage;
-    } else {
-      return null;
     }
+    return null;
   }
 }

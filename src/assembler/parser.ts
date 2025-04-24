@@ -1,7 +1,7 @@
 export enum CommandType {
-  A_COMMAND,
-  C_COMMAND,
-  L_COMMAND,
+  A_COMMAND = 0,
+  C_COMMAND = 1,
+  L_COMMAND = 2,
 }
 
 export default class Parser {
@@ -10,7 +10,7 @@ export default class Parser {
   private currentCommand = "";
 
   public advance(): boolean {
-    let line: string | undefined = this.inputStream[this.inputStreamIndex++];
+    const line: string | undefined = this.inputStream[this.inputStreamIndex++];
     if (line === undefined) return false;
     if (line === "") return this.advance();
     this.currentCommand = line.replace(/[ \t\r\f]/g, "");

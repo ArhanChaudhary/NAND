@@ -1,15 +1,15 @@
 import { VMTranslatorError } from "./main";
 import VMTranslator from "./main";
-import fs from "fs";
+import fs from "node:fs";
 
-let path = process.argv[process.argv.length - 1].replace(/\/$/, "");
+const path = process.argv[process.argv.length - 1].replace(/\/$/, "");
 
 let VMCodes: { fileName: string; VMCode: string[] }[];
 let outputFile: string;
 if (path.endsWith(".vm")) {
   VMCodes = [
     {
-      fileName: path.split("/").pop()!.replace(/\.vm$/, ""),
+      fileName: path.split("/").pop()?.replace(/\.vm$/, ""),
       VMCode: fs.readFileSync(path, "utf-8").split("\n"),
     },
   ];

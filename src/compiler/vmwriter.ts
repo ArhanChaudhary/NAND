@@ -46,7 +46,7 @@ export default class VMWriter {
     return true;
   }
 
-  public writeArithmetic(command: SymbolToken, sub: boolean = true): void {
+  public writeArithmetic(command: SymbolToken, sub = true): void {
     switch (command) {
       case SymbolToken.ADD:
         if (this.out[this.out.length - 1] === "push constant 0") {
@@ -151,7 +151,7 @@ export default class VMWriter {
         }
         break;
       default:
-        throw new Error("Invalid command arithmetic: " + command);
+        throw new Error(`Invalid command arithmetic: ${command}`);
     }
   }
 

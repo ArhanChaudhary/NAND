@@ -690,7 +690,7 @@ export default class Main {
   static refreshDisplay() {
     let tmp;
     let bestDotFitness;
-    let minStep = Dot.getMinStep();
+    const minStep = Dot.getMinStep();
     Main.drawGoal();
     Main.drawObstacles();
     console.log(Main.#generationString + Population.getGen());

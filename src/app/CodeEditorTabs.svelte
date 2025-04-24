@@ -4,11 +4,11 @@
   import { flip } from "svelte/animate";
   import Tokenizer from "../compiler/tokenizer";
   let componentRoot: HTMLDivElement;
-  let onMountAsync = new Promise<void>(onMount);
+  const onMountAsync = new Promise<void>(onMount);
   $: $activeTabName, scrollActiveIntoView();
   async function scrollActiveIntoView() {
     await onMountAsync;
-    let activeTab = componentRoot.querySelector(".tab.active");
+    const activeTab = componentRoot.querySelector(".tab.active");
     if (activeTab) {
       activeTab.scrollIntoView({
         behavior: "instant",
@@ -21,10 +21,11 @@
   function tabAdd() {
     let fileName: string;
     while (true) {
-      let promptInput = prompt("Enter new class name:");
+      const promptInput = prompt("Enter new class name:");
       if (promptInput === null) {
         return;
-      } else if (promptInput == "" || !Tokenizer.isLetter(promptInput[0])) {
+      }
+      if (promptInput === "" || !Tokenizer.isLetter(promptInput[0])) {
         alert("Invalid class name!");
       } else if ($IDEContext.some((file) => file.fileName === promptInput)) {
         alert("class already exists!");
@@ -44,7 +45,7 @@
     if (!confirm(`Are you sure you want to delete '${tabName}'?`)) return;
     if (tabName === $activeTabName) {
       const tabNames = $IDEContext.map((file) => file.fileName);
-      let index = tabNames.indexOf(tabName) + 1;
+      const index = tabNames.indexOf(tabName) + 1;
       if (index === $IDEContext.length) {
         tabClick(tabNames[index - 2]);
       } else {
@@ -56,7 +57,7 @@
 
   const dragTabDuration = 300;
   let draggingTabName: string | null;
-  let animatingTabNames = new Set();
+  const animatingTabNames = new Set();
   function tabDragStart(tabName: string) {
     draggingTabName = tabName;
   }

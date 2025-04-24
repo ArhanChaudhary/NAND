@@ -18,7 +18,7 @@ export default function VMTranslator(
   });
   const codeWriter = new CodeWriter();
   codeWriter.writeInit();
-  for (let VMCode of VMCodes) {
+  for (const VMCode of VMCodes) {
     codeWriter.setFileName(VMCode.fileName);
     const parser = new Parser(VMCode.VMCode);
     while (parser.advance()) {

@@ -49,7 +49,7 @@ export default function assembler(
   }
 
   parser = new Parser(inputStream);
-  let out = new Array<string>();
+  const out = new Array<string>();
   let RAMAddress = 16;
   while (parser.advance()) {
     switch (parser.commandType()) {
@@ -67,7 +67,7 @@ export default function assembler(
           raw = RAMAddress;
           symbolTable.addEntry(symbol, RAMAddress++);
         }
-        out.push(`0${("0000000000000000" + raw.toString(2)).slice(-15)}`);
+        out.push(`0${`0000000000000000${raw.toString(2)}`.slice(-15)}`);
         break;
       }
       case CommandType.C_COMMAND: {

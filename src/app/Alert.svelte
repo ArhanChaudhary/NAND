@@ -1,6 +1,6 @@
 <script lang="ts">
   export let showAlert: boolean;
-  export let alignTop: boolean = true;
+  export const alignTop = true;
 </script>
 
 <div id="overlay" class:alignTop>

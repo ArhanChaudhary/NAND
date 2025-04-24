@@ -1,5 +1,6 @@
 <script lang="ts">
-  import VirtualList, { type Alignment } from "svelte-tiny-virtual-list";
+  import VirtualList from "svelte-tiny-virtual-list";
+  import type { Alignment } from "svelte-tiny-virtual-list";
   import {
     IDEContext,
     ROM,
@@ -36,14 +37,14 @@
   let VMCodeStarts = new Array<number>();
   let scrollToAlignment: Alignment;
   let followPC = false;
-  let onMountAsync = new Promise<void>(onMount);
+  const onMountAsync = new Promise<void>(onMount);
 
   async function loadUserFiles(e: Event) {
-    let reader = new FileReader();
-    let files = (e.target as HTMLInputElement).files as FileList;
+    const reader = new FileReader();
+    const files = (e.target as HTMLInputElement).files as FileList;
 
     let prevFileExtension: string | undefined;
-    let programFiles = new Array<{ fileName: string; file: string[] }>();
+    const programFiles = new Array<{ fileName: string; file: string[] }>();
 
     for (let i = 0; i < files.length; i++) {
       await new Promise<void>((resolve) => {
@@ -88,7 +89,7 @@
       return;
     }
 
-    let filteredJackOS = JackOS.filter(
+    const filteredJackOS = JackOS.filter(
       (OSFile) =>
         !programFiles.find(
           (programFile) => programFile.fileName === OSFile.fileName
@@ -147,7 +148,7 @@
             .map((line) => line.trim())
             // remove new lines
             .filter((line) => line);
-          for (let instruction of machineCode) {
+          for (const instruction of machineCode) {
             if (!/^[01]{16}$/.test(instruction)) {
               $compilerError = new BroadCompilerError(
                 "",
@@ -176,18 +177,20 @@
           mem -= 65536;
         }
         return mem.toString();
-      case "hex":
-        let hex = mem.toString(16).toUpperCase().padStart(4, "0");
-        return hex.slice(0, 2) + " " + hex.slice(2);
-      case "bin":
-        let bin = mem.toString(2).padStart(16, "0");
-        return bin.slice(0, 8) + " " + bin.slice(8);
+      case "hex": {
+        const hex = mem.toString(16).toUpperCase().padStart(4, "0");
+        return `${hex.slice(0, 2)} ${hex.slice(2)}`;
+      }
+      case "bin": {
+        const bin = mem.toString(2).padStart(16, "0");
+        return `${bin.slice(0, 8)} ${bin.slice(8)}`;
+      }
     }
   }
 
   function memoryIndexToDisplay(i: number) {
     switch (memoryDisplayType) {
-      case "ram":
+      case "ram": {
         let mem: number;
         if (i < ramMemoryLength) {
           mem = $computerMemory.ramMemory[i];
@@ -197,18 +200,19 @@
           mem = $computerMemory.pressedKey;
         }
         return RAMToDisplay(mem);
+      }
       case "rom":
         switch (memoryDisplay) {
           case "bin": {
             let ret = $ROM.machineCode[i];
             if (!ret) return "00000000 00000000";
             ret = ret.trim();
-            return ret.slice(0, 8) + " " + ret.slice(8);
+            return `${ret.slice(0, 8)} ${ret.slice(8)}`;
           }
           case "asm":
             return $ROM.assembly[i].trim();
           case "vm": {
-            let foundIndex = indexOfVMCodeStarts(i);
+            const foundIndex = indexOfVMCodeStarts(i);
             return $ROM.VMCodes[foundIndex].VMCode[
               i - VMCodeStarts[foundIndex]
             ].trim();
@@ -223,7 +227,7 @@
     let left = 0;
     let right = VMCodeStarts.length - 1;
     while (left <= right) {
-      let mid = Math.floor((left + right) / 2);
+      const mid = Math.floor((left + right) / 2);
       if (VMCodeStarts[mid] <= i) {
         foundIndex = mid;
         left = mid + 1;
@@ -257,9 +261,8 @@
           case "vm":
             if (VMCodeStarts.includes(i)) {
               return 40;
-            } else {
-              return 20;
             }
+            return 20;
         }
     }
     return 0;
@@ -267,12 +270,12 @@
 
   function gotoInput(e: Event) {
     const value = (e.target as HTMLInputElement).value.toLowerCase();
-    let valueAsNumber = Number(value);
+    const valueAsNumber = Number(value);
     if (!Number.isNaN(valueAsNumber)) {
       scrollToAlignment = "start";
       scrollToIndex = valueAsNumber;
     } else if (memoryDisplayType === "rom" && memoryDisplay === "vm") {
-      let foundIndex = $ROM.VMCodes.findIndex((VMCode) =>
+      const foundIndex = $ROM.VMCodes.findIndex((VMCode) =>
         VMCode.fileName.toLowerCase().startsWith(value)
       );
       if (foundIndex !== -1) {
@@ -350,7 +353,7 @@
   $: {
     pcToAssembly = $ROM.assembly.reduce((acc, assembly, index) => {
       if (!assembly.startsWith("(")) {
-        let commentIndex = assembly.indexOf("//");
+        const commentIndex = assembly.indexOf("//");
         if (commentIndex !== -1) {
           assembly = assembly.slice(0, commentIndex);
         }
@@ -366,7 +369,7 @@
         [0]
       );
       assemblyToVMCode = $ROM.assembly.reduce((acc, assembly) => {
-        let commentIndex = assembly.indexOf("//");
+        const commentIndex = assembly.indexOf("//");
         if (commentIndex === -1) {
           if (acc.length) {
             acc.push(acc[acc.length - 1]);
@@ -381,13 +384,13 @@
             expectedVMCodeIndex = (acc[acc.length - 1] as number) + 1;
           }
           while (true) {
-            let actualVMCodeIndex = indexOfVMCodeStarts(expectedVMCodeIndex);
-            let expectedVMCode = assembly.slice(commentIndex + 3);
+            const actualVMCodeIndex = indexOfVMCodeStarts(expectedVMCodeIndex);
+            const expectedVMCode = assembly.slice(commentIndex + 3);
             let actualVMCode =
               $ROM.VMCodes[actualVMCodeIndex].VMCode[
                 expectedVMCodeIndex - VMCodeStarts[actualVMCodeIndex]
               ].trim();
-            let VMCodeCommentIndex = actualVMCode.indexOf("//");
+            const VMCodeCommentIndex = actualVMCode.indexOf("//");
             if (VMCodeCommentIndex !== -1) {
               actualVMCode = actualVMCode.slice(0, VMCodeCommentIndex);
             }
@@ -413,8 +416,8 @@
       case "asm":
         highlightIndex = pcToAssembly[$computerMemory.pcRegister];
         break;
-      case "vm":
-        let ret = assemblyToVMCode[pcToAssembly[$computerMemory.pcRegister]];
+      case "vm": {
+        const ret = assemblyToVMCode[pcToAssembly[$computerMemory.pcRegister]];
         if (ret === null) {
           // throttle disabling highlight so it doesnt disable when fast
           // but does when slow
@@ -426,6 +429,7 @@
           highlightIndex = ret;
         }
         break;
+      }
     }
     if (followPC) {
       scrollToIndex = undefined;

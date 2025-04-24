@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import { CompilerError } from "../compiler/exceptions";
+import type { CompilerError } from "../compiler/exceptions";
 export const IDEContext = writable<{ fileName: string; file: string[] }[]>(
   JSON.parse(localStorage.getItem("IDEContext") as string) || []
 );

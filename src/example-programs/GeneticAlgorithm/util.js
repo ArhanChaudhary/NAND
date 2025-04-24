@@ -1,4 +1,4 @@
-let ctx = document.getElementById("canvas").getContext("2d");
+const ctx = document.getElementById("canvas").getContext("2d");
 ctx.textAlign = "center";
 ctx.textBaseline = "middle";
 ctx.font = "7px monospace";
@@ -38,7 +38,7 @@ export default class Util {
         F11: 151,
         F12: 152,
       }[e.key];
-      if (keyValue == undefined) {
+      if (keyValue === undefined) {
         if (e.key.length !== 1) return;
         keyValue = e.key.charCodeAt(0);
       }
@@ -46,18 +46,18 @@ export default class Util {
         keyValue = 0;
       }
       prev = keyValue;
-      this.#keyPressed = keyValue;
+      Util.#keyPressed = keyValue;
     });
 
     document.addEventListener("keyup", () => {
       prev = 0;
-      this.#keyPressed = 0;
+      Util.#keyPressed = 0;
     });
   }
 
   static validate(callee, argumentsKwd) {
-    let args = [...argumentsKwd];
-    let calleeLen = callee.length;
+    const args = [...argumentsKwd];
+    const calleeLen = callee.length;
     if (args.length !== calleeLen) {
       throw new Error(`Expected ${calleeLen} arguments, got ${args.length}`);
     }
@@ -164,7 +164,7 @@ export default class Util {
   }
 
   static keyPressed() {
-    return this.#keyPressed;
+    return Util.#keyPressed;
   }
 }
 const div = Util.div;

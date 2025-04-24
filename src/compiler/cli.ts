@@ -1,8 +1,8 @@
 import { CompilerError } from "./exceptions";
 import compiler from "./main";
-import fs from "fs";
+import fs from "node:fs";
 
-let path = process.argv[process.argv.length - 1].replace(/\/$/, "");
+const path = process.argv[process.argv.length - 1].replace(/\/$/, "");
 
 let inputFiles: Array<{ fileName: string; file: string[] }>;
 if (path.endsWith(".jack")) {
