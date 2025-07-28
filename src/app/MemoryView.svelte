@@ -453,6 +453,9 @@
       default:
         memoryViewWidth = 150;
     }
+  }
+
+  $: {
     switch (memoryDisplayType) {
       case "rom":
         switch (memoryDisplay) {
