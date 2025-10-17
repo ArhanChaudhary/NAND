@@ -1,0 +1,67 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Sys.jack
+
+/**
+ * A library that supports various program execution services.
+ */
+class Sys {
+
+    /** Performs all the initializations required by the OS. */
+    function void init() {
+        var int screenPtr, i, offset;
+        do Memory.init(2048);
+        do Math.init();
+        do Screen.init();
+        do Screen.clearScreen();
+        do Output.init();
+        let offset = Keyboard.readInt("Enter a memory offset: ");
+
+        let screenPtr = 16384;
+        let i = 0;
+        while (~(i > 8191)) {
+            let screenPtr[i] = 0;
+            let i = i + 1;
+        }
+
+        do Memory.init(screenPtr + offset);
+        do Math.init();
+        do Screen.init();
+        do Output.init();
+        do Main.main();
+        do Sys.halt();
+    }
+
+    /** Halts the program execution. */
+    function void halt() {
+        // NAND hardware-specific flag to tell the runtime to halt
+        // see src/core/builtins/runtime_worker.rs
+    }
+
+    /** Waits approximately duration milliseconds and returns.  */
+    function void wait(int duration) {
+        var int durationCounter;
+        if (duration < 0) {
+            do Sys.error(1);
+        }
+        let durationCounter = 50;
+        while (~(duration < 0)) {
+            let durationCounter = durationCounter - 1;
+            if (durationCounter = 0) {
+                let durationCounter = 50;
+                let duration = duration - 1;
+            }
+        }
+    }
+
+    /** Displays the given error code in the form "ERR<errorCode>",
+     *  and halts the program's execution. */
+    function void error(int errorCode) {
+        do Output.printChar(69);
+        do Output.printChar(82);
+        do Output.printChar(82);
+        do Output.printInt(errorCode);
+        do Sys.halt();
+    }
+}
