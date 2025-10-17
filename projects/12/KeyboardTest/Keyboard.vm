@@ -21,6 +21,12 @@ pop local 0
 push local 0
 push constant 0
 eq
+not
+push local 0
+push constant 130
+lt
+and
+not
 if-goto FALSE_CASE2
 push local 0
 pop local 1

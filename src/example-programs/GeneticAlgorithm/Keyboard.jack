@@ -47,7 +47,7 @@ class Keyboard {
         do Output.printChar(0);
         while ((pressFalling = 0) | (pressRising > 0)) {
             let pressRising = Keyboard.keyPressed();
-            if (~(pressRising = 0)) {
+            if ((~(pressRising = 0)) & (pressRising < 130)) {
                 let pressFalling = pressRising;
             }
         }

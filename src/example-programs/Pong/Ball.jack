@@ -88,7 +88,7 @@ class Ball {
             let positivey = (x < destx);
         }
         else {
-	        let positivex = (x < destx);
+            let positivex = (x < destx);
             let positivey = (y < desty);
         }
 
