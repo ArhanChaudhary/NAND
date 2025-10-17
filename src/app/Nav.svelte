@@ -50,7 +50,8 @@
     const exampleProgramsOrder = [
       "Program Template",
       "Average",
-      "Pong",
+      "_2Pong",
+      "CorruptedPong",
       "2048",
       "Overflow",
       "SecretPassword",
