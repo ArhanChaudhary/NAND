@@ -136,6 +136,7 @@ impl ReceivedWorkerMessage {
             }
             Self::ClearRAM => {
                 memory::clear_ram();
+                architecture::reset();
                 hardware_info::emit();
             }
         }
