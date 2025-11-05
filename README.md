@@ -119,7 +119,7 @@ If you're unfamiliar with stack layouts, here's the main idea behind the exploit
 
 The program enables the user to overwrite a single memory address in the RAM to any value. Putting two and two together, if the user were to overwrite the return address of a stack frame with the address of another function, they essentially gain the ability to execute arbitrary code included in the program.
 
-Indeed, if you enter 267 as the memory location and 1715 as the value to overwrite, two numbers reverse engineered by manually inspecting the stack memory space and the assembler, you'll see this idea in working action.
+Indeed, if you enter 267 as the memory location and 1743 as the value to overwrite, two numbers reverse engineered by manually inspecting the stack memory space and the assembler, you'll see this idea in working action.
 
 <img src="media/secret_password.png" width="700" alt="The working secret password program">
 

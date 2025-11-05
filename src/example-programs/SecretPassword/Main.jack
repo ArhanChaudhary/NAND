@@ -3,7 +3,7 @@
  * smashing, or overwriting the stack frame return address, to call
  * a function that would otherwise be inaccessible.
  *
- * Input the numbers 267 and 1715, see what happens!
+ * Input the numbers 267 and 1743, see what happens!
  */
 class Main {
     function void main() {
