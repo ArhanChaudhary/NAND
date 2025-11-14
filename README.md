@@ -1,6 +1,14 @@
 <p align="center">
     <img src="media/logo.png" width="200" alt="The NAND logo">
 </p>
+<p align="center">
+    <a href="https://news.ycombinator.com/item?id=40159278">
+      <img
+        alt="Featured on Hacker News"
+        src="https://hackerbadge.now.sh/api?id=40159278"
+      />
+    </a>
+</p>
 <hr>
 <!-- cSpell:disable -->
 
