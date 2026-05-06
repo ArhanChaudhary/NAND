@@ -312,12 +312,14 @@
       keyValue = 0;
     }
     prev = keyValue;
+    e.preventDefault();
     keyboardComputer(keyValue);
   }
 
-  function keyup() {
+  function keyup(e: KeyboardEvent) {
     if (!hasInitRunner) return;
     prev = 0;
+    e.preventDefault();
     keyboardComputer(0);
   }
 </script>
